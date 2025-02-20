@@ -1,0 +1,32 @@
+Reset Style Sheet for ClayCrazE Website
+Author: Jim Alexander
+Date:   02-19-2025
+
+Filename: cc_reset.css
+
+*/
+
+/* Structural Styles */
+article, aside, figcaption, figure, footer, header, main, menu, nav, section {display: block;}
+
+
+
+/* Typographic Styles */
+address, article, aside, blockquote, body, cite, div, dl, dt, dd, em, figcaption, figure, footer, h1, h2, h3, h4, h5, h6, header, html, img, li, main, nav, ol, p, section, span, ul, section {
+display: block
+
+back-ground-color: transparent;
+color: #000000;
+font-size: 100%;
+margin: 0;
+padding: 0;
+vertical-align: baseline;
+}
+
+nav ul {
+list-style: none;
+list-style-image: none;
+}
+body {
+line-height: 1;
+}
