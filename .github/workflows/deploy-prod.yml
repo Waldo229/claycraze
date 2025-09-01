@@ -1,7 +1,7 @@
 name: Deploy to SiteGround (PROD)
 on:
   push:
-    branches: [ main ]   # deploy on every push to main
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -13,19 +13,19 @@ jobs:
       - name: Upload to SiteGround (FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.SG_HOST }}
-          username: ${{ secrets.SG_USER }}
+          server: ${{ secrets.SG_HOST }}       # gvam1276.siteground.biz
+          username: ${{ secrets.SG_USER }}     # jim@claycraze.com
           password: ${{ secrets.SG_PASS }}
           protocol: ftps
-          port: ${{ secrets.SG_PORT }}
-          server-dir: ${{ secrets.SG_DIR }}   # "/" = /claycraze.com/public_html/
+          port: ${{ secrets.SG_PORT }}         # 21
+          server-dir: ${{ secrets.SG_DIR }}    # "/" = /claycraze.com/public_html/
           local-dir: ./
+          state-name: ftp-deploy-sync.json     # <— non-hidden state file
+          log-level: verbose
+          timeout: 120000
           exclude: |
             **/.git*
             **/.github/**
             node_modules/**
             **/*.psd
             **/*.ai
-          dangerous-clean-slate: false
-          log-level: verbose
-          timeout: 120000
