@@ -1,19 +1,31 @@
-- name: Upload to SiteGround (FTPS)
-  uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-  with:
-    server: ${{ secrets.SG_HOST }}
-    username: ${{ secrets.SG_USER }}
-    password: ${{ secrets.SG_PASS }}
-    protocol: ftps
-    port: ${{ secrets.SG_PORT }}
-    server-dir: ${{ secrets.SG_DIR }}
-    local-dir: ./
-    exclude: |
-      **/.git*
-      **/.github/**
-      node_modules/**
-      **/*.psd
-      **/*.ai
-    dangerous-clean-slate: false
-    log-level: verbose
-    timeout: 120000
+name: Deploy to SiteGround (PROD)
+on:
+  push:
+    branches: [ main ]   # deploy on every push to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload to SiteGround (FTPS)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          password: ${{ secrets.SG_PASS }}
+          protocol: ftps
+          port: ${{ secrets.SG_PORT }}
+          server-dir: ${{ secrets.SG_DIR }}   # "/" = /claycraze.com/public_html/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.github/**
+            node_modules/**
+            **/*.psd
+            **/*.ai
+          dangerous-clean-slate: false
+          log-level: verbose
+          timeout: 120000
