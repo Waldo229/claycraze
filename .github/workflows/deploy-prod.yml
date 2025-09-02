@@ -1,4 +1,4 @@
-name: Deploy to SiteGround (SCP, marker smoke)
+name: Deploy to SiteGround (SCP, passphrase via key file)
 
 on:
   push:
@@ -8,47 +8,49 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Show repo tree (top-level)
+      - name: Write private key to file
         run: |
-          echo "PWD: $(pwd)"
-          ls -lah | sed -n '1,120p'
-          echo "---- try common subfolders ----"
-          for d in public public_html dist build claycraze claycraze.com; do
-            echo "--- $d ---"; ls -lah "$d" 2>/dev/null || true
-          done
+          umask 077
+          echo "${{ secrets.SG_PRIVATE_KEY }}" > id_sg
+          # show key type only (for debug without leaking key)
+          head -n 1 id_sg
 
-      - name: Create marker file
+      - name: Local preview
         run: |
-          date -u +"%Y-%m-%dT%H:%M:%SZ" > DEPLOYED.txt
-          echo "Deployed from GitHub Actions" >> DEPLOYED.txt
+          echo "Repo root:"; ls -lah | head -n 80
 
-      - name: Upload marker via SCP (proves auth + path)
+      # Upload the entire repo root to ~/public_html (change 'source' if your site is in a subfolder)
+      - name: Upload via SCP (passphrase + key_path)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SG_HOST }}
           username: ${{ secrets.SG_USER }}
           port: ${{ secrets.SG_PORT }}
-          key: ${{ secrets.SG_PRIVATE_KEY }}
+          key_path: id_sg
           passphrase: ${{ secrets.SG_PASSPHRASE }}
-          source: DEPLOYED.txt
+          source: |
+            ./**
+            ./.htaccess
           target: "~/public_html/"
           overwrite: true
 
-      - name: Verify marker on server
+      - name: Verify on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SG_HOST }}
           username: ${{ secrets.SG_USER }}
           port: ${{ secrets.SG_PORT }}
-          key: ${{ secrets.SG_PRIVATE_KEY }}
+          key_path: id_sg
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
-            echo "Listing ~/public_html:"
+            echo "After deploy, listing ~/public_html:"
             ls -lah ~/public_html | head -n 80
-            echo "DEPLOYED.txt contents:"
-            cat ~/public_html/DEPLOYED.txt || true
+            stat ~/public_html/index.html || true
+
 
