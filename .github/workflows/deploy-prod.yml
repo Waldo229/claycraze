@@ -1,4 +1,4 @@
-name: Deploy to SiteGround (SFTP, PROD)
+name: Deploy to SiteGround (SCP over SSH, PROD)
 
 on:
   push:
@@ -11,32 +11,28 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # 🚚 Upload site to SiteGround via SFTP (SSH + passphrase supported)
-      # NOTE: Your site files are inside claycraze.com/public_html/ (per your screenshots)
-      # If your index.html is at repo root instead, see the alternate block below.
-      - name: Upload via SFTP
-        uses: appleboy/sftp-action@v0.7.1
+      # 🚚 Upload site via SCP (supports key + passphrase)
+      # If your site is at repo root, see the ALT block below.
+      - name: Upload via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-            host: ${{ secrets.SG_HOST }}
-            username: ${{ secrets.SG_USER }}
-            port: ${{ secrets.SG_PORT }}
-            key: ${{ secrets.SG_PRIVATE_KEY }}
-            passphrase: ${{ secrets.SG_PASSPHRASE }}
-            # Upload the CONTENTS of this folder (not the folder itself)
-            source: |
-              claycraze.com/public_html/**
-              claycraze.com/public_html/.htaccess
-            target: ~/public_html/
-            overwrite: true
-            # optional safety: timeout in seconds
-            timeout: 600
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key: ${{ secrets.SG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          source: |
+            claycraze.com/public_html/**
+            claycraze.com/public_html/.htaccess
+          target: ~/public_html/
+          overwrite: true
+          strip_components: 2   # drops "claycraze.com/public_html" so files land directly at docroot
 
-      # ✅ Verify that files landed in the right place
+      # ✅ Verify it landed
       - name: Verify remote contents
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -46,10 +42,11 @@ jobs:
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
-            echo "==> Listing ~/public_html"
+            echo "==> ~/public_html listing"
             ls -lah ~/public_html | head -n 50
             echo "==> index.html timestamp"
             stat ~/public_html/index.html || true
+
 
 
          
