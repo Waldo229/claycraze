@@ -1,7 +1,6 @@
 name: SiteGround SSH Diagnostic
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
@@ -22,11 +21,10 @@ jobs:
         with:
           host: ${{ secrets.SG_HOST }}
           username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}
+          port: ${{ secrets.SG_PORT }}      # 18765
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
             echo "Connected as $(whoami)"
-            echo "Home directory:"; pwd
-            echo "Listing home:"; ls -lah ~
-            echo "Listing docroot:"; ls -lah ~/public_html || echo "No public_html"
+            echo "Home:"; ls -lah ~
+            echo "Docroot:"; ls -lah ~/public_html || echo "No public_html"
