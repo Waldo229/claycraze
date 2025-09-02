@@ -1,9 +1,13 @@
-name: Deploy to SiteGround (SCP, passphrase via key file)
+name: Deploy to SiteGround (SCP, PROD)
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
+concurrency:
+  group: prod-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -11,22 +15,23 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Write private key to file
         run: |
           umask 077
           echo "${{ secrets.SG_PRIVATE_KEY }}" > id_sg
-          # show key type only (for debug without leaking key)
-          head -n 1 id_sg
+          head -n 1 id_sg  # shows the key type only, no secrets
 
       - name: Local preview
         run: |
-          echo "Repo root:"; ls -lah | head -n 80
+          echo "Repo root:"
+          ls -lah | head -n 80
+          echo "---- claycraze.com/public_html ----"
+          ls -lah claycraze.com/public_html || true
 
-      # Upload the entire repo root to ~/public_html (change 'source' if your site is in a subfolder)
-      - name: Upload via SCP (passphrase + key_path)
+      - name: Upload site via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SG_HOST }}
@@ -35,22 +40,7 @@ jobs:
           key_path: id_sg
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           source: |
-            ./**
-            ./.htaccess
+            claycraze.com/public_html/**
+            claycraze.com/public_html/.htaccess
           target: "~/public_html/"
-          overwrite: true
-
-      - name: Verify on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SG_HOST }}
-          username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}
-          key_path: id_sg
-          passphrase: ${{ secrets.SG_PASSPHRASE }}
-          script: |
-            echo "After deploy, listing ~/public_html:"
-            ls -lah ~/public_html | head -n 80
-            stat ~/public_html/index.html || true
-
-
+          overwr
