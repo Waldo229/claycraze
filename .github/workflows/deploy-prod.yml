@@ -1,4 +1,5 @@
 name: Deploy to SiteGround (PROD)
+
 on:
   push:
     branches: [ main ]
@@ -17,17 +18,10 @@ jobs:
           username: ${{ secrets.SG_USER }}
           password: ${{ secrets.SG_PASS }}
           protocol: ftps
-          port: ${{ secrets.SG_PORT }}
-          server-dir: ${{ secrets.SG_DIR }}   # /public_html/
-          local-dir: ./
-          state-name: ftp-deploy-sync.json   # non-hidden state file
+          port: 21                          # FTPS is port 21 (don't use 18765 here)
+          server-dir: /public_html/         # land at the docroot exactly
+          local-dir: claycraze.com/public_html/   # <- path INSIDE your repo that holds index.html
+          state-name: .ftp-deploy-sync-state.json
           log-level: verbose
           timeout: 120000
-          exclude: |
-            .htaccess
-            **/.htaccess
-            **/.git*
-            **/.github/**
-            node_modules/**
-            **/*.psd
-            **/*.ai
+         
