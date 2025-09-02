@@ -1,27 +1,13 @@
-name: SiteGround Smoke Test (SCP)
+name: SiteGround SSH Diagnostic
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
-concurrency:
-  group: prod-deploy
-  cancel-in-progress: true
-
 jobs:
-  deploy:
+  diag:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Create marker file
-        run: |
-          date -u +"%Y-%m-%dT%H:%M:%SZ" > DEPLOYED.txt
-          echo "ClaycrazE – hello from GitHub Actions" >> DEPLOYED.txt
-
-      - name: SSH pre-check (prove we can reach ~/public_html)
+      - name: Try SSH to SiteGround
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SG_HOST }}
@@ -30,35 +16,10 @@ jobs:
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
-            echo "whoami: $(whoami)"
-            echo "home:"; ls -lah ~
-            mkdir -p ~/public_html
-            echo "docroot:"; ls -lah ~/public_html
-
-      - name: Upload marker via SCP (supports key + passphrase)
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SG_HOST }}
-          username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}
-          key: ${{ secrets.SG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SG_PASSPHRASE }}
-          source: "DEPLOYED.txt"
-          target: "~/public_html/"
-          overwrite: true
-
-      - name: Verify marker on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SG_HOST }}
-          username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}
-          key: ${{ secrets.SG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SG_PASSPHRASE }}
-          script: |
-            echo "ls ~/public_html:"
-            ls -lah ~/public_html | head -n 50
-            echo "show DEPLOYED.txt:"
-            tail -n +1 ~/public_html/DEPLOYED.txt || true
-
-         
+            echo "Connected as $(whoami)"
+            echo "Home directory:"
+            pwd
+            echo "Listing home:"
+            ls -lah ~
+            echo "Listing docroot:"
+            ls -lah ~/public_html || echo "No public_html"
