@@ -1,46 +1,44 @@
-name: Deploy to SiteGround (SCP, PROD)
+name: Deploy to SiteGround (SCP, marker smoke)
 
 on:
   push:
     branches: [ main ]
-
-concurrency:
-  group: prod-deploy
-  cancel-in-progress: true
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
+    timeout-minutes: 5
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Show what we’re about to upload (helps catch path issues)
-      - name: Local preview
+      - name: Show repo tree (top-level)
         run: |
-          echo "Repo root:"
-          ls -lah | head -n 80
+          echo "PWD: $(pwd)"
+          ls -lah | sed -n '1,120p'
+          echo "---- try common subfolders ----"
+          for d in public public_html dist build claycraze claycraze.com; do
+            echo "--- $d ---"; ls -lah "$d" 2>/dev/null || true
+          done
 
-      # 🚚 Upload EVERYTHING in repo root to SG docroot
-      # (includes dotfiles; grabs .htaccess explicitly)
-      - name: Upload site via SCP
+      - name: Create marker file
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > DEPLOYED.txt
+          echo "Deployed from GitHub Actions" >> DEPLOYED.txt
+
+      - name: Upload marker via SCP (proves auth + path)
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SG_HOST }}         # ssh.claycraze.com
-          username: ${{ secrets.SG_USER }}     # your SG SSH user
-          port: ${{ secrets.SG_PORT }}         # 18765
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
-          source: |
-            ./**
-            ./.htaccess
+          source: DEPLOYED.txt
           target: "~/public_html/"
           overwrite: true
 
-      # ✅ Prove files landed in the right place
-      - name: Verify on server
+      - name: Verify marker on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SG_HOST }}
@@ -49,4 +47,8 @@ jobs:
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
-            echo "After deploy, listing ~/p
+            echo "Listing ~/public_html:"
+            ls -lah ~/public_html | head -n 80
+            echo "DEPLOYED.txt contents:"
+            cat ~/public_html/DEPLOYED.txt || true
+
