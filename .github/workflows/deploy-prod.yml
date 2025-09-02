@@ -1,6 +1,7 @@
 name: SiteGround SSH Diagnostic
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
@@ -19,9 +20,9 @@ jobs:
       - name: Try SSH to SiteGround
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SG_HOST }}      # ssh.claycraze.com
-          username: ${{ secrets.SG_USER }}  # u1966-...
-          port: ${{ secrets.SG_PORT }}      # 18765
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
