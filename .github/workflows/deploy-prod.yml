@@ -18,7 +18,7 @@ jobs:
           password: ${{ secrets.SG_PASS }}
           protocol: ftps
           port: ${{ secrets.SG_PORT }}
-          server-dir: ${{ secrets.SG_DIR }}   # /claycraze.com/public_html/
+          server-dir: ${{ secrets.SG_DIR }}   # /public_html/
           local-dir: ./
           state-name: ftp-deploy-sync.json   # non-hidden state file
           log-level: verbose
