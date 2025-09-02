@@ -6,20 +6,26 @@ on:
 jobs:
   diag:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
+      - name: Sanity check secrets (no values printed)
+        run: |
+          test -n "${{ secrets.SG_PRIVATE_KEY }}" || (echo "Missing SG_PRIVATE_KEY" && exit 1)
+          test -n "${{ secrets.SG_PASSPHRASE }}"  || (echo "Missing SG_PASSPHRASE" && exit 1)
+          test -n "${{ secrets.SG_HOST }}"        || (echo "Missing SG_HOST" && exit 1)
+          test -n "${{ secrets.SG_PORT }}"        || (echo "Missing SG_PORT" && exit 1)
+          test -n "${{ secrets.SG_USER }}"        || (echo "Missing SG_USER" && exit 1)
+
       - name: Try SSH to SiteGround
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SG_HOST }}
-          username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}
+          host: ${{ secrets.SG_HOST }}      # ssh.claycraze.com
+          username: ${{ secrets.SG_USER }}  # u1966-...
+          port: ${{ secrets.SG_PORT }}      # 18765
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
             echo "Connected as $(whoami)"
-            echo "Home directory:"
-            pwd
-            echo "Listing home:"
-            ls -lah ~
-            echo "Listing docroot:"
-            ls -lah ~/public_html || echo "No public_html"
+            echo "Home directory:"; pwd
+            echo "Listing home:"; ls -lah ~
+            echo "Listing docroot:"; ls -lah ~/public_html || echo "No public_html"
