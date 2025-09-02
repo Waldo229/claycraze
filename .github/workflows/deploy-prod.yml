@@ -1,30 +1,49 @@
-name: SiteGround SSH Diagnostic
+
+name: Deploy to SiteGround (SCP, PROD)
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: prod-deploy
+  cancel-in-progress: true
 
 jobs:
-  diag:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 10
     steps:
-      - name: Sanity check secrets (no values printed)
-        run: |
-          test -n "${{ secrets.SG_PRIVATE_KEY }}" || (echo "Missing SG_PRIVATE_KEY" && exit 1)
-          test -n "${{ secrets.SG_PASSPHRASE }}"  || (echo "Missing SG_PASSPHRASE" && exit 1)
-          test -n "${{ secrets.SG_HOST }}"        || (echo "Missing SG_HOST" && exit 1)
-          test -n "${{ secrets.SG_PORT }}"        || (echo "Missing SG_PORT" && exit 1)
-          test -n "${{ secrets.SG_USER }}"        || (echo "Missing SG_USER" && exit 1)
+      - uses: actions/checkout@v4
 
-      - name: Try SSH to SiteGround
+      - name: Local preview
+        run: |
+          echo "Repo root:"; ls -lah | head -n 50
+          echo "claycraze.com/public_html (if present):"; ls -lah claycraze.com/public_html || true
+
+      - name: Upload site via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key: ${{ secrets.SG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          source: |
+            claycraze.com/public_html/**
+            claycraze.com/public_html/.htaccess
+          target: "~/public_html/"
+          overwrite: true
+          strip_components: 2
+
+      - name: Verify on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SG_HOST }}
           username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}      # 18765
+          port: ${{ secrets.SG_PORT }}
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
-            echo "Connected as $(whoami)"
-            echo "Home:"; ls -lah ~
-            echo "Docroot:"; ls -lah ~/public_html || echo "No public_html"
+            echo "After deploy:"; ls -lah ~/public_html | head -n 50
+            echo "index.html timestamp:"; stat ~/public_html/index.html || true
