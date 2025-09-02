@@ -1,4 +1,4 @@
-name: Deploy to SiteGround (PROD)
+name: Deploy to SiteGround (SFTP, PROD)
 
 on:
   push:
@@ -11,17 +11,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Upload to SiteGround (FTPS)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      # If index.html is at repo root, set local_path: './'
+      # If it's inside claycraze.com/public_html/, keep that path.
+      - name: Upload via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          server: ${{ secrets.SG_HOST }}
+          server: ${{ secrets.SG_HOST }}        # ssh.claycraze.com
+          port: ${{ secrets.SG_PORT }}          # 18765
+          username: ${{ secrets.SG_USER }}      # u1966-...
+          ssh_private_key: ${{ secrets.SG_PRIVATE_KEY }}   # full key text
+          passphrase: ${{ secrets.SG_PASSPHRASE }}         # if you set one
+          local_path: 'claycraze.com/public_html/'         # or './' if root
+          remote_path: 'public_html/'            # relative path from SSH home
+          sftp_only: true
+          exclude: |
+            .git*
+            .github/**
+            node_modules/**
+            **/*.map
+
+      # Verify it actually landed
+      - name: Verify remote contents
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SG_HOST }}
           username: ${{ secrets.SG_USER }}
-          password: ${{ secrets.SG_PASS }}
-          protocol: ftps
-          port: 21                          # FTPS is port 21 (don't use 18765 here)
-          server-dir: /public_html/         # land at the docroot exactly
-          local-dir: claycraze.com/public_html/   # <- path INSIDE your repo that holds index.html
-          state-name: .ftp-deploy-sync-state.json
-          log-level: verbose
-          timeout: 120000
+          port: ${{ secrets.SG_PORT }}
+          key: ${{ secrets.SG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          script: |
+            echo "==> ~/public_html listing"
+            ls -lah ~/public_html | head -n 50
+            echo "==> index.html?"
+            stat ~/public_html/index.html || true
+
          
