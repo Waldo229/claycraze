@@ -4,33 +4,39 @@ on:
   push:
     branches: [ main ]
 
+concurrency:
+  group: prod-deploy
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      # If index.html is at repo root, set local_path: './'
-      # If it's inside claycraze.com/public_html/, keep that path.
+      # 🚚 Upload site to SiteGround via SFTP (SSH + passphrase supported)
+      # NOTE: Your site files are inside claycraze.com/public_html/ (per your screenshots)
+      # If your index.html is at repo root instead, see the alternate block below.
       - name: Upload via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: appleboy/sftp-action@v0.7.1
         with:
-          server: ${{ secrets.SG_HOST }}        # ssh.claycraze.com
-          port: ${{ secrets.SG_PORT }}          # 18765
-          username: ${{ secrets.SG_USER }}      # u1966-...
-          ssh_private_key: ${{ secrets.SG_PRIVATE_KEY }}   # full key text
-          passphrase: ${{ secrets.SG_PASSPHRASE }}         # if you set one
-          local_path: 'claycraze.com/public_html/'         # or './' if root
-          remote_path: 'public_html/'            # relative path from SSH home
-          sftp_only: true
-          exclude: |
-            .git*
-            .github/**
-            node_modules/**
-            **/*.map
+            host: ${{ secrets.SG_HOST }}
+            username: ${{ secrets.SG_USER }}
+            port: ${{ secrets.SG_PORT }}
+            key: ${{ secrets.SG_PRIVATE_KEY }}
+            passphrase: ${{ secrets.SG_PASSPHRASE }}
+            # Upload the CONTENTS of this folder (not the folder itself)
+            source: |
+              claycraze.com/public_html/**
+              claycraze.com/public_html/.htaccess
+            target: ~/public_html/
+            overwrite: true
+            # optional safety: timeout in seconds
+            timeout: 600
 
-      # Verify it actually landed
+      # ✅ Verify that files landed in the right place
       - name: Verify remote contents
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -40,9 +46,10 @@ jobs:
           key: ${{ secrets.SG_PRIVATE_KEY }}
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
-            echo "==> ~/public_html listing"
+            echo "==> Listing ~/public_html"
             ls -lah ~/public_html | head -n 50
-            echo "==> index.html?"
+            echo "==> index.html timestamp"
             stat ~/public_html/index.html || true
+
 
          
