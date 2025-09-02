@@ -1,2 +1,85 @@
-DirectoryIndex index.html index.php
-Options -Indexes
+name: Deploy to SiteGround (SFTP, with path checks)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 🔎 Show what's at the repo root and inside ./claycraze (if it exists)
+      - name: List local files
+        run: |
+          echo "==> repo root:"
+          ls -lah
+          echo "==> ./claycraze (if present):"
+          ls -lah ./claycraze || true
+
+      # ⬅️ CHANGE THIS if your index.html sits in a subfolder.
+      # If your site is at repo root: SITE_DIR="."
+      # If it's in ./claycraze:       SITE_DIR="claycraze"
+      - name: Set site directory
+        run: echo "SITE_DIR=${SITE_DIR:-.}" >> $GITHUB_ENV
+        env:
+          # 👉 pick ONE of these:
+          # SITE_DIR: .           # use this if index.html is at repo root
+          SITE_DIR: claycraze      # use this if index.html is in ./claycraze
+
+      - name: Confirm chosen site dir
+        run: |
+          echo "Using SITE_DIR=$SITE_DIR"
+          ls -lah "$SITE_DIR"
+      
+      # 🔐 Pre-check remote path (note: many hosts chroot; use ~/public_html)
+      - name: SSH pre-check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key: ${{ secrets.SG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          script: |
+            echo "pwd:"
+            pwd
+            echo "home listing:"
+            ls -lah ~
+            echo "~/public_html listing:"
+            ls -lah ~/public_html || (echo "ERROR: ~/public_html not found" && exit 1)
+
+      - name: Upload via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.SG_HOST }}
+          port: ${{ secrets.SG_PORT }}
+          username: ${{ secrets.SG_USER }}
+          ssh_private_key: ${{ secrets.SG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          # ⚠️ On shared hosts, path is usually relative to home. Use no leading slash.
+          local_path: '${{ env.SITE_DIR }}/'
+          remote_path: 'public_html/'
+          sftp_only: true
+          exclude: |
+            .git*
+            .github/**
+            node_modules/**
+            **/*.map
+
+      - name: SSH post-check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key: ${{ secrets.SG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          script: |
+            echo "==> After deploy, ~/public_html:"
+            ls -lah ~/public_html | head -n 50
+            echo "Try to show index.html timestamp:"
+            stat ~/public_html/index.html 2>/dev/null || echo "No index.html at root"
+
