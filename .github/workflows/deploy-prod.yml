@@ -24,23 +24,3 @@ jobs:
           echo "${{ secrets.SG_PRIVATE_KEY }}" > id_sg
           head -n 1 id_sg  # shows the key type only, no secrets
 
-      - name: Local preview
-        run: |
-          echo "Repo root:"
-          ls -lah | head -n 80
-          echo "---- claycraze.com/public_html ----"
-          ls -lah claycraze.com/public_html || true
-
-      - name: Upload site via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SG_HOST }}
-          username: ${{ secrets.SG_USER }}
-          port: ${{ secrets.SG_PORT }}
-          key_path: id_sg
-          passphrase: ${{ secrets.SG_PASSPHRASE }}
-          source: |
-            claycraze.com/public_html/**
-            claycraze.com/public_html/.htaccess
-          target: "~/public_html/"
-          overwr
