@@ -1,0 +1,98 @@
+name: Reset SiteGround docroot + Redeploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  reset-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Sanity check secrets
+        run: |
+          test -n "${{ secrets.SG_HOST }}" || (echo "Missing SG_HOST" && exit 1)
+          test -n "${{ secrets.SG_PORT }}" || (echo "Missing SG_PORT" && exit 1)
+          test -n "${{ secrets.SG_USER }}" || (echo "Missing SG_USER" && exit 1)
+          test -n "${{ secrets.SG_PRIVATE_KEY }}" || (echo "Missing SG_PRIVATE_KEY" && exit 1)
+
+      - name: Write private key to file
+        run: |
+          umask 077
+          echo "${{ secrets.SG_PRIVATE_KEY }}" > id_sg
+          head -n 1 id_sg
+
+      - name: Backup + wipe docroot (preserve .well-known)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key_path: id_sg
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          script: |
+            set -euo pipefail
+            echo "Home:"; pwd
+            echo "Before cleanup:"; ls -al ~ | grep -i public_html || true
+
+            TS=$(date +%F_%H%M%S)
+            echo "Creating backup: ~/backup_public_html_${TS}.tgz"
+            tar -czf ~/backup_public_html_${TS}.tgz -C ~ public_html || true
+
+            # Remove stray capitalized folder if it exists
+            rm -rf ~/Public_html 2>/dev/null || true
+
+            # Preserve ACME/Let's Encrypt tokens if present
+            tmp_preserve=~/.tmp_sg_preserve
+            rm -rf "$tmp_preserve" && mkdir -p "$tmp_preserve"
+            if [ -d ~/public_html/.well-known ]; then
+              mv ~/public_html/.well-known "$tmp_preserve/.well-known"
+            fi
+
+            # Wipe docroot
+            rm -rf ~/public_html/*
+            mkdir -p ~/public_html
+            chmod 755 ~/public_html
+
+            # Restore preserved tokens
+            if [ -d "$tmp_preserve/.well-known" ]; then
+              mv "$tmp_preserve/.well-known" ~/public_html/
+            fi
+            rm -rf "$tmp_preserve"
+
+            # Temporary placeholder so you see something if deploy is empty
+            printf '<!doctype html><meta charset="utf-8"><title>ClayCraze reset</title><h1>Docroot reset %s</h1>' "$(date)" > ~/public_html/index.html
+
+            echo "After cleanup:"
+            ls -lah ~/public_html
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Upload site via SCP (from claycraze.com/public_html/)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key_path: id_sg
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          source: |
+            claycraze.com/public_html/**
+            claycraze.com/public_html/.htaccess
+          target: "~/public_html/"
+          overwrite: true
+          strip_components: 2
+
+      - name: Verify on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
+          key_path: id_sg
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          script: |
+            echo "Deployed contents:"
+            ls -lah ~/public_html | head -n 120
+            echo "index.html info:"
+            stat ~/public_html/index.html || true
