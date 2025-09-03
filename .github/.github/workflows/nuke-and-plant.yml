@@ -1,0 +1,51 @@
+name: nuke-and-plant
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "**"
+      - "!.gitignore"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SG_HOST: ${{ secrets.SG_HOST }}          # e.g. ssh.claycraze.com
+      SG_PORT: ${{ secrets.SG_PORT }}          # e.g. 18765
+      SG_USER: ${{ secrets.SG_USER }}          # e.g. u1966-xxxx
+      SG_PASSPHRASE: ${{ secrets.SG_PASSPHRASE }}
+      REMOTE_PATH: "/home/u1966-xxxx/public_html"  # <-- set this to YOUR exact path
+      PRESERVE_WELL_KNOWN: "true"              # set "false" to delete /.well-known too
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Write SSH key
+        id: key
+        shell: bash
+        env:
+          SG_PRIVATE_KEY: ${{ secrets.SG_PRIVATE_KEY }}
+        run: |
+          mkdir -p "$HOME/.ssh"
+          echo "$SG_PRIVATE_KEY" > "$HOME/.ssh/sg_key"
+          chmod 600 "$HOME/.ssh/sg_key"
+          # Trust host key
+          ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> "$HOME/.ssh/known_hosts"
+
+      - name: Smoke test SSH
+        shell: bash
+        run: |
+          ssh -i "$HOME/.ssh/sg_key" -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo Connected OK && uname -a"
+
+      - name: NUKE remote directory (careful!)
+        shell: bash
+        run: |
+          set -euo pipefail
+          KEY="$HOME/.ssh/sg_key"
+          # Safety rails: must be an absolute path and include /public_html
+          case "$REMOTE_PATH" in
+            ""|"/"|"/home"|"/home/"*|"/*") ;;
+          esac
+          if [[ "$REMOTE_PATH" != *"/public_ht_*_]()]()
