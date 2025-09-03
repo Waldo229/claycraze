@@ -1,0 +1,49 @@
+name: FIND_WEBROOT
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      SG_HOST: ${{ secrets.SG_HOST }}
+      SG_PORT: ${{ secrets.SG_PORT }}
+      SG_USER: ${{ secrets.SG_USER }}
+    steps:
+      - name: Write SSH key
+        shell: bash
+        env: { SG_PRIVATE_KEY: ${{ secrets.SG_PRIVATE_KEY }} }
+        run: |
+          mkdir -p "$HOME/.ssh"
+          echo "$SG_PRIVATE_KEY" > "$HOME/.ssh/sg_key"
+          chmod 600 "$HOME/.ssh/sg_key"
+          ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> "$HOME/.ssh/known_hosts"
+
+      - name: List candidate webroots and drop markers
+        shell: bash
+        run: |
+          KEY="$HOME/.ssh/sg_key"
+          DATE="$(date -u +%Y%m%d-%H%M%SZ)"
+          ssh -i "$KEY" -p "$SG_PORT" "$SG_USER@$SG_HOST" bash -lc '
+            set -euo pipefail
+            echo "whoami: $(whoami)"
+            echo "pwd: $(pwd)"
+            echo "HOME: $HOME"
+            echo "Searching for public_html dirs (depth<=4) ..."
+            find /home -maxdepth 4 -type d -name public_html 2>/dev/null || true
+            find /home/customer -maxdepth 5 -type d -name public_html 2>/dev/null || true
+            echo "--- contents around likely locations ---"
+            for d in \
+              "$HOME/public_html" \
+              "/home/customer/www/claycraze.com/public_html" \
+              "/home/'"$SG_USER"'/domains/claycraze.com/public_html" \
+              "/home/'"$SG_USER"'/public_html" \
+            ; do
+              if [ -d "$d" ]; then
+                echo ">>> $d"
+                ls -la "$d" | head -n 30 || true
+                echo "NUKE-TEST-$DATE" > "$d/NUKE_TEST_$DATE.txt" || true
+              fi
+            done
+          '
+          echo "Check which folder now contains NUKE_TEST_$DATE.txt in Site Tools."
