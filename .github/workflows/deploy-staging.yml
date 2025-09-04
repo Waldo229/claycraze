@@ -1,4 +1,4 @@
-name: Deploy • STAGING (staging → staging.claycraze.com)
+name: Deploy - STAGING (staging -> staging.claycraze.com)
 
 on:
   push:
@@ -13,11 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SG_HOST: ${{ secrets.SG_HOST }}
-  SG_PORT: ${{ secrets.SG_PORT }}
-  SG_USER: ${{ secrets.SG_USER_STAGING }}
-  # TEMP guess; we’ll confirm in Preflight:
-  DEST_PATH: public_html/staging
+  SG_HOST: ${{ secrets.SG_HOST }}             # e.g. ssh.claycraze.com
+  SG_PORT: ${{ secrets.SG_PORT }}             # e.g. 18765
+  SG_USER: ${{ secrets.SG_USER_STAGING }}     # exact SG SSH user (often u1966-...)
+  DEST_PATH: /home/customer/www/staging.claycraze.com/public_html  # adjust after Preflight output
 
 jobs:
   deploy-staging:
@@ -25,16 +24,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
-      - name: Start ssh-agent
+      - name: Start native ssh-agent (persist env)
         shell: bash
         run: |
           eval "$(ssh-agent -s)"
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
           echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
 
-      - name: Add SiteGround key (ASKPASS)
+      - name: Add passphrase-protected key via SSH_ASKPASS (force)
         shell: bash
         env:
           PASSPHRASE: ${{ secrets.SG_PASSPHRASE_STAGING }}
@@ -43,51 +43,9 @@ jobs:
           umask 077
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_rsa_staging
+          # Normalize CRLF just in case
+          sed -i 's/\r$//' ~/.ssh/id_rsa_staging
           chmod 600 ~/.ssh/id_rsa_staging
-          cat > /tmp/askpass.sh << 'EOF'
-          #!/usr/bin/env bash
-          echo "$PASSPHRASE"
-          EOF
-          chmod +x /tmp/askpass.sh
-          export SSH_ASKPASS=/tmp/askpass.sh
-          export DISPLAY=:0
-          ssh-add ~/.ssh/id_rsa_staging < /dev/null
-          ssh-add -l
 
-      - name: Add SiteGround host to known_hosts
-        shell: bash
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
-
-      # 🔎 Preflight: map the remote filesystem so we know the correct docroot
-      - name: Preflight: inspect remote
-        shell: bash
-        run: |
-          set -x
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" '
-            echo "whoami: $(whoami)";
-            echo "HOME: $HOME";
-            echo "--- HOME listing ---"; ls -la;
-            echo "--- ~/public_html ---"; ls -la ~/public_html || true;
-            echo "--- /home/customer/www ---"; ls -la /home/customer/www || true;
-            echo "--- claycraze.com/public_html ---"; ls -la /home/customer/www/claycraze.com/public_html || true;
-            echo "--- staging.claycraze.com/public_html ---"; ls -la /home/customer/www/staging.claycraze.com/public_html || true;
-            echo "--- DEST_PATH ($DEST_PATH) ---"; ls -la "$DEST_PATH" || echo "DEST_PATH missing: $DEST_PATH";
-          '
-
-      # If DEST_PATH exists, deploy. If not, just stop after preflight.
-      - name: Rsync site to STAGING (only if DEST_PATH exists)
-        shell: bash
-        run: |
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "test -d '$DEST_PATH'"
-          rsync -az --delete \
-            --exclude ".git/" \
-            --exclude ".github/" \
-            --exclude "README.md" \
-            ./ "$SG_USER@$SG_HOST:$DEST_PATH" -e "ssh -p $SG_PORT"
-
-      - name: Verify deploy
-        shell: bash
-        run: |
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "cd '$DEST_PATH' && pwd && ls -la | head -n 30"
+          # Minimal askpass helper
+          printf
