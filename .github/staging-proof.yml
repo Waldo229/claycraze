@@ -1,0 +1,29 @@
+name: Staging Proof
+
+on:
+  workflow_dispatch:
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write CI key
+        run: |
+          umask 077
+          printf "%s" "${{ secrets.SG_PRIVATE_KEY }}" > id_sg
+          head -n 1 id_sg
+
+      - name: Write marker to staging docroot + list
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SG_HOST }}        # ssh.claycraze.com
+          username: ${{ secrets.SG_USER }}    # u1966-...
+          port: ${{ secrets.SG_PORT }}        # 18765
+          key_path: id_sg
+          passphrase: ${{ secrets.SG_PASSPHRASE }}
+          script: |
+            set -e
+            STAGING=~/staging.claycraze.com/public_html
+            mkdir -p "$STAGING"
+            echo "STAGING OK :: $GITHUB_SHA :: $(date -u)" > "$STAGING/DEPLOY_MARKER.txt"
+            ls -lah "$STAGING" | head -n 80
