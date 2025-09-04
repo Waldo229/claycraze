@@ -16,7 +16,7 @@ env:
   SG_HOST: ${{ secrets.SG_HOST }}            # e.g. ssh.claycraze.com
   SG_PORT: ${{ secrets.SG_PORT }}            # e.g. 18765
   SG_USER: ${{ secrets.SG_USER_STAGING }}    # e.g. u1966-olev38ziybsd (use exact SG username)
-  DEST_PATH: public_html/staging             # set to your subdomain's docroot
+  DEST_PATH: public_html/staging             # ← set to your subdomain’s docroot
 
 jobs:
   deploy-staging:
@@ -27,15 +27,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Start the ssh-agent (no keys added yet)
+      # 1) Start a native ssh-agent and persist its env across steps
       - name: Start ssh-agent
-        uses: webfactory/ssh-agent@v0.9.0
+        shell: bash
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
 
-      # Write the passphrase-protected key and add it using SSH_ASKPASS
-      - name: Add key to agent with passphrase (ASKPASS)
+      # 2) Add the PASS-PHRASE-PROTECTED key using SSH_ASKPASS (non-interactive)
+      - name: Add SiteGround key (ASKPASS, no prompt)
+        shell: bash
         env:
-          SSH_ASKPASS: /tmp/askpass.sh
-          DISPLAY: :0                      # required so ssh-add uses SSH_ASKPASS
           PASSPHRASE: ${{ secrets.SG_PASSPHRASE_STAGING }}
         run: |
           set -euo pipefail
@@ -43,19 +46,38 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_rsa_staging
           chmod 600 ~/.ssh/id_rsa_staging
-          # tiny askpass helper that prints the passphrase
-          printf '#!/usr/bin/env bash\necho "$PASSPHRASE"\n' > "$SSH_ASKPASS"
-          chmod +x "$SSH_ASKPASS"
+
+          # Minimal askpass helper that outputs the passphrase
+          cat > /tmp/askpass.sh << 'EOF'
+          #!/usr/bin/env bash
+          echo "$PASSPHRASE"
+          EOF
+          chmod +x /tmp/askpass.sh
+
+          # Use ASKPASS; DISPLAY must be non-empty for ssh-add to use it
+          export SSH_ASKPASS=/tmp/askpass.sh
+          export DISPLAY=:0
           ssh-add ~/.ssh/id_rsa_staging < /dev/null
 
+          # Optional: confirm key is in the agent
+          ssh-add -l
+
+      # 3) Trust host key
       - name: Add SiteGround host to known_hosts
+        shell: bash
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
 
-      # Optional: build step goes here (npm/yarn/etc.)
+      # 4) (Optional) quick connection smoke test
+      - name: Test SSH connection
+        shell: bash
+        run: |
+          ssh -o StrictHostKeyChecking=yes -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo 'ssh-ok: $(hostname)'"
 
+      # 5) Deploy via rsync
       - name: Rsync site to STAGING
+        shell: bash
         run: |
           rsync -az --delete \
             --exclude ".git/" \
@@ -63,6 +85,8 @@ jobs:
             --exclude "README.md" \
             ./ "$SG_USER@$SG_HOST:$DEST_PATH" -e "ssh -p $SG_PORT"
 
+      # 6) Verify
       - name: Verify deploy (list top of target dir)
+        shell: bash
         run: |
           ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "cd '$DEST_PATH' && pwd && ls -la | head -n 30"
