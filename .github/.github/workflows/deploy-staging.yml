@@ -2,26 +2,27 @@ name: deploy-staging
 
 on:
   push:
-    branches: [ staging ]       # deploy when you push to "staging"
-  workflow_dispatch:            # or run manually
+    branches: [ staging ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SG_HOST: ${{ secrets.SG_HOST }}          # e.g. server123.sg-host.com
-      SG_PORT: ${{ secrets.SG_PORT }}          # usually 18765
-      SG_USER: ${{ secrets.SG_USER }}          # e.g. u1966-olev38ziybsd
+      SG_HOST: ${{ secrets.SG_HOST }}
+      SG_PORT: ${{ secrets.SG_PORT }}
+      SG_USER: ${{ secrets.SG_USER }}
       SG_PASSPHRASE: ${{ secrets.SG_PASSPHRASE }}
       REMOTE_PATH: "/home/${{ secrets.SG_USER }}/domains/staging.claycraze.com/public_html"
-      NUKE_BEFORE: "true"                      # set "false" to keep existing files
+      NUKE_BEFORE: "true"
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Write SSH key
-        env: { SG_PRIVATE_KEY: ${{ secrets.SG_PRIVATE_KEY }} }
+        env:
+          SG_PRIVATE_KEY: ${{ secrets.SG_PRIVATE_KEY }}
         run: |
           mkdir -p "$HOME/.ssh"
           echo "$SG_PRIVATE_KEY" > "$HOME/.ssh/sg_key"
