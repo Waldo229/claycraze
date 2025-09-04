@@ -15,16 +15,19 @@ concurrency:
 env:
   SG_HOST: ${{ secrets.SG_HOST }}              # e.g. ssh.claycraze.com
   SG_PORT: ${{ secrets.SG_PORT }}              # e.g. 18765
-  SG_USER: ${{ secrets.SG_USER_STAGING }}      # must match the key's authorized user (often u1966-...)
-  DEST_PATH: /home/customer/www/staging.claycraze.com/public_html  # replace with the exact docroot from SG
+  SG_USER: ${{ secrets.SG_USER_STAGING }}      # exact SG SSH user (often u1966-…)
+  # ↓ Replace with the EXACT Document Root shown in SiteGround → Domain → Subdomains
+  DEST_PATH: /home/customer/www/staging.claycraze.com/public_html
 
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - name: Start ssh-agent
         shell: bash
@@ -34,7 +37,7 @@ jobs:
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
           echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
 
-      - name: Add passphrase-protected key via SSH_ASKPASS (force)
+      - name: Add SG key (ASKPASS, non-interactive) + print fingerprints
         shell: bash
         env:
           PASSPHRASE: ${{ secrets.SG_PASSPHRASE_STAGING }}
@@ -43,34 +46,38 @@ jobs:
           umask 077
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_rsa_staging
-          # normalize Windows CRLF just in case
+          # Normalize CRLF just in case the secret was pasted on Windows
           sed -i 's/\r$//' ~/.ssh/id_rsa_staging
           chmod 600 ~/.ssh/id_rsa_staging
-          # tiny askpass helper
+
+          # Minimal askpass helper to feed the passphrase
           printf '#!/usr/bin/env bash\necho "$PASSPHRASE"\n' > /tmp/askpass.sh
           chmod +x /tmp/askpass.sh
           export SSH_ASKPASS=/tmp/askpass.sh
           export SSH_ASKPASS_REQUIRE=force
           export DISPLAY=:0
-          setsid -w ssh-add ~/.ssh/id_rsa_staging < /dev/null
-          ssh-add -l
 
-      - name: Add SiteGround host to known_hosts
+          # Add the key without a TTY; then show what's loaded + file fingerprint
+          setsid -w ssh-add ~/.ssh/id_rsa_staging < /dev/null
+          echo "Agent identities:"
+          ssh-add -l || true
+          echo "Key file fingerprint:"
+          ssh-keygen -lf ~/.ssh/id_rsa_staging || true
+
+      - name: Trust host
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
           ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
 
-      # Put the connection test BEFORE anything else
-      - name: Test SSH connection (verbose)
+      - name: Smoke test SSH
         shell: bash
         run: |
           set -euo pipefail
-          ssh -vvv -o StrictHostKeyChecking=yes -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo ssh-ok: \$(whoami)@\$(hostname)"
+          ssh -o StrictHostKeyChecking=yes -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo ssh-ok: \$(whoami)@\$(hostname)"
 
-      # Map likely docroots so you can compare with SG's Subdomains -> Document Root
-      - name: Preflight - inspect remote layout
+      - name: Preflight - inspect remote layout (find the right docroot)
         shell: bash
         run: |
           set -euo pipefail
@@ -96,3 +103,18 @@ jobs:
         run: |
           set -euo pipefail
           ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "cd '$DEST_PATH' && pwd && ls -la | head -n 30"
+
+      - name: Write deploy stamp
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" \
+            "echo 'staging deploy: $GITHUB_SHA on \$(date -u) UTC' > '$DEST_PATH/.deploy-stamp.txt'"
+
+      - name: Job summary
+        shell: bash
+        run: |
+          echo "### Staging deployed" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`$GITHUB_SHA\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Stamp: https://staging.claycraze.com/.deploy-stamp.txt" >> $GITHUB_STEP_SUMMARY
+          echo "- Site:  https://staging.claycraze.com/" >> $GITHUB_STEP_SUMMARY
