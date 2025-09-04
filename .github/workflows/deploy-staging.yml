@@ -1,78 +1,45 @@
-name: Deploy to SiteGround (PROD & STAGING)
+name: Deploy • STAGING (staging → staging.claycraze.com)
 
 on:
   push:
-    branches:
-      - main        # production
-      - staging     # staging
+    branches: [staging]
+  workflow_dispatch: {}
 
 permissions:
   contents: read
 
+# Avoid overlapping deploys if you push multiple times quickly
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+env:
+  SG_HOST: ${{ secrets.SG_HOST }}            # e.g. ssh.claycraze.com
+  SG_PORT: ${{ secrets.SG_PORT }}            # e.g. 18765
+  SG_USER: ${{ secrets.SG_USER_STAGING }}    # e.g. 1966-olev38ziybsd (or u1966-…)
+  DEST_PATH: public_html/staging             # ← set to your subdomain’s docroot
+
 jobs:
-  deploy-prod:
-    if: github.ref == 'refs/heads/main'
-    name: Deploy • PRODUCTION (main → claycraze.com)
-    runs-on: ubuntu-latest
-    env:
-      SG_HOST: ${{ secrets.SG_HOST }}           # e.g. ssh.claycraze.com
-      SG_PORT: ${{ secrets.SG_PORT }}           # e.g. 18765
-      SG_USER: ${{ secrets.SG_USER_PROD }}      # SiteGround SSH user for PROD
-      DEST_PATH: "public_html"                  # docroot for claycraze.com
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Start ssh-agent & add private key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SG_PRIVATE_KEY_PROD }}
-          ssh-passphrase: ${{ secrets.SG_PASSPHRASE_PROD }}
-
-      - name: Add SiteGround host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
-
-      # Optional: build step (npm/yarn/etc.) — remove if not needed
-      # - run: |
-      #     echo "No build step — static site"
-
-      - name: Rsync site to PRODUCTION
-        run: |
-          rsync -az --delete \
-            --exclude ".git/" \
-            --exclude ".github/" \
-            --exclude "README.md" \
-            ./ "$SG_USER@$SG_HOST:$DEST_PATH" -e "ssh -p $SG_PORT"
-
   deploy-staging:
-    if: github.ref == 'refs/heads/staging'
-    name: Deploy • STAGING (staging → staging.claycraze.com)
     runs-on: ubuntu-latest
-    env:
-      SG_HOST: ${{ secrets.SG_HOST }}             # same host
-      SG_PORT: ${{ secrets.SG_PORT }}             # same port
-      SG_USER: ${{ secrets.SG_USER_STAGING }}     # SiteGround SSH user for STAGING (can be same as PROD)
-      # Adjust DEST_PATH to the actual docroot of the subdomain:
-      # Common SG defaults:
-      #   - public_html/staging
-      #   - public_html/staging.claycraze.com
-      DEST_PATH: "public_html/staging"
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Start ssh-agent & add private key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SG_PRIVATE_KEY_STAGING }}
-          ssh-passphrase: ${{ secrets.SG_PASSPHRASE_STAGING }}
 
       - name: Add SiteGround host to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
+
+      # If you have a build step (e.g., npm run build), add it here
 
       - name: Rsync site to STAGING
         run: |
@@ -81,3 +48,7 @@ jobs:
             --exclude ".github/" \
             --exclude "README.md" \
             ./ "$SG_USER@$SG_HOST:$DEST_PATH" -e "ssh -p $SG_PORT"
+
+      - name: Verify deploy (list top of target dir)
+        run: |
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "cd '$DEST_PATH' && pwd && ls -la | head -n 30"
