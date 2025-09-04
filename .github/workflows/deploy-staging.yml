@@ -38,6 +38,7 @@ jobs:
             else
               find . -mindepth 1 -maxdepth 1 -exec rm -rf {} +
             fi
+            echo "NUKE complete"
           '
 
       - name: Deploy via rsync
@@ -47,6 +48,7 @@ jobs:
             -e "ssh -i $KEY -p $SG_PORT -o StrictHostKeyChecking=no" \
             --exclude ".git/" --exclude ".github/" \
             ./ "$SG_USER@$SG_HOST:$REMOTE_PATH/"
+          echo "Deploy complete"
 
       - name: Post-deploy proof
         run: |
@@ -54,4 +56,10 @@ jobs:
           ssh -i "$KEY" -p "$SG_PORT" "$SG_USER@$SG_HOST" bash -lc '
             cd "'"$REMOTE_PATH"'"
             echo "TREE AFTER DEPLOY:"; ls -la | head -n 30
+            if [ -f index.html ]; then
+              echo "First few lines of index.html:"
+              head -n 5 index.html
+            else
+              echo "No index.html found at REMOTE_PATH"
+            fi
           '
