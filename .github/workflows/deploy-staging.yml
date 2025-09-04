@@ -8,38 +8,46 @@ on:
 permissions:
   contents: read
 
-# Avoid overlapping deploys if you push multiple times quickly
 concurrency:
   group: staging-deploy
   cancel-in-progress: true
 
 env:
-  SG_HOST: ${{ secrets.SG_HOST }}            # e.g. ssh.claycraze.com
-  SG_PORT: ${{ secrets.SG_PORT }}            # e.g. 18765
-  SG_USER: ${{ secrets.SG_USER_STAGING }}    # e.g. 1966-olev38ziybsd (or u1966-…)
-  DEST_PATH: public_html/staging             # ← set to your subdomain’s docroot
+  SG_HOST: ${{ secrets.SG_HOST }}           # e.g. ssh.claycraze.com
+  SG_PORT: ${{ secrets.SG_PORT }}           # e.g. 18765
+  SG_USER: ${{ secrets.SG_USER_STAGING }}   # e.g. u1966-olev38ziybsd (use exact SG username)
+  DEST_PATH: public_html/staging            # set to your subdomain docroot
 
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 🔑 Write the encrypted key to disk and strip its passphrase using the secret
+      - name: Prepare SSH key (decrypt for CI)
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_rsa_staging
+          chmod 600 ~/.ssh/id_rsa_staging
+          # Remove passphrase: -P old passphrase, -N "" = new empty passphrase
+          ssh-keygen -p -P "${{ secrets.SG_PASSPHRASE_STAGING }}" -N "" -f ~/.ssh/id_rsa_staging
+
+      # 🚀 Start agent and add the now no-pass key
       - name: Start ssh-agent & add private key
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SG_PRIVATE_KEY_STAGING }}
+          ssh-add-cmd: ssh-add ~/.ssh/id_rsa_staging
 
       - name: Add SiteGround host to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
 
-      # If you have a build step (e.g., npm run build), add it here
+      # Build step would go here if you have one
 
       - name: Rsync site to STAGING
         run: |
