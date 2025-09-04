@@ -57,8 +57,7 @@ jobs:
             cd "'"$REMOTE_PATH"'"
             echo "TREE AFTER DEPLOY:"; ls -la | head -n 30
             if [ -f index.html ]; then
-              echo "First few lines of index.html:"
-              head -n 5 index.html
+              echo "First few lines of index.html:"; head -n 5 index.html
             else
               echo "No index.html found at REMOTE_PATH"
             fi
