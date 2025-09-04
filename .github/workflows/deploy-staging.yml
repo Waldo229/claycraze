@@ -13,10 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SG_HOST: ${{ secrets.SG_HOST }}           # e.g. ssh.claycraze.com
-  SG_PORT: ${{ secrets.SG_PORT }}           # e.g. 18765
-  SG_USER: ${{ secrets.SG_USER_STAGING }}   # e.g. u1966-olev38ziybsd (use exact SG username)
-  DEST_PATH: public_html/staging            # set to your subdomain docroot
+  SG_HOST: ${{ secrets.SG_HOST }}            # e.g. ssh.claycraze.com
+  SG_PORT: ${{ secrets.SG_PORT }}            # e.g. 18765
+  SG_USER: ${{ secrets.SG_USER_STAGING }}    # e.g. u1966-olev38ziybsd (use exact SG username)
+  DEST_PATH: public_html/staging             # set to your subdomain's docroot
 
 jobs:
   deploy-staging:
@@ -27,27 +27,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 🔑 Write the encrypted key to disk and strip its passphrase using the secret
-      - name: Prepare SSH key (decrypt for CI)
+      # Start the ssh-agent (no keys added yet)
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+
+      # Write the passphrase-protected key and add it using SSH_ASKPASS
+      - name: Add key to agent with passphrase (ASKPASS)
+        env:
+          SSH_ASKPASS: /tmp/askpass.sh
+          DISPLAY: :0                      # required so ssh-add uses SSH_ASKPASS
+          PASSPHRASE: ${{ secrets.SG_PASSPHRASE_STAGING }}
         run: |
+          set -euo pipefail
+          umask 077
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_rsa_staging
           chmod 600 ~/.ssh/id_rsa_staging
-          # Remove passphrase: -P old passphrase, -N "" = new empty passphrase
-          ssh-keygen -p -P "${{ secrets.SG_PASSPHRASE_STAGING }}" -N "" -f ~/.ssh/id_rsa_staging
-
-      # 🚀 Start agent and add the now no-pass key
-      - name: Start ssh-agent & add private key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-add-cmd: ssh-add ~/.ssh/id_rsa_staging
+          # tiny askpass helper that prints the passphrase
+          printf '#!/usr/bin/env bash\necho "$PASSPHRASE"\n' > "$SSH_ASKPASS"
+          chmod +x "$SSH_ASKPASS"
+          ssh-add ~/.ssh/id_rsa_staging < /dev/null
 
       - name: Add SiteGround host to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
 
-      # Build step would go here if you have one
+      # Optional: build step goes here (npm/yarn/etc.)
 
       - name: Rsync site to STAGING
         run: |
