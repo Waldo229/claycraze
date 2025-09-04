@@ -13,10 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SG_HOST: ${{ secrets.SG_HOST }}             # e.g. ssh.claycraze.com
-  SG_PORT: ${{ secrets.SG_PORT }}             # e.g. 18765
-  SG_USER: ${{ secrets.SG_USER_STAGING }}     # exact SG SSH user (often u1966-...)
-  DEST_PATH: /home/customer/www/staging.claycraze.com/public_html  # adjust after Preflight output
+  SG_HOST: ${{ secrets.SG_HOST }}              # e.g. ssh.claycraze.com
+  SG_PORT: ${{ secrets.SG_PORT }}              # e.g. 18765
+  SG_USER: ${{ secrets.SG_USER_STAGING }}      # must match the key's authorized user (often u1966-...)
+  DEST_PATH: /home/customer/www/staging.claycraze.com/public_html  # replace with the exact docroot from SG
 
 jobs:
   deploy-staging:
@@ -24,12 +24,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
-      - name: Start native ssh-agent (persist env)
+      - name: Start ssh-agent
         shell: bash
         run: |
+          set -euo pipefail
           eval "$(ssh-agent -s)"
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
           echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
@@ -43,9 +43,56 @@ jobs:
           umask 077
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_rsa_staging
-          # Normalize CRLF just in case
+          # normalize Windows CRLF just in case
           sed -i 's/\r$//' ~/.ssh/id_rsa_staging
           chmod 600 ~/.ssh/id_rsa_staging
+          # tiny askpass helper
+          printf '#!/usr/bin/env bash\necho "$PASSPHRASE"\n' > /tmp/askpass.sh
+          chmod +x /tmp/askpass.sh
+          export SSH_ASKPASS=/tmp/askpass.sh
+          export SSH_ASKPASS_REQUIRE=force
+          export DISPLAY=:0
+          setsid -w ssh-add ~/.ssh/id_rsa_staging < /dev/null
+          ssh-add -l
 
-          # Minimal askpass helper
-          printf
+      - name: Add SiteGround host to known_hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
+
+      # Put the connection test BEFORE anything else
+      - name: Test SSH connection (verbose)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -vvv -o StrictHostKeyChecking=yes -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo ssh-ok: \$(whoami)@\$(hostname)"
+
+      # Map likely docroots so you can compare with SG's Subdomains -> Document Root
+      - name: Preflight - inspect remote layout
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo HOME=\$HOME; ls -la; ls -la ~/public_html || true"
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "ls -la /home/customer/www || true"
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "ls -la /home/customer/www/claycraze.com/public_html || true"
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "ls -la /home/customer/www/staging.claycraze.com/public_html || true"
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo DEST_PATH=$DEST_PATH; ls -la '$DEST_PATH' || echo 'DEST_PATH missing'"
+
+      - name: Deploy via rsync (only if docroot exists)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "test -d '$DEST_PATH'"
+          rsync -az --delete \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "README.md" \
+            ./ "$SG_USER@$SG_HOST:$DEST_PATH" -e "ssh -p $SG_PORT"
+
+      - name: Verify deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "cd '$DEST_PATH' && pwd && ls -la | head -n 30"
