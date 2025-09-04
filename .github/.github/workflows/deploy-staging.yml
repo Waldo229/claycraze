@@ -13,7 +13,7 @@ jobs:
       SG_PORT: ${{ secrets.SG_PORT }}
       SG_USER: ${{ secrets.SG_USER }}
       SG_PASSPHRASE: ${{ secrets.SG_PASSPHRASE }}
-      REMOTE_PATH: "/home/${{ secrets.SG_USER }}/domains/staging.claycraze.com/public_html"
+     REMOTE_PATH: "/home/${{ secrets.SG_USER }}/public_html"
       NUKE_BEFORE: "true"
 
     steps:
