@@ -13,63 +13,78 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SG_HOST: ${{ secrets.SG_HOST }}
-  SG_PORT: ${{ secrets.SG_PORT }}
-  SG_USER: ${{ secrets.SG_USER_STAGING }}
-  # Set this to the EXACT Document Root from SG → Domain → Subdomains
+  SG_HOST: ${{ secrets.SG_HOST }}              # ssh.claycraze.com
+  SG_PORT: ${{ secrets.SG_PORT }}              # 18765
+  SG_USER: ${{ secrets.SG_USER_STAGING }}      # e.g. u1966-olev38ziybsd
+  # Replace with the EXACT Document Root from SiteGround → Domain → Subdomains
   DEST_PATH: /home/customer/www/staging.claycraze.com/public_html
 
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-
-      - name: Start ssh-agent & add private key
-        uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SG_PRIVATE_KEY_STAGING }}
+          fetch-depth: 0
+
+      # Start a native ssh-agent and persist env for later steps
+      - name: Start ssh-agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          eval "$(ssh-agent -s)"
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+
+      # Add passphrase-protected key via SSH_ASKPASS (non-interactive, with timeout)
+      - name: Add SG key (ASKPASS, passphrase-protected)
+        shell: bash
+        env:
+          PASSPHRASE: ${{ secrets.SG_PASSPHRASE_STAGING }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p ~/.ssh
+          # Write PRIVATE key from GitHub Secrets
+          printf '%s\n' "${{ secrets.SG_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_ed25519_staging
+          # Normalize CRLF in case it was pasted from Windows
+          sed -i 's/\r$//' ~/.ssh/id_ed25519_staging
+          chmod 600 ~/.ssh/id_ed25519_staging
+
+          # Minimal askpass helper to feed the passphrase
+          printf '#!/usr/bin/env bash\nexec echo "$PASSPHRASE"\n' > /tmp/askpass.sh
+          chmod +x /tmp/askpass.sh
+          export SSH_ASKPASS=/tmp/askpass.sh
+          export SSH_ASKPASS_REQUIRE=force
+          export DISPLAY=:0
+
+          echo "Passphrase length: ${#PASSPHRASE}"
+          # Add the key without a TTY; bail out if it takes too long
+          timeout 30s setsid -w ssh-add -v ~/.ssh/id_ed25519_staging < /dev/null
+
+          echo "Agent identities loaded:"
+          ssh-add -l || true
+
+          echo "Private key fingerprint (match in SiteGround):"
+          ssh-keygen -lf ~/.ssh/id_ed25519_staging || true
 
       - name: Trust host
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
           ssh-keyscan -p "$SG_PORT" "$SG_HOST" >> ~/.ssh/known_hosts
 
       - name: Smoke test SSH
+        shell: bash
         run: |
+          set -euo pipefail
           ssh -o StrictHostKeyChecking=yes -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo ssh-ok: \$(whoami)@\$(hostname)"
 
-      - name: Preflight - inspect remote layout
+      - name: Preflight - inspect remote layout (find the right docroot)
+        shell: bash
         run: |
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo HOME=\$HOME; ls -la ~/public_html || true"
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "ls -la /home/customer/www || true"
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "ls -la /home/customer/www/claycraze.com/public_html || true"
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "ls -la /home/customer/www/staging.claycraze.com/public_html || true"
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo DEST_PATH=$DEST_PATH; ls -la '$DEST_PATH' || echo 'DEST_PATH missing'"
-
-      - name: Deploy via rsync (only if docroot exists)
-        run: |
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "test -d '$DEST_PATH'"
-          rsync -az --delete \
-            --exclude ".git/" \
-            --exclude ".github/" \
-            --exclude "README.md" \
-            ./ "$SG_USER@$SG_HOST:$DEST_PATH" -e "ssh -p $SG_PORT"
-
-      - name: Verify deploy
-        run: |
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "cd '$DEST_PATH' && pwd && ls -la | head -n 30"
-
-      - name: Write deploy stamp
-        run: |
-          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" \
-            "echo 'staging deploy: $GITHUB_SHA on \$(date -u) UTC' > '$DEST_PATH/.deploy-stamp.txt'"
-
-      - name: Job summary
-        run: |
-          echo "### Staging deployed" >> $GITHUB_STEP_SUMMARY
-          echo "- Commit: \`$GITHUB_SHA\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Stamp: https://staging.claycraze.com/.deploy-stamp.txt" >> $GITHUB_STEP_SUMMARY
-          echo "- Site:  https://staging.claycraze.com/" >> $GITHUB_STEP_SUMMARY
+          set -euo pipefail
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "echo HOME=_
