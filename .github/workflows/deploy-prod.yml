@@ -18,11 +18,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Start ssh-agent and add key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SG_PRIVATE_KEY }}
-          ssh-passphrase: ${{ secrets.SG_PASSPHRASE }}
+      - name: Write private key to file
+        run: |
+          umask 077
+          echo "${{ secrets.SG_PRIVATE_KEY }}" > id_sg
 
       - name: Deploy via rsync over SSH
         run: |
@@ -31,5 +30,4 @@ jobs:
           if [ -z "$TARGET" ]; then
             TARGET="/home/customer/www/claycraze.com/public_html"
           fi
-          rsync -avz --delete $RSYNC_EXCLUDES -e "ssh -o StrictHostKeyChecking=no" ./ "${{ secrets.SG_USER }}@${{ secrets.SG_HOST }}:$TARGET/"
-
+          rsync -avz --delete $RSYNC_EXCLUDES -e "ssh -i id_sg -o StrictHostKeyChecking=no" ./ "${{ secrets.SG_USER }}@${{ secrets.SG_HOST }}:$TARGET/"
