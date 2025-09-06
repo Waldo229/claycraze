@@ -1,5 +1,4 @@
 name: Staging Proof
-
 on:
   workflow_dispatch:
 
@@ -7,6 +6,9 @@ jobs:
   proof:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Write CI key
         run: |
           umask 077
@@ -16,9 +18,9 @@ jobs:
       - name: Write marker to staging docroot + list
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SG_HOST }}        # ssh.claycraze.com
-          username: ${{ secrets.SG_USER }}    # u1966-...
-          port: ${{ secrets.SG_PORT }}        # 18765
+          host: ${{ secrets.SG_HOST }}
+          username: ${{ secrets.SG_USER }}
+          port: ${{ secrets.SG_PORT }}
           key_path: id_sg
           passphrase: ${{ secrets.SG_PASSPHRASE }}
           script: |
