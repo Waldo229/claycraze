@@ -14,6 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    # Map secrets into env so we can use them in `if:` conditions
+    env:
+      SG_HOST: ${{ secrets.SG_HOST }}
+      SG_PORT: ${{ secrets.SG_PORT }}         # e.g. 18765 on SiteGround (often not 22)
+      SG_USER: ${{ secrets.SG_USER }}
+      SG_PASSPHRASE: ${{ secrets.SG_PASSPHRASE }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -30,26 +37,26 @@ jobs:
           rsync --version || true
 
       - name: Try SSH "whoami" (no passphrase key)
-        if: ${{ !secrets.SG_PASSPHRASE }}
+        if: ${{ env.SG_PASSPHRASE == '' }}
+        shell: bash
         run: |
-          PORT="${{ secrets.SG_PORT }}"
-          [ -z "$PORT" ] && PORT=22
+          PORT="${SG_PORT:-22}"
           ssh -i id_sg -p "$PORT" -o StrictHostKeyChecking=no \
-            "${{ secrets.SG_USER }}@${{ secrets.SG_HOST }}" \
+            "${SG_USER}@${SG_HOST}" \
             'echo CONNECTED && whoami && pwd && uname -a && ls -la | head -40'
 
       - name: Start ssh-agent (for passphrase keys)
-        if: ${{ secrets.SG_PASSPHRASE != '' }}
+        if: ${{ env.SG_PASSPHRASE != '' }}
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SG_PRIVATE_KEY }}
           ssh-passphrase: ${{ secrets.SG_PASSPHRASE }}
 
       - name: Try SSH "whoami" (agent)
-        if: ${{ secrets.SG_PASSPHRASE != '' }}
+        if: ${{ env.SG_PASSPHRASE != '' }}
+        shell: bash
         run: |
-          PORT="${{ secrets.SG_PORT }}"
-          [ -z "$PORT" ] && PORT=22
+          PORT="${SG_PORT:-22}"
           ssh -p "$PORT" -o StrictHostKeyChecking=no \
-            "${{ secrets.SG_USER }}@${{ secrets.SG_HOST }}" \
+            "${SG_USER}@${SG_HOST}" \
             'echo CONNECTED && whoami && pwd && uname -a && ls -la | head -40'
