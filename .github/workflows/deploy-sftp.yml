@@ -1,30 +1,60 @@
-name: Deploy to SiteGround (SFTP)
+name: Deploy to SiteGround (SFTP) — Staging & Prod
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to deploy"
+        required: true
+        default: "staging"
+        type: choice
+        options: [staging, production]
 
 defaults:
   run:
     shell: bash
 
+# Keep staging/prod runs from colliding
 concurrency:
-  group: deploy-to-siteground
+  group: deploy-${{ github.event.inputs.target || github.ref }}
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SG_PORT: ${{ secrets.SG_PORT }}           # 18765
-      SG_DEST: ${{ secrets.SG_DEST }}           # www/claycraze.com/public_html/
+      SG_PORT: ${{ secrets.SG_PORT }}   # 18765
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup SSH key file
+      - name: Select environment (staging/prod)
+        id: select
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="${{ github.event.inputs.target }}"
+          else
+            case "${{ github.ref }}" in
+              refs/heads/main)    TARGET=production ;;
+              refs/heads/staging) TARGET=staging ;;
+              *) echo "::error::Unsupported branch ${GITHUB_REF}"; exit 1 ;;
+            esac
+          fi
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+          if [ "$TARGET" = "production" ]; then
+            echo "DEST_PATH=${{ secrets.SG_DEST_PROD }}" >> "$GITHUB_ENV"
+            echo "BASE_URL=https://claycraze.com" >> "$GITHUB_ENV"
+          else
+            echo "DEST_PATH=${{ secrets.SG_DEST_STAGING }}" >> "$GITHUB_ENV"
+            echo "BASE_URL=https://staging.claycraze.com" >> "$GITHUB_ENV"
+          fi
+          echo "Deploy target: $TARGET → ${DEST_PATH}"
+
+      - name: Setup SSH key
         env:
           PRIV: ${{ secrets.SG_PRIVATE_KEY }}
         run: |
@@ -38,10 +68,11 @@ jobs:
           echo "CI key fingerprint (must match SG authorized key):"
           ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
 
+      # Guardrail: accept SG_EXPECTED_FPR as Variable OR Secret
       - name: Assert CI key fingerprint matches expected
         env:
-          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}     # if you ever add a Variable
-          EXPECTED_S: ${{ secrets.SG_EXPECTED_FPR }}  # or keep it as a Secret
+          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}
+          EXPECTED_S: ${{ secrets.SG_EXPECTED_FPR }}
         run: |
           set -euo pipefail
           EXPECTED="${EXPECTED_V:-${EXPECTED_S:-}}"
@@ -72,8 +103,8 @@ jobs:
 
       - name: Create deploy markers
         run: |
-          echo "deployed $(date -u +'%Y-%m-%dT%H:%M:%SZ') $GITHUB_SHA" > deploy.txt
-          echo "internal $(date -u) $GITHUB_SHA" > .ci_deploy_marker.txt
+          echo "deployed $(date -u +'%Y-%m-%dT%H:%M:%SZ') $GITHUB_SHA ($TARGET)" > deploy.txt
+          echo "internal $(date -u) $GITHUB_SHA $TARGET" > .ci_deploy_marker.txt
 
       - name: Deploy via SFTP mirror
         env:
@@ -81,21 +112,19 @@ jobs:
           SG_HOST: ${{ secrets.SG_HOST }}
         run: |
           set -euo pipefail
-          DEST_PATH="${SG_DEST:-www/claycraze.com/public_html/}"
-          echo "Deploying to $SG_USER@$SG_HOST:$DEST_PATH (port ${SG_PORT:-18765})"
+          echo "Deploying to $SG_USER@$SG_HOST:${DEST_PATH} (port ${SG_PORT:-18765})"
           lftp -u "$SG_USER","" sftp://$SG_HOST \
             -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT:-18765} -o StrictHostKeyChecking=no\"; \
                 set net:max-retries 2; set net:timeout 30; set ssl:verify-certificate no; set cmd:fail-exit yes; \
-                put -O \"$DEST_PATH\" deploy.txt; \
-                put -O \"$DEST_PATH\" .ci_deploy_marker.txt; \
+                put -O \"${DEST_PATH}\" deploy.txt; \
+                put -O \"${DEST_PATH}\" .ci_deploy_marker.txt; \
                 mirror -R --delete --verbose=1 --parallel=4 \
                        --exclude-glob .git/ --exclude-glob .github/ --exclude-glob .vscode/ \
                        --exclude-glob node_modules/ --exclude-glob \"*.md\" \
-                       ./ \"$DEST_PATH\"; \
-                echo \"Listing $DEST_PATH\"; cls -la \"$DEST_PATH\"; \
+                       ./ \"${DEST_PATH}\"; \
+                echo \"Listing ${DEST_PATH}\"; cls -la \"${DEST_PATH}\"; \
                 bye"
 
       - name: Verify live deploy marker (HTTP)
         run: |
-          # fetch the marker from the site with cache-bust
-          curl -fsS "https://claycraze.com/deploy.txt?nocache=$(date +%s)" | head -n1
+          curl -fsS "$BASE_URL/deploy.txt?nocache=$(date +%s)" | head -n1
