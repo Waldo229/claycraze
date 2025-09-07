@@ -1,4 +1,4 @@
-name: Deploy to SiteGround
+name: Deploy to SiteGround (SFTP)
 
 on:
   push:
@@ -17,60 +17,35 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      # Pull from secret if set; shell falls back to 18765
-      SG_PORT: ${{ secrets.SG_PORT }}
+      SG_PORT: ${{ secrets.SG_PORT }}   # set to 18765 in repo secrets
+      SG_DEST: ${{ secrets.SG_DEST }}   # optional; defaults to public_html/
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Sanity-check host & user (no secrets shown)
-        run: |
-          echo "SG host: ${{ secrets.SG_HOST }}"
-          echo "SG user: ${{ secrets.SG_USERNAME }}"
-          echo "SG port: ${SG_PORT:-18765}"
-          getent hosts "${{ secrets.SG_HOST }}" || true
-
-      - name: Setup SSH (with validation)
+      - name: Setup SSH key file
         env:
           PRIV: ${{ secrets.SG_PRIVATE_KEY }}
-          HOST: ${{ secrets.SG_HOST }}
         run: |
-          set -e
+          set -euo pipefail
           mkdir -p ~/.ssh
-          printf '%s\n' "$PRIV" | sed 's/\r$//' > ~/.ssh/sg-ci
+          printf '%s' "$PRIV" | tr -d '\r' > ~/.ssh/sg-ci
           chmod 600 ~/.ssh/sg-ci
-          # Ensure we really got a PRIVATE key
-          if ! head -1 ~/.ssh/sg-ci | grep -q 'BEGIN OPENSSH PRIVATE KEY'; then
-            echo "::error::SG_PRIVATE_KEY does not look like a private key (expected BEGIN OPENSSH PRIVATE KEY)."
-            exit 1
-          fi
-          # Try to grab host key on the right port; non-fatal if it fails
-          ssh-keyscan -T 10 -p ${SG_PORT:-18765} -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null \
-            || echo "::warning::ssh-keyscan failed; proceeding with StrictHostKeyChecking=no."
 
-      - name: Test SSH connection (verbose, correct port)
+      - name: Show CI key fingerprint
         run: |
-          set -e
-          echo "Testing SSH to ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }} on port ${SG_PORT:-18765} ..."
-          ssh -vvv -i ~/.ssh/sg-ci \
-              -o StrictHostKeyChecking=no \
-              -p ${SG_PORT:-18765} \
-              "${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}" \
-              "echo '✅ SSH OK'; echo user: \$(whoami); echo home: \$HOME; pwd; ls -la"
+          ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
 
-      - name: Deploy via rsync (correct port)
+      - name: Install lftp
         run: |
-          set -e
-          RSYNC_SSH="ssh -i ~/.ssh/sg-ci -o StrictHostKeyChecking=no -p ${SG_PORT:-18765}"
-          REMOTE="${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}"
-          DEST_PATH="\$HOME/public_html/"
+          sudo apt-get update -y
+          sudo apt-get install -y lftp
 
-          rsync -az --delete \
-            --exclude '.git' \
-            --exclude '.github' \
-            --exclude '.vscode' \
-            --exclude 'README.md' \
-            --exclude 'LICENSE' \
-            -e "$RSYNC_SSH" \
-            ./ "$REMOTE:$DEST_PATH"
+      - name: Test SFTP connectivity
+        env:
+          SG_USER: ${{ secrets.SG_USERNAME }}
+          SG_HOST: ${{ secrets.SG_HOST }}
+        run: |
+          set -euo pipefail
+          lftp -u "$SG_USER","" sftp://$SG_HOST <<LFTP_CMDS
