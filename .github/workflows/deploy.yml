@@ -2,21 +2,43 @@ name: Deploy to SiteGround
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Decode SSH key
+      - name: Setup SSH
         run: |
-          echo "${{ secrets.SG_SSH_KEY }}" | base64 -d > sg-ci
-          chmod 600 sg-ci
+          mkdir -p ~/.ssh
+          # Write the raw private key from GitHub Secrets
+          echo "${{ secrets.SG_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/sg-ci
+          chmod 600 ~/.ssh/sg-ci
+          # Add SiteGround host to known_hosts so ssh won't prompt
+          ssh-keyscan -H "${{ secrets.SG_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy via SCP
+      - name: Test SSH connection
         run: |
-          rsync -avz -e "ssh -i sg-ci -o StrictHostKeyChecking=no" ./ ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}:/home/${{ secrets.SG_USERNAME }}/public_html/
+          ssh -i ~/.ssh/sg-ci \
+              -o StrictHostKeyChecking=yes \
+              -p ${SG_PORT:-22} \
+              ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }} \
+              "echo '✅ SSH connection OK on host:' $(hostname); pwd; whoami"
+        env:
+          SG_PORT: ${{ secrets.SG_PORT }}
+
+      - name: Deploy via rsync
+        run: |
+          RSYNC_SSH="ssh -i ~/.ssh/sg-ci -o StrictHostKeyChecking=yes -p ${SG_PORT:-22}"
+          rsync -az --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            -e "$RSYNC_SSH" \
+            ./ \
+            ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}:/home/${{ secrets.SG_USERNAME }}/public_html/
+        env:
+          SG_PORT: ${{ secrets.SG_PORT }}
