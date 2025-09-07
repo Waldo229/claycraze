@@ -1,0 +1,22 @@
+name: Deploy to SiteGround
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.SG_SSH_KEY }}" | base64 -d > sg-ci
+          chmod 600 sg-ci
+
+      - name: Deploy via SCP
+        run: |
+          rsync -avz -e "ssh -i sg-ci -o StrictHostKeyChecking=no" ./ ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}:/home/${{ secrets.SG_USERNAME }}/public_html/
