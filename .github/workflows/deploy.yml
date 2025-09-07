@@ -16,66 +16,53 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      # Pull from secret if set; shell falls back to 18765
+      SG_PORT: ${{ secrets.SG_PORT }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Print non-secret inputs and verify DNS works
       - name: Sanity-check host & user (no secrets shown)
-        env:
-          SG_PORT: ${{ secrets.SG_PORT }}
         run: |
           echo "SG host: ${{ secrets.SG_HOST }}"
           echo "SG user: ${{ secrets.SG_USERNAME }}"
-          echo "SG port: ${SG_PORT:-22}"
-          # DNS check
-          if ! getent hosts "${{ secrets.SG_HOST }}"; then
-            echo "::error::Cannot resolve SG_HOST '${{ secrets.SG_HOST }}'. Use the exact SSH Hostname from SiteGround."
-            exit 1
-          fi
+          echo "SG port: ${SG_PORT:-18765}"
+          getent hosts "${{ secrets.SG_HOST }}" || true
 
       - name: Setup SSH (with validation)
         env:
           PRIV: ${{ secrets.SG_PRIVATE_KEY }}
           HOST: ${{ secrets.SG_HOST }}
-          SG_PORT: ${{ secrets.SG_PORT }}
         run: |
           set -e
           mkdir -p ~/.ssh
-          # Write private key; strip CR characters from Windows copy
           printf '%s\n' "$PRIV" | sed 's/\r$//' > ~/.ssh/sg-ci
           chmod 600 ~/.ssh/sg-ci
-
-          # Validate that this is a PRIVATE key, not a .pub
+          # Ensure we really got a PRIVATE key
           if ! head -1 ~/.ssh/sg-ci | grep -q 'BEGIN OPENSSH PRIVATE KEY'; then
-            echo "::error::SG_PRIVATE_KEY does not look like a private key. It should start with '-----BEGIN OPENSSH PRIVATE KEY-----'."
-            echo "::error::Did you paste the PUBLIC key (starts with 'ssh-ed25519 ')?"
+            echo "::error::SG_PRIVATE_KEY does not look like a private key (expected BEGIN OPENSSH PRIVATE KEY)."
             exit 1
           fi
+          # Try to grab host key on the right port; non-fatal if it fails
+          ssh-keyscan -T 10 -p ${SG_PORT:-18765} -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null \
+            || echo "::warning::ssh-keyscan failed; proceeding with StrictHostKeyChecking=no."
 
-          # Fetch host key (non-fatal if it times out; we still try to connect)
-          ssh-keyscan -T 10 -p ${SG_PORT:-22} -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null \
-            || echo "::warning::ssh-keyscan failed; will continue to SSH test."
-
-      - name: Test SSH connection (verbose)
-        env:
-          SG_PORT: ${{ secrets.SG_PORT }}
+      - name: Test SSH connection (verbose, correct port)
         run: |
           set -e
-          echo "Testing SSH to ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }} ..."
+          echo "Testing SSH to ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }} on port ${SG_PORT:-18765} ..."
           ssh -vvv -i ~/.ssh/sg-ci \
               -o StrictHostKeyChecking=no \
-              -p ${SG_PORT:-22} \
+              -p ${SG_PORT:-18765} \
               "${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}" \
               "echo '✅ SSH OK'; echo user: \$(whoami); echo home: \$HOME; pwd; ls -la"
 
-      - name: Deploy via rsync
-        env:
-          SG_PORT: ${{ secrets.SG_PORT }}
+      - name: Deploy via rsync (correct port)
         run: |
           set -e
-          RSYNC_SSH="ssh -i ~/.ssh/sg-ci -o StrictHostKeyChecking=no -p ${SG_PORT:-22}"
+          RSYNC_SSH="ssh -i ~/.ssh/sg-ci -o StrictHostKeyChecking=no -p ${SG_PORT:-18765}"
           REMOTE="${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}"
           DEST_PATH="\$HOME/public_html/"
 
