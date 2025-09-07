@@ -17,8 +17,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SG_PORT: ${{ secrets.SG_PORT }}     # set to 18765 in repo secrets
-      SG_DEST: ${{ secrets.SG_DEST }}     # set to: www/claycraze.com/public_html/
+      # Set these in repo Settings → Secrets and variables → Actions
+      SG_PORT: ${{ secrets.SG_PORT }}                 # e.g. 18765
+      SG_DEST: ${{ secrets.SG_DEST }}                 # e.g. www/claycraze.com/public_html/
 
     steps:
       - name: Checkout repository
@@ -26,16 +27,32 @@ jobs:
 
       - name: Setup SSH key file
         env:
-          PRIV: ${{ secrets.SG_PRIVATE_KEY }}
+          PRIV: ${{ secrets.SG_PRIVATE_KEY }}         # paste your private key into this secret
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
+          # strip any CR characters just in case the secret was saved with Windows line endings
           printf '%s' "$PRIV" | tr -d '\r' > ~/.ssh/sg-ci
           chmod 600 ~/.ssh/sg-ci
 
       - name: Show CI key fingerprint
         run: |
+          echo "CI key fingerprint (must match the key you authorized in SiteGround):"
           ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
+
+      - name: Assert CI key fingerprint matches expected (optional guardrail)
+        env:
+          EXPECTED: ${{ vars.SG_EXPECTED_FPR }}       # set repo Variable to: SHA256:Lo54tiAVh71rE53wig4sTMD7d7fQAedp/ujQsTAS4KM
+        run: |
+          set -euo pipefail
+          ACTUAL="$(ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf - | awk '{print $2}')"
+          if [ -n "${EXPECTED:-}" ]; then
+            echo "Expected: $EXPECTED"
+            echo "Actual:   $ACTUAL"
+            [ "$ACTUAL" = "$EXPECTED" ] || { echo "::error::CI private key does not match expected fingerprint"; exit 1; }
+          else
+            echo "No SG_EXPECTED_FPR set; skipping fingerprint assertion."
+          fi
 
       - name: Install lftp
         run: |
