@@ -3,6 +3,17 @@ name: Deploy to SiteGround
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
+# Ensure all run steps use bash (prevents pwsh quirks on Ubuntu)
+defaults:
+  run:
+    shell: bash
+
+# Prevent overlapping deploys on rapid pushes
+concurrency:
+  group: deploy-to-siteground
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -12,33 +23,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Show shell (debug)
+        run: echo "SHELL is $SHELL"
+
       - name: Setup SSH
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
-          # Write the raw private key from GitHub Secrets
+          # Write the raw private key from Secrets; strip CR in case of Windows copy
           echo "${{ secrets.SG_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/sg-ci
           chmod 600 ~/.ssh/sg-ci
-          # Add SiteGround host to known_hosts so ssh won't prompt
+          # Trust SiteGround host so ssh/rsync won't prompt
           ssh-keyscan -H "${{ secrets.SG_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Test SSH connection
+        env:
+          SG_PORT: ${{ secrets.SG_PORT }}
         run: |
+          set -euo pipefail
           ssh -i ~/.ssh/sg-ci \
               -o StrictHostKeyChecking=yes \
               -p ${SG_PORT:-22} \
-              ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }} \
-              "echo '✅ SSH connection OK on host:' $(hostname); pwd; whoami"
-        env:
-          SG_PORT: ${{ secrets.SG_PORT }}
+              "${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}" \
+              "echo '✅ SSH connection OK on host:' \$(hostname); echo 'cwd:' \$(pwd); echo 'user:' \$(whoami)"
 
       - name: Deploy via rsync
+        env:
+          SG_PORT: ${{ secrets.SG_PORT }}
         run: |
+          set -euo pipefail
           RSYNC_SSH="ssh -i ~/.ssh/sg-ci -o StrictHostKeyChecking=yes -p ${SG_PORT:-22}"
+
+          # Adjust the destination path if deploying to a subdomain
+          DEST_PATH="/home/${{ secrets.SG_USERNAME }}/public_html/"
+
           rsync -az --delete \
             --exclude '.git' \
             --exclude '.github' \
+            --exclude '.vscode' \
+            --exclude 'README.md' \
+            --exclude 'LICENSE' \
             -e "$RSYNC_SSH" \
-            ./ \
-            ${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}:/home/${{ secrets.SG_USERNAME }}/public_html/
-        env:
-          SG_PORT: ${{ secrets.SG_PORT }}
+            ./ "$${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}:${DEST_PATH}"
