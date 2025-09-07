@@ -17,8 +17,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SG_PORT: ${{ secrets.SG_PORT }}   # set to 18765 in repo secrets
-      SG_DEST: ${{ secrets.SG_DEST }}   # optional; defaults to public_html/
+      SG_PORT: ${{ secrets.SG_PORT }}     # set to 18765 in repo secrets
+      SG_DEST: ${{ secrets.SG_DEST }}     # set to: www/claycraze.com/public_html/
 
     steps:
       - name: Checkout repository
@@ -48,4 +48,29 @@ jobs:
           SG_HOST: ${{ secrets.SG_HOST }}
         run: |
           set -euo pipefail
-          lftp -u "$SG_USER","" sftp://$SG_HOST <<LFTP_CMDS
+          lftp -u "$SG_USER","" sftp://$SG_HOST \
+            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT:-18765} -o StrictHostKeyChecking=no\"; \
+                set net:max-retries 1; set net:timeout 20; set cmd:fail-exit yes; \
+                pwd; cls -la; bye"
+
+      - name: Create deploy marker
+        run: echo "deployed $(date -u) $GITHUB_SHA" > .ci_deploy_marker.txt
+
+      - name: Deploy via SFTP mirror
+        env:
+          SG_USER: ${{ secrets.SG_USERNAME }}
+          SG_HOST: ${{ secrets.SG_HOST }}
+        run: |
+          set -euo pipefail
+          DEST_PATH="${SG_DEST:-www/claycraze.com/public_html/}"
+          echo "Deploying to $SG_USER@$SG_HOST:$DEST_PATH (port ${SG_PORT:-18765})"
+          lftp -u "$SG_USER","" sftp://$SG_HOST \
+            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT:-18765} -o StrictHostKeyChecking=no\"; \
+                set net:max-retries 2; set net:timeout 30; set ssl:verify-certificate no; set cmd:fail-exit yes; \
+                put -O \"$DEST_PATH\" .ci_deploy_marker.txt; \
+                mirror -R --delete --verbose=1 --parallel=4 \
+                       --exclude-glob .git/ --exclude-glob .github/ --exclude-glob .vscode/ \
+                       --exclude-glob node_modules/ --exclude-glob \"*.md\" \
+                       ./ \"$DEST_PATH\"; \
+                echo \"Listing $DEST_PATH\"; cls -la \"$DEST_PATH\"; \
+                bye"
