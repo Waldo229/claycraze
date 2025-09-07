@@ -17,9 +17,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      # Set these in: Repo → Settings → Secrets and variables → Actions
-      SG_PORT: ${{ secrets.SG_PORT }}           # e.g. 18765
-      SG_DEST: ${{ secrets.SG_DEST }}           # e.g. www/claycraze.com/public_html/
+      SG_PORT: ${{ secrets.SG_PORT }}           # 18765
+      SG_DEST: ${{ secrets.SG_DEST }}           # www/claycraze.com/public_html/
 
     steps:
       - name: Checkout repository
@@ -27,7 +26,7 @@ jobs:
 
       - name: Setup SSH key file
         env:
-          PRIV: ${{ secrets.SG_PRIVATE_KEY }}   # your private key (BEGIN/END OPENSSH)
+          PRIV: ${{ secrets.SG_PRIVATE_KEY }}
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
@@ -36,13 +35,12 @@ jobs:
 
       - name: Show CI key fingerprint
         run: |
-          echo "CI key fingerprint (must match the key authorized in SiteGround):"
+          echo "CI key fingerprint (must match SG authorized key):"
           ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
 
-      # Works whether SG_EXPECTED_FPR is saved as a Variable or as a Secret
       - name: Assert CI key fingerprint matches expected
         env:
-          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}     # use this if you have Variables
+          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}     # if you ever add a Variable
           EXPECTED_S: ${{ secrets.SG_EXPECTED_FPR }}  # or keep it as a Secret
         run: |
           set -euo pipefail
@@ -72,8 +70,10 @@ jobs:
                 set net:max-retries 1; set net:timeout 20; set cmd:fail-exit yes; \
                 pwd; cls -la; bye"
 
-      - name: Create deploy marker
-        run: echo "deployed $(date -u) $GITHUB_SHA" > .ci_deploy_marker.txt
+      - name: Create deploy markers
+        run: |
+          echo "deployed $(date -u +'%Y-%m-%dT%H:%M:%SZ') $GITHUB_SHA" > deploy.txt
+          echo "internal $(date -u) $GITHUB_SHA" > .ci_deploy_marker.txt
 
       - name: Deploy via SFTP mirror
         env:
@@ -86,6 +86,7 @@ jobs:
           lftp -u "$SG_USER","" sftp://$SG_HOST \
             -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT:-18765} -o StrictHostKeyChecking=no\"; \
                 set net:max-retries 2; set net:timeout 30; set ssl:verify-certificate no; set cmd:fail-exit yes; \
+                put -O \"$DEST_PATH\" deploy.txt; \
                 put -O \"$DEST_PATH\" .ci_deploy_marker.txt; \
                 mirror -R --delete --verbose=1 --parallel=4 \
                        --exclude-glob .git/ --exclude-glob .github/ --exclude-glob .vscode/ \
@@ -93,3 +94,8 @@ jobs:
                        ./ \"$DEST_PATH\"; \
                 echo \"Listing $DEST_PATH\"; cls -la \"$DEST_PATH\"; \
                 bye"
+
+      - name: Verify live deploy marker (HTTP)
+        run: |
+          # fetch the marker from the site with cache-bust
+          curl -fsS "https://claycraze.com/deploy.txt?nocache=$(date +%s)" | head -n1
