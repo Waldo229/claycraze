@@ -35,6 +35,7 @@ jobs:
         id: select
         run: |
           set -euo pipefail
+          # Determine TARGET from manual input or branch
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TARGET="${{ github.event.inputs.target }}"
           else
@@ -44,15 +45,22 @@ jobs:
               *) echo "::error::Unsupported branch ${GITHUB_REF}"; exit 1 ;;
             esac
           fi
-          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+
+          # Assign DEST_PATH/BASE_URL LOCALLY first (so we can echo them),
+          # then export to GITHUB_ENV for later steps.
           if [ "$TARGET" = "production" ]; then
-            echo "DEST_PATH=${{ secrets.SG_DEST_PROD }}" >> "$GITHUB_ENV"
-            echo "BASE_URL=https://claycraze.com" >> "$GITHUB_ENV"
+            DEST_PATH='${{ secrets.SG_DEST_PROD }}'
+            BASE_URL='https://claycraze.com'
           else
-            echo "DEST_PATH=${{ secrets.SG_DEST_STAGING }}" >> "$GITHUB_ENV"
-            echo "BASE_URL=https://staging.claycraze.com" >> "$GITHUB_ENV"
+            DEST_PATH='${{ secrets.SG_DEST_STAGING }}'
+            BASE_URL='https://staging.claycraze.com'
           fi
-          echo "Deploy target: $TARGET → ${DEST_PATH}"
+
+          echo "TARGET=$TARGET"           >> "$GITHUB_ENV"
+          echo "DEST_PATH=$DEST_PATH"     >> "$GITHUB_ENV"
+          echo "BASE_URL=$BASE_URL"       >> "$GITHUB_ENV"
+
+          echo "Deploy target: $TARGET → $DEST_PATH"
 
       - name: Setup SSH key
         env:
