@@ -17,9 +17,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      # Set these in repo Settings → Secrets and variables → Actions
-      SG_PORT: ${{ secrets.SG_PORT }}                 # e.g. 18765
-      SG_DEST: ${{ secrets.SG_DEST }}                 # e.g. www/claycraze.com/public_html/
+      # Set these in: Repo → Settings → Secrets and variables → Actions
+      SG_PORT: ${{ secrets.SG_PORT }}           # e.g. 18765
+      SG_DEST: ${{ secrets.SG_DEST }}           # e.g. www/claycraze.com/public_html/
 
     steps:
       - name: Checkout repository
@@ -27,31 +27,33 @@ jobs:
 
       - name: Setup SSH key file
         env:
-          PRIV: ${{ secrets.SG_PRIVATE_KEY }}         # paste your private key into this secret
+          PRIV: ${{ secrets.SG_PRIVATE_KEY }}   # your private key (BEGIN/END OPENSSH)
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
-          # strip any CR characters just in case the secret was saved with Windows line endings
           printf '%s' "$PRIV" | tr -d '\r' > ~/.ssh/sg-ci
           chmod 600 ~/.ssh/sg-ci
 
       - name: Show CI key fingerprint
         run: |
-          echo "CI key fingerprint (must match the key you authorized in SiteGround):"
+          echo "CI key fingerprint (must match the key authorized in SiteGround):"
           ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
 
-      - name: Assert CI key fingerprint matches expected (optional guardrail)
+      # Works whether SG_EXPECTED_FPR is saved as a Variable or as a Secret
+      - name: Assert CI key fingerprint matches expected
         env:
-          EXPECTED: ${{ vars.SG_EXPECTED_FPR }}       # set repo Variable to: SHA256:Lo54tiAVh71rE53wig4sTMD7d7fQAedp/ujQsTAS4KM
+          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}     # use this if you have Variables
+          EXPECTED_S: ${{ secrets.SG_EXPECTED_FPR }}  # or keep it as a Secret
         run: |
           set -euo pipefail
+          EXPECTED="${EXPECTED_V:-${EXPECTED_S:-}}"
           ACTUAL="$(ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf - | awk '{print $2}')"
-          if [ -n "${EXPECTED:-}" ]; then
+          if [ -n "$EXPECTED" ]; then
             echo "Expected: $EXPECTED"
             echo "Actual:   $ACTUAL"
             [ "$ACTUAL" = "$EXPECTED" ] || { echo "::error::CI private key does not match expected fingerprint"; exit 1; }
           else
-            echo "No SG_EXPECTED_FPR set; skipping fingerprint assertion."
+            echo "No SG_EXPECTED_FPR provided; skipping fingerprint assertion."
           fi
 
       - name: Install lftp
