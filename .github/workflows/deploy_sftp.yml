@@ -31,22 +31,109 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ---- Select environment WITHOUT quoting secrets in bash ----
       - name: Select environment (staging/prod)
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             TARGET="${{ github.event.inputs.target }}"
           else
-            case "${{ github.ref }}" in
-              refs/heads/main)    TARGET=production ;;
-              refs/heads/staging) TARGET=staging ;;
-              *) echo "::error::Unsupported branch ${GITHUB_REF}"; exit 1 ;;
-            esac
+            if   [[ "${{ github.ref }}" == "refs/heads/main"    ]]; then TARGET="production"
+            elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then TARGET="staging"
+            else echo "::error::Unsupported branch ${{ github.ref }}"; exit 1
+            fi
           fi
-          if [ "$TARGET" = "production" ]; then
-            DEST_PATH='${{ secrets.SG_DEST_PROD }}'
-            BASE_URL='https://claycraze.com'
-          else
-            DEST_PATH='${{ secrets.SG_DEST_STAGING }}'
-            BASE_URL='https://stagi_
 
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+          if [[ "$TARGET" == "production" ]]; then
+            echo "DEST_PATH=${{ secrets.SG_DEST_PROD }}" >> "$GITHUB_ENV"
+            echo "BASE_URL=https://claycraze.com"       >> "$GITHUB_ENV"
+          else
+            echo "DEST_PATH=${{ secrets.SG_DEST_STAGING }}" >> "$GITHUB_ENV"
+            echo "BASE_URL=https://staging.claycraze.com"   >> "$GITHUB_ENV"
+          fi
+
+          echo "Deploy target: $TARGET → $(tail -n1 "$GITHUB_ENV" | cut -d= -f2-)"
+
+      - name: Validate config (fail fast)
+        env:
+          SG_USER: ${{ secrets.SG_USERNAME }}
+          SG_HOST: ${{ secrets.SG_HOST }}
+        run: |
+          set -euo pipefail
+          : "${SG_USER:?Missing SG_USERNAME secret}"
+          : "${SG_HOST:?Missing SG_HOST secret}"
+          : "${DEST_PATH:?Missing DEST_PATH (set SG_DEST_PROD / SG_DEST_STAGING)}"
+          : "${SG_PORT:?Missing SG_PORT secret}"
+
+      - name: Setup SSH key
+        env:
+          PRIV: ${{ secrets.SG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s' "$PRIV" | tr -d '\r' > ~/.ssh/sg-ci
+          chmod 600 ~/.ssh/sg-ci
+
+      - name: Show CI key fingerprint
+        run: ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
+
+      - name: Assert CI key fingerprint matches expected (optional)
+        env:
+          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}
+          EXPECTED_S: ${{ secrets.SG_EXPECTED_FPR }}
+        run: |
+          set -euo pipefail
+          EXPECTED="${EXPECTED_V:-${EXPECTED_S:-}}"
+          ACTUAL="$(ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf - | awk '{print $2}')"
+          if [[ -n "$EXPECTED" && "$ACTUAL" != "$EXPECTED" ]]; then
+            echo "::error::CI key fingerprint mismatch"; exit 1
+          fi
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y lftp
+
+      - name: Test SFTP connectivity
+        env:
+          SG_USER: ${{ secrets.SG_USERNAME }}
+          SG_HOST: ${{ secrets.SG_HOST }}
+        run: |
+          set -euo pipefail
+          lftp -u "$SG_USER","" sftp://$SG_HOST \
+            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
+                set net:max-retries 1; set net:timeout 20; set cmd:fail-exit yes; \
+                pwd; bye"
+
+      - name: Deploy via SFTP mirror
+        env:
+          SG_USER: ${{ secrets.SG_USERNAME }}
+          SG_HOST: ${{ secrets.SG_HOST }}
+        run: |
+          set -euo pipefail
+          echo "Deploying to $SG_USER@$SG_HOST:${DEST_PATH} (port ${SG_PORT})"
+
+          # Create markers in workspace
+          echo "deployed $(date -u +'%Y-%m-%dT%H:%M:%SZ') $GITHUB_SHA ($TARGET)" > "$GITHUB_WORKSPACE/deploy.txt"
+          echo "internal $(date -u) $GITHUB_SHA $TARGET" > "$GITHUB_WORKSPACE/.ci_deploy_marker.txt"
+
+          cd "$GITHUB_WORKSPACE"
+          ls -la | sed -n '1,80p'
+
+          # cd into exact destination (no mkdir) and mirror
+          lftp -u "$SG_USER","" sftp://$SG_HOST \
+            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
+                set net:max-retries 2; set net:timeout 30; set ssl:verify-certificate no; set cmd:fail-exit yes; \
+                lcd \"$GITHUB_WORKSPACE\"; \
+                echo Remote PWD:; pwd; echo Checking path: ${DEST_PATH}; \
+                cd \"${DEST_PATH}\"; pwd; cls -la; \
+                mirror -R --delete --verbose=1 --parallel=4 \
+                       --exclude-glob .git/ --exclude-glob .github/ --exclude-glob .vscode/ \
+                       --exclude-glob node_modules/ --exclude-glob \"*.md\" \
+                       ./ ./; \
+                bye"
+
+      - name: Verify live deploy marker (HTTP)
+        run: |
+          curl -fsS "$BASE_URL/deploy.txt?nocache=$(date +%s)" | head -n1
