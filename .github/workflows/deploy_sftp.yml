@@ -141,14 +141,28 @@ jobs:
           URL="$BASE_URL/deploy.txt?nocache=$(date +%s)"
           STATUS=$(curl -sS -o /tmp/marker.txt -w '%{http_code}\n' "$URL" || true)
           echo "HTTP status: $STATUS for $URL"
+
           if [[ "$STATUS" == "200" ]]; then
+            echo "deploy.txt via HTTP:"
             head -n1 /tmp/marker.txt
             exit 0
           fi
+
           echo "::warning::HTTP $STATUS — falling back to SFTP to verify deploy.txt presence/contents"
+
+          # Fetch deploy.txt to /tmp via SFTP and show first line
           lftp -u "$SG_USER","" sftp://$SG_HOST \
             -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
                 cd \"${DEST_PATH}\"; pwd; \
                 echo 'Remote listing:'; cls -la deploy.txt; \
-                echo 'First line of deploy.txt:'; get -o /dev/stdout deploy.txt | head -n1; \
+                get -O /tmp deploy.txt; \
                 bye"
+
+          echo "First line of deploy.txt (via SFTP):"
+          head -n1 /tmp/deploy.txt || true
+
+          echo "::error::deploy.txt exists at ${DEST_PATH} but HTTP returned $STATUS. \
+Likely the subdomain Document Root is not ${DEST_PATH##*/} (or DNS/proxy is pointing elsewhere). \
+Fix the SiteGround subdomain’s Document Root to 'staging.claycraze.com/public_html' and retry."
+          exit 1
+
