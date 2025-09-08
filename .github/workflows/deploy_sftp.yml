@@ -1,3 +1,4 @@
+# .github/workflows/deploy-sftp.yml
 name: Deploy to SiteGround (SFTP) — Staging & Prod
 
 on:
@@ -47,93 +48,5 @@ jobs:
             BASE_URL='https://claycraze.com'
           else
             DEST_PATH='${{ secrets.SG_DEST_STAGING }}'
-            BASE_URL='https://staging.claycraze.com'
-          fi
-          echo "TARGET=$TARGET"       >> "$GITHUB_ENV"
-          echo "DEST_PATH=$DEST_PATH" >> "$GITHUB_ENV"
-          echo "BASE_URL=$BASE_URL"   >> "$GITHUB_ENV"
-          echo "Deploy target: $TARGET → ${DEST_PATH:-<EMPTY>}"
+            BASE_URL='https://stagi_
 
-      - name: Validate config (fail fast)
-        env:
-          SG_USER: ${{ secrets.SG_USERNAME }}
-          SG_HOST: ${{ secrets.SG_HOST }}
-        run: |
-          set -euo pipefail
-          : "${SG_USER:?Missing SG_USERNAME secret}"
-          : "${SG_HOST:?Missing SG_HOST secret}"
-          : "${DEST_PATH:?Missing DEST_PATH (set SG_DEST_PROD / SG_DEST_STAGING)}"
-          : "${SG_PORT:?Missing SG_PORT secret}"
-
-      - name: Setup SSH key
-        env:
-          PRIV: ${{ secrets.SG_PRIVATE_KEY }}
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh
-          printf '%s' "$PRIV" | tr -d '\r' > ~/.ssh/sg-ci
-          chmod 600 ~/.ssh/sg-ci
-
-      - name: Show CI key fingerprint
-        run: ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf -
-
-      - name: Assert CI key fingerprint matches expected
-        env:
-          EXPECTED_V: ${{ vars.SG_EXPECTED_FPR }}
-          EXPECTED_S: ${{ secrets.SG_EXPECTED_FPR }}
-        run: |
-          set -euo pipefail
-          EXPECTED="${EXPECTED_V:-${EXPECTED_S:-}}"
-          ACTUAL="$(ssh-keygen -y -f ~/.ssh/sg-ci | ssh-keygen -lf - | awk '{print $2}')"
-          if [ -n "$EXPECTED" ] && [ "$ACTUAL" != "$EXPECTED" ]; then
-            echo "::error::CI key fingerprint mismatch"; exit 1
-          fi
-
-      - name: Install lftp
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y lftp
-
-      - name: Test SFTP connectivity
-        env:
-          SG_USER: ${{ secrets.SG_USERNAME }}
-          SG_HOST: ${{ secrets.SG_HOST }}
-        run: |
-          set -euo pipefail
-          lftp -u "$SG_USER","" sftp://$SG_HOST \
-            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
-                set net:max-retries 1; set net:timeout 20; set cmd:fail-exit yes; \
-                pwd; bye"
-
-      - name: Deploy via SFTP mirror
-        env:
-          SG_USER: ${{ secrets.SG_USERNAME }}
-          SG_HOST: ${{ secrets.SG_HOST }}
-        run: |
-          set -euo pipefail
-
-          echo "Deploying to $SG_USER@$SG_HOST:${DEST_PATH} (port ${SG_PORT})"
-
-          # Create and verify deploy markers now (in the workspace)
-          MARK_DEP="$GITHUB_WORKSPACE/deploy.txt"
-          MARK_CI="$GITHUB_WORKSPACE/.ci_deploy_marker.txt"
-          echo "deployed $(date -u +'%Y-%m-%dT%H:%M:%SZ') $GITHUB_SHA ($TARGET)" > "$MARK_DEP"
-          echo "internal $(date -u) $GITHUB_SHA $TARGET" > "$MARK_CI"
-          test -f "$MARK_DEP" || { echo "::error::deploy.txt missing"; exit 1; }
-          test -f "$MARK_CI"  || { echo "::error::.ci_deploy_marker.txt missing"; exit 1; }
-
-          # Mirror the entire workspace to the remote dest
-          lftp -u "$SG_USER","" sftp://$SG_HOST \
-            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
-                set net:max-retries 2; set net:timeout 30; set ssl:verify-certificate no; set cmd:fail-exit yes; \
-                lcd \"$GITHUB_WORKSPACE\"; \
-                mkdir -p \"${DEST_PATH}\"; cd \"${DEST_PATH}\"; pwd; \
-                mirror -R --delete --verbose=1 --parallel=4 \
-                       --exclude-glob .git/ --exclude-glob .github/ --exclude-glob .vscode/ \
-                       --exclude-glob node_modules/ --exclude-glob \"*.md\" \
-                       ./ ./; \
-                bye"
-
-      - name: Verify live deploy marker (HTTP)
-        run: |
-          curl -fsS "$BASE_URL/deploy.txt?nocache=$(date +%s)" | head -n1
