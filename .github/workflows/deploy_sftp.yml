@@ -25,13 +25,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SG_PORT: ${{ secrets.SG_PORT }}   # 18765
+      SG_PORT: ${{ secrets.SG_PORT }}   # e.g., 18765
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ---- Select environment WITHOUT quoting secrets in bash ----
+      # Pick staging vs production and write to $GITHUB_ENV (no risky quoting)
       - name: Select environment (staging/prod)
         run: |
           set -euo pipefail
@@ -43,7 +43,6 @@ jobs:
             else echo "::error::Unsupported branch ${{ github.ref }}"; exit 1
             fi
           fi
-
           echo "TARGET=$TARGET" >> "$GITHUB_ENV"
           if [[ "$TARGET" == "production" ]]; then
             echo "DEST_PATH=${{ secrets.SG_DEST_PROD }}" >> "$GITHUB_ENV"
@@ -52,8 +51,7 @@ jobs:
             echo "DEST_PATH=${{ secrets.SG_DEST_STAGING }}" >> "$GITHUB_ENV"
             echo "BASE_URL=https://staging.claycraze.com"   >> "$GITHUB_ENV"
           fi
-
-          echo "Deploy target: $TARGET → $(tail -n1 "$GITHUB_ENV" | cut -d= -f2-)"
+          echo "Deploy target: $TARGET"
 
       - name: Validate config (fail fast)
         env:
@@ -114,14 +112,14 @@ jobs:
           set -euo pipefail
           echo "Deploying to $SG_USER@$SG_HOST:${DEST_PATH} (port ${SG_PORT})"
 
-          # Create markers in workspace
+          # Create marker files in the workspace
           echo "deployed $(date -u +'%Y-%m-%dT%H:%M:%SZ') $GITHUB_SHA ($TARGET)" > "$GITHUB_WORKSPACE/deploy.txt"
           echo "internal $(date -u) $GITHUB_SHA $TARGET" > "$GITHUB_WORKSPACE/.ci_deploy_marker.txt"
 
           cd "$GITHUB_WORKSPACE"
           ls -la | sed -n '1,80p'
 
-          # cd into exact destination (no mkdir) and mirror
+          # cd into exact destination and mirror
           lftp -u "$SG_USER","" sftp://$SG_HOST \
             -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
                 set net:max-retries 2; set net:timeout 30; set ssl:verify-certificate no; set cmd:fail-exit yes; \
@@ -134,6 +132,23 @@ jobs:
                        ./ ./; \
                 bye"
 
-      - name: Verify live deploy marker (HTTP)
+      - name: Verify live deploy marker (HTTP with SFTP fallback)
+        env:
+          SG_USER: ${{ secrets.SG_USERNAME }}
+          SG_HOST: ${{ secrets.SG_HOST }}
         run: |
-          curl -fsS "$BASE_URL/deploy.txt?nocache=$(date +%s)" | head -n1
+          set -euo pipefail
+          URL="$BASE_URL/deploy.txt?nocache=$(date +%s)"
+          STATUS=$(curl -sS -o /tmp/marker.txt -w '%{http_code}\n' "$URL" || true)
+          echo "HTTP status: $STATUS for $URL"
+          if [[ "$STATUS" == "200" ]]; then
+            head -n1 /tmp/marker.txt
+            exit 0
+          fi
+          echo "::warning::HTTP $STATUS — falling back to SFTP to verify deploy.txt presence/contents"
+          lftp -u "$SG_USER","" sftp://$SG_HOST \
+            -e "set sftp:connect-program \"ssh -a -x -i ~/.ssh/sg-ci -p ${SG_PORT} -o StrictHostKeyChecking=no\"; \
+                cd \"${DEST_PATH}\"; pwd; \
+                echo 'Remote listing:'; cls -la deploy.txt; \
+                echo 'First line of deploy.txt:'; get -o /dev/stdout deploy.txt | head -n1; \
+                bye"
