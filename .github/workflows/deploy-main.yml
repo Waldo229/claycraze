@@ -18,6 +18,13 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
+      - name: Trust SiteGround host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SG_PORT }} -t rsa,ecdsa,ed25519 ${{ secrets.SG_HOST }} >> ~/.ssh/known_hosts
+          # optional: show what we added
+          ssh-keygen -F ${{ secrets.SG_HOST }} || true
+
       - name: Deploy to production
         run: |
           rsync -avz --delete \
