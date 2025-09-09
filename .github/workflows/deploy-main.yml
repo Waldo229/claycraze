@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install private key (newline-safe, no heredoc)
+      - name: Install private key (newline-safe)
         run: |
           mkdir -p ~/.ssh
           printf '%s' "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
@@ -22,7 +22,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.SG_PORT }} -t rsa,ecdsa,ed25519 ${{ secrets.SG_HOST }} >> ~/.ssh/known_hosts
-          # optional: show what we added
+          chmod 600 ~/.ssh/known_hosts
+          # show what we saved (for sanity)
           ssh-keygen -F ${{ secrets.SG_HOST }} || true
 
       - name: Deploy to production
