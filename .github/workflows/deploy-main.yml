@@ -1,0 +1,36 @@
+name: Deploy (MAIN → claycraze.com)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install private key (newline-safe)
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
+          sed -i 's/\r$//' ~/.ssh/sg_ci
+          chmod 600 ~/.ssh/sg_ci
+
+      - name: Trust SiteGround host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SG_PORT }} -t rsa,ecdsa,ed25519 ${{ secrets.SG_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          # show what we saved (for sanity)
+          ssh-keygen -F ${{ secrets.SG_HOST }} || true
+
+      - name: Deploy to production
+        run: |
+          rsync -avz --delete \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "README.md" \
+            -e "ssh -p ${{ secrets.SG_PORT }} -o IdentitiesOnly=yes -i ~/.ssh/sg_ci" \
+            ./ "${{ secrets.SG_USERNAME }}@${{ secrets.SG_HOST }}:${{ secrets.SG_DEST_PROD }}"
