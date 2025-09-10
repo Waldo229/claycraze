@@ -87,7 +87,9 @@ body{
   margin: .5rem 0 0;
   font-size: 1.05rem;
   opacity: .9;
+  font-style: italic;
 }
+
 
 /* Primary nav */
 .nav{
