@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<!--
+		
+	General Information about ClayCrazE
+	Author: Jim Alexander
+	Date: February 7, 2025
+
+	Filename: cc_about.html
+	-->
+	<meta charset="utf-8" />
+	<meta name="keywords" content="pottery, Williamsburg, Yorktown, Jamestown, ceramics, bonsai, Japan" />
+
+	<title> Colonial Clay </title>
+	
+	<link href ="../css/cc_reset.css" rel="stylesheet" />
+	<link href="../css/cc_styles1_ccs" rel="stylesheet" />
+	<link href="../css/cc_home.css" rel="stylesheet" />
+	
+</head>
+
+<body>
+	<header>
+		<a href="../html/home.html"><img src="../images/cc_logo3.png" alt="ClayCrazE" /></a>
+		<nav>
+			<ul>	
+				<li><a href="cc_about.html">About ClayCrazE</a></li>
+				<li><a href="cc_clay.html">Colonial Clay</a></li>
+				<li><a href="cc_gallery.html">Gallery</a></li>
+				<li><a href="cc_contact.html">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+				
+
+
+		<h1>ClayCrazE</h1>
+		
+
+	</header>
+		
+<article>
+	<p>
+<h1><em> Clay</em> </h1>
+<strong>The Poor Potter of Yorktown </strong>Neither poor, nor a potter, William Roger's began a pottery in Yorktown, Virginia (date) under the nose of the British government and sold his goods in the colonies profitably, undercutting the price of imports. Nothing to see here, just a poor man trying to make a living, was what his friend the governor was telling the English. Today, the story of William Rogers is all but forgotten, but his clay remains a treasure ripe for rediscovery.
+Since 1973, I have crafted pottery with a deep appreciation for Japanese-influenced ceramics. My work reflects a lifelong passion for form and function, deeply inspired by traditional Japanese aesthetics and the balance of nature. After retiring from the Portsmouth Fire Department, I spent three years at the Norfolk Botanical Garden and maintained a small studio at the Hermitage Museum, where I rekindled my dedication to pottery. Norfolk’s cultural connections—through NATO, the Embassy of Japan, and the U.S. National Arboretum—have profoundly shaped my artistic direction.
+
+Today, I create ceramic containers for my garden and offer them to members of my local bonsai club as well as Ikebana International Chapter 1 in Washington, D.C. In collaboration with Ironwood Bonsai in Newport News, Virginia, I aim to reach a broader bonsai audience. Our partnership has included showcasing my pottery at the National Silhouette Show in Kannapolis, North Carolina.
+A key focus of my current work is using natural clay sourced from Yorktown, Virginia—the same clay that William Rogers, Virginia’s first potter, used in Colonial times. I call this material "Colonial Clay" to honor the region’s history and heritage while crafting pottery that enhances the beauty and spirit of bonsai arrangements.
+The journey begins!<em>Buckle your seatbelt, It's about to get bumppy. </em>.
+</p> </article>
+	
+<footer >
+	<p>ClayCrazE: We dig it in Virginia</p>
+</footer>
+
+
+</body>
+
+</html>

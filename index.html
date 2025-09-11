@@ -1,34 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClayCrazE</title>
-  <style>
-    :root {
-      --gold: #d4af37;
-      --text: #111;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    body {
-      background: var(--gold);
-      color: var(--text);
-      display: grid;
-      place-items: center;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-    h1 {
-      font-size: clamp(2rem, 6vw, 5rem);
-      letter-spacing: 0.02em;
-      margin: 0;
-    }
-  </style>
+<meta charset="utf-8" />
+<title>ClaycrazE — It’s a CrazE world!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="ClaycrazE — It’s a CrazE World! Studio, materials, kiln, the GENE Project, gallery, and places that shape the work." />
+<link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <h1>ClayCrazE</h1>
-  <h2>It's a CrazE World!</h2>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header">
+<h1 class="wordmark">ClaycrazE</h1>
+<p class="tagline">It’s a CrazE World!</p>
+<nav aria-label="Primary">
+<ul class="nav">
+<li><a href="studio.html">Studio</a></li>
+<li><a href="materials.html">Materials</a></li>
+<li><a href="kiln.html">Kiln</a></li>
+<li><a href="gene.html">GENE Project</a></li>
+<li><a href="gallery.html">Gallery</a></li>
+<li><a href="places.html">Places &amp; People</a></li>
+</ul>
+</nav>
+</header>
+
+
+<main id="content" class="wrapper" role="main">
+<section aria-labelledby="grid-title">
+<h2 id="grid-title" class="visually-hidden">Explore</h2>
+<div class="groups" role="list">
+<a class="group" role="listitem" href="studio.html">
+<h3>Studio</h3>
+<p>Personal vs shared vs school studios — costs, flow, and fit.</p>
+</a>
+<a class="group" role="listitem" href="materials.html">
+<h3>Materials</h3>
+<p>Yorktown clay, James River beds, grog and glaze choices.</p>
+</a>
+<a class="group" role="listitem" href="kiln.html">
+<h3>Kiln</h3>
+<p>Electric, gas, wood, raku — why fire adds value.</p>
+</a>
+<a class="group" role="listitem" href="gene.html">
+<h3>The GENE Project</h3>
+<p>Clay + electronics: mascot, kiln watcher, studio helper.</p>
+</a>
+<a class="group" role="listitem" href="gallery.html">
+<h3>Gallery</h3>
+<p>Bonsai pots, tea bowls, ikebana — each with a story.</p>
+</a>
+<a class="group" role="listitem" href="places.html">
+<h3>Places &amp; People</h3>
+<p>Jamestown to Yorktown, Smithfield to Charles City — the trail.</p>
+</a>
+</div>
+</section>
+</main>
+
+
+<footer class="site-footer">
+<small>© 2025 Jim Alexander, ClaycrazE</small>
+</footer>
 </body>
 </html>

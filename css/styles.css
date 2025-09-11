@@ -1,0 +1,190 @@
+/* ---------------------- */
+/*  Base + Theme Tokens   */
+/* ---------------------- */
+:root{
+  --gold: #DAA520;           /* goldenrod vibe */
+  --gold-ink: #1a1200;       /* dark ink on gold */
+  --ink: #111;               /* body text */
+  --bg: #fff8dc;             /* cornsilk */
+  --panel: #ffffff;          /* tile bg */
+  --edge: rgba(0,0,0,.08);   /* hairline borders */
+  --shadow: rgba(0,0,0,.16);
+  --shadow-strong: rgba(0,0,0,.25);
+  --maxw: 1200px;
+  --radius: 16px;
+}
+
+/* Reset-ish */
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--gold);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------------------- */
+/*  Accessibility helpers */
+/* ---------------------- */
+.visually-hidden{
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.skip-link{
+  position: absolute;
+  top: -40px; left: 1rem;
+  background: #000; color: #fff;
+  padding: .5rem .75rem; border-radius: 8px;
+  transition: top .2s ease;
+  z-index: 999;
+}
+.skip-link:focus{ top: 1rem; }
+
+/* ---------------------- */
+/*  Header                */
+/* ---------------------- */
+.site-header{
+  color: var(--gold-ink);
+  background:
+    radial-gradient(1200px 400px at 50% -50%, #fff 0%, transparent 70%),
+    var(--gold);
+  text-align: center;
+  padding: 2.25rem 1rem 1.25rem;
+  box-shadow: 0 4px 16px var(--shadow-strong);
+}
+
+.kicker{
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: .85;
+  margin: 0 0 .25rem;
+}
+
+.wordmark{
+  margin: 0;
+  font-size: clamp(2rem, 7vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: .01em;
+}
+.wordmark .craze{
+  text-decoration: underline;
+  text-decoration-thickness: .18em;
+  text-underline-offset: .1em;
+}
+
+.tagline{
+  margin: .5rem 0 0;
+  font-size: 1.05rem;
+  opacity: .9;
+  font-style: italic;
+}
+
+
+/* Primary nav */
+.nav{
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem .75rem;
+  justify-content: center;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+.nav a{
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,.25);
+  color: var(--gold-ink);
+  text-decoration: none;
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.nav a:hover,
+.nav a:focus-visible{
+  background: rgba(0,0,0,.08);
+  outline: none;
+}
+
+/* ---------------------- */
+/*  Main                  */
+/* ---------------------- */
+.wrapper{
+  flex: 1;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  max-width: var(--maxw);
+}
+
+/* Tiles grid */
+.groups{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+/* Each tile is a real link */
+.group{
+  background: var(--panel);
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: grid;
+  gap: .35rem;
+  box-shadow: 0 6px 12px var(--shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+  min-height: 140px;
+}
+.group h3{
+  margin: 0;
+  font-size: 1.15rem;
+  color: #0e0e0e;
+}
+.group p{
+  margin: 0;
+  font-size: .98rem;
+  opacity: .9;
+}
+.group:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px var(--shadow-strong);
+}
+
+/* Focus ring for keyboard users */
+.group:focus-visible,
+.nav a:focus-visible{
+  outline: 3px solid #000;
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; }
+  .group:hover{ transform: none; box-shadow: 0 6px 12px var(--shadow); }
+}
+
+/* ---------------------- */
+/*  Footer                */
+/* ---------------------- */
+.site-footer{
+  background: #1f1a0d; /* deep ink on gold theme */
+  color: #f7f3e7;
+  text-align: center;
+  padding: 1rem;
+  font-size: .95rem;
+  box-shadow: 0 -4px 12px var(--shadow-strong);
+}

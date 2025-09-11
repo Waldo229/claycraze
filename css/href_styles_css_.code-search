@@ -1,0 +1,38 @@
+# Query: href="styles.css"
+# ContextLines: 1
+
+7 results - 7 files
+
+gallery,html:
+  7  <meta name="description" content="Bonsai pots, tea bowls, ikebana vases, and new work — each with process notes and provenance." />
+  8: <link rel="stylesheet" href="css/styles.css"" />
+  9  </head>
+
+gene.html:
+  7  <meta name="description" content="The GENE Project — a fusion of clay and electronics: studio mascot, kiln watcher, and creative experiment." />
+  8: <link rel="stylesheet" href="css/styles.css"
+
+index.html:
+  7  <meta name="description" content="ClaycrazE — It’s a CrazE World. Studio, materials, kiln, the GENE Project, gallery, and places that shape the work." />
+  8: <link rel="stylesheet" href="css/styles.css" />
+  9  </head>
+
+kiln.html:
+  7  <meta name="description" content="Electric, gas, wood, and raku firing — how fire transforms and why it adds value." />
+  8: <link rel="stylesheet" href="css/styles.css" />
+  9  </head>
+
+materials.html:
+  7  <meta name="description" content="Clay sources, grog, feldspar, ash glazes, and how materials shape the work." />
+  8: <link rel="stylesheet" href="css/styles.css" />
+  9  </head>
+
+places.html:
+  7  <meta name="description" content="Jamestown, Williamsburg, Yorktown, Smithfield, Charles City, and the Rochambeau route — the cultural trail behind the work." />
+  8: <link rel="stylesheet" href="css/styles.css" />
+  9  </head>
+
+studio.html:
+  7  <meta name="description" content="Studio options and philosophy — personal studios, shared/private studios, and school facilities." />
+  8: <link rel="stylesheet" href="css/styles.css" />
+  9  </head>
