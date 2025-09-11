@@ -13,13 +13,46 @@ jobs:
       - name: Prepare SSH key
         shell: bash
         run: |
+          set -euxo pipefail
           mkdir -p ~/.ssh
           echo "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
           ssh-keyscan -p ${{ secrets.SG_PORT }} ${{ secrets.SG_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Rsync to SiteGround
+      - name: Preflight (check remote, create path, show rsync availability)
         shell: bash
         run: |
-          rsync -az --delete
+          set -euxo pipefail
+          ssh -p ${{ secrets.SG_PORT }} -i ~/.ssh/sg_ci \
+            ${{ secrets.SG_USER }}@${{ secrets.SG_HOST }} \
+            "echo 'SSH OK as:' \$(whoami) && mkdir -p '${{ secrets.SG_PATH }}' && \
+             (command -v rsync >/dev/null && echo 'rsync: FOUND' || echo 'rsync: NOT FOUND') && \
+             ls -la '${{ secrets.SG_PATH }}' | head -n 10"
+
+      - name: Deploy (rsync, with SCP fallback)
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if ssh -p ${{ secrets.SG_PORT }} -i ~/.ssh/sg_ci ${{ secrets.SG_USER }}@${{ secrets.SG_HOST }} "command -v rsync >/dev/null 2>&1"; then
+            echo "Using rsync"
+            rsync -az --delete \
+              --exclude ".git/" --exclude ".github/" \
+              -e "ssh -p ${{ secrets.SG_PORT }} -i ~/.ssh/sg_ci -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
+              ./ ${{ secrets.SG_USER }}@${{ secrets.SG_HOST }}:${{ secrets.SG_PATH }}/
+          else
+            echo "rsync not available; using SCP fallback"
+            ssh -p ${{ secrets.SG_PORT }} -i ~/.ssh/sg_ci ${{ secrets.SG_USER }}@${{ secrets.SG_HOST }} \
+              "find '${{ secrets.SG_PATH }}' -mindepth 1 -maxdepth 1 -exec rm -rf {} +"
+            scp -P ${{ secrets.SG_PORT }} -i ~/.ssh/sg_ci -r \
+              . ${{ secrets.SG_USER }}@${{ secrets.SG_HOST }}:${{ secrets.SG_PATH }}/
+          fi
+
+      - name: Stamp deployment
+        shell: bash
+        run: |
+          set -euxo pipefail
+          ssh -p ${{ secrets.SG_PORT }} -i ~/.ssh/sg_ci \
+            ${{ secrets.SG_USER }}@${{ secrets.SG_HOST }} \
+            "date '+%Y-%m-%d %H:%M:%S %Z' > '${{ secrets.SG_PATH }}/.last_deploy'"
+
