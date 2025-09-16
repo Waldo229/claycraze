@@ -1,0 +1,27 @@
+name: Deploy to SiteGround (STAGING)
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
+          sed -i 's/\r$//' ~/.ssh/sg_ci
+          chmod 600 ~/.ssh/sg_ci
+          ssh-keyscan -p 18765 claycraze.com >> ~/.ssh/known_hosts
+
+      - name: Deploy via SCP (staging)
+        run: |
+          scp -i ~/.ssh/sg_ci -P 18765 -r ./ \
+          ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/staging.claycraze.com
