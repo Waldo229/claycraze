@@ -1,13 +1,17 @@
 name: Deploy to SiteGround (PROD)
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
@@ -15,7 +19,12 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
           ssh-keyscan -p 18765 claycraze.com >> ~/.ssh/known_hosts
-      - name: Deploy via SCP (prod)
+
+      - name: Deploy to PROD via SCP
         run: |
-          scp -i ~/.ssh/sg_ci -P 18765 -r ./ \
-          ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/public_html
+          tar --exclude='.git' --exclude='.github' --exclude='README.md' \
+              -czf site.tar.gz ./
+          scp -i ~/.ssh/sg_ci -P 18765 site.tar.gz \
+              ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/public_html
+          ssh -i ~/.ssh/sg_ci -p 18765 ${{ secrets.SG_USER }}@claycraze.com \
+              'cd /home/u1966-olev38ziybsd/public_html && tar -xzf site.tar.gz && rm site.tar.gz'
