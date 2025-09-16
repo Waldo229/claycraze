@@ -1,0 +1,4 @@
+git checkout main
+git add .deployignore .github/workflows/SG_prod.yml
+git commit -m "prod: ensure .deployignore is present"  # will say 'nothing to commit' if already tracked
+git push
