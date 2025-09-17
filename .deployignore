@@ -1,7 +1,11 @@
-.git/
+# things we don't want to upload
+.git
 .github/
-.vscode/
+site.tar.gz
+node_modules/
+*.psd
+*.ai
+*.zip
+*.tar.gz
 README.md
 LICENSE
-Thumbs.db
-.DS_Store
