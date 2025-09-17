@@ -188,3 +188,29 @@ body{
   font-size: .95rem;
   box-shadow: 0 -4px 12px var(--shadow-strong);
 }
+/* ---------------------- */
+/*  Images & Hero layout  */
+/* ---------------------- */
+
+/* Keep images from overflowing their containers */
+img { max-width: 100%; height: auto; display: block; }
+
+/* Remove default figure margins (helps hero spacing) */
+figure { margin: 0; }
+
+/* Vertical rhythm for the hero area (your <main class="wrapper hero">) */
+.hero { padding-block: 1.5rem; }
+@media (min-width: 768px){
+  .hero { padding-block: 2.5rem; }
+}
+
+/* Constrain the hero artwork */
+.hero-moto{
+  margin: 1rem auto 2rem;
+  max-width: min(100%, 50rem);   /* ≈ 800px cap; adjust as you like */
+}
+.hero-moto img{
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px var(--shadow);
+}
