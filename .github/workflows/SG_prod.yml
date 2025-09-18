@@ -2,37 +2,43 @@ name: Deploy to SiteGround (PROD)
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up SSH key
         run: |
-          set -euxo pipefail
           mkdir -p ~/.ssh
           echo "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
-          ssh-keyscan -p 18765 claycraze.com >> ~/.ssh/known_hosts
 
-      - name: Package & Upload (PROD)
+      - name: Package project
         run: |
-          set -euxo pipefail
-          # create tarball excluding dev/CI files
-          tar --exclude-from=.deployignore -czf site.tar.gz ./
-          # upload to docroot
-          scp -i ~/.ssh/sg_ci -P 18765 site.tar.gz \
-            ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/public_html
-          # unpack atomically on server
-          ssh -i ~/.ssh/sg_ci -p 18765 ${{ secrets.SG_USER }}@claycraze.com '
-            set -euxo pipefail
-            cd /home/u1966-olev38ziybsd/public_html
-            tar -xzf site.tar.gz
-            rm -f site.tar.gz
-          '
+          set -euo pipefail
+          [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
+          if [ -f .deployignore ]; then
+            tar --exclude-from=.deployignore -czf site.tar.gz .
+          else
+            echo "No .deployignore found; continuing without it."
+            tar -czf site.tar.gz .
+          fi
+
+      - name: Upload & Deploy (PROD)
+        env:
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
+          SG_DOCROOT: ${{ secrets.SG_DOCROOT }}      # /home/<user>/public_html
+        run: |
+          set -euo pipefail
+          scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:$SG_DOCROOT/"
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "/bin/bash -lc 'set -e; mkdir -p \"$SG_DOCROOT\"; cd \"$SG_DOCROOT\"; \
+              rm -rf __extract_tmp; mkdir __extract_tmp; tar -xzf site.tar.gz -C __extract_tmp; \
+              shopt -s dotglob; rm -rf *; mv __extract_tmp/* .; rmdir __extract_tmp; rm -f site.tar.gz'"

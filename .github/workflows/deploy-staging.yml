@@ -2,42 +2,45 @@
 
 on:
   push:
-    branches: [staging]
+    branches: [ "staging" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up SSH key
         run: |
-          set -euxo pipefail
           mkdir -p ~/.ssh
           echo "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
-          ssh-keyscan -p 18765 claycraze.com >> ~/.ssh/known_hosts
 
-      - name: Package & Upload (STAGING)
+      - name: Package project
         run: |
-          set -euxo pipefail
           set -euo pipefail
-[ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
-if [ -f .deployignore ]; then
-  tar --exclude-from=.deployignore -czf site.tar.gz .
-else
-  echo 'No .deployignore found; continuing without it.'
-  tar -czf site.tar.gz .
-fi/
-          scp -i ~/.ssh/sg_ci -P 18765 site.tar.gz \
-            ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/staging.claycraze.com
-          ssh -i ~/.ssh/sg_ci -p 18765 ${{ secrets.SG_USER }}@claycraze.com '
-            set -euxo pipefail
-            cd /home/u1966-olev38ziybsd/staging.claycraze.com
-            tar -xzf site.tar.gz
-            rm -f site.tar.gz
-          '
+          [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
+          if [ -f .deployignore ]; then
+            tar --exclude-from=.deployignore -czf site.tar.gz .
+          else
+            echo "No .deployignore found; continuing without it."
+            tar -czf site.tar.gz .
+          fi
+          ls -lh site.tar.gz
 
+      - name: Upload & Deploy (STAGING)
+        env:
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
+          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}  # /home/<user>/public_html/staging
+        run: |
+          set -euo pipefail
+          scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:$SG_STAGING_ROOT/"
+          # Use bash so we can dotglob to move hidden files too
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "/bin/bash -lc 'set -e; mkdir -p \"$SG_STAGING_ROOT\"; cd \"$SG_STAGING_ROOT\"; \
+              rm -rf __extract_tmp; mkdir __extract_tmp; tar -xzf site.tar.gz -C __extract_tmp; \
+              shopt -s dotglob; rm -rf *; mv __extract_tmp/* .; rmdir __extract_tmp; rm -f site.tar.gz'"
