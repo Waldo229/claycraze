@@ -18,28 +18,47 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
+      - name: Sanity-check secrets
+        env:
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
+          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}
+        run: |
+          set -euo pipefail
+          for v in SG_HOST SG_PORT SG_USER SG_STAGING_ROOT; do
+            [ -n "${!v:-}" ] || { echo "❌ $v is empty"; exit 1; }
+          done
+
       - name: Package project
         run: |
           set -euo pipefail
+          TAR="$RUNNER_TEMP/site.tar.gz"
+          # Normalize CRLF if present
           [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
+
           if [ -f .deployignore ]; then
-            tar --exclude-from=.deployignore -czf site.tar.gz .
+            tar --exclude-from=.deployignore --exclude=./site.tar.gz -czf "$TAR" .
           else
             echo "No .deployignore found; continuing without it."
-            tar -czf site.tar.gz .
+            tar --exclude=./site.tar.gz -czf "$TAR" .
           fi
-          ls -lh site.tar.gz
+
+          mv "$TAR" ./site.tar.gz
+          ls -lh ./site.tar.gz
 
       - name: Upload & Deploy (STAGING)
         env:
           SG_HOST: ${{ secrets.SG_HOST }}
           SG_PORT: ${{ secrets.SG_PORT }}
           SG_USER: ${{ secrets.SG_USER }}
-          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}   # /home/<user>/public_html/staging
+          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}   # e.g. /home/<user>/public_html/staging
         run: |
           set -euo pipefail
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:$SG_STAGING_ROOT/"
+          # Use double-quotes so $SG_STAGING_ROOT expands locally into a literal path for the remote shell
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "/bin/bash -lc 'set -e; mkdir -p \"$SG_STAGING_ROOT\"; cd \"$SG_STAGING_ROOT\"; \
+            "/bin/bash -lc \"set -e; mkdir -p '$SG_STAGING_ROOT'; cd '$SG_STAGING_ROOT'; \
               rm -rf __extract_tmp; mkdir __extract_tmp; tar -xzf site.tar.gz -C __extract_tmp; \
-              shopt -s dotglob; rm -rf *; mv __extract_tmp/* .; rmdir __extract_tmp; rm -f site.tar.gz'"
+              shopt -s dotglob; rm -rf *; mv __extract_tmp/* .; rmdir __extract_tmp; rm -f site.tar.gz; \
+              ls -la | head -n 40\""
