@@ -18,16 +18,16 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
-      - name: Sanity-check secrets
+      - name: Sanity-check base secrets
         env:
-          SG_HOST:         ${{ secrets.SG_HOST }}
-          SG_PORT:         ${{ secrets.SG_PORT }}
-          SG_USER:         ${{ secrets.SG_USER }}
-          SG_DOCROOT_PROD: ${{ secrets.SG_DOCROOT_PROD }}   # e.g. /home/<user>/public_html
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
         run: |
           set -euo pipefail
-          for v in SG_HOST SG_PORT SG_USER SG_DOCROOT_PROD; do
-            if [ -z "${!v:-}" ]; then echo "❌ $v is EMPTY"; exit 1; else echo "✅ $v set"; fi
+          for v in SG_HOST SG_PORT SG_USER; do
+            [ -n "${!v:-}" ] || { echo "❌ $v is EMPTY"; exit 1; }
+            echo "✅ $v set"
           done
 
       - name: Package project
@@ -46,31 +46,27 @@ jobs:
 
       - name: Upload & Deploy (PROD)
         env:
-          SG_HOST:         ${{ secrets.SG_HOST }}
-          SG_PORT:         ${{ secrets.SG_PORT }}
-          SG_USER:         ${{ secrets.SG_USER }}
-          SG_DOCROOT_PROD: ${{ secrets.SG_DOCROOT_PROD }}
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
         run: |
           set -euo pipefail
-          # 1) Upload to HOME
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
 
-          # 2) Move into docroot and deploy
-          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "/bin/bash -lc \"set -e
-              DOC='${SG_DOCROOT_PROD}'
-              [ -z \\\"\$DOC\\\" ] && DOC=\\\"\$HOME/public_html\\\"
-              echo Using PROD docroot: \\\"\$DOC\\\"
-              mkdir -p \\\"\$DOC\\\"
-              mv -f ~/site.tar.gz \\\"\$DOC/\\\"
-              cd \\\"\$DOC\\\"
-              rm -rf __extract_tmp
-              mkdir __extract_tmp
-              tar -xzf site.tar.gz -C __extract_tmp
-              shopt -s dotglob
-              rm -rf *
-              mv __extract_tmp/* .
-              rmdir __extract_tmp
-              rm -f site.tar.gz
-              ls -la | head -n 40
-            \""
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" bash -s <<'BASH'
+          set -e
+          DOC="$HOME/public_html"
+          echo "Using PROD docroot: $DOC"
+          mkdir -p "$DOC"
+          mv -f "$HOME/site.tar.gz" "$DOC/"
+          cd "$DOC"
+          rm -rf __extract_tmp
+          mkdir __extract_tmp
+          tar -xzf site.tar.gz -C __extract_tmp
+          shopt -s dotglob
+          rm -rf *
+          mv __extract_tmp/* .
+          rmdir __extract_tmp
+          rm -f site.tar.gz
+          ls -la | head -n 40
+BASH
