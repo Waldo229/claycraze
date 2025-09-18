@@ -1,8 +1,8 @@
-﻿name: Deploy to SiteGround (STAGING)
+name: Deploy to SiteGround (PROD)
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
 
 jobs:
   deploy:
@@ -21,23 +21,18 @@ jobs:
           chmod 600 ~/.ssh/sg_ci
           ssh-keyscan -p 18765 claycraze.com >> ~/.ssh/known_hosts
 
-      - name: Package & Upload (STAGING)
+      - name: Package & Upload (PROD)
         run: |
           set -euxo pipefail
-          set -euo pipefail
-[ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
-if [ -f .deployignore ]; then
-  tar --exclude-from=.deployignore -czf site.tar.gz .
-else
-  echo 'No .deployignore found; continuing without it.'
-  tar -czf site.tar.gz .
-fi/
+          # create tarball excluding dev/CI files
+          tar --exclude-from=.deployignore -czf site.tar.gz ./
+          # upload to docroot
           scp -i ~/.ssh/sg_ci -P 18765 site.tar.gz \
-            ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/staging.claycraze.com
+            ${{ secrets.SG_USER }}@claycraze.com:/home/u1966-olev38ziybsd/public_html
+          # unpack atomically on server
           ssh -i ~/.ssh/sg_ci -p 18765 ${{ secrets.SG_USER }}@claycraze.com '
             set -euxo pipefail
-            cd /home/u1966-olev38ziybsd/staging.claycraze.com
+            cd /home/u1966-olev38ziybsd/public_html
             tar -xzf site.tar.gz
             rm -f site.tar.gz
           '
-

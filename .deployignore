@@ -1,1 +1,12 @@
+﻿.git
+.github/
+site.tar.gz
+node_modules/
+dist/
+build/
+*.log
 *.zip
+*.tar
+*.tar.gz
+README.md
+LICENSE
