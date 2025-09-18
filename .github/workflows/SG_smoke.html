@@ -1,0 +1,34 @@
+name: SG Smoke Test
+on:
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
+          sed -i 's/\r$//' ~/.ssh/sg_ci
+          chmod 600 ~/.ssh/sg_ci
+
+      - name: SSH → print HOME and docroots; write/read/delete a probe in staging
+        env:
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
+        run: |
+          set -euo pipefail
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" bash -s <<'BASH'
+          set -e
+          echo "HOME=$HOME"
+          ls -ld "$HOME/public_html" "$HOME/public_html/staging" || true
+          DOC="$HOME/public_html/staging"
+          mkdir -p "$DOC"
+          name="__probe_$(date +%s).txt"
+          echo ok > "$DOC/$name"
+          ls -l "$DOC/$name"
+          rm -f "$DOC/$name"
+          echo "staging probe OK"
+BASH
