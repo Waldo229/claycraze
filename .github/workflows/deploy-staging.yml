@@ -18,44 +18,6 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
-      # Shows which vars are set (prints "set"/"missing", not values)
       - name: Sanity-check secrets
         env:
-          SG_HOST:          ${{ secrets.SG_HOST }}
-          SG_PORT:          ${{ secrets.SG_PORT }}
-          SG_USER:          ${{ secrets.SG_USER }}
-          SG_STAGING_ROOT:  ${{ secrets.SG_STAGING_ROOT }}   # MUST exist
-        run: |
-          set -euo pipefail
-          for v in SG_HOST SG_PORT SG_USER SG_STAGING_ROOT; do
-            if [ -z "${!v:-}" ]; then echo "❌ $v is EMPTY"; exit 1; else echo "✅ $v set"; fi
-          done
-
-      - name: Package project
-        run: |
-          set -euo pipefail
-          TAR="$RUNNER_TEMP/site.tar.gz"
-          [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
-          if [ -f .deployignore ]; then
-            tar --exclude-from=.deployignore --exclude=./site.tar.gz -czf "$TAR" .
-          else
-            echo "No .deployignore found; continuing without it."
-            tar --exclude=./site.tar.gz -czf "$TAR" .
-          fi
-          mv "$TAR" ./site.tar.gz
-          ls -lh ./site.tar.gz
-
-      - name: Upload & Deploy (STAGING)
-        env:
-          SG_HOST:         ${{ secrets.SG_HOST }}
-          SG_PORT:         ${{ secrets.SG_PORT }}
-          SG_USER:         ${{ secrets.SG_USER }}
-          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}
-        run: |
-          set -euo pipefail
-          scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:$SG_STAGING_ROOT/"
-          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "/bin/bash -lc \"set -e; mkdir -p '$SG_STAGING_ROOT'; cd '$SG_STAGING_ROOT'; \
-              rm -rf __extract_tmp; mkdir __extract_tmp; tar -xzf site.tar.gz -C __extract_tmp; \
-              shopt -s dotglob; rm -rf *; mv __extract_tmp/* .; rmdir __extract_tmp; rm -f site.tar.gz; \
-              ls -la | head -n 40\""
+          SG_HOST:         $_
