@@ -35,11 +35,10 @@ jobs:
           SG_HOST: ${{ secrets.SG_HOST }}
           SG_PORT: ${{ secrets.SG_PORT }}
           SG_USER: ${{ secrets.SG_USER }}
-          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}  # /home/<user>/public_html/staging
+          SG_STAGING_ROOT: ${{ secrets.SG_STAGING_ROOT }}   # /home/<user>/public_html/staging
         run: |
           set -euo pipefail
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:$SG_STAGING_ROOT/"
-          # Use bash so we can dotglob to move hidden files too
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
             "/bin/bash -lc 'set -e; mkdir -p \"$SG_STAGING_ROOT\"; cd \"$SG_STAGING_ROOT\"; \
               rm -rf __extract_tmp; mkdir __extract_tmp; tar -xzf site.tar.gz -C __extract_tmp; \

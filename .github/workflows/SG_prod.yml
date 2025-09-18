@@ -34,7 +34,7 @@ jobs:
           SG_HOST: ${{ secrets.SG_HOST }}
           SG_PORT: ${{ secrets.SG_PORT }}
           SG_USER: ${{ secrets.SG_USER }}
-          SG_DOCROOT: ${{ secrets.SG_DOCROOT }}      # /home/<user>/public_html
+          SG_DOCROOT: ${{ secrets.SG_DOCROOT }}             # /home/<user>/public_html
         run: |
           set -euo pipefail
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:$SG_DOCROOT/"
