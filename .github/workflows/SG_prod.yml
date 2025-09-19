@@ -1,32 +1,11 @@
-- name: Upload & Deploy (PROD)
-  shell: bash
-  env:
-    SG_HOST: ${{ secrets.SG_HOST }}
-    SG_PORT: ${{ secrets.SG_PORT }}
-    SG_USER: ${{ secrets.SG_USER }}
-  run: |
-    set -euo pipefail
-    scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
+name: Deploy to SiteGround (PROD)
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "YAML OK"
 
-    ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" bash -s <<'BASH'
-    set -euo pipefail
-    DOC="$HOME/public_html"
-    mkdir -p "$DOC"
-    mv -f "$HOME/site.tar.gz" "$DOC/"
-    cd "$DOC"
-
-    rm -rf __new
-    mkdir __new
-    tar -xzf site.tar.gz -C __new
-
-    if command -v rsync >/dev/null 2>&1; then
-      rsync -a --delete __new/ ./
-    else
-      shopt -s dotglob
-      rm -rf *
-      cp -a __new/. ./
-    fi
-
-    rm -rf __new site.tar.gz
-    ls -la | head -n 40
-    BASH
