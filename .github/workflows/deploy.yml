@@ -2,8 +2,7 @@ name: Deploy to SiteGround (PROD)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -26,14 +25,27 @@ jobs:
         run: |
           set -euo pipefail
           TAR="$RUNNER_TEMP/site.tar.gz"
+
+          # Normalize CRLF in .deployignore if it exists (Windows devs)
           [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
+
+          # Exclude list: --exclude-vcs removes .git; explicitly drop .github; keep your .deployignore
+          EXCLUDES=( --exclude-vcs --exclude='./site.tar.gz' --exclude='./.github' )
           if [ -f .deployignore ]; then
-            tar --exclude-from=.deployignore --exclude=./site.tar.gz -czf "$TAR" .
-          else
-            tar --exclude=./site.tar.gz -czf "$TAR" .
+            EXCLUDES+=( --exclude-from=.deployignore )
           fi
+
+          tar -czf "$TAR" "${EXCLUDES[@]}" .
           mv "$TAR" ./site.tar.gz
-          ls -lh ./site.tar.gz
+
+          echo "Archive size:"; ls -lh site.tar.gz
+          echo "Sanity check for VCS/CI dirs in archive:"
+          if tar -tzf site.tar.gz | grep -E '^\./(\.git|\.github)/' > /dev/null; then
+            echo "❌ .git/.github found in archive (unexpected)"; tar -tzf site.tar.gz | grep -E '^\./(\.git|\.github)/' | head -n 20
+            exit 1
+          else
+            echo "✅ .git/.github excluded from archive"
+          fi
 
       - name: Upload & Deploy (PROD)
         shell: bash
@@ -43,8 +55,10 @@ jobs:
           SG_USER: ${{ secrets.SG_USER }}
         run: |
           set -euo pipefail
+
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
 
+          # One remote shell; safe replace in place
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
             "set -euo pipefail; \
              DOC=\$HOME/public_html; \
