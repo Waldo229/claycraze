@@ -12,25 +12,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up SSH key
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
-          echo "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
+          printf '%s' "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
-      - name: Sanity-check base secrets
-        env:
-          SG_HOST: ${{ secrets.SG_HOST }}
-          SG_PORT: ${{ secrets.SG_PORT }}
-          SG_USER: ${{ secrets.SG_USER }}
-        run: |
-          set -euo pipefail
-          for v in SG_HOST SG_PORT SG_USER; do
-            [ -n "${!v:-}" ] || { echo "❌ $v is EMPTY"; exit 1; }
-            echo "✅ $v set"
-          done
-
       - name: Package project
+        shell: bash
         run: |
           set -euo pipefail
           TAR="$RUNNER_TEMP/site.tar.gz"
@@ -38,25 +29,25 @@ jobs:
           if [ -f .deployignore ]; then
             tar --exclude-from=.deployignore --exclude=./site.tar.gz -czf "$TAR" .
           else
-            echo "No .deployignore found; continuing without it."
             tar --exclude=./site.tar.gz -czf "$TAR" .
           fi
           mv "$TAR" ./site.tar.gz
           ls -lh ./site.tar.gz
 
       - name: Upload & Deploy (PROD)
+        shell: bash
         env:
           SG_HOST: ${{ secrets.SG_HOST }}
           SG_PORT: ${{ secrets.SG_PORT }}
           SG_USER: ${{ secrets.SG_USER }}
         run: |
           set -euo pipefail
+
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
 
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" bash -s <<'BASH'
           set -e
           DOC="$HOME/public_html"
-          echo "Using PROD docroot: $DOC"
           mkdir -p "$DOC"
           mv -f "$HOME/site.tar.gz" "$DOC/"
           cd "$DOC"
@@ -69,4 +60,4 @@ jobs:
           rmdir __extract_tmp
           rm -f site.tar.gz
           ls -la | head -n 40
-BASH
+          BASH
