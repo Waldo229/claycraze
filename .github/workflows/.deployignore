@@ -1,4 +1,89 @@
-git checkout main
-git add .deployignore .github/workflows/SG_prod.yml
-git commit -m "prod: ensure .deployignore is present"  # will say 'nothing to commit' if already tracked
-git push
+# =========================
+# OS / editor cruft
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+*.swp
+*.swo
+*~
+.nfs*
+.idea/
+.vscode/
+.history/
+*.code-workspace
+
+# =========================
+# Node / front-end (optional)
+# If you DO want to commit a lockfile, remove it here.
+# =========================
+node_modules/
+.cache/
+dist/
+build/
+coverage/
+# package managers
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# =========================
+# Python (optional helpers/scripts)
+# =========================
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.egg-info/
+.venv/
+venv/
+pip-wheel-metadata/
+
+# =========================
+# Archives / temp / logs
+# =========================
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.rej
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.gz
+
+# =========================
+# Environment / local config
+# =========================
+.env
+.env.*
+*.local
+
+# =========================
+# Deploy / CI odds & ends
+# (the workflow will create these temporarily)
+# =========================
+site.tar.gz
+__extract_tmp/
+__new/
+
+# =========================
+# Design/source files (optional)
+# Uncomment these if you don’t want to version large sources.
+# *.xcf
+# *.psd
+# *.ai
+# *.sketch
+# *.kra
+# *.blend
+
+# =========================
+# Known accidental files
+# =========================
+taging
+tatus
