@@ -1,51 +1,59 @@
 # =========================
+# VCS / CI (belt & suspenders)
+# =========================
+.git
+.git/
+./.git
+./.git/
+.github
+.github/
+./.github
+./.github/
+.gitattributes
+.gitignore
+
+# If you keep any HTML helpers under .github/, never deploy them
+.github/workflows/
+SG_smoke.html
+
+# =========================
+# Docs not needed on the server
+# =========================
+README.md
+LICENSE
+
+# =========================
+# Build / tooling / caches (optional)
+# =========================
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+.tmp/
+.temp/
+site.tar.gz        # the archive itself
+__new/
+__extract_tmp/
+
+# =========================
 # OS / editor cruft
 # =========================
 .DS_Store
 Thumbs.db
-ehthumbs.db
-Icon?
 *.swp
 *.swo
 *~
 .nfs*
-.idea/
 .vscode/
-.history/
+.idea/
 *.code-workspace
 
 # =========================
-# Node / front-end (optional)
-# If you DO want to commit a lockfile, remove it here.
-# =========================
-node_modules/
-.cache/
-dist/
-build/
-coverage/
-# package managers
-pnpm-lock.yaml
-yarn.lock
-package-lock.json
-
-# =========================
-# Python (optional helpers/scripts)
-# =========================
-__pycache__/
-*.py[cod]
-*.pyd
-*.pyo
-*.egg-info/
-.venv/
-venv/
-pip-wheel-metadata/
-
-# =========================
-# Archives / temp / logs
+# Logs / archives / misc
 # =========================
 *.log
 *.tmp
-*.temp
 *.bak
 *.old
 *.orig
@@ -58,32 +66,19 @@ pip-wheel-metadata/
 *.gz
 
 # =========================
-# Environment / local config
+# Design/source files (keep in git if you want, but don't deploy)
 # =========================
-.env
-.env.*
-*.local
-
-# =========================
-# Deploy / CI odds & ends
-# (the workflow will create these temporarily)
-# =========================
-site.tar.gz
-__extract_tmp/
-__new/
-
-# =========================
-# Design/source files (optional)
-# Uncomment these if you don’t want to version large sources.
-# *.xcf
-# *.psd
-# *.ai
-# *.sketch
-# *.kra
-# *.blend
+*.xcf
+*.psd
+*.ai
+*.sketch
+*.kra
+*.blend
 
 # =========================
 # Known accidental files
 # =========================
 taging
+tatus
+
 tatus
