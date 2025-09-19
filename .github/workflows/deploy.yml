@@ -45,21 +45,16 @@ jobs:
           set -euo pipefail
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
 
-          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" 'bash -s' <<'BASH'
-          set -euo pipefail
-          DOC="$HOME/public_html"
-          mkdir -p "$DOC"
-          mv -f "$HOME/site.tar.gz" "$DOC/"
-          cd "$DOC"
-
-          rm -rf __new
-          mkdir __new
-          tar -xzf site.tar.gz -C __new
-
-          shopt -s dotglob
-          find . -mindepth 1 -maxdepth 1 ! -name '__new' -exec rm -rf {} +
-          cp -a __new/. ./
-
-          rm -rf __new site.tar.gz
-          ls -la | head -n 40
-          BASH
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "set -euo pipefail; \
+             DOC=\$HOME/public_html; \
+             mkdir -p \"\$DOC\"; \
+             mv -f \"\$HOME/site.tar.gz\" \"\$DOC/\"; \
+             cd \"\$DOC\"; \
+             rm -rf __new; mkdir __new; \
+             tar -xzf site.tar.gz -C __new; \
+             shopt -s dotglob; \
+             find . -mindepth 1 -maxdepth 1 ! -name '__new' -exec rm -rf {} +; \
+             cp -a __new/. ./; \
+             rm -rf __new site.tar.gz; \
+             ls -la | head -n 40"
