@@ -1,65 +1,35 @@
-﻿name: Deploy to SiteGround (STAGING)
+﻿- name: Upload & Deploy (STAGING)
+  shell: bash
+  env:
+    SG_HOST: ${{ secrets.SG_HOST }}
+    SG_PORT: ${{ secrets.SG_PORT }}
+    SG_USER: ${{ secrets.SG_USER }}
+  run: |
+    set -euo pipefail
+    # Upload to HOME (always exists)
+    scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
 
-on:
-  push:
-    branches: [ "staging" ]
-  workflow_dispatch:
+    # Remote deploy script (note the indented closing BASH)
+    ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" bash -s <<'BASH'
+    set -euo pipefail
+    DOC="$HOME/public_html/staging"
+    mkdir -p "$DOC"
+    mv -f "$HOME/site.tar.gz" "$DOC/"
+    cd "$DOC"
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    rm -rf __new
+    mkdir __new
+    tar -xzf site.tar.gz -C __new
 
-      - name: Set up SSH key
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh
-          printf '%s' "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
-          sed -i 's/\r$//' ~/.ssh/sg_ci
-          chmod 600 ~/.ssh/sg_ci
+    if command -v rsync >/dev/null 2>&1; then
+      rsync -a --delete __new/ ./
+    else
+      # Fallback if rsync is unavailable
+      shopt -s dotglob
+      rm -rf *
+      cp -a __new/. ./
+    fi
 
-      - name: Package project
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAR="$RUNNER_TEMP/site.tar.gz"
-          [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
-          if [ -f .deployignore ]; then
-            tar --exclude-from=.deployignore --exclude=./site.tar.gz -czf "$TAR" .
-          else
-            tar --exclude=./site.tar.gz -czf "$TAR" .
-          fi
-          mv "$TAR" ./site.tar.gz
-          ls -lh ./site.tar.gz
-
-      - name: Upload & Deploy (STAGING)
-        shell: bash
-        env:
-          SG_HOST: ${{ secrets.SG_HOST }}
-          SG_PORT: ${{ secrets.SG_PORT }}
-          SG_USER: ${{ secrets.SG_USER }}
-        run: |
-          set -euo pipefail
-
-          # 1) Upload to HOME (always exists)
-          scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
-
-          # 2) Move into docroot and deploy via a here-doc (note the indentation of the closing BASH)
-          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" bash -s <<'BASH'
-          set -e
-          DOC="$HOME/public_html/staging"
-          mkdir -p "$DOC"
-          mv -f "$HOME/site.tar.gz" "$DOC/"
-          cd "$DOC"
-          rm -rf __extract_tmp
-          mkdir __extract_tmp
-          tar -xzf site.tar.gz -C __extract_tmp
-          shopt -s dotglob
-          rm -rf *
-          mv __extract_tmp/* .
-          rmdir __extract_tmp
-          rm -f site.tar.gz
-          ls -la | head -n 40
-          BASH
+    rm -rf __new site.tar.gz
+    ls -la | head -n 40
+    BASH
