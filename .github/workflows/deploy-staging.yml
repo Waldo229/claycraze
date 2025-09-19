@@ -1,9 +1,9 @@
-name: Deploy to SiteGround (PROD)
+﻿name: Deploy to SiteGround (STAGING)
 
 on:
   push:
     branches:
-      - main
+      - staging
   workflow_dispatch:
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
           mv "$TAR" ./site.tar.gz
           ls -lh ./site.tar.gz
 
-      - name: Upload & Deploy (PROD)
+      - name: Upload & Deploy (STAGING)
         shell: bash
         env:
           SG_HOST: ${{ secrets.SG_HOST }}
@@ -43,11 +43,13 @@ jobs:
           SG_USER: ${{ secrets.SG_USER }}
         run: |
           set -euo pipefail
+          # Upload to HOME (always exists)
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
 
+          # Run the remote deploy as one safely-quoted command (no heredoc)
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
             "set -euo pipefail; \
-             DOC=\$HOME/public_html; \
+             DOC=\$HOME/public_html/staging; \
              mkdir -p \"\$DOC\"; \
              mv -f \"\$HOME/site.tar.gz\" \"\$DOC/\"; \
              cd \"\$DOC\"; \

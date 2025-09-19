@@ -1,11 +1,12 @@
-# things we don't want to upload
-.git
+﻿.git
 .github/
 site.tar.gz
 node_modules/
-*.psd
-*.ai
+dist/
+build/
+*.log
 *.zip
+*.tar
 *.tar.gz
 README.md
 LICENSE
