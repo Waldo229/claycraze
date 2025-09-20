@@ -30,59 +30,61 @@
     <article>
       <header>
         <h2>Meet GENE</h2>
-        
-<figure class="hero-gene">
-  <img
-    src="images/gene_nightowl4.jpg"
-    alt="GENE, the kiln guardian, standing watch as protector of the flame."
-  />
-  <figcaption>
-     GENE (Great Engineering Needs Everyone) —protector of the flame and keeper of the kiln—stands as a vigilant sentinel. Be careful what you wish for around him.
-  </figcaption>
-</figure>
+      </header>
 
+      <figure class="hero-gene">
+        <img
+          src="images/gene_nightowl4.jpg"
+          alt="GENE, the kiln guardian, standing watch as protector of the flame."
+          loading="lazy" decoding="async"
+        />
+        <figcaption>
+          GENE—protector of the flame and keeper of the kiln—stands as a vigilant sentinel. Be careful what you wish for around our genie.
+        </figcaption>
+      </figure>
 
-      <section>
+      <section id="concept">
         <h3>Concept</h3>
-        <p><b>Free the Genie.</b></p>
-         <p>Presently, our kiln guard is pretty passive. Why not make him a bit more responsive and help him communicate with the team?  </b></p>
-         <section><b>Let's turn Gene into a sensor that is able to:</b></section>
-         <ul>
-            <li>Connect to a local network using WiFi.</li>
-            <li>Capture the kiln temperature using a thermocouple.</li>
-            <li>Broadcast the kiln temperature over a local network at regular intervals.</li>   
-           </ul>
-        
+        <p><strong>Free the Genie.</strong> Presently, our kiln guard is pretty passive. Why not make him a bit more responsive and help him communicate with the team?</p>
+        <p><strong>Let’s turn GENE into a sensor able to:</strong></p>
+        <ul>
+          <li>Connect to a local network using Wi-Fi.</li>
+          <li>Capture the kiln temperature using a thermocouple.</li>
+          <li>Broadcast the kiln temperature over the local network at regular intervals.</li>
+        </ul>
       </section>
 
-      <section>
-<p> <b>Create a network service on the local network that is able to:</b></p>
-    <ul>
-    <li>Capture the network broadcasts</li>
-    <li>Decode the temperature readings of one or more sensors</li>
-    <li>Present the temperature readings to a user in graph form (Temperature / Time)</li>
-    <li>Present the ramp temperature (temperature change/hour)</li>
-    <ul>Provide a web interface   </ul>
+      <section id="network-service">
+        <h3>Network Service</h3>
+        <p><strong>Create a service on the local network that can:</strong></p>
+        <ul>
+          <li>Receive the broadcasts from one or more sensors.</li>
+          <li>Decode temperature readings.</li>
+          <li>Present temperatures as a time-series graph (Temperature vs. Time).</li>
+          <li>Show ramp rate (°/hr).</li>
+          <li>Provide a simple web interface.</li>
+        </ul>
       </section>
 
+      <section id="hardware">
         <h3>Hardware</h3>
         <ul>
-        <li>1 x ESP32 ESP-32S WiFi Development Board</li>
-        <li>1 x Thermocouple Amplifier MAX31856</li>
-        <li>1 x Type K Thermocouple and wire</li>
-        <li>1 x Jumper Wires</li>
-        <li>1 x USB Power Bank</li>
-    </ul>
+          <li>ESP32 ESP-32S Wi-Fi development board</li>
+          <li>MAX31856 thermocouple amplifier</li>
+          <li>Type-K thermocouple &amp; wire</li>
+          <li>Jumper wires</li>
+          <li>USB power bank</li>
+        </ul>
       </section>
 
-    </section>
-
-      <section>
+      <section id="kiln-watch">
         <h3>Kiln Watch</h3>
-        <p>Telemetry and temperature graphs. <em>Future:</em> live webcam</p>
-        <p>Big shout out to the Tidewater Linux Users Group (TWUUG) for their assistance with The GENE Project.</p>
+        <p>Telemetry and temperature graphs. <em>Future:</em> live webcam.</p>
+        <p>Big shout-out to the <abbr title="Tidewater Linux Users Group">TWUUG</abbr> for their assistance with The GENE Project.</p>
       </section>
     </article>
   </main>
 </body>
 </html>
+<footer class="site-footer">
+  <small>© 2025 Jim Alexander, ClaycrazE</small>
