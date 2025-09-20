@@ -214,3 +214,4 @@ figure { margin: 0; }
   border-radius: var(--radius);
   box-shadow: 0 8px 20px var(--shadow);
 }
+.hero-gene figcaption { margin-top:.5rem; font-style:italic; opacity:.9; }
