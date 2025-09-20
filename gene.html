@@ -1,57 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>The GENE Project — ClaycrazE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="The GENE Project — a fusion of clay and electronics: studio mascot, kiln watcher, and creative experiment." />
-<link rel="stylesheet" href="css/styles.css" />
+  <meta charset="utf-8" />
+  <title>The GENE Project — ClaycrazE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="The GENE Project — a fusion of clay and electronics: studio mascot, kiln watcher, and creative experiment." />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-<a class="skip-link" href="#content">Skip to content</a>
-<header class="site-header">
-<h1 class="wordmark">ClaycrazE</h1>
-<p class="tagline">It’s a CrazE World!</p>
-<nav aria-label="Primary">
-<ul class="nav">
-<li><a href="index.html">Home</a></li>
-<li><a href="studio.html">Studio</a></li>
-<li><a href="materials.html">Materials</a></li>
-<li><a href="kiln.html">Kiln</a></li>
-<li><a href="gene.html" aria-current="page">GENE Project</a></li>
-<li><a href="gallery.html">Gallery</a></li>
-<li><a href="places.html">Places &amp; People</a></li>
-</ul>
-</nav>
-</header>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header class="site-header">
+    <h1 class="wordmark">ClaycrazE</h1>
+    <p class="tagline">It’s a CrazE World!</p>
+    <nav aria-label="Primary">
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="studio.html">Studio</a></li>
+        <li><a href="materials.html">Materials</a></li>
+        <li><a href="kiln.html">Kiln</a></li>
+        <li><a href="gene.html" aria-current="page">GENE Project</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="places.html">Places &amp; People</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="content" class="wrapper" role="main">
+    <article>
+      <header>
+        <h2>Meet GENE</h2>
+        
+<figure class="hero-gene">
+  <img
+    src="images/gene_nightowl4.jpg"
+    alt="GENE, the kiln guardian, standing watch as protector of the flame."
+  />
+  <figcaption>
+     GENE (Great Engineering Needs Everyone) —protector of the flame and keeper of the kiln—stands as a vigilant sentinel. Be careful what you wish for around him.
+  </figcaption>
+</figure>
 
 
-<main id="content" class="wrapper" role="main">
-<article>
-<header>
-<h2>Meet GENE</h2>
+      <section>
+        <h3>Concept</h3>
+        <p><b>Free the Genie.</b></p>
+         <p>Presently, our kiln guard is pretty passive. Why not make him a bit more responsive and help him communicate with the team?  </b></p>
+         <section><b>Let's turn Gene into a sensor that is able to:</b></section>
+         <ul>
+            <li>Connect to a local network using WiFi.</li>
+            <li>Capture the kiln temperature using a thermocouple.</li>
+            <li>Broadcast the kiln temperature over a local network at regular intervals.</li>   
+           </ul>
+        
+      </section>
 
-<p>Clay shell, silicon heart. Part studio assistant, part kinetic sculpture, part spare parts Staging Version.</p>
+      <section>
+<p> <b>Create a network service on the local network that is able to:</b></p>
+    <ul>
+    <li>Capture the network broadcasts</li>
+    <li>Decode the temperature readings of one or more sensors</li>
+    <li>Present the temperature readings to a user in graph form (Temperature / Time)</li>
+    <li>Present the ramp temperature (temperature change/hour)</li>
+    <ul>Provide a web interface   </ul>
+      </section>
 
-</header>
-<section>
-<h3>Concept</h3>
-<p>Modular body for easy cleaning and iteration; clay forms meet embedded electronics.</p>
-</section>
-<section>
-<h3>Hardware</h3>
-<p>Raspberry Pi, servos, sensors (thermocouples, camera), LED indicators, power.</p>
-</section>
-<section>
-<h3>Kiln Watch</h3>
-<p>Telemetry, temp graphs, alerts. (Future: live chart embeds, video snippets.)</p>
-</section>
-</article>
-</main>
+        <h3>Hardware</h3>
+        <ul>
+        <li>1 x ESP32 ESP-32S WiFi Development Board</li>
+        <li>1 x Thermocouple Amplifier MAX31856</li>
+        <li>1 x Type K Thermocouple and wire</li>
+        <li>1 x Jumper Wires</li>
+        <li>1 x USB Power Bank</li>
+    </ul>
+      </section>
 
+    </section>
 
-<footer class="site-footer">
-<small>© 2025 Jim Alexander, ClaycrazE</small>
-</footer>
+      <section>
+        <h3>Kiln Watch</h3>
+        <p>Telemetry and temperature graphs. <em>Future:</em> live webcam</p>
+        <p>Big shout out to the Tidewater Linux Users Group (TWUUG) for their assistance with The GENE Project.</p>
+      </section>
+    </article>
+  </main>
 </body>
 </html>
