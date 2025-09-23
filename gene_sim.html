@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gene Servo Simulation</title>
+<style>
+  :root{--bg:#0b0b0c;--panel:#161619;--text:#f3f3f3}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+            font:16px/1.4 system-ui,Segoe UI,Roboto,Arial}
+  .wrap{max-width:900px;margin:22px auto;padding:16px}
+  .card{background:var(--panel);border-radius:16px;padding:16px;
+        box-shadow:0 10px 24px rgba(0,0,0,.3)}
+  .row{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .btn{background:#2a2a30;border:1px solid #fff2;color:var(--text);
+       padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn:active{transform:translateY(1px)}
+  .stat{font-variant-numeric:tabular-nums}
+  svg{width:100%;height:auto;display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="row">
+      <div>
+        <button class="btn" id="left">&larr; Left</button>
+        <button class="btn" id="center">Center</button>
+        <button class="btn" id="right">Right &rarr;</button>
+      </div>
+      <div class="stat" id="stat">Angle: 90°</div>
+    </div>
+    <!-- Face -->
+    <svg viewBox="0 0 600 340" aria-label="Gene head">
+      <defs><filter id=g><feGaussianBlur stdDeviation="6" result=b/><feMerge><feMergeNode in=b/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <rect x="0" y="0" width="600" height="340" rx="18" fill="#0e0e10"/>
+      <g id="head" transform="rotate(0,300,170)">
+        <ellipse cx="300" cy="170" rx="250" ry="120" fill="#1a1a1e" stroke="#3a3a3a" stroke-width="3"/>
+        <ellipse cx="215" cy="150" rx="44" ry="22" fill="#1c1c1f" stroke="#494949" stroke-width="3"/>
+        <ellipse cx="385" cy="150" rx="44" ry="22" fill="#1c1c1f" stroke="#494949" stroke-width="3"/>
+        <circle cx="215" cy="150" r="10" fill="#7dd3fc" filter="url(#g)"/>
+        <circle cx="385" cy="150" r="10" fill="#7dd3fc" filter="url(#g)"/>
+        <path d="M210 210 Q300 250 390 210" fill="none" stroke="#bdbdbd" stroke-width="6" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <p>Tip: use keyboard ← → arrows to nudge, <b>space</b> to center.</p>
+  </div>
+</div>
+
+<script>
+let angle = 90;
+const stat = document.getElementById('stat');
+const head = document.getElementById('head');
+
+function setHead(deg){
+  angle = Math.max(0, Math.min(180, deg));
+  head.setAttribute('transform', `rotate(${angle-90},300,170)`);
+  stat.textContent = `Angle: ${angle}°`;
+}
+
+document.getElementById('left').onclick = ()=> setHead(angle-10);
+document.getElementById('right').onclick= ()=> setHead(angle+10);
+document.getElementById('center').onclick= ()=> setHead(90);
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='ArrowLeft')  setHead(angle-5);
+  if(e.key==='ArrowRight') setHead(angle+5);
+  if(e.key===' ')          setHead(90);
+});
+
+setHead(angle);
+</script>
+</body>
+</html>
