@@ -1,0 +1,48 @@
+substitutions:
+  device_index: "0" # The device index, used to differentiate between devices
+  device_name: "kiln_watch_${device_index}"
+  ssid: "....."
+  wifi_passwd: "....."
+
+esphome:
+  name: "${device_name}"
+  friendly_name: "Kiln Watch ${device_index}"
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+  level: DEBUG
+
+wifi:
+  ssid: "${ssid}"
+  password: "${wifi_passwd}"
+
+udp:
+  id: udp_id
+  port: 23464
+  addresses:
+    - 255.255.255.255
+
+spi:
+  mosi_pin: GPIO23
+  miso_pin: GPIO19
+  clk_pin:  GPIO18
+
+sensor:
+  - platform: max31856
+    id: temp_sensor
+    name: Kiln Temperature
+    icon: mdi:FireCircle
+    cs_pin: GPIO22
+    update_interval: 10s
+    on_value:
+      then:
+        - udp.write:
+            data: !lambda |-
+              std::string message = "KW,${device_name},${device_index}," + to_string((int)id(temp_sensor).state);
+              std::vector<unsigned char> message_vector(message.begin(), message.end());
+              return message_vector;
