@@ -1,0 +1,130 @@
+/* --------------------------------------------------
+   ClaycrazE Site Styles
+-------------------------------------------------- */
+
+body{
+    font-family: Georgia, serif;
+    margin:0;
+    padding:0;
+    background:#ffffff;
+    color:#333;
+    line-height:1.6;
+}
+
+/* --------------------------------------------------
+   Header
+-------------------------------------------------- */
+
+.header{
+    text-align:center;
+    padding:40px 20px 20px 20px;
+}
+
+.header h1{
+    font-size:2.5rem;
+    margin-bottom:5px;
+}
+
+.header p{
+    font-size:1rem;
+    color:#666;
+}
+
+/* --------------------------------------------------
+   Three Door Layout
+-------------------------------------------------- */
+
+.flex-container{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    padding:40px;
+    flex-wrap:wrap;
+}
+
+/* Individual door */
+
+.flex-item{
+    text-align:center;
+    max-width:260px;
+}
+
+.flex-item img{
+    width:100%;
+    height:auto;
+    border-radius:4px;
+}
+
+.flex-item h3{
+    margin-top:12px;
+    font-weight:normal;
+}
+
+/* --------------------------------------------------
+   Page Content Blocks
+-------------------------------------------------- */
+
+.note{
+    max-width:800px;
+    margin:40px auto;
+    padding:0 20px;
+}
+
+.note h3{
+    margin-top:30px;
+}
+
+.note p{
+    margin-top:5px;
+}
+
+/* --------------------------------------------------
+   Path Navigation
+-------------------------------------------------- */
+
+.path-nav{
+    margin-top:50px;
+    padding-top:25px;
+    border-top:1px solid #ddd;
+    text-align:center;
+}
+
+.path-nav a{
+    margin:0 15px;
+    text-decoration:none;
+    color:#444;
+    font-size:0.95rem;
+}
+
+.path-nav a:hover{
+    text-decoration:underline;
+}
+
+/* --------------------------------------------------
+   Links
+-------------------------------------------------- */
+
+a{
+    color:#333;
+}
+
+a:hover{
+    color:#000;
+}
+
+/* --------------------------------------------------
+   Responsive Behavior
+-------------------------------------------------- */
+
+@media (max-width:768px){
+
+.flex-container{
+    flex-direction:column;
+    align-items:center;
+}
+
+.flex-item{
+    max-width:400px;
+}
+
+}
