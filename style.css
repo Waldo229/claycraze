@@ -1,6 +1,7 @@
-/* --------------------------------------------------
-   ClaycrazE Site Styles
--------------------------------------------------- */
+/* =================================================
+   ClaycrazE — Site Styles
+   Pottery by Jim Alexander
+================================================= */
 
 body{
     font-family: Georgia, serif;
@@ -8,12 +9,12 @@ body{
     padding:0;
     background:#ffffff;
     color:#333;
-    line-height:1.6;
+    line-height:1.7;
 }
 
-/* --------------------------------------------------
+/* -------------------------------------------------
    Header
--------------------------------------------------- */
+--------------------------------------------------*/
 
 .header{
     text-align:center;
@@ -30,11 +31,11 @@ body{
     color:#666;
 }
 
-/* --------------------------------------------------
-   Three Door Layout
--------------------------------------------------- */
+/* -------------------------------------------------
+   Homepage Entrance Layout
+--------------------------------------------------*/
 
-.flex-container{
+.museum-panels{
     display:flex;
     justify-content:center;
     gap:40px;
@@ -42,48 +43,65 @@ body{
     flex-wrap:wrap;
 }
 
-/* Individual door */
+/* individual entrance panel */
 
-.flex-item{
+.panel{
     text-align:center;
     max-width:260px;
+    text-decoration:none;
+    color:#333;
+    transition:transform .25s ease, box-shadow .25s ease;
 }
 
-.flex-item img{
+/* gallery hover effect */
+
+.panel:hover{
+    transform:translateY(-6px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* panel images */
+
+.panel img{
     width:100%;
     height:auto;
     border-radius:4px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.12);
 }
 
-.flex-item h3{
+/* panel titles */
+
+.panel h2{
     margin-top:12px;
     font-weight:normal;
 }
 
-/* --------------------------------------------------
+/* -------------------------------------------------
    Page Content Blocks
--------------------------------------------------- */
+--------------------------------------------------*/
 
 .note{
-    max-width:800px;
+    max-width:720px;
     margin:40px auto;
     padding:0 20px;
 }
 
 .note h3{
-    margin-top:30px;
+    margin-top:32px;
+    font-size:1.3rem;
 }
 
 .note p{
-    margin-top:5px;
+    margin-top:6px;
+    color:#444;
 }
 
-/* --------------------------------------------------
+/* -------------------------------------------------
    Path Navigation
--------------------------------------------------- */
+--------------------------------------------------*/
 
 .path-nav{
-    margin-top:50px;
+    margin-top:60px;
     padding-top:25px;
     border-top:1px solid #ddd;
     text-align:center;
@@ -100,30 +118,42 @@ body{
     text-decoration:underline;
 }
 
-/* --------------------------------------------------
+/* -------------------------------------------------
    Links
--------------------------------------------------- */
+--------------------------------------------------*/
 
 a{
     color:#333;
+    text-decoration:none;
 }
 
 a:hover{
+    text-decoration:underline;
+}
+
+/* section links (Theory / Practice pages) */
+
+.note h3 a{
+    color:#222;
+    font-weight:500;
+}
+
+.note h3 a:hover{
     color:#000;
 }
 
-/* --------------------------------------------------
-   Responsive Behavior
--------------------------------------------------- */
+/* -------------------------------------------------
+   Responsive Layout
+--------------------------------------------------*/
 
 @media (max-width:768px){
 
-.flex-container{
+.museum-panels{
     flex-direction:column;
     align-items:center;
 }
 
-.flex-item{
+.panel{
     max-width:400px;
 }
 
