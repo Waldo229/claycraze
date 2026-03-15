@@ -1,8 +1,10 @@
-/* ---------- Base layout ---------- */
+/* ===================================================== */
+/* Base layout */
+/* ===================================================== */
 
 body{
   font-family: Georgia, serif;
-  max-width: 780px;
+  max-width: 900px;
   margin: 40px auto;
   padding: 0 20px;
   line-height: 1.7;
@@ -11,29 +13,47 @@ body{
 }
 
 
-/* ---------- Site header / navigation ---------- */
+/* ===================================================== */
+/* Homepage museum panels (THEORY / PRACTICE / GENE) */
+/* ===================================================== */
 
-.site-header{
-  margin-bottom:50px;
+.museum-panels{
+  display:flex;
+  gap:30px;
+  margin-top:40px;
 }
 
-.site-title{
-  font-weight:normal;
-  margin-bottom:10px;
-}
-
-.site-nav a{
-  margin-right:15px;
+.panel{
+  flex:1;
+  text-align:center;
   text-decoration:none;
+  color:#222;
+}
+
+.panel img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+}
+
+.panel h2{
+  margin-top:14px;
+  font-weight:normal;
+}
+
+.panel p{
+  font-size:0.95rem;
   color:#444;
 }
 
-.site-nav a:hover{
-  text-decoration:underline;
+.panel:hover{
+  opacity:.85;
 }
 
 
-/* ---------- Museum wall label ---------- */
+/* ===================================================== */
+/* Node Notes page */
+/* ===================================================== */
 
 .header{
   border-left:4px solid #444;
@@ -53,7 +73,9 @@ body{
 }
 
 
-/* ---------- Artifact display ---------- */
+/* ===================================================== */
+/* Artifact display */
+/* ===================================================== */
 
 .node-photo{
   text-align:center;
@@ -75,7 +97,9 @@ body{
 }
 
 
-/* ---------- Signal divider ---------- */
+/* ===================================================== */
+/* Signal divider */
+/* ===================================================== */
 
 .signal{
   height:2px;
@@ -84,7 +108,9 @@ body{
 }
 
 
-/* ---------- Log entries ---------- */
+/* ===================================================== */
+/* Log entries */
+/* ===================================================== */
 
 .note{
   margin-bottom:60px;
@@ -94,4 +120,17 @@ body{
   font-family:monospace;
   color:#888;
   margin-bottom:10px;
+}
+
+
+/* ===================================================== */
+/* Responsive behavior */
+/* ===================================================== */
+
+@media (max-width:700px){
+
+  .museum-panels{
+      flex-direction:column;
+  }
+
 }
