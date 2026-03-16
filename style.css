@@ -1,160 +1,172 @@
-/* =================================================
-   ClaycrazE — Site Styles
-   Pottery by Jim Alexander
-================================================= */
+/* ClaycrazE base layout */
 
 body{
-    font-family: Georgia, serif;
-    margin:0;
-    padding:0;
-    background:#ffffff;
-    color:#333;
-    line-height:1.7;
+font-family: Georgia, "Times New Roman", serif;
+background:#efefef;
+color:#222;
+margin:40px;
+line-height:1.6;
 }
 
-/* -------------------------------------------------
-   Header
---------------------------------------------------*/
+
+/* Header */
 
 .header{
-    text-align:center;
-    padding:40px 20px 20px 20px;
+border-left:6px solid #555;
+padding-left:18px;
+margin-bottom:30px;
 }
 
 .header h1{
-    font-size:2.5rem;
-    margin-bottom:5px;
+font-size:36px;
+margin:0;
+font-weight:normal;
 }
 
 .header p{
-    font-size:1rem;
-    color:#666;
+margin-top:6px;
+color:#666;
 }
 
-/* -------------------------------------------------
-   Homepage Entrance Layout
---------------------------------------------------*/
 
-.museum-panels{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    padding:40px;
-    flex-wrap:wrap;
-}
-
-/* individual entrance panel */
-
-.panel{
-    text-align:center;
-    max-width:260px;
-    text-decoration:none;
-    color:#333;
-    transition:transform .25s ease, box-shadow .25s ease;
-}
-
-/* gallery hover effect */
-
-.panel:hover{
-    transform:translateY(-6px);
-    box-shadow:0 10px 25px rgba(0,0,0,0.15);
-}
-
-/* panel images */
-
-.panel img{
-    width:100%;
-    height:auto;
-    border-radius:4px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.12);
-}
-
-/* panel titles */
-
-.panel h2{
-    margin-top:12px;
-    font-weight:normal;
-}
-
-/* -------------------------------------------------
-   Page Content Blocks
---------------------------------------------------*/
+/* Intro text */
 
 .note{
-    max-width:720px;
-    margin:40px auto;
-    padding:0 20px;
-}
-
-.note h3{
-    margin-top:32px;
-    font-size:1.3rem;
+max-width:760px;
+margin-bottom:40px;
 }
 
 .note p{
-    margin-top:6px;
-    color:#444;
+margin-bottom:16px;
 }
 
-/* -------------------------------------------------
-   Path Navigation
---------------------------------------------------*/
 
-.path-nav{
-    margin-top:60px;
-    padding-top:25px;
-    border-top:1px solid #ddd;
-    text-align:center;
-}
-
-.path-nav a{
-    margin:0 15px;
-    text-decoration:none;
-    color:#444;
-    font-size:0.95rem;
-}
-
-.path-nav a:hover{
-    text-decoration:underline;
-}
-
-/* -------------------------------------------------
-   Links
---------------------------------------------------*/
+/* Links */
 
 a{
-    color:#333;
-    text-decoration:none;
+color:#2a4cff;
+text-decoration:none;
 }
 
 a:hover{
-    text-decoration:underline;
+text-decoration:underline;
 }
 
-/* section links (Theory / Practice pages) */
 
-.note h3 a{
-    color:#222;
-    font-weight:500;
+/* Footer navigation */
+
+.path-nav{
+margin-top:60px;
+font-size:14px;
 }
 
-.note h3 a:hover{
-    color:#000;
+.path-nav a{
+margin-right:10px;
 }
 
-/* -------------------------------------------------
-   Responsive Layout
---------------------------------------------------*/
 
-@media (max-width:768px){
+/* Gallery grid */
 
-.museum-panels{
-    flex-direction:column;
-    align-items:center;
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+gap:60px;
+margin-top:30px;
 }
 
-.panel{
-    max-width:400px;
+
+/* Container card */
+
+.container-card{
+max-width:520px;
+}
+
+
+/* Image */
+
+.container-card img{
+width:100%;
+height:auto;
+display:block;
+margin-bottom:14px;
+border:1px solid #999;
+background:white;
+}
+
+
+/* Object record layout */
+
+.object-record{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:40px;
+}
+
+
+/* Label block */
+
+.label{
+font-size:14px;
+line-height:1.4;
+}
+
+.object-id{
+font-size:13px;
+color:#777;
+margin-bottom:4px;
+}
+
+.title{
+font-size:16px;
+margin-bottom:6px;
+}
+
+
+/* Availability */
+
+.status{
+font-size:13px;
+margin-bottom:8px;
+}
+
+.available{
+color:#2f6f2f;
+}
+
+.sold{
+color:#777;
+font-style:italic;
+}
+
+
+/* Curator commentary */
+
+.curator{
+font-size:14px;
+line-height:1.5;
+color:#444;
+}
+
+.curator strong{
+display:block;
+margin-bottom:8px;
+}
+
+
+/* Mobile adjustment */
+
+@media (max-width:700px){
+
+body{
+margin:20px;
+}
+
+.header h1{
+font-size:28px;
+}
+
+.object-record{
+grid-template-columns:1fr;
 }
 
 }
