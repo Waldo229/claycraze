@@ -1,228 +1,149 @@
 /* =========================
-   ClaycrazE Base Layout
-   ========================= */
+   BASE
+========================= */
 
-body{
-font-family: Georgia, "Times New Roman", serif;
-background:#efefef;
-color:#222;
-margin:40px;
-line-height:1.6;
+body {
+  margin: 0;
+  padding: 40px;
+  font-family: Georgia, serif;
+  background: #f5f5f5;
+  color: #222;
+  line-height: 1.6;
 }
-
 
 /* =========================
-   Global Image Control
-   ========================= */
+   LINKS (GLOBAL)
+========================= */
 
-img{
-max-width:520px;
-width:100%;
-height:auto;
-display:block;
-margin-bottom:16px;
+a {
+  color: #5a6f85; /* light blue-gray */
+  text-decoration: none;
 }
 
+a:hover {
+  text-decoration: underline;
+}
 
 /* =========================
-   Header
-   ========================= */
+   HEADER
+========================= */
 
-.header{
-border-left:6px solid #555;
-padding-left:18px;
-margin-bottom:30px;
+.header {
+  border-left: 4px solid #444;
+  padding-left: 15px;
+  margin-bottom: 10px;
 }
 
-.header h1{
-font-size:36px;
-margin:0;
-font-weight:normal;
+.header h1 {
+  margin: 0;
+  font-size: 36px;
 }
 
-.header p{
-margin-top:6px;
-color:#666;
+.header p {
+  margin: 5px 0 0 0;
+  color: #666;
 }
-
 
 /* =========================
-   Text Sections
-   ========================= */
+   NAV BAR (GLOBAL SYSTEM)
+========================= */
 
-.note{
-max-width:760px;
-margin-bottom:40px;
+.site-nav {
+  width: 100%;
+  background: #d9d9d9;
+  padding: 14px 0;
+
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+
+  margin: 20px 0 40px 0;
 }
 
-.note p{
-margin-bottom:16px;
+.site-nav a {
+  color: #3f556b;
+  font-size: 15px;
+  letter-spacing: 0.5px;
 }
 
+.site-nav a:hover {
+  color: #000;
+}
 
 /* =========================
-   Links
-   ========================= */
+   TEXT BLOCKS
+========================= */
 
-a{
-color:#2a4cff;
-text-decoration:none;
+.note {
+  max-width: 700px;
+  margin-bottom: 30px;
 }
-
-a:hover{
-text-decoration:underline;
-}
-
 
 /* =========================
-   Footer Navigation
-   ========================= */
+   GALLERY / CARDS
+========================= */
 
-.path-nav{
-margin-top:60px;
-font-size:14px;
+.gallery {
+  display: block;
 }
 
-.path-nav a{
-margin-right:10px;
+.container-card {
+  margin-bottom: 50px;
 }
-
 
 /* =========================
-   Gallery Grid
-   ========================= */
+   IMAGE FRAME SYSTEM
+========================= */
 
-.gallery{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
-gap:60px;
-margin-top:30px;
+.container-card img {
+  width: 100%;
+  max-width: 600px;
+  height: 350px;
+
+  object-fit: contain;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+
+  display: block;
+  margin: 20px auto 30px auto;
 }
-
 
 /* =========================
-   Container Card
-   ========================= */
+   OBJECT RECORD
+========================= */
 
-.container-card{
-max-width:520px;
+.object-record {
+  max-width: 600px;
+  margin: 0 auto 20px auto;
 }
 
+.label {
+  font-size: 13px;
+  color: #666;
+}
+
+.object-id {
+  font-weight: bold;
+}
+
+.status {
+  color: #3a7a3a;
+  margin-top: 4px;
+}
+
+.object-record h3 {
+  margin: 10px 0;
+}
 
 /* =========================
-   Object Record Layout
-   ========================= */
+   CURATORIAL NOTE
+========================= */
 
-.object-record{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:40px;
+.curatorial-note {
+  max-width: 600px;
+  margin: 20px auto;
 }
 
-
-/* =========================
-   Label Block
-   ========================= */
-
-.label{
-font-size:14px;
-line-height:1.4;
-}
-
-.object-id{
-font-size:13px;
-color:#777;
-margin-bottom:4px;
-}
-
-.title{
-font-size:16px;
-margin-bottom:6px;
-}
-
-
-/* =========================
-   Availability
-   ========================= */
-
-.status{
-font-size:13px;
-margin-bottom:8px;
-}
-
-.available{
-color:#2f6f2f;
-}
-
-.sold{
-color:#777;
-font-style:italic;
-}
-
-
-/* =========================
-   Curator Commentary
-   ========================= */
-
-.curator{
-font-size:14px;
-line-height:1.5;
-color:#444;
-}
-
-.curator strong{
-display:block;
-margin-bottom:8px;
-}
-
-
-/* =========================
-   Practice Page
-   ========================= */
-
-.practice-links{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-gap:60px;
-margin-top:40px;
-}
-
-.practice-item{
-max-width:520px;
-margin-bottom:40px;
-}
-
-.practice-item h2{
-font-size:22px;
-margin-top:10px;
-}
-
-.practice-item a{
-text-decoration:none;
-color:inherit;
-}
-
-.practice-item a:hover{
-text-decoration:underline;
-}
-
-
-/* =========================
-   Responsive Adjustment
-   ========================= */
-
-@media (max-width:700px){
-
-body{
-margin:20px;
-}
-
-.header h1{
-font-size:28px;
-}
-
-.object-record{
-grid-template-columns:1fr;
-}
-
+.curatorial-note h3 {
+  margin-bottom: 10px;
 }
