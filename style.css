@@ -1,4 +1,6 @@
-/* ClaycrazE base layout */
+/* =========================
+   ClaycrazE Base Layout
+   ========================= */
 
 body{
 font-family: Georgia, "Times New Roman", serif;
@@ -9,7 +11,22 @@ line-height:1.6;
 }
 
 
-/* Header */
+/* =========================
+   Global Image Control
+   ========================= */
+
+img{
+max-width:520px;
+width:100%;
+height:auto;
+display:block;
+margin-bottom:16px;
+}
+
+
+/* =========================
+   Header
+   ========================= */
 
 .header{
 border-left:6px solid #555;
@@ -29,7 +46,9 @@ color:#666;
 }
 
 
-/* Intro text */
+/* =========================
+   Text Sections
+   ========================= */
 
 .note{
 max-width:760px;
@@ -41,7 +60,9 @@ margin-bottom:16px;
 }
 
 
-/* Links */
+/* =========================
+   Links
+   ========================= */
 
 a{
 color:#2a4cff;
@@ -53,7 +74,9 @@ text-decoration:underline;
 }
 
 
-/* Footer navigation */
+/* =========================
+   Footer Navigation
+   ========================= */
 
 .path-nav{
 margin-top:60px;
@@ -65,7 +88,9 @@ margin-right:10px;
 }
 
 
-/* Gallery grid */
+/* =========================
+   Gallery Grid
+   ========================= */
 
 .gallery{
 display:grid;
@@ -75,26 +100,18 @@ margin-top:30px;
 }
 
 
-/* Container card */
+/* =========================
+   Container Card
+   ========================= */
 
 .container-card{
 max-width:520px;
 }
 
 
-/* Image */
-
-.container-card img{
-width:100%;
-height:auto;
-display:block;
-margin-bottom:14px;
-border:1px solid #999;
-background:white;
-}
-
-
-/* Object record layout */
+/* =========================
+   Object Record Layout
+   ========================= */
 
 .object-record{
 display:grid;
@@ -103,7 +120,9 @@ gap:40px;
 }
 
 
-/* Label block */
+/* =========================
+   Label Block
+   ========================= */
 
 .label{
 font-size:14px;
@@ -122,7 +141,9 @@ margin-bottom:6px;
 }
 
 
-/* Availability */
+/* =========================
+   Availability
+   ========================= */
 
 .status{
 font-size:13px;
@@ -139,7 +160,9 @@ font-style:italic;
 }
 
 
-/* Curator commentary */
+/* =========================
+   Curator Commentary
+   ========================= */
 
 .curator{
 font-size:14px;
@@ -153,7 +176,40 @@ margin-bottom:8px;
 }
 
 
-/* Mobile adjustment */
+/* =========================
+   Practice Page
+   ========================= */
+
+.practice-links{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:60px;
+margin-top:40px;
+}
+
+.practice-item{
+max-width:520px;
+margin-bottom:40px;
+}
+
+.practice-item h2{
+font-size:22px;
+margin-top:10px;
+}
+
+.practice-item a{
+text-decoration:none;
+color:inherit;
+}
+
+.practice-item a:hover{
+text-decoration:underline;
+}
+
+
+/* =========================
+   Responsive Adjustment
+   ========================= */
 
 @media (max-width:700px){
 
