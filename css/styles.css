@@ -1,217 +1,223 @@
-/* ---------------------- */
-/*  Base + Theme Tokens   */
-/* ---------------------- */
-:root{
-  --gold: #DAA520;           /* goldenrod vibe */
-  --gold-ink: #1a1200;       /* dark ink on gold */
-  --ink: #111;               /* body text */
-  --bg: #fff8dc;             /* cornsilk */
-  --panel: #ffffff;          /* tile bg */
-  --edge: rgba(0,0,0,.08);   /* hairline borders */
-  --shadow: rgba(0,0,0,.16);
-  --shadow-strong: rgba(0,0,0,.25);
-  --maxw: 1200px;
-  --radius: 16px;
-}
+/* =========================
+   GLOBAL
+========================= */
 
-/* Reset-ish */
-*{ box-sizing: border-box; }
-html, body{ height: 100%; }
-body{
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background: #c9a646;
+  color: #111;
+  line-height: 1.6;
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--ink);
-  background: var(--gold);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  -webkit-text-size-adjust: 100%;
-  text-rendering: optimizeLegibility;
 }
 
-/* ---------------------- */
-/*  Accessibility helpers */
-/* ---------------------- */
-.visually-hidden{
-  position: absolute !important;
-  height: 1px; width: 1px;
-  overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
-  white-space: nowrap;
-}
+/* =========================
+   HEADER (GLOBAL)
+========================= */
 
-.skip-link{
-  position: absolute;
-  top: -40px; left: 1rem;
-  background: #000; color: #fff;
-  padding: .5rem .75rem; border-radius: 8px;
-  transition: top .2s ease;
-  z-index: 999;
-}
-.skip-link:focus{ top: 1rem; }
-
-/* ---------------------- */
-/*  Header                */
-/* ---------------------- */
-.site-header{
-  color: var(--gold-ink);
-  background:
-    radial-gradient(1200px 400px at 50% -50%, #fff 0%, transparent 70%),
-    var(--gold);
+.site-header {
   text-align: center;
-  padding: 2.25rem 1rem 1.25rem;
-  box-shadow: 0 4px 16px var(--shadow-strong);
+  padding: 3rem 1rem 2rem;
 }
 
-.kicker{
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  font-weight: 700;
-  opacity: .85;
-  margin: 0 0 .25rem;
+/* WORDMARK */
+
+.wordmark {
+  font-size: 3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+
+  color: #1f1712;
+
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.15),
+    0 2px 4px rgba(0,0,0,0.25);
 }
 
-.wordmark{
-  margin: 0;
-  font-size: clamp(2rem, 7vw, 3.5rem);
-  line-height: 1.05;
-  letter-spacing: .01em;
-}
-.wordmark .craze{
-  text-decoration: underline;
-  text-decoration-thickness: .18em;
-  text-underline-offset: .1em;
+/* TAGLINE */
+
+.tagline {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: #4a3a30;
 }
 
-.tagline{
-  margin: .5rem 0 0;
-  font-size: 1.05rem;
-  opacity: .9;
-  font-style: italic;
-}
+/* =========================
+   NAVIGATION (SAME EVERYWHERE)
+========================= */
 
-
-/* Primary nav */
-.nav{
+.nav {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  gap: .5rem .75rem;
   justify-content: center;
-  padding: 0;
-  margin: 1rem 0 0;
-}
-.nav a{
-  display: inline-block;
-  border: 1px solid rgba(0,0,0,.25);
-  color: var(--gold-ink);
-  text-decoration: none;
-  padding: .45rem .9rem;
-  border-radius: 999px;
-  font-weight: 600;
-}
-.nav a:hover,
-.nav a:focus-visible{
-  background: rgba(0,0,0,.08);
-  outline: none;
-}
-
-/* ---------------------- */
-/*  Main                  */
-/* ---------------------- */
-.wrapper{
-  flex: 1;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem;
-  max-width: var(--maxw);
-}
-
-/* Tiles grid */
-.groups{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
+  padding: 1rem 0;
+  margin: 0;
 }
 
-/* Each tile is a real link */
-.group{
-  background: var(--panel);
-  color: var(--ink);
+.nav li {
+  display: inline;
+}
+
+.nav a {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+
   text-decoration: none;
-  border: 1px solid var(--edge);
-  border-radius: var(--radius);
-  padding: 1.25rem;
-  display: grid;
-  gap: .35rem;
-  box-shadow: 0 6px 12px var(--shadow);
-  transition: transform .18s ease, box-shadow .18s ease;
-  min-height: 140px;
-}
-.group h3{
-  margin: 0;
-  font-size: 1.15rem;
-  color: #0e0e0e;
-}
-.group p{
-  margin: 0;
-  font-size: .98rem;
-  opacity: .9;
-}
-.group:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px var(--shadow-strong);
+  color: #222;
+  font-size: 0.85rem;
+
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
 }
 
-/* Focus ring for keyboard users */
-.group:focus-visible,
-.nav a:focus-visible{
-  outline: 3px solid #000;
-  outline-offset: 4px;
-  border-radius: var(--radius);
+.nav a:hover {
+  background: rgba(255, 255, 255, 0.35);
 }
 
-/* Respect user motion preferences */
-@media (prefers-reduced-motion: reduce){
-  *{ transition: none !important; }
-  .group:hover{ transform: none; box-shadow: 0 6px 12px var(--shadow); }
+/* =========================
+   MAIN STRUCTURE
+========================= */
+
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-/* ---------------------- */
-/*  Footer                */
-/* ---------------------- */
-.site-footer{
-  background: #1f1a0d; /* deep ink on gold theme */
-  color: #f7f3e7;
+.hero {
+  padding: 2rem 1rem 3rem;
   text-align: center;
-  padding: 1rem;
-  font-size: .95rem;
-  box-shadow: 0 -4px 12px var(--shadow-strong);
-}
-/* ---------------------- */
-/*  Images & Hero layout  */
-/* ---------------------- */
-
-/* Keep images from overflowing their containers */
-img { max-width: 100%; height: auto; display: block; }
-
-/* Remove default figure margins (helps hero spacing) */
-figure { margin: 0; }
-
-/* Vertical rhythm for the hero area (your <main class="wrapper hero">) */
-.hero { padding-block: 1.5rem; }
-@media (min-width: 768px){
-  .hero { padding-block: 2.5rem; }
 }
 
-/* Constrain the hero artwork */
-.hero-moto{
-  margin: 1rem auto 2rem;
-  max-width: min(100%, 50rem);   /* ≈ 800px cap; adjust as you like */
+/* =========================
+   TEXT
+========================= */
+
+.note {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 0;
+  font-size: 0.95rem;
+  color: #222;
+  text-align: left;
 }
-.hero-moto img{
+
+.note p {
+  margin-bottom: 1rem;
+}
+
+/* =========================
+   ENTRY CARDS
+========================= */
+
+.container-card {
+  max-width: 720px;
+  margin: 2.5rem auto;
+  padding: 1rem 0;
+}
+
+.container-card img {
   width: 100%;
-  border-radius: var(--radius);
-  box-shadow: 0 8px 20px var(--shadow);
+  max-width: 600px;
+  margin: 0 auto;
 }
-.hero-gene figcaption { margin-top:.5rem; font-style:italic; opacity:.9; }
+
+/* =========================
+   GALLERY
+========================= */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card {
+  text-align: left;
+}
+
+.card img {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* =========================
+   CATALOG
+========================= */
+
+.catalog-id {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.catalog-meta {
+  font-size: 0.85rem;
+  color: #444;
+}
+
+.catalog-note {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.card.available .status {
+  color: #2f5e3b;
+}
+
+.card.sold .status {
+  color: #7a2a2a;
+}
+
+.card.sold img {
+  opacity: 0.65;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.site-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+/* =========================
+   IMAGE SAFETY
+========================= */
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =========================
+   ACCESSIBILITY
+========================= */
+
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+}
