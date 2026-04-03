@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClaycrazE Inventory Admin</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">ClaycrazE Inventory Admin</div>
+    <div class="content">
+      <h2>Add Inventory Piece</h2>
+      <div class="small-note">
+        Example: shape = OV, piece number = 1, date = 2604 → ID becomes OV-0001-2604
+      </div>
+
+      <form id="pieceForm">
+        <div class="form-grid">
+          <label for="shape">Shape Code</label>
+          <input type="text" id="shape" name="shape" placeholder="OV" required />
+
+          <label for="piece_number">Piece Number</label>
+          <input type="number" id="piece_number" name="piece_number" placeholder="1" required />
+
+          <label for="date_code">Date Code</label>
+          <input type="text" id="date_code" name="date_code" placeholder="2604" required />
+
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" placeholder="Oval bonsai pot" />
+
+          <label for="clay_body">Clay Body</label>
+          <input type="text" id="clay_body" name="clay_body" placeholder="White stoneware" />
+
+          <label for="glaze">Glaze</label>
+          <input type="text" id="glaze" name="glaze" placeholder="Waxy satin matte" />
+
+          <label for="width">Width</label>
+          <input type="text" id="width" name="width" placeholder="13" />
+
+          <label for="depth">Depth</label>
+          <input type="text" id="depth" name="depth" placeholder="9" />
+
+          <label for="height">Height</label>
+          <input type="text" id="height" name="height" placeholder="5" />
+
+          <label for="firing">Firing</label>
+          <input type="text" id="firing" name="firing" placeholder="Cone 6 oxidation" />
+
+          <label for="image_path">Photo / Image Path</label>
+          <input type="text" id="image_path" name="image_path" placeholder="images/ov-0001-2604.jpg" />
+
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="available">available</option>
+            <option value="sold">sold</option>
+            <option value="held">held</option>
+            <option value="gifted">gifted</option>
+            <option value="archive">archive</option>
+          </select>
+
+          <label for="price">Price</label>
+          <input type="text" id="price" name="price" placeholder="125.00" />
+
+          <label for="sale_date">Sale Date</label>
+          <input type="date" id="sale_date" name="sale_date" />
+
+          <label for="patron">Patron</label>
+          <input type="text" id="patron" name="patron" placeholder="Joe Doke" />
+
+          <label for="patron_location">Patron Location</label>
+          <input type="text" id="patron_location" name="patron_location" placeholder="Norfolk, VA" />
+
+          <label for="patron_contact">Patron Contact</label>
+          <input type="text" id="patron_contact" name="patron_contact" placeholder="phone / email / address" />
+
+          <label for="context_of_sale">Context of Sale</label>
+          <select id="context_of_sale" name="context_of_sale">
+            <option value="">-- Select --</option>
+            <option value="studio">studio</option>
+            <option value="gallery">gallery</option>
+            <option value="show">show</option>
+            <option value="festival">festival</option>
+            <option value="online">online</option>
+            <option value="private sale">private sale</option>
+            <option value="gift">gift</option>
+          </select>
+
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" class="full-row" placeholder="Slip, firing placement, iron wash notes, buyer remarks, etc."></textarea>
+        </div>
+
+        <div class="preview" id="idPreview">ID Preview: —</div>
+
+        <div class="button-row">
+          <button type="submit">Add Piece</button>
+          <button type="button" id="clearBtn">Clear Form</button>
+          <button type="button" id="refreshBtn">Refresh Piece List</button>
+        </div>
+      </form>
+
+      <div class="status" id="statusBox">Ready.</div>
+
+      <div class="section-title">Current Inventory</div>
+      <div class="table-wrap">
+        <table id="piecesTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Status</th>
+              <th>Price</th>
+              <th>Shape</th>
+              <th>#</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Clay Body</th>
+              <th>Glaze</th>
+              <th>W</th>
+              <th>D</th>
+              <th>H</th>
+              <th>Firing</th>
+              <th>Patron</th>
+              <th>Location</th>
+              <th>Sale Date</th>
+              <th>Context</th>
+              <th>Image</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="19">No pieces loaded yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,4 +1,0 @@
-* text=auto
-*.yml text eol=lf
-*.sh  text eol=lf
-.deployignore text eol=lf
