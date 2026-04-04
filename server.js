@@ -5,21 +5,59 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 
-const db = new sqlite3.Database(
-  path.join(__dirname, "claycraze_inventory.db"),
-  (err) => {
-    if (err) {
-      console.error("Could not open database:", err.message);
-      process.exit(1);
-    }
-    console.log("Connected to SQLite database.");
+const db = new sqlite3.Database(path.join(__dirname, "claycraze_inventory.db"), (err) => {
+  if (err) {
+    console.error("Could not open database:", err.message);
+    process.exit(1);
   }
-);
+  console.log("Connected to SQLite database.");
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
+
+/* -------------------------
+   HELPERS
+-------------------------- */
+function normalizeImagePath(imagePath) {
+  const raw = String(imagePath || "").trim();
+  if (!raw) return "";
+
+  let cleaned = raw.replace(/\\/g, "/").replace(/^"+|"+$/g, "");
+
+  const marker = "/images/";
+  const idx = cleaned.toLowerCase().indexOf(marker);
+
+  if (idx !== -1) {
+    cleaned = cleaned.substring(idx);
+  } else {
+    cleaned = cleaned.replace(/^\.?\/*/, "");
+    cleaned = cleaned.replace(/^claycraze\//i, "");
+
+    if (!cleaned.toLowerCase().startsWith("images/")) {
+      cleaned = `images/${cleaned}`;
+    }
+
+    cleaned = `/${cleaned}`;
+  }
+
+  return cleaned;
+}
+
+function cleanShape(shape) {
+  return String(shape || "").trim().toUpperCase();
+}
+
+function cleanStatus(status) {
+  return String(status || "available").trim().toLowerCase();
+}
+
+function buildId(shape, pieceNumber, dateCode) {
+  const paddedNumber = String(pieceNumber).padStart(4, "0");
+  return `${cleanShape(shape)}-${paddedNumber}-${String(dateCode || "").trim()}`;
+}
 
 /* -------------------------
    SITE PAGES
@@ -34,6 +72,10 @@ app.get("/practice", (req, res) => {
 
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
+});
+
+app.get("/piece/:id", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "gallery", "piece.html"));
 });
 
 /* -------------------------
@@ -72,7 +114,22 @@ app.get("/gallery/sculpture", (req, res) => {
 });
 
 /* -------------------------
-   ADD PIECE (ADMIN)
+   NEXT PIECE NUMBER
+-------------------------- */
+app.get("/next-piece-number", (req, res) => {
+  db.get(`SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_piece_number FROM inventory`, [], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    res.json({
+      next_piece_number: row?.next_piece_number || 1
+    });
+  });
+});
+
+/* -------------------------
+   ADD PIECE
 -------------------------- */
 app.post("/add-piece", (req, res) => {
   const {
@@ -88,6 +145,9 @@ app.post("/add-piece", (req, res) => {
     height = "",
     firing = "",
     image_path = "",
+    image_path_2 = "",
+    image_path_3 = "",
+    image_path_4 = "",
     status = "available",
     sale_date = "",
     price = "",
@@ -102,49 +162,26 @@ app.post("/add-piece", (req, res) => {
   }
 
   const pieceNum = parseInt(piece_number, 10);
-
   if (Number.isNaN(pieceNum)) {
     return res.status(400).send("Piece Number must be a valid number.");
   }
 
-  const cleanShape = String(shape).trim().toUpperCase();
-  const cleanDate = String(date_code).trim();
-  const cleanStatus = String(status).trim().toLowerCase();
-
-  const paddedNumber = String(pieceNum).padStart(4, "0");
-  const id = `${cleanShape}-${paddedNumber}-${cleanDate}`;
+  const id = buildId(shape, pieceNum, date_code);
 
   const sql = `
     INSERT INTO inventory (
-      id,
-      shape,
-      piece_number,
-      date_code,
-      description,
-      clay_body,
-      glaze,
-      notes,
-      width,
-      depth,
-      height,
-      firing,
-      image_path,
-      status,
-      sale_date,
-      price,
-      patron,
-      patron_location,
-      patron_contact,
-      context_of_sale
+      id, shape, piece_number, date_code, description, clay_body, glaze, notes,
+      width, depth, height, firing, image_path, image_path_2, image_path_3, image_path_4,
+      status, sale_date, price, patron, patron_location, patron_contact, context_of_sale
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
     id,
-    cleanShape,
+    cleanShape(shape),
     pieceNum,
-    cleanDate,
+    String(date_code).trim(),
     description,
     clay_body,
     glaze,
@@ -153,8 +190,11 @@ app.post("/add-piece", (req, res) => {
     depth,
     height,
     firing,
-    image_path,
-    cleanStatus,
+    normalizeImagePath(image_path),
+    normalizeImagePath(image_path_2),
+    normalizeImagePath(image_path_3),
+    normalizeImagePath(image_path_4),
+    cleanStatus(status),
     sale_date,
     price,
     patron,
@@ -170,16 +210,186 @@ app.post("/add-piece", (req, res) => {
       }
       return res.status(500).send("Database error: " + err.message);
     }
-
     res.send(`Piece ${id} added successfully.`);
   });
 });
 
 /* -------------------------
-   ADMIN: FULL INTERNAL DATA
+   UPDATE PIECE
+-------------------------- */
+app.post("/update-piece", (req, res) => {
+  const {
+    original_id,
+    shape,
+    piece_number,
+    date_code,
+    description = "",
+    clay_body = "",
+    glaze = "",
+    notes = "",
+    width = "",
+    depth = "",
+    height = "",
+    firing = "",
+    image_path = "",
+    image_path_2 = "",
+    image_path_3 = "",
+    image_path_4 = "",
+    status = "available",
+    sale_date = "",
+    price = "",
+    patron = "",
+    patron_location = "",
+    patron_contact = "",
+    context_of_sale = ""
+  } = req.body;
+
+  if (!original_id) {
+    return res.status(400).send("Original ID is required for update.");
+  }
+
+  if (!shape || !piece_number || !date_code) {
+    return res.status(400).send("Shape, Piece Number, and Date are required.");
+  }
+
+  const pieceNum = parseInt(piece_number, 10);
+  if (Number.isNaN(pieceNum)) {
+    return res.status(400).send("Piece Number must be a valid number.");
+  }
+
+  const newId = buildId(shape, pieceNum, date_code);
+
+  const sql = `
+    UPDATE inventory
+    SET
+      id = ?,
+      shape = ?,
+      piece_number = ?,
+      date_code = ?,
+      description = ?,
+      clay_body = ?,
+      glaze = ?,
+      notes = ?,
+      width = ?,
+      depth = ?,
+      height = ?,
+      firing = ?,
+      image_path = ?,
+      image_path_2 = ?,
+      image_path_3 = ?,
+      image_path_4 = ?,
+      status = ?,
+      sale_date = ?,
+      price = ?,
+      patron = ?,
+      patron_location = ?,
+      patron_contact = ?,
+      context_of_sale = ?
+    WHERE id = ?
+  `;
+
+  const values = [
+    newId,
+    cleanShape(shape),
+    pieceNum,
+    String(date_code).trim(),
+    description,
+    clay_body,
+    glaze,
+    notes,
+    width,
+    depth,
+    height,
+    firing,
+    normalizeImagePath(image_path),
+    normalizeImagePath(image_path_2),
+    normalizeImagePath(image_path_3),
+    normalizeImagePath(image_path_4),
+    cleanStatus(status),
+    sale_date,
+    price,
+    patron,
+    patron_location,
+    patron_contact,
+    context_of_sale,
+    String(original_id).trim()
+  ];
+
+  db.run(sql, values, function (err) {
+    if (err) {
+      if (err.message.includes("UNIQUE")) {
+        return res.status(400).send(`Cannot update: piece ${newId} already exists.`);
+      }
+      return res.status(500).send("Database error: " + err.message);
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).send(`No record found for ${original_id}.`);
+    }
+
+    res.send(`Piece ${newId} updated successfully.`);
+  });
+});
+
+/* -------------------------
+   ARCHIVE PIECE
+-------------------------- */
+app.post("/archive-piece", (req, res) => {
+  const { original_id } = req.body;
+
+  if (!original_id) {
+    return res.status(400).send("Original ID is required to archive a piece.");
+  }
+
+  db.run(
+    `UPDATE inventory SET status = 'archive' WHERE id = ?`,
+    [String(original_id).trim()],
+    function (err) {
+      if (err) {
+        return res.status(500).send("Database error: " + err.message);
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).send(`No record found for ${original_id}.`);
+      }
+
+      res.send(`Piece ${original_id} archived successfully.`);
+    }
+  );
+});
+
+/* -------------------------
+   DELETE PIECE
+-------------------------- */
+app.post("/delete-piece", (req, res) => {
+  const { original_id } = req.body;
+
+  if (!original_id) {
+    return res.status(400).send("Original ID is required to delete a piece.");
+  }
+
+  db.run(
+    `DELETE FROM inventory WHERE id = ?`,
+    [String(original_id).trim()],
+    function (err) {
+      if (err) {
+        return res.status(500).send("Database error: " + err.message);
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).send(`No record found for ${original_id}.`);
+      }
+
+      res.send(`Piece ${original_id} deleted successfully.`);
+    }
+  );
+});
+
+/* -------------------------
+   ADMIN DATA
 -------------------------- */
 app.get("/pieces", (req, res) => {
-  db.all("SELECT * FROM inventory ORDER BY id DESC", [], (err, rows) => {
+  db.all(`SELECT * FROM inventory ORDER BY id DESC`, [], (err, rows) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -188,7 +398,52 @@ app.get("/pieces", (req, res) => {
 });
 
 /* -------------------------
-   PUBLIC DATA HELPERS
+   PIECE DETAIL DATA
+-------------------------- */
+app.get("/piece-data/:id", (req, res) => {
+  const pieceId = String(req.params.id || "").trim();
+
+  db.get(
+    `
+    SELECT
+      id,
+      shape,
+      piece_number,
+      date_code,
+      description,
+      clay_body,
+      glaze,
+      width,
+      depth,
+      height,
+      firing,
+      image_path,
+      image_path_2,
+      image_path_3,
+      image_path_4,
+      status,
+      price,
+      notes
+    FROM inventory
+    WHERE id = ?
+    `,
+    [pieceId],
+    (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (!row) {
+        return res.status(404).json({ error: "Piece not found." });
+      }
+
+      res.json(row);
+    }
+  );
+});
+
+/* -------------------------
+   PUBLIC DATA
 -------------------------- */
 const PUBLIC_FIELDS = `
   id,
@@ -203,11 +458,15 @@ const PUBLIC_FIELDS = `
   height,
   firing,
   image_path,
+  image_path_2,
+  image_path_3,
+  image_path_4,
   status,
-  price
+  price,
+  notes
 `;
 
-const PUBLIC_STATUSES = ["available", "sold", "held", "gifted", "archive"];
+const PUBLIC_STATUSES = ["available", "sold", "held", "gifted"];
 
 function getPublicPiecesByShape(shapeCode, res) {
   const sql = `
@@ -219,7 +478,7 @@ function getPublicPiecesByShape(shapeCode, res) {
   `;
 
   const params = [
-    String(shapeCode).trim().toUpperCase(),
+    cleanShape(shapeCode),
     ...PUBLIC_STATUSES.map((s) => s.toLowerCase())
   ];
 
@@ -241,7 +500,7 @@ function getPublicPiecesByShapes(shapeCodes, res) {
   `;
 
   const params = [
-    ...shapeCodes.map((code) => String(code).trim().toUpperCase()),
+    ...shapeCodes.map((code) => cleanShape(code)),
     ...PUBLIC_STATUSES.map((s) => s.toLowerCase())
   ];
 
@@ -253,9 +512,6 @@ function getPublicPiecesByShapes(shapeCodes, res) {
   });
 }
 
-/* -------------------------
-   PUBLIC GALLERY DATA ROUTES
--------------------------- */
 app.get("/gallery-data/all", (req, res) => {
   const sql = `
     SELECT ${PUBLIC_FIELDS}
@@ -305,28 +561,6 @@ app.get("/gallery-data/sculpture", (req, res) => {
 });
 
 /* -------------------------
-   DEBUG
--------------------------- */
-app.get("/debug/rectangles", (req, res) => {
-  db.all(
-    `
-    SELECT id, shape, status, description
-    FROM inventory
-    WHERE TRIM(UPPER(shape)) = 'RC'
-       OR description LIKE '%RECT%'
-    ORDER BY id DESC
-    `,
-    [],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(rows);
-    }
-  );
-});
-
-/* -------------------------
    START SERVER
 -------------------------- */
 app.listen(PORT, () => {
@@ -335,11 +569,4 @@ app.listen(PORT, () => {
   console.log(`Practice: http://localhost:${PORT}/practice`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Bonsai: http://localhost:${PORT}/gallery/bonsai`);
-  console.log(`Ovals: http://localhost:${PORT}/gallery/ovals`);
-  console.log(`Rounds: http://localhost:${PORT}/gallery/rounds`);
-  console.log(`Rectangles: http://localhost:${PORT}/gallery/rectangles`);
-  console.log(`Facejugs: http://localhost:${PORT}/gallery/facejugs`);
-  console.log(`Freestyle: http://localhost:${PORT}/gallery/freestyle`);
-  console.log(`Ikebana: http://localhost:${PORT}/gallery/ikebana`);
-  console.log(`Sculpture: http://localhost:${PORT}/gallery/sculpture`);
 });

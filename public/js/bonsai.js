@@ -34,13 +34,8 @@ function buildCardHtml(piece) {
   const id = piece.id || "";
   const shape = String(piece.shape || "").toUpperCase();
   const dimensions = shape === "RD" ? formatRoundDimensions(piece) : formatStandardDimensions(piece);
-  const clayBody = piece.clay_body || "—";
-  const glaze = piece.glaze || "—";
-  const firing = piece.firing || "—";
-  const status = piece.status || "";
   const price = formatPrice(piece.price);
   const imageHtml = buildImageHtml(piece.image_path, title);
-  const category = shapeLabel(shape);
 
   return `
     <article class="piece-card">
@@ -52,32 +47,15 @@ function buildCardHtml(piece) {
         <p class="piece-id">${escapeHtml(id)}</p>
 
         <div class="museum-card">
-          <p class="card-row"><span class="card-label">Category:</span> ${escapeHtml(category)}</p>
           <p class="card-row"><span class="card-label">Dimensions:</span> ${escapeHtml(dimensions)}</p>
-          <p class="card-row"><span class="card-label">Clay Body:</span> ${escapeHtml(clayBody)}</p>
-          <p class="card-row"><span class="card-label">Glaze:</span> ${escapeHtml(glaze)}</p>
-          <p class="card-row"><span class="card-label">Firing:</span> ${escapeHtml(firing)}</p>
           <p class="card-row"><span class="card-label">Price:</span> ${escapeHtml(price)}</p>
-          <div class="status-badge">${escapeHtml(status)}</div>
+          <p class="card-row">
+            <a class="more-link" href="/piece/${encodeURIComponent(id)}">More</a>
+          </p>
         </div>
       </div>
     </article>
   `;
-}
-
-function shapeLabel(shape) {
-  switch (shape) {
-    case "OV":
-      return "Oval";
-    case "RD":
-      return "Round";
-    case "RC":
-      return "Rectangle";
-    case "FS":
-      return "Freestyle";
-    default:
-      return shape || "—";
-  }
 }
 
 function buildImageHtml(imagePath, altText) {
@@ -93,7 +71,7 @@ function buildImageHtml(imagePath, altText) {
       src="${escapeAttribute(normalizedPath)}"
       alt="${escapeAttribute(altText || "ClaycrazE piece")}"
       loading="lazy"
-      onerror="this.replaceWith(document.createElement('div'));"
+      onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
     />
   `;
 }

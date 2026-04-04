@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClaycrazE | Piece</title>
+  <link rel="stylesheet" href="/css/gallery.css" />
+  <style>
+    .piece-page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    .piece-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.2fr) minmax(260px, 0.8fr);
+      gap: 32px;
+      align-items: start;
+    }
+
+    .piece-gallery {
+      display: grid;
+      gap: 18px;
+    }
+
+    .piece-gallery-main,
+    .piece-gallery-thumb {
+      background: #e7e1d5;
+      border: 1px solid #cfc7b8;
+      overflow: hidden;
+    }
+
+    .piece-gallery-main img,
+    .piece-gallery-thumb img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .piece-thumbs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 14px;
+    }
+
+    .piece-meta {
+      background: #fcfbf8;
+      border: 1px solid #cfc7b8;
+      padding: 20px;
+    }
+
+    .piece-meta h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: normal;
+    }
+
+    .piece-meta .piece-id {
+      margin: 0 0 18px;
+      color: #6b655d;
+      letter-spacing: 0.04em;
+    }
+
+    .piece-meta .meta-row {
+      margin: 0 0 10px;
+      line-height: 1.45;
+    }
+
+    .piece-meta .meta-label {
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 18px;
+      text-decoration: none;
+    }
+
+    @media (max-width: 850px) {
+      .piece-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="piece-page">
+    <a class="back-link" href="/gallery/bonsai">← Back to gallery</a>
+
+    <div id="pieceContainer">
+      <div class="loading">Loading piece...</div>
+    </div>
+  </main>
+
+  <script>
+    const container = document.getElementById("pieceContainer");
+    const pieceId = decodeURIComponent(window.location.pathname.split("/piece/")[1] || "");
+
+    async function loadPiece() {
+      try {
+        const response = await fetch(`/piece-data/${encodeURIComponent(pieceId)}`);
+
+        if (!response.ok) {
+          throw new Error(\`Server returned \${response.status}\`);
+        }
+
+        const piece = await response.json();
+        renderPiece(piece);
+      } catch (error) {
+        container.innerHTML = \`
+          <div class="error-state">
+            Could not load piece details: \${escapeHtml(error.message)}
+          </div>
+        \`;
+      }
+    }
+
+    function renderPiece(piece) {
+      const title = piece.description || "Untitled Piece";
+      const images = [
+        piece.image_path,
+        piece.image_path_2,
+        piece.image_path_3,
+        piece.image_path_4
+      ].filter(Boolean);
+
+      const dimensions = String(piece.shape || "").toUpperCase() === "RD"
+        ? formatRoundDimensions(piece)
+        : formatStandardDimensions(piece);
+
+      const mainImage = images.length
+        ? \`<div class="piece-gallery-main"><img src="\${escapeAttribute(images[0])}" alt="\${escapeAttribute(title)}" /></div>\`
+        : \`<div class="piece-gallery-main"><div class="no-image">No image available</div></div>\`;
+
+      const thumbs = images.slice(1).map((src) => \`
+        <div class="piece-gallery-thumb">
+          <img src="\${escapeAttribute(src)}" alt="\${escapeAttribute(title)}" />
+        </div>
+      \`).join("");
+
+      container.innerHTML = \`
+        <div class="piece-layout">
+          <section class="piece-gallery">
+            \${mainImage}
+            <div class="piece-thumbs">\${thumbs}</div>
+          </section>
+
+          <aside class="piece-meta">
+            <h1>\${escapeHtml(title)}</h1>
+            <p class="piece-id">\${escapeHtml(piece.id || "")}</p>
+
+            <p class="meta-row"><span class="meta-label">Dimensions:</span> \${escapeHtml(dimensions)}</p>
+            <p class="meta-row"><span class="meta-label">Price:</span> \${escapeHtml(formatPrice(piece.price))}</p>
+            <p class="meta-row"><span class="meta-label">Clay Body:</span> \${escapeHtml(piece.clay_body || "—")}</p>
+            <p class="meta-row"><span class="meta-label">Glaze:</span> \${escapeHtml(piece.glaze || "—")}</p>
+            <p class="meta-row"><span class="meta-label">Firing:</span> \${escapeHtml(piece.firing || "—")}</p>
+            <p class="meta-row"><span class="meta-label">Notes:</span> \${escapeHtml(piece.notes || "—")}</p>
+          </aside>
+        </div>
+      \`;
+    }
+
+    function formatStandardDimensions(piece) {
+      const length = safeDim(piece.width);
+      const width = safeDim(piece.depth);
+      const height = safeDim(piece.height);
+
+      if (!length && !width && !height) return "—";
+      return \`\${length || "?"} x \${width || "?"} x \${height || "?"}\`;
+    }
+
+    function formatRoundDimensions(piece) {
+      const diameter = safeDim(piece.width);
+      const height = safeDim(piece.height);
+
+      if (!diameter && !height) return "—";
+      return \`\${diameter || "?"} x \${height || "?"}\`;
+    }
+
+    function safeDim(value) {
+      if (value === null || value === undefined) return "";
+      const text = String(value).trim();
+      return text || "";
+    }
+
+    function formatPrice(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "—";
+
+      const cleaned = raw.replace(/\\$/g, "").replace(/,/g, "");
+      const number = Number(cleaned);
+      if (Number.isNaN(number)) return raw;
+
+      return \`$\${number.toFixed(2)}\`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    loadPiece();
+  </script>
+</body>
+</html>

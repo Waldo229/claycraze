@@ -10,7 +10,7 @@ async function loadFreestyle() {
 
     const pieces = await response.json();
 
-    if (!pieces.length) {
+    if (!Array.isArray(pieces) || pieces.length === 0) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
           No freestyle pieces are currently available for display.
@@ -26,17 +26,14 @@ async function loadFreestyle() {
         Could not load freestyle gallery data: ${escapeHtml(error.message)}
       </div>
     `;
+    console.error("Freestyle gallery error:", error);
   }
 }
 
 function buildCardHtml(piece) {
   const title = piece.description || "Untitled Piece";
   const id = piece.id || "";
-  const dimensions = formatDimensions(piece);
-  const clayBody = piece.clay_body || "—";
-  const glaze = piece.glaze || "—";
-  const firing = piece.firing || "—";
-  const status = piece.status || "";
+  const dimensions = formatStandardDimensions(piece);
   const price = formatPrice(piece.price);
   const imageHtml = buildImageHtml(piece.image_path, title);
 
@@ -51,11 +48,10 @@ function buildCardHtml(piece) {
 
         <div class="museum-card">
           <p class="card-row"><span class="card-label">Dimensions:</span> ${escapeHtml(dimensions)}</p>
-          <p class="card-row"><span class="card-label">Clay Body:</span> ${escapeHtml(clayBody)}</p>
-          <p class="card-row"><span class="card-label">Glaze:</span> ${escapeHtml(glaze)}</p>
-          <p class="card-row"><span class="card-label">Firing:</span> ${escapeHtml(firing)}</p>
           <p class="card-row"><span class="card-label">Price:</span> ${escapeHtml(price)}</p>
-          <div class="status-badge">${escapeHtml(status)}</div>
+          <p class="card-row">
+            <a class="more-link" href="/piece/${encodeURIComponent(id)}">More</a>
+          </p>
         </div>
       </div>
     </article>
@@ -63,37 +59,72 @@ function buildCardHtml(piece) {
 }
 
 function buildImageHtml(imagePath, altText) {
-  if (!imagePath) return `<div class="no-image">No image available</div>`;
+  if (!imagePath) {
+    return `<div class="no-image">No image available</div>`;
+  }
+
   const normalizedPath = normalizeImagePath(imagePath);
-  return `<img class="piece-image" src="${escapeAttribute(normalizedPath)}" alt="${escapeAttribute(altText || "ClaycrazE piece")}" loading="lazy" />`;
+
+  return `
+    <img
+      class="piece-image"
+      src="${escapeAttribute(normalizedPath)}"
+      alt="${escapeAttribute(altText || "ClaycrazE piece")}"
+      loading="lazy"
+      onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
+    />
+  `;
 }
 
 function normalizeImagePath(imagePath) {
-  const trimmed = String(imagePath).trim();
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) return trimmed;
+  const trimmed = String(imagePath).trim().replace(/\\/g, "/");
+
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/")
+  ) {
+    return trimmed;
+  }
+
   return `/${trimmed.replace(/^\.?\/*/, "")}`;
 }
 
-function formatDimensions(piece) {
+function formatStandardDimensions(piece) {
   const length = safeDim(piece.width);
   const width = safeDim(piece.depth);
   const height = safeDim(piece.height);
-  if (!length && !width && !height) return "—";
+
+  if (!length && !width && !height) {
+    return "—";
+  }
+
   return `${length || "?"} x ${width || "?"} x ${height || "?"}`;
 }
 
 function safeDim(value) {
-  if (value === null || value === undefined) return "";
+  if (value === null || value === undefined) {
+    return "";
+  }
+
   const text = String(value).trim();
   return text || "";
 }
 
 function formatPrice(value) {
   const raw = String(value || "").trim();
-  if (!raw) return "—";
+
+  if (!raw) {
+    return "—";
+  }
+
   const cleaned = raw.replace(/\$/g, "").replace(/,/g, "");
   const number = Number(cleaned);
-  if (Number.isNaN(number)) return raw;
+
+  if (Number.isNaN(number)) {
+    return raw;
+  }
+
   return `$${number.toFixed(2)}`;
 }
 

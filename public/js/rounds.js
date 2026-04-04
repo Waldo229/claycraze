@@ -10,7 +10,7 @@ async function loadRounds() {
 
     const pieces = await response.json();
 
-    if (!pieces.length) {
+    if (!Array.isArray(pieces) || pieces.length === 0) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
           No round pieces are currently available for display.
@@ -26,6 +26,7 @@ async function loadRounds() {
         Could not load round gallery data: ${escapeHtml(error.message)}
       </div>
     `;
+    console.error("Round gallery error:", error);
   }
 }
 
@@ -33,10 +34,6 @@ function buildCardHtml(piece) {
   const title = piece.description || "Untitled Piece";
   const id = piece.id || "";
   const dimensions = formatRoundDimensions(piece);
-  const clayBody = piece.clay_body || "—";
-  const glaze = piece.glaze || "—";
-  const firing = piece.firing || "—";
-  const status = piece.status || "";
   const price = formatPrice(piece.price);
   const imageHtml = buildImageHtml(piece.image_path, title);
 
@@ -50,28 +47,11 @@ function buildCardHtml(piece) {
         <p class="piece-id">${escapeHtml(id)}</p>
 
         <div class="museum-card">
+          <p class="card-row"><span class="card-label">Dimensions:</span> ${escapeHtml(dimensions)}</p>
+          <p class="card-row"><span class="card-label">Price:</span> ${escapeHtml(price)}</p>
           <p class="card-row">
-            <span class="card-label">Dimensions:</span>
-            ${escapeHtml(dimensions)}
+            <a class="more-link" href="/piece/${encodeURIComponent(id)}">More</a>
           </p>
-          <p class="card-row">
-            <span class="card-label">Clay Body:</span>
-            ${escapeHtml(clayBody)}
-          </p>
-          <p class="card-row">
-            <span class="card-label">Glaze:</span>
-            ${escapeHtml(glaze)}
-          </p>
-          <p class="card-row">
-            <span class="card-label">Firing:</span>
-            ${escapeHtml(firing)}
-          </p>
-          <p class="card-row">
-            <span class="card-label">Price:</span>
-            ${escapeHtml(price)}
-          </p>
-
-          <div class="status-badge">${escapeHtml(status)}</div>
         </div>
       </div>
     </article>
@@ -91,12 +71,13 @@ function buildImageHtml(imagePath, altText) {
       src="${escapeAttribute(normalizedPath)}"
       alt="${escapeAttribute(altText || "ClaycrazE piece")}"
       loading="lazy"
+      onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
     />
   `;
 }
 
 function normalizeImagePath(imagePath) {
-  const trimmed = String(imagePath).trim();
+  const trimmed = String(imagePath).trim().replace(/\\/g, "/");
 
   if (
     trimmed.startsWith("http://") ||

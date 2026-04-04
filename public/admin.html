@@ -10,15 +10,26 @@
   <div class="window">
     <div class="titlebar">ClaycrazE Inventory Admin</div>
     <div class="content">
-      <h2>Add Inventory Piece</h2>
+      <h2>Add / Edit Inventory Piece</h2>
       <div class="small-note">
-        Example: shape = OV, piece number = 1, date = 2604 → ID becomes OV-0001-2604
+        Click a row below to load it into the form for editing. Image paths are cleaned automatically into web paths.
       </div>
 
       <form id="pieceForm">
+        <input type="hidden" id="original_id" name="original_id" />
+
         <div class="form-grid">
           <label for="shape">Shape Code</label>
-          <input type="text" id="shape" name="shape" placeholder="OV" required />
+          <select id="shape" name="shape" required>
+            <option value="">-- Select --</option>
+            <option value="OV">OV</option>
+            <option value="RD">RD</option>
+            <option value="RC">RC</option>
+            <option value="FJ">FJ</option>
+            <option value="FS">FS</option>
+            <option value="IKE">IKE</option>
+            <option value="SCP">SCP</option>
+          </select>
 
           <label for="piece_number">Piece Number</label>
           <input type="number" id="piece_number" name="piece_number" placeholder="1" required />
@@ -35,10 +46,10 @@
           <label for="glaze">Glaze</label>
           <input type="text" id="glaze" name="glaze" placeholder="Waxy satin matte" />
 
-          <label for="width">Width</label>
+          <label for="width">Width / Length</label>
           <input type="text" id="width" name="width" placeholder="13" />
 
-          <label for="depth">Depth</label>
+          <label for="depth">Depth / Width</label>
           <input type="text" id="depth" name="depth" placeholder="9" />
 
           <label for="height">Height</label>
@@ -48,7 +59,7 @@
           <input type="text" id="firing" name="firing" placeholder="Cone 6 oxidation" />
 
           <label for="image_path">Photo / Image Path</label>
-          <input type="text" id="image_path" name="image_path" placeholder="images/ov-0001-2604.jpg" />
+          <input type="text" id="image_path" name="image_path" placeholder="/images/bonsai/rectangles/rectangle-001.png" />
 
           <label for="status">Status</label>
           <select id="status" name="status">
@@ -93,7 +104,10 @@
         <div class="preview" id="idPreview">ID Preview: —</div>
 
         <div class="button-row">
-          <button type="submit">Add Piece</button>
+          <button type="submit" id="addBtn">Add Piece</button>
+          <button type="button" id="updateBtn">Update Piece</button>
+          <button type="button" id="archiveBtn">Archive Piece</button>
+          <button type="button" id="deleteBtn">Delete Piece</button>
           <button type="button" id="clearBtn">Clear Form</button>
           <button type="button" id="refreshBtn">Refresh Piece List</button>
         </div>

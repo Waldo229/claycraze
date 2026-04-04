@@ -196,3 +196,32 @@ button:focus {
     margin-top: 6px;
   }
 }
+.status-archive {
+  color: #b00020;
+  font-weight: bold;
+}
+
+.status-sold {
+  color: #1f4e79;
+  font-weight: bold;
+}
+
+.status-held {
+  color: #8a6d1d;
+  font-weight: bold;
+}
+
+.status-gifted {
+  color: #6a1b9a;
+  font-weight: bold;
+}
+
+.status-available {
+  color: #1b5e20;
+  font-weight: bold;
+}
+
+.status-message-archive {
+  color: #b00020;
+  font-weight: bold;
+}

@@ -17,7 +17,7 @@ body {
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 20px 22px;
+  padding: 28px 20px 18px;
 }
 
 .header-inner h1 {
@@ -33,10 +33,40 @@ body {
   color: #5b564d;
 }
 
-.gallery-page {
+.gallery-nav {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 20px 40px;
+  padding: 0 20px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gallery-nav a {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #b9b09f;
+  background: #eee7da;
+  color: #2f2a24;
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.gallery-nav a:hover {
+  background: #e3dac9;
+}
+
+.gallery-nav a.active {
+  background: #cbb898;
+  color: #1f1b16;
+  border-color: #aa987a;
+}
+
+.gallery-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 16px 40px;
 }
 
 .gallery-intro {
@@ -57,11 +87,13 @@ body {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+  justify-content: center;
   gap: 24px;
 }
 
 .piece-card {
+  width: 100%;
   background: #fcfbf8;
   border: 1px solid #cfc7b8;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -70,17 +102,18 @@ body {
 
 .piece-image-wrap {
   background: #e7e1d5;
-  aspect-ratio: 4 / 3;
+  height: 240px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 10px;
 }
 
 .piece-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -88,6 +121,7 @@ body {
   color: #6b655d;
   font-size: 14px;
   font-style: italic;
+  text-align: center;
 }
 
 .piece-body {
@@ -135,6 +169,19 @@ body {
   text-transform: uppercase;
 }
 
+.more-link {
+  display: inline-block;
+  margin-top: 2px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #2f2a24;
+  border-bottom: 1px solid transparent;
+}
+
+.more-link:hover {
+  border-bottom-color: #2f2a24;
+}
+
 .loading,
 .empty-state,
 .error-state {
@@ -151,5 +198,17 @@ body {
 
   .gallery-intro h2 {
     font-size: 24px;
+  }
+
+  .gallery-nav {
+    padding: 0 16px 16px;
+  }
+
+  .gallery-page {
+    padding: 24px 12px 32px;
+  }
+
+  .piece-image-wrap {
+    height: 220px;
   }
 }
