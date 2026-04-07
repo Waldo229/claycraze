@@ -9,25 +9,49 @@
 <body class="theory-page">
 
   <header class="site-header">
-    <div class="header-inner">
-      <h1><a href="/" class="site-title-link">ClaycrazE</a></h1>
-      <p class="site-subtitle">Theory</p>
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
 
-      <nav class="top-nav" aria-label="Primary">
-        <a href="/">Home</a>
-        <a href="/theory.html" class="active">Theory</a>
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open navigation"
+        type="button"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-      </nav>
-
-      <nav class="category-nav" aria-label="Theory sections">
         <a href="/studio.html">Studio</a>
-        <a href="/kiln.html">Kilns</a>
-        <a href="/gene.html">GENE Project</a>
+        <a href="/materials.html">Materials</a>
+        <a href="/processes.html">Processes</a>
+        <a href="/places.html">Places</a>
+        <a href="/kiln.html">Kiln</a>
+        <a href="/gene.html">GENE</a>
       </nav>
     </div>
   </header>
 
   <main class="theory-main">
+    <nav class="category-nav" aria-label="Theory sections">
+      <a href="/studio.html">Studio</a>
+      <a href="/materials.html">Materials</a>
+      <a href="/processes.html">Processes</a>
+      <a href="/places.html">Places</a>
+      <a href="/kiln.html">Kiln</a>
+      <a href="/gene.html">GENE Project</a>
+    </nav>
+
     <div class="theory-intro">
       <h2>Theory</h2>
       <p>
@@ -57,7 +81,7 @@
 
       <article class="theory-card">
         <a class="theory-card-link" href="/kiln.html">
-          <h3>Kilns</h3>
+          <h3>Kiln</h3>
           <p>
             The transforming field of heat and time: the Electric Skutt 1027
             and the outdoor PoorBoy gas kiln.
@@ -78,5 +102,6 @@
     </div>
   </main>
 
+  <script src="/js/nav.js"></script>
 </body>
 </html>

@@ -6,32 +6,54 @@
   <title>ClaycrazE | Bonsai</title>
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body>
+<body class="practice-page">
+
   <header class="site-header">
-    <div class="header-inner">
-      <h1><a href="/" class="site-title-link">ClaycrazE</a></h1>
-      <p class="site-subtitle">Practice</p>
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
 
-      <nav class="top-nav" aria-label="Primary">
-        <a href="/">Home</a>
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open navigation"
+        type="button"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
-      </nav>
-
-      <nav class="category-nav" aria-label="Practice galleries">
-        <a href="/gallery/bonsai.html" class="active">Bonsai</a>
-        <a href="/gallery/ovals.html">Ovals</a>
-        <a href="/gallery/rectangles.html">Rectangles</a>
-        <a href="/gallery/freestyle.html">Freestyle</a>
-        <a href="/gallery/rounds.html">Rounds</a>
-        <a href="/gallery/ikebana.html">Ikebana</a>
-        <a href="/gallery/sculpture.html">Sculpture</a>
-        <a href="/gallery/facejugs.html">Face Jugs</a>
+        <a href="/practice.html">Practice</a>
+        <a href="/studio.html">Studio</a>
+        <a href="/materials.html">Materials</a>
+        <a href="/processes.html">Processes</a>
+        <a href="/places.html">Places</a>
+        <a href="/kiln.html">Kiln</a>
+        <a href="/gene.html">GENE</a>
       </nav>
     </div>
   </header>
 
   <main class="gallery-page">
+    <nav class="category-nav" aria-label="Practice galleries">
+      <a href="/gallery/bonsai.html">Bonsai</a>
+      <a href="/gallery/ovals.html">Ovals</a>
+      <a href="/gallery/rectangles.html">Rectangles</a>
+      <a href="/gallery/freestyle.html">Freestyle</a>
+      <a href="/gallery/rounds.html">Rounds</a>
+      <a href="/gallery/ikebana.html">Ikebana</a>
+      <a href="/gallery/sculpture.html">Sculpture</a>
+      <a href="/gallery/facejugs.html">Face Jugs</a>
+    </nav>
+
     <section class="gallery-intro">
       <h2>Bonsai</h2>
       <p>Ovals, rectangles, freestyle, and rounds gathered under one heading.</p>
@@ -42,6 +64,7 @@
     </section>
   </main>
 
+  <script src="/js/nav.js"></script>
   <script src="/js/bonsai.js?v=6"></script>
 </body>
 </html>
