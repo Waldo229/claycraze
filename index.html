@@ -1,49 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>ClaycrazE — Pottery by Jim Alexander</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="ClaycrazE — It’s a CrazE World! Studio, materials, kiln, the GENE Project, gallery, and places that shape the work." />
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClaycrazE</title>
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
-
-<body>
+<body class="home-page">
 
   <header class="site-header">
+    <div class="header-inner">
+      <h1><a href="/" class="site-title-link">ClaycrazE</a></h1>
+      <p class="site-subtitle">Two doors: Theory and Practice</p>
 
-    <h1 class="wordmark">ClaycrazE</h1>
-    <p class="tagline">Pottery by Jim Alexander</p>
-
-    <nav aria-label="Primary">
-      <ul class="nav">
-        <li><a href="studio.html">Theory</a></li>
-        <li><a href="practice.html">Practice</a></li>
-        <li><a href="gene.html">GENE Project</a></li>
-      </ul>
-    </nav>
-
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/" class="active">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
   </header>
 
-  <main id="content" class="wrapper hero">
+  <main class="home-main">
+    <section class="home-intro">
+      <h2>Welcome</h2>
+      <p>
+        ClaycrazE begins here. This is the threshold page: one path opens into
+        theory, reflection, notes, materials, and place; the other opens into
+        practice, form, and the database-driven galleries of finished work.
+      </p>
+      <p>
+        Han Shan and Shih-te stand at the threshold as guides: one opening toward
+        contemplation, the other toward making.
+      </p>
+    </section>
 
-    <figure class="hero-moto">
-      <img
-        src="images/cc_moto.png"
-        alt="Two monks flank a central panel about theory and practice."
-      />
+    <section class="door-grid" aria-label="Main site sections">
+      <article class="door-card monk-card theory-door">
+        <a class="door-link" href="/theory.html">
+          <img src="/images/han-shan.png" alt="Han Shan, guide to Theory" />
+          <h3>Theory</h3>
+          <p>
+            Thought, material understanding, notes, place, memory, and the ideas
+            that shape the work.
+          </p>
+          <span class="door-guide">Guided by Han Shan</span>
+        </a>
+      </article>
 
-      <figcaption class="visually-hidden">
-        Theory and Practice — Shih-Te and Han-Shan — The Mad Monks of Cold Mountain.
-        ClaycrazE is dedicated to the proposition that great ideas are sometimes messy.
-      </figcaption>
-    </figure>
-
+      <article class="door-card monk-card practice-door">
+        <a class="door-link" href="/practice.html">
+          <img src="/images/shih-te.png" alt="Shih-te, guide to Practice" />
+          <h3>Practice</h3>
+          <p>
+            The made work: bonsai, ikebana, sculpture, and face jugs, leading
+            into gallery pages populated by the database.
+          </p>
+          <span class="door-guide">Guided by Shih-te</span>
+        </a>
+      </article>
+    </section>
   </main>
-
-  <footer class="site-footer">
-    <small>© 2025 Jim Alexander, ClaycrazE</small>
-  </footer>
 
 </body>
 </html>

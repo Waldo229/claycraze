@@ -4,27 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Ikebana</title>
-  <link rel="stylesheet" href="/css/gallery.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <h1>ClaycrazE</h1>
-      <p>Ikebana</p>
+      <h1><a href="/" class="site-title-link">ClaycrazE</a></h1>
+      <p class="site-subtitle">Practice</p>
+
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html" class="active">Practice</a>
+      </nav>
+
+      <nav class="category-nav" aria-label="Practice galleries">
+        <a href="/gallery/bonsai.html">Bonsai</a>
+        <a href="/gallery/ovals.html">Ovals</a>
+        <a href="/gallery/rectangles.html">Rectangles</a>
+        <a href="/gallery/freestyle.html">Freestyle</a>
+        <a href="/gallery/rounds.html">Rounds</a>
+        <a href="/gallery/ikebana.html" class="active">Ikebana</a>
+        <a href="/gallery/sculpture.html">Sculpture</a>
+        <a href="/gallery/facejugs.html">Face Jugs</a>
+      </nav>
     </div>
   </header>
 
   <main class="gallery-page">
     <section class="gallery-intro">
       <h2>Ikebana</h2>
-      <p>Museum-card style display generated from the inventory database.</p>
+      <p>Vessels for spatial and floral composition.</p>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid">
-      <div class="loading">Loading ikebana pieces...</div>
+    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
+      <div class="loading">Loading ikebana work...</div>
     </section>
   </main>
 
-  <script src="/js/ikebana.js"></script>
+  <script src="/js/ikebana.js?v=6"></script>
 </body>
 </html>

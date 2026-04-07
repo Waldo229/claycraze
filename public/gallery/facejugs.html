@@ -3,28 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Facejugs</title>
-  <link rel="stylesheet" href="/css/gallery.css" />
+  <title>ClaycrazE | Face Jugs</title>
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <h1>ClaycrazE</h1>
-      <p>Facejugs</p>
+      <h1><a href="/" class="site-title-link">ClaycrazE</a></h1>
+      <p class="site-subtitle">Practice</p>
+
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html" class="active">Practice</a>
+      </nav>
+
+      <nav class="category-nav" aria-label="Practice galleries">
+        <a href="/gallery/bonsai.html">Bonsai</a>
+        <a href="/gallery/ovals.html">Ovals</a>
+        <a href="/gallery/rectangles.html">Rectangles</a>
+        <a href="/gallery/freestyle.html">Freestyle</a>
+        <a href="/gallery/rounds.html">Rounds</a>
+        <a href="/gallery/ikebana.html">Ikebana</a>
+        <a href="/gallery/sculpture.html">Sculpture</a>
+        <a href="/gallery/facejugs.html" class="active">Face Jugs</a>
+      </nav>
     </div>
   </header>
 
   <main class="gallery-page">
     <section class="gallery-intro">
-      <h2>Facejugs</h2>
-      <p>Museum-card style display generated from the inventory database.</p>
+      <h2>Face Jugs</h2>
+      <p>Southern vernacular pottery tradition, character, and force.</p>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid">
-      <div class="loading">Loading facejugs...</div>
+    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
+      <div class="loading">Loading face jugs...</div>
     </section>
   </main>
 
-  <script src="/js/facejugs.js"></script>
+  <script src="/js/facejugs.js?v=6"></script>
 </body>
 </html>

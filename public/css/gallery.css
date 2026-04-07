@@ -5,19 +5,56 @@
 body {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  background: #f2efe8;
-  color: #1f1f1f;
+  background: linear-gradient(to bottom, #e6c566 0%, #d5a634 210px, #d5a634 100%);
+  color: #2d1b12;
+}
+
+a {
+  color: #3f2318;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .site-header {
-  background: #d9d2c3;
-  border-bottom: 1px solid #b9b09f;
+  background: linear-gradient(to bottom, #ecd184 0%, #d9ae35 100%);
+  border-bottom: 1px solid rgba(91, 54, 28, 0.22);
+  box-shadow: 0 4px 18px rgba(70, 39, 17, 0.18);
 }
 
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 20px 18px;
+  padding: 18px 20px 18px;
+}
+
+.gallery-path-nav {
+  margin: 0 0 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gallery-path-nav a {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(95, 60, 32, 0.28);
+  background: rgba(255, 248, 230, 0.38);
+  color: #3f2318;
+  font-size: 15px;
+}
+
+.gallery-path-nav a:hover {
+  text-decoration: none;
+  background: rgba(255, 248, 230, 0.58);
+}
+
+.gallery-path-nav a.active {
+  background: rgba(91, 43, 35, 0.14);
+  font-weight: bold;
 }
 
 .header-inner h1 {
@@ -25,6 +62,7 @@ body {
   font-size: 34px;
   font-weight: normal;
   letter-spacing: 0.02em;
+  color: #24130b;
 }
 
 .header-inner p {
@@ -33,34 +71,31 @@ body {
   color: #5b564d;
 }
 
-.gallery-nav {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px 18px;
+.gallery-top-nav {
+  margin-top: 16px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.gallery-nav a {
+.gallery-top-nav a {
   display: inline-block;
   padding: 8px 12px;
-  border: 1px solid #b9b09f;
-  background: #eee7da;
-  color: #2f2a24;
+  border-radius: 999px;
+  border: 1px solid rgba(95, 60, 32, 0.28);
+  background: rgba(255, 248, 230, 0.38);
+  color: #3f2318;
+  font-size: 15px;
+}
+
+.gallery-top-nav a:hover {
   text-decoration: none;
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  background: rgba(255, 248, 230, 0.58);
 }
 
-.gallery-nav a:hover {
-  background: #e3dac9;
-}
-
-.gallery-nav a.active {
-  background: #cbb898;
-  color: #1f1b16;
-  border-color: #aa987a;
+.gallery-top-nav a.active {
+  background: rgba(91, 43, 35, 0.14);
+  font-weight: bold;
 }
 
 .gallery-page {
@@ -77,12 +112,13 @@ body {
   margin: 0 0 8px;
   font-size: 30px;
   font-weight: normal;
+  color: #2f190f;
 }
 
 .gallery-intro p {
   margin: 0;
   font-size: 16px;
-  color: #5b564d;
+  color: #4d2f22;
 }
 
 .gallery-grid {
@@ -94,14 +130,15 @@ body {
 
 .piece-card {
   width: 100%;
-  background: #fcfbf8;
-  border: 1px solid #cfc7b8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 248, 230, 0.55);
+  border: 1px solid rgba(94, 57, 31, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(73, 42, 18, 0.14);
   overflow: hidden;
 }
 
 .piece-image-wrap {
-  background: #e7e1d5;
+  background: #efe2b6;
   height: 240px;
   display: flex;
   align-items: center;
@@ -133,6 +170,7 @@ body {
   font-size: 22px;
   line-height: 1.2;
   font-weight: normal;
+  color: #2f190f;
 }
 
 .piece-id {
@@ -143,7 +181,7 @@ body {
 }
 
 .museum-card {
-  border-top: 1px solid #ddd4c6;
+  border-top: 1px solid rgba(94, 57, 31, 0.16);
   padding-top: 12px;
 }
 
@@ -151,6 +189,7 @@ body {
   margin: 0 0 8px;
   font-size: 15px;
   line-height: 1.35;
+  color: #4d2f22;
 }
 
 .card-label {
@@ -162,11 +201,12 @@ body {
   display: inline-block;
   margin-top: 10px;
   padding: 5px 10px;
-  border: 1px solid #b8ae9a;
-  background: #f0ebdf;
+  border: 1px solid rgba(95, 60, 32, 0.28);
+  background: rgba(255, 248, 230, 0.55);
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: #3f2318;
 }
 
 .more-link {
@@ -174,21 +214,23 @@ body {
   margin-top: 2px;
   text-decoration: none;
   font-weight: bold;
-  color: #2f2a24;
+  color: #3f2318;
   border-bottom: 1px solid transparent;
 }
 
 .more-link:hover {
-  border-bottom-color: #2f2a24;
+  border-bottom-color: #3f2318;
 }
 
 .loading,
 .empty-state,
 .error-state {
   padding: 28px;
-  background: #fcfbf8;
-  border: 1px solid #cfc7b8;
+  background: rgba(255, 248, 230, 0.55);
+  border: 1px solid rgba(94, 57, 31, 0.22);
+  border-radius: 14px;
   font-size: 16px;
+  color: #4d2f22;
 }
 
 @media (max-width: 700px) {
@@ -198,10 +240,6 @@ body {
 
   .gallery-intro h2 {
     font-size: 24px;
-  }
-
-  .gallery-nav {
-    padding: 0 16px 16px;
   }
 
   .gallery-page {

@@ -4,158 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Practice</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      background: #f3f0e8;
-      color: #1f1f1f;
-    }
-
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 20px 48px;
-    }
-
-    .hero {
-      margin-bottom: 36px;
-    }
-
-    .hero h1 {
-      margin: 0 0 12px;
-      font-size: 42px;
-      font-weight: normal;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 760px;
-      font-size: 20px;
-      line-height: 1.45;
-      color: #4f4a43;
-    }
-
-    .practice-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 36px 28px;
-    }
-
-    .practice-card a {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .practice-card a:hover .image-wrap {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    }
-
-    .practice-card h2 {
-      margin: 0 0 10px;
-      font-size: 28px;
-      font-weight: normal;
-    }
-
-    .practice-card p {
-      margin: 0 0 16px;
-      font-size: 18px;
-      line-height: 1.45;
-      color: #4f4a43;
-    }
-
-    .image-wrap {
-      width: 100%;
-      max-width: 340px;
-      background: #e7e1d5;
-      border: 1px solid #cfc7b8;
-      overflow: hidden;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .image-wrap img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    @media (max-width: 700px) {
-      .page {
-        padding: 24px 16px 36px;
-      }
-
-      .hero h1 {
-        font-size: 34px;
-      }
-
-      .hero p,
-      .practice-card p {
-        font-size: 17px;
-      }
-
-      .practice-card h2 {
-        font-size: 24px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body>
-  <main class="page">
-    <section class="hero">
-      <h1>Practice</h1>
+<body class="practice-page">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <h1><a href="/" class="site-title-link">ClaycrazE</a></h1>
+      <p class="site-subtitle">Practice</p>
+
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html" class="active">Practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="gallery-page">
+    <section class="gallery-intro">
+      <h2>Practice</h2>
       <p>
-        ClaycrazE moves between vessel, container, figure, and object.
-        These categories serve as pathways into the work.
+        The made work lives here. These are the doors into the database-driven gallery pages:
+        bonsai, ikebana, sculpture, and face jugs.
       </p>
     </section>
 
-    <section class="practice-grid">
-      <article class="practice-card">
-        <a href="/gallery/bonsai">
-          <h2>Bonsai</h2>
-          <p>Ovals, rounds, rectangles, and freestyle forms gathered under one heading.</p>
-          <div class="image-wrap">
-            <img src="/images/bonsai_001.png" alt="Bonsai pottery" />
-          </div>
+    <section class="gallery-grid" aria-label="Practice galleries">
+
+      <article class="gallery-card">
+        <a class="gallery-card-link" href="/gallery/bonsai.html">
+          <h3>Bonsai</h3>
+          <p>Hand-built and wheel-thrown containers for living trees.</p>
+          <img src="/images/bonsai_001s.png" alt="Bonsai containers" />
         </a>
       </article>
 
-      <article class="practice-card">
-        <a href="/gallery/ikebana">
-          <h2>Ikebana</h2>
+      <article class="gallery-card">
+        <a class="gallery-card-link" href="/gallery/ikebana.html">
+          <h3>Ikebana</h3>
           <p>Vessels for spatial and floral composition.</p>
-          <div class="image-wrap">
-            <img src="/images/Ikebana_001.png" alt="Ikebana vessel" />
-          </div>
+          <img src="/images/ikebana_001s.png" alt="Ikebana vessels" />
         </a>
       </article>
 
-      <article class="practice-card">
-        <a href="/gallery/sculpture">
-          <h2>Sculpture</h2>
+      <article class="gallery-card">
+        <a class="gallery-card-link" href="/gallery/sculpture.html">
+          <h3>Sculpture</h3>
           <p>Figural and narrative clay forms.</p>
-          <div class="image-wrap">
-            <img src="/images/sculpture_001.png" alt="Sculpture" />
-          </div>
+          <img src="/images/sculpture_001s.png" alt="Clay sculpture" />
         </a>
       </article>
 
-      <article class="practice-card">
-        <a href="/gallery/facejugs">
-          <h2>Facejugs</h2>
-          <p>Expressive portrait vessels and character forms.</p>
-          <div class="image-wrap">
-            <img src="/images/facejug_001.jpg" alt="Facejug" />
-          </div>
+      <article class="gallery-card">
+        <a class="gallery-card-link" href="/gallery/facejugs.html">
+          <h3>Face Jugs</h3>
+          <p>Southern vernacular pottery tradition.</p>
+          <img src="/images/facejug_001s.jpg" alt="Face jugs" />
         </a>
       </article>
+
     </section>
   </main>
+
 </body>
 </html>

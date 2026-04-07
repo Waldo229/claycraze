@@ -66,8 +66,76 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/theory", (req, res) => {
+  res.sendFile(path.join(__dirname, "theory.html"));
+});
+
+app.get("/theory.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "theory.html"));
+});
+
 app.get("/practice", (req, res) => {
   res.sendFile(path.join(__dirname, "practice.html"));
+});
+
+app.get("/practice.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "practice.html"));
+});
+
+app.get("/materials", (req, res) => {
+  res.sendFile(path.join(__dirname, "materials.html"));
+});
+
+app.get("/materials.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "materials.html"));
+});
+
+app.get("/places", (req, res) => {
+  res.sendFile(path.join(__dirname, "places.html"));
+});
+
+app.get("/places.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "places.html"));
+});
+
+app.get("/processes", (req, res) => {
+  res.sendFile(path.join(__dirname, "processes.html"));
+});
+
+app.get("/processes.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "processes.html"));
+});
+
+app.get("/gene", (req, res) => {
+  res.sendFile(path.join(__dirname, "gene.html"));
+});
+
+app.get("/gene.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "gene.html"));
+});
+
+app.get("/studio", (req, res) => {
+  res.sendFile(path.join(__dirname, "studio.html"));
+});
+
+app.get("/studio.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "studio.html"));
+});
+
+app.get("/kiln", (req, res) => {
+  res.sendFile(path.join(__dirname, "kiln.html"));
+});
+
+app.get("/kiln.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "kiln.html"));
+});
+
+app.get("/node-notes", (req, res) => {
+  res.sendFile(path.join(__dirname, "node-notes.html"));
+});
+
+app.get("/node-notes.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "node-notes.html"));
 });
 
 app.get("/admin", (req, res) => {
@@ -566,7 +634,8 @@ app.get("/gallery-data/sculpture", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Home: http://localhost:${PORT}/`);
-  console.log(`Practice: http://localhost:${PORT}/practice`);
+  console.log(`Theory: http://localhost:${PORT}/theory.html`);
+  console.log(`Practice: http://localhost:${PORT}/practice.html`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Bonsai: http://localhost:${PORT}/gallery/bonsai`);
 });
