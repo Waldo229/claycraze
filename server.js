@@ -3,19 +3,32 @@ const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
+const PORT = 3010;
 
-const db = new sqlite3.Database(path.join(__dirname, "claycraze_inventory.db"), (err) => {
-  if (err) {
-    console.error("Could not open database:", err.message);
-    process.exit(1);
+/* -------------------------
+   DATABASE
+-------------------------- */
+const db = new sqlite3.Database(
+  path.join(__dirname, "claycraze_inventory.db"),
+  (err) => {
+    if (err) {
+      console.error("Could not open database:", err.message);
+      process.exit(1);
+    }
+    console.log("Connected to SQLite database.");
   }
-  console.log("Connected to SQLite database.");
-});
+);
 
+/* -------------------------
+   MIDDLEWARE
+-------------------------- */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+/* Public website root */
 app.use(express.static(path.join(__dirname, "public")));
+
+/* Optional extra image mount if you still use a root-level images folder */
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 /* -------------------------
@@ -60,84 +73,15 @@ function buildId(shape, pieceNumber, dateCode) {
 }
 
 /* -------------------------
-   SITE PAGES
+   HOME ROUTE
 -------------------------- */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.get("/theory", (req, res) => {
-  res.sendFile(path.join(__dirname, "theory.html"));
-});
-
-app.get("/theory.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "theory.html"));
-});
-
-app.get("/practice", (req, res) => {
-  res.sendFile(path.join(__dirname, "practice.html"));
-});
-
-app.get("/practice.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "practice.html"));
-});
-
-app.get("/materials", (req, res) => {
-  res.sendFile(path.join(__dirname, "materials.html"));
-});
-
-app.get("/materials.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "materials.html"));
-});
-
-app.get("/places", (req, res) => {
-  res.sendFile(path.join(__dirname, "places.html"));
-});
-
-app.get("/places.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "places.html"));
-});
-
-app.get("/processes", (req, res) => {
-  res.sendFile(path.join(__dirname, "processes.html"));
-});
-
-app.get("/processes.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "processes.html"));
-});
-
-app.get("/gene", (req, res) => {
-  res.sendFile(path.join(__dirname, "gene.html"));
-});
-
-app.get("/gene.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "gene.html"));
-});
-
-app.get("/studio", (req, res) => {
-  res.sendFile(path.join(__dirname, "studio.html"));
-});
-
-app.get("/studio.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "studio.html"));
-});
-
-app.get("/kiln", (req, res) => {
-  res.sendFile(path.join(__dirname, "kiln.html"));
-});
-
-app.get("/kiln.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "kiln.html"));
-});
-
-app.get("/node-notes", (req, res) => {
-  res.sendFile(path.join(__dirname, "node-notes.html"));
-});
-
-app.get("/node-notes.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "node-notes.html"));
-});
-
+/* -------------------------
+   ADMIN PAGE + PIECE PAGE
+-------------------------- */
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
@@ -185,15 +129,19 @@ app.get("/gallery/sculpture", (req, res) => {
    NEXT PIECE NUMBER
 -------------------------- */
 app.get("/next-piece-number", (req, res) => {
-  db.get(`SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_piece_number FROM inventory`, [], (err, row) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+  db.get(
+    `SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_piece_number FROM inventory`,
+    [],
+    (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
 
-    res.json({
-      next_piece_number: row?.next_piece_number || 1
-    });
-  });
+      res.json({
+        next_piece_number: row?.next_piece_number || 1,
+      });
+    }
+  );
 });
 
 /* -------------------------
@@ -222,7 +170,7 @@ app.post("/add-piece", (req, res) => {
     patron = "",
     patron_location = "",
     patron_contact = "",
-    context_of_sale = ""
+    context_of_sale = "",
   } = req.body;
 
   if (!shape || !piece_number || !date_code) {
@@ -268,7 +216,7 @@ app.post("/add-piece", (req, res) => {
     patron,
     patron_location,
     patron_contact,
-    context_of_sale
+    context_of_sale,
   ];
 
   db.run(sql, values, function (err) {
@@ -309,7 +257,7 @@ app.post("/update-piece", (req, res) => {
     patron = "",
     patron_location = "",
     patron_contact = "",
-    context_of_sale = ""
+    context_of_sale = "",
   } = req.body;
 
   if (!original_id) {
@@ -380,7 +328,7 @@ app.post("/update-piece", (req, res) => {
     patron_location,
     patron_contact,
     context_of_sale,
-    String(original_id).trim()
+    String(original_id).trim(),
   ];
 
   db.run(sql, values, function (err) {
@@ -547,7 +495,7 @@ function getPublicPiecesByShape(shapeCode, res) {
 
   const params = [
     cleanShape(shapeCode),
-    ...PUBLIC_STATUSES.map((s) => s.toLowerCase())
+    ...PUBLIC_STATUSES.map((s) => s.toLowerCase()),
   ];
 
   db.all(sql, params, (err, rows) => {
@@ -569,7 +517,7 @@ function getPublicPiecesByShapes(shapeCodes, res) {
 
   const params = [
     ...shapeCodes.map((code) => cleanShape(code)),
-    ...PUBLIC_STATUSES.map((s) => s.toLowerCase())
+    ...PUBLIC_STATUSES.map((s) => s.toLowerCase()),
   ];
 
   db.all(sql, params, (err, rows) => {
