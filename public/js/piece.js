@@ -3,33 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Bonsai</title>
+  <title>ClaycrazE | Piece View</title>
   <link rel="stylesheet" href="/css/gallery.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="/">ClaycrazE</a>
-      <nav class="site-nav" aria-label="Primary">
+
+      <nav class="site-nav" aria-label="Primary navigation">
         <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-        <a href="/bonsai.html" aria-current="page">Bonsai</a>
+        <a href="/bonsai.html">Bonsai</a>
       </nav>
     </div>
   </header>
 
-  <main class="gallery-page">
-    <section class="gallery-intro">
-      <p class="eyebrow">Practice</p>
-      <h1>Bonsai Forms</h1>
-      <p>
-        A selection of bonsai containers from the studio. The gallery view shows the
-        top image of each piece. Open any piece to inspect the full view and underside.
-      </p>
-    </section>
+  <main class="piece-page">
+    <p class="back-link-wrap">
+      <a class="back-link" href="/bonsai.html">&larr; Back to Bonsai</a>
+    </p>
 
-    <section class="gallery-grid" id="galleryGrid" aria-live="polite"></section>
+    <section class="piece-layout" id="pieceLayout">
+      <section class="not-found">
+        <h1>Loading piece...</h1>
+        <p>Please wait while the piece data is loaded.</p>
+      </section>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -37,6 +38,6 @@
   </footer>
 
   <script src="/js/pieces.js"></script>
-  <script src="/js/bonsai.js"></script>
+  <script src="/js/piece.js"></script>
 </body>
 </html>

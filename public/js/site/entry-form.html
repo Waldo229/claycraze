@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClaycrazE | Piece Entry Form</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg: #d8b24a;
+      --bg-deep: #c7992d;
+      --panel: #f4e7c6;
+      --panel-2: #ecd9aa;
+      --text: #2c1a10;
+      --muted: #6a4b2d;
+      --line: #b68530;
+      --accent: #7a4d1c;
+      --accent-soft: #98662e;
+      --shadow: rgba(55, 31, 12, 0.16);
+      --ok: #355e2c;
+      --warn: #8a5a00;
+      --maxw: 1100px;
+      --radius: 14px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background: linear-gradient(to bottom, #ead08a 0%, var(--bg) 20%, var(--bg-deep) 100%);
+      min-height: 100vh;
+    }
+
+    .site-header {
+      background: rgba(236, 217, 170, 0.94);
+      border-bottom: 1px solid rgba(122, 77, 28, 0.18);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+    }
+
+    .header-inner {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      text-decoration: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .site-nav a {
+      color: var(--accent);
+      text-decoration: none;
+      padding: 0.4rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    .site-nav a:hover {
+      background: rgba(122, 77, 28, 0.08);
+    }
+
+    .page {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2.5rem;
+    }
+
+    .hero,
+    .panel {
+      background: rgba(244, 231, 198, 0.84);
+      border: 1px solid rgba(122, 77, 28, 0.16);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 28px var(--shadow);
+    }
+
+    .hero {
+      padding: 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 60ch;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.2rem;
+    }
+
+    .panel {
+      padding: 1.2rem;
+    }
+
+    .panel h2 {
+      margin: 0 0 0.9rem;
+      font-size: 1.3rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.95rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: #fffaf0;
+      border: 1px solid rgba(122, 77, 28, 0.22);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(122, 77, 28, 0.2);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.75rem 1rem;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #f9efda;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff7ea;
+      border-color: var(--accent);
+    }
+
+    .primary:hover {
+      background: var(--accent-soft);
+    }
+
+    .output-block {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(122, 77, 28, 0.14);
+    }
+
+    .output-block h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1.05rem;
+    }
+
+    pre,
+    code.inline {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #fffaf0;
+      border: 1px solid rgba(122, 77, 28, 0.18);
+      border-radius: 10px;
+      padding: 0.95rem;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+
+    .path-list {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .path-item {
+      background: #fffaf0;
+      border: 1px solid rgba(122, 77, 28, 0.18);
+      border-radius: 10px;
+      padding: 0.85rem;
+    }
+
+    .path-item strong {
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.8rem 0.95rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .status.ok {
+      background: rgba(53, 94, 44, 0.12);
+      border: 1px solid rgba(53, 94, 44, 0.25);
+      color: var(--ok);
+    }
+
+    .status.warn {
+      background: rgba(138, 90, 0, 0.12);
+      border: 1px solid rgba(138, 90, 0, 0.25);
+      color: var(--warn);
+    }
+
+    .checklist {
+      margin: 0;
+      padding-left: 1.2rem;
+      line-height: 1.7;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/">ClaycrazE</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+        <a href="/bonsai.html">Bonsai</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <h1>Piece Entry Form</h1>
+      <p>
+        Use this page to prepare a new gallery entry. It generates the exact
+        <code class="inline">pieces.js</code> entry and the exact image filenames
+        needed for the site. Copy the results into the project when finished.
+      </p>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Entry Details</h2>
+
+        <form id="entryForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="shape">Shape Code</label>
+              <select id="shape" name="shape">
+                <option value="OV">OV — Oval</option>
+                <option value="RC">RC — Rectangular</option>
+                <option value="RD">RD — Round</option>
+                <option value="CS">CS — Cascade</option>
+                <option value="SL">SL — Slab / Tray</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="pieceNumber">Piece Number</label>
+              <input id="pieceNumber" name="pieceNumber" type="number" min="1" max="999" value="1" />
+            </div>
+
+            <div class="field">
+              <label for="yearMonth">Year + Month</label>
+              <input id="yearMonth" name="yearMonth" type="text" value="" maxlength="4" />
+              <div class="help">Use 4 digits, like <code class="inline">2604</code> for April 2026.</div>
+            </div>
+
+            <div class="field">
+              <label for="title">Title</label>
+              <input id="title" name="title" type="text" value="Oval Bonsai Container" />
+            </div>
+
+            <div class="field">
+              <label for="category">Category</label>
+              <input id="category" name="category" type="text" value="Bonsai" />
+            </div>
+
+            <div class="field">
+              <label for="clay">Clay</label>
+              <input id="clay" name="clay" type="text" placeholder="Stoneware" />
+            </div>
+
+            <div class="field">
+              <label for="finish">Finish</label>
+              <input id="finish" name="finish" type="text" placeholder="Quiet satin with iron response" />
+            </div>
+
+            <div class="field">
+              <label for="dimensions">Dimensions</label>
+              <input id="dimensions" name="dimensions" type="text" placeholder='Approx. 10" x 8" x 2.5"' />
+            </div>
+
+            <div class="field">
+              <label for="price">Status</label>
+              <select id="price" name="price">
+                <option value="Available">Available</option>
+                <option value="Sold">Sold</option>
+                <option value="Hold">Hold</option>
+                <option value="Not Listed">Not Listed</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="undersideReady">Underside image ready?</label>
+              <select id="undersideReady" name="undersideReady">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" placeholder="Write a short, clean description of the piece."></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="primary" id="generateBtn">Generate Entry</button>
+            <button type="button" id="copyEntryBtn">Copy pieces.js Entry</button>
+            <button type="button" id="copyPathsBtn">Copy File Paths</button>
+            <button type="reset" id="resetBtn">Clear Form</button>
+          </div>
+        </form>
+
+        <div id="formStatus" class="status warn">
+          Fill out the form, then click <strong>Generate Entry</strong>.
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Generated Output</h2>
+
+        <div class="output-block">
+          <h3>Piece ID</h3>
+          <pre id="pieceIdOutput">—</pre>
+        </div>
+
+        <div class="output-block">
+          <h3>Image Filenames & Locations</h3>
+          <div class="path-list" id="pathList">
+            <div class="path-item">Generate an entry to see file paths.</div>
+          </div>
+        </div>
+
+        <div class="output-block">
+          <h3>pieces.js Entry</h3>
+          <pre id="entryOutput">—</pre>
+        </div>
+
+        <div class="output-block">
+          <h3>Apprentice Checklist</h3>
+          <ul class="checklist">
+            <li>Create the correct image files.</li>
+            <li>Put the thumbnail top image in <code class="inline">/images/thumbs</code>.</li>
+            <li>Put the full top and full bottom images in <code class="inline">/images/full</code>.</li>
+            <li>Copy the generated entry into <code class="inline">/js/pieces.js</code>.</li>
+            <li>Save and refresh the site.</li>
+          </ul>
+          <p class="small">
+            The gallery only needs the thumbnail to appear. The piece page uses the full top image,
+            and the bottom image is optional.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById("entryForm");
+      const generateBtn = document.getElementById("generateBtn");
+      const copyEntryBtn = document.getElementById("copyEntryBtn");
+      const copyPathsBtn = document.getElementById("copyPathsBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      const pieceIdOutput = document.getElementById("pieceIdOutput");
+      const entryOutput = document.getElementById("entryOutput");
+      const pathList = document.getElementById("pathList");
+      const formStatus = document.getElementById("formStatus");
+
+      const yearMonthInput = document.getElementById("yearMonth");
+      const titleInput = document.getElementById("title");
+      const shapeInput = document.getElementById("shape");
+
+      let lastGenerated = {
+        entry: "",
+        paths: "",
+        id: ""
+      };
+
+      setDefaultYearMonth();
+      updateTitleFromShape();
+
+      shapeInput.addEventListener("change", updateTitleFromShape);
+      generateBtn.addEventListener("click", generateEntry);
+      copyEntryBtn.addEventListener("click", copyEntry);
+      copyPathsBtn.addEventListener("click", copyPaths);
+      resetBtn.addEventListener("click", function () {
+        setTimeout(() => {
+          setDefaultYearMonth();
+          updateTitleFromShape();
+          clearOutputs();
+          setStatus("Fill out the form, then click Generate Entry.", "warn");
+        }, 0);
+      });
+
+      function setDefaultYearMonth() {
+        const now = new Date();
+        const year = String(now.getFullYear()).slice(-2);
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        yearMonthInput.value = year + month;
+      }
+
+      function updateTitleFromShape() {
+        const map = {
+          OV: "Oval Bonsai Container",
+          RC: "Rectangular Bonsai Container",
+          RD: "Round Bonsai Container",
+          CS: "Cascade Container",
+          SL: "Slab Planting Tray"
+        };
+        titleInput.value = map[shapeInput.value] || "Bonsai Container";
+      }
+
+      function generateEntry() {
+        const shape = getValue("shape").trim().toUpperCase();
+        const pieceNumberRaw = getValue("pieceNumber").trim();
+        const yearMonth = getValue("yearMonth").trim();
+        const title = getValue("title").trim();
+        const category = getValue("category").trim();
+        const clay = getValue("clay").trim();
+        const finish = getValue("finish").trim();
+        const dimensions = getValue("dimensions").trim();
+        const price = getValue("price").trim();
+        const description = getValue("description").trim();
+        const undersideReady = getValue("undersideReady").trim();
+
+        if (!/^[A-Z]{2}$/.test(shape)) {
+          setStatus("Shape code must be 2 letters, like OV or RC.", "warn");
+          return;
+        }
+
+        if (!/^\d{4}$/.test(yearMonth)) {
+          setStatus("Year + Month must be 4 digits, like 2604.", "warn");
+          return;
+        }
+
+        const pieceNumber = Number(pieceNumberRaw);
+        if (!Number.isInteger(pieceNumber) || pieceNumber < 1 || pieceNumber > 999) {
+          setStatus("Piece number must be between 1 and 999.", "warn");
+          return;
+        }
+
+        if (!title) {
+          setStatus("Please enter a title.", "warn");
+          return;
+        }
+
+        const paddedNumber = String(pieceNumber).padStart(2, "0");
+        const id = `${shape}-${yearMonth}-${paddedNumber}`;
+
+        const thumbPath = `/images/thumbs/${id}_top.jpg`;
+        const fullTopPath = `/images/full/${id}_top.jpg`;
+        const fullBottomPath = `/images/full/${id}_bottom.jpg`;
+
+        const entry = `{
+  id: "${escapeForJs(id)}",
+  title: "${escapeForJs(title)}",
+  category: "${escapeForJs(category)}",
+  clay: "${escapeForJs(clay)}",
+  finish: "${escapeForJs(finish)}",
+  dimensions: "${escapeForJs(dimensions)}",
+  price: "${escapeForJs(price)}",
+  description: "${escapeForJs(description)}"
+}`;
+
+        pieceIdOutput.textContent = id;
+        entryOutput.textContent = entry;
+
+        pathList.innerHTML = `
+          <div class="path-item">
+            <strong>Thumbnail (required for gallery)</strong>
+            <code>${thumbPath}</code>
+          </div>
+          <div class="path-item">
+            <strong>Full top image (required for piece page)</strong>
+            <code>${fullTopPath}</code>
+          </div>
+          <div class="path-item">
+            <strong>Full bottom image (${undersideReady === "yes" ? "expected" : "optional for now"})</strong>
+            <code>${fullBottomPath}</code>
+          </div>
+        `;
+
+        lastGenerated.id = id;
+        lastGenerated.entry = entry;
+        lastGenerated.paths = [
+          `Thumbnail: ${thumbPath}`,
+          `Full top: ${fullTopPath}`,
+          `Full bottom: ${fullBottomPath}`
+        ].join("\n");
+
+        setStatus(
+          undersideReady === "yes"
+            ? "Entry generated. Add all three images and copy the pieces.js block."
+            : "Entry generated. Gallery and top image can go live now; bottom image can be added later.",
+          "ok"
+        );
+      }
+
+      async function copyEntry() {
+        if (!lastGenerated.entry) {
+          setStatus("Generate an entry first.", "warn");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(lastGenerated.entry);
+          setStatus("pieces.js entry copied to clipboard.", "ok");
+        } catch {
+          setStatus("Could not copy automatically. Select and copy the entry manually.", "warn");
+        }
+      }
+
+      async function copyPaths() {
+        if (!lastGenerated.paths) {
+          setStatus("Generate an entry first.", "warn");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(lastGenerated.paths);
+          setStatus("Image file paths copied to clipboard.", "ok");
+        } catch {
+          setStatus("Could not copy automatically. Copy the paths manually.", "warn");
+        }
+      }
+
+      function clearOutputs() {
+        pieceIdOutput.textContent = "—";
+        entryOutput.textContent = "—";
+        pathList.innerHTML = '<div class="path-item">Generate an entry to see file paths.</div>';
+        lastGenerated = { entry: "", paths: "", id: "" };
+      }
+
+      function setStatus(message, kind) {
+        formStatus.className = "status " + kind;
+        formStatus.innerHTML = message;
+      }
+
+      function getValue(id) {
+        return document.getElementById(id).value;
+      }
+
+      function escapeForJs(value) {
+        return String(value || "")
+          .replaceAll("\\", "\\\\")
+          .replaceAll('"', '\\"');
+      }
+    })();
+  </script>
+</body>
+</html>
