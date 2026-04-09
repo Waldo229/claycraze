@@ -416,3 +416,38 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+# =========================
+# ClaycrazE / studio-specific
+# =========================
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Local-only working folders
+source_images/
+raw_images/
+exports/
+temp/
+private/
+studio_tools/
+
+# OS clutter not always covered above
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Optional local database / temp files
+# Comment these out if the database itself becomes the committed master record
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.tmp
+
+# Logs
+*.log
+
+# Keep live website images tracked
+# Do NOT ignore /public/images/
