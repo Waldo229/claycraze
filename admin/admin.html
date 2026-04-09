@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClaycrazE | Admin Entry</title>
+  <link rel="stylesheet" href="/css/gallery.css" />
+  <style>
+    .admin-page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2.5rem;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.2rem;
+    }
+
+    .admin-panel {
+      background: rgba(244, 231, 198, 0.84);
+      border: 1px solid rgba(122, 77, 28, 0.16);
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(55, 31, 12, 0.16);
+      padding: 1.2rem;
+    }
+
+    .admin-panel h2 {
+      margin: 0 0 1rem;
+    }
+
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      font: inherit;
+      border: 1px solid rgba(122, 77, 28, 0.22);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      background: #fffaf0;
+      color: #2c1a10;
+    }
+
+    .field textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .admin-btn {
+      appearance: none;
+      border: 1px solid rgba(122, 77, 28, 0.2);
+      background: #f4e7c6;
+      color: #2c1a10;
+      border-radius: 999px;
+      padding: 0.75rem 1rem;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .admin-btn.primary {
+      background: #7a4d1c;
+      color: #fff7ea;
+      border-color: #7a4d1c;
+    }
+
+    .admin-status,
+    .admin-output {
+      background: #fffaf0;
+      border: 1px solid rgba(122, 77, 28, 0.18);
+      border-radius: 10px;
+      padding: 0.95rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .admin-list {
+      margin: 0;
+      padding-left: 1.2rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 860px) {
+      .admin-grid,
+      .admin-form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/bonsai.html">ClaycrazE</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/bonsai.html">Bonsai</a>
+        <a href="/piece.html">Piece View</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="admin-page">
+    <section class="gallery-intro">
+      <p class="eyebrow">Studio</p>
+      <h1>Admin Entry</h1>
+      <p>
+        Enter a piece once. This form saves directly to the SQLite master record
+        and refreshes the JSON used by the site.
+      </p>
+    </section>
+
+    <div class="admin-grid">
+      <section class="admin-panel">
+        <h2>Piece Entry</h2>
+
+        <form id="adminForm">
+          <div class="admin-form-grid">
+            <div class="field">
+              <label for="shape">Shape Code</label>
+              <select id="shape" name="shape">
+                <option value="OV">OV — Oval</option>
+                <option value="RC">RC — Rectangular</option>
+                <option value="RD">RD — Round</option>
+                <option value="CS">CS — Cascade</option>
+                <option value="SL">SL — Slab / Tray</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="pieceNumber">Piece Number</label>
+              <input id="pieceNumber" name="pieceNumber" type="number" min="1" max="999" value="1" />
+            </div>
+
+            <div class="field">
+              <label for="yearMonth">Year + Month</label>
+              <input id="yearMonth" name="yearMonth" type="text" maxlength="4" />
+            </div>
+
+            <div class="field">
+              <label for="title">Title</label>
+              <input id="title" name="title" type="text" value="Oval Bonsai Container" />
+            </div>
+
+            <div class="field">
+              <label for="category">Category</label>
+              <input id="category" name="category" type="text" value="Bonsai" />
+            </div>
+
+            <div class="field">
+              <label for="clay">Clay</label>
+              <input id="clay" name="clay" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="finish">Finish</label>
+              <input id="finish" name="finish" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="dimensions">Dimensions</label>
+              <input id="dimensions" name="dimensions" type="text" placeholder='Approx. 10" x 8" x 2.5"' />
+            </div>
+
+            <div class="field">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="Available">Available</option>
+                <option value="Sold">Sold</option>
+                <option value="Hold">Hold</option>
+                <option value="Not Listed">Not Listed</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="hasBottomImage">Bottom image ready?</label>
+              <select id="hasBottomImage" name="hasBottomImage">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="isPublished">Publish to website?</label>
+              <select id="isPublished" name="isPublished">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="description">Description</label>
+              <textarea id="description" name="description"></textarea>
+            </div>
+          </div>
+
+          <div class="admin-actions">
+            <button type="button" class="admin-btn" id="previewBtn">Preview Entry</button>
+            <button type="submit" class="admin-btn primary">Save to Database</button>
+            <button type="reset" class="admin-btn" id="resetBtn">Clear Form</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-panel">
+        <h2>Output</h2>
+
+        <p><strong>Piece ID</strong></p>
+        <div class="admin-output" id="pieceIdOutput">—</div>
+
+        <p><strong>Image files</strong></p>
+        <div class="admin-output" id="imageOutput">—</div>
+
+        <p><strong>Record Preview</strong></p>
+        <div class="admin-output" id="recordOutput">—</div>
+
+        <p><strong>Studio checklist</strong></p>
+        <ul class="admin-list">
+          <li>Save the thumbnail top image in <code>/public/images/thumbs/ID_top.jpg</code></li>
+          <li>Save the full top image in <code>/public/images/full/ID_top.jpg</code></li>
+          <li>Save the full bottom image in <code>/public/images/full/ID_bottom.jpg</code> if available</li>
+          <li>Click <strong>Save to Database</strong></li>
+          <li>The server refreshes <code>/public/data/pieces.json</code> automatically</li>
+          <li>Refresh the site</li>
+        </ul>
+
+        <p><strong>Status</strong></p>
+        <div class="admin-status" id="statusOutput">Fill out the form, then preview or save.</div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/admin/js/admin.js"></script>
+</body>
+</html>

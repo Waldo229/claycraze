@@ -1,10 +1,12 @@
 import json
 import sqlite3
 from pathlib import Path
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from urllib.parse import unquote
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
+ADMIN_DIR = BASE_DIR / "admin"
 DB_PATH = BASE_DIR / "inventory" / "inventory.db"
 JSON_PATH = PUBLIC_DIR / "data" / "pieces.json"
 
@@ -91,59 +93,6 @@ def export_pieces_json() -> int:
     return len(pieces)
 
 
-class ClaycrazEHandler(SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(PUBLIC_DIR), **kwargs)
-
-    def end_json(self, status_code: int, payload: dict) -> None:
-        body = json.dumps(payload).encode("utf-8")
-        self.send_response(status_code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    def do_POST(self):
-        if self.path != "/api/pieces":
-            self.end_json(404, {"ok": False, "error": "Not found"})
-            return
-
-        try:
-            length = int(self.headers.get("Content-Length", "0"))
-        except ValueError:
-            self.end_json(400, {"ok": False, "error": "Invalid Content-Length"})
-            return
-
-        raw_body = self.rfile.read(length)
-        try:
-            data = json.loads(raw_body.decode("utf-8"))
-        except json.JSONDecodeError:
-            self.end_json(400, {"ok": False, "error": "Invalid JSON"})
-            return
-
-        validation_error = validate_piece_payload(data)
-        if validation_error:
-            self.end_json(400, {"ok": False, "error": validation_error})
-            return
-
-        try:
-            upsert_piece(data)
-            exported_count = export_pieces_json()
-        except Exception as exc:
-            self.end_json(500, {"ok": False, "error": f"Server error: {exc}"})
-            return
-
-        self.end_json(
-            200,
-            {
-                "ok": True,
-                "message": "Piece saved successfully.",
-                "piece_id": data["id"],
-                "exported_count": exported_count,
-            },
-        )
-
-
 def validate_piece_payload(data: dict) -> str | None:
     required_text_fields = ["id", "title", "category", "status"]
     for field in required_text_fields:
@@ -205,13 +154,138 @@ def upsert_piece(data: dict) -> None:
         conn.close()
 
 
+class ClaycrazEHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        path = unquote(self.path.split("?", 1)[0])
+
+        if path == "/":
+            path = "/bonsai.html"
+
+        file_path = self.resolve_get_path(path)
+        if not file_path:
+            self.send_error(404, "File not found")
+            return
+
+        self.serve_file(file_path)
+
+    def do_POST(self):
+        if self.path != "/api/pieces":
+            self.send_json(404, {"ok": False, "error": "Not found"})
+            return
+
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            self.send_json(400, {"ok": False, "error": "Invalid Content-Length"})
+            return
+
+        raw_body = self.rfile.read(length)
+        try:
+            data = json.loads(raw_body.decode("utf-8"))
+        except json.JSONDecodeError:
+            self.send_json(400, {"ok": False, "error": "Invalid JSON"})
+            return
+
+        validation_error = validate_piece_payload(data)
+        if validation_error:
+            self.send_json(400, {"ok": False, "error": validation_error})
+            return
+
+        try:
+            upsert_piece(data)
+            exported_count = export_pieces_json()
+        except Exception as exc:
+            self.send_json(500, {"ok": False, "error": f"Server error: {exc}"})
+            return
+
+        self.send_json(
+            200,
+            {
+                "ok": True,
+                "message": "Piece saved successfully.",
+                "piece_id": data["id"],
+                "exported_count": exported_count,
+            },
+        )
+
+    def resolve_get_path(self, path: str) -> Path | None:
+        if path == "/admin.html":
+            candidate = ADMIN_DIR / "admin.html"
+        elif path.startswith("/admin/js/"):
+            relative = path.removeprefix("/admin/js/")
+            candidate = ADMIN_DIR / "js" / relative
+        else:
+            relative = path.lstrip("/")
+            candidate = PUBLIC_DIR / relative
+
+        try:
+            candidate = candidate.resolve()
+        except FileNotFoundError:
+            return None
+
+        allowed_roots = [PUBLIC_DIR.resolve(), ADMIN_DIR.resolve()]
+        if not any(root == candidate or root in candidate.parents for root in allowed_roots):
+            return None
+
+        if not candidate.exists() or not candidate.is_file():
+            return None
+
+        return candidate
+
+    def serve_file(self, file_path: Path) -> None:
+        content_type = self.guess_content_type(file_path)
+
+        try:
+            data = file_path.read_bytes()
+        except OSError:
+            self.send_error(500, "Could not read file")
+            return
+
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def send_json(self, status_code: int, payload: dict) -> None:
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    @staticmethod
+    def guess_content_type(file_path: Path) -> str:
+        suffix = file_path.suffix.lower()
+
+        if suffix == ".html":
+            return "text/html; charset=utf-8"
+        if suffix == ".css":
+            return "text/css; charset=utf-8"
+        if suffix == ".js":
+            return "application/javascript; charset=utf-8"
+        if suffix == ".json":
+            return "application/json; charset=utf-8"
+        if suffix == ".jpg" or suffix == ".jpeg":
+            return "image/jpeg"
+        if suffix == ".png":
+            return "image/png"
+        if suffix == ".webp":
+            return "image/webp"
+        if suffix == ".svg":
+            return "image/svg+xml"
+        return "application/octet-stream"
+
+
 def main() -> None:
     ensure_database()
     export_pieces_json()
 
     server = ThreadingHTTPServer(("127.0.0.1", 8000), ClaycrazEHandler)
     print("ClaycrazE local server running at http://127.0.0.1:8000")
-    print("Open http://127.0.0.1:8000/admin.html")
+    print("Public site:  http://127.0.0.1:8000/bonsai.html")
+    print("Private admin: http://127.0.0.1:8000/admin.html")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
