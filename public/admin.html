@@ -3,153 +3,259 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE Inventory Admin</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <title>ClaycrazE | Admin Entry</title>
+  <link rel="stylesheet" href="/css/gallery.css" />
+  <style>
+    .admin-page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2.5rem;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.2rem;
+    }
+
+    .admin-panel {
+      background: rgba(244, 231, 198, 0.84);
+      border: 1px solid rgba(122, 77, 28, 0.16);
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(55, 31, 12, 0.16);
+      padding: 1.2rem;
+    }
+
+    .admin-panel h2 {
+      margin: 0 0 1rem;
+    }
+
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      font: inherit;
+      border: 1px solid rgba(122, 77, 28, 0.22);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      background: #fffaf0;
+      color: #2c1a10;
+    }
+
+    .field textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .admin-btn {
+      appearance: none;
+      border: 1px solid rgba(122, 77, 28, 0.2);
+      background: #f4e7c6;
+      color: #2c1a10;
+      border-radius: 999px;
+      padding: 0.75rem 1rem;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .admin-btn.primary {
+      background: #7a4d1c;
+      color: #fff7ea;
+      border-color: #7a4d1c;
+    }
+
+    .admin-status,
+    .admin-output {
+      background: #fffaf0;
+      border: 1px solid rgba(122, 77, 28, 0.18);
+      border-radius: 10px;
+      padding: 0.95rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .admin-list {
+      margin: 0;
+      padding-left: 1.2rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 860px) {
+      .admin-grid,
+      .admin-form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="window">
-    <div class="titlebar">ClaycrazE Inventory Admin</div>
-    <div class="content">
-      <h2>Add / Edit Inventory Piece</h2>
-      <div class="small-note">
-        Click a row below to load it into the form for editing. Image paths are cleaned automatically into web paths.
-      </div>
-
-      <form id="pieceForm">
-        <input type="hidden" id="original_id" name="original_id" />
-
-        <div class="form-grid">
-          <label for="shape">Shape Code</label>
-          <select id="shape" name="shape" required>
-            <option value="">-- Select --</option>
-            <option value="OV">OV</option>
-            <option value="RD">RD</option>
-            <option value="RC">RC</option>
-            <option value="FJ">FJ</option>
-            <option value="FS">FS</option>
-            <option value="IKE">IKE</option>
-            <option value="SCP">SCP</option>
-          </select>
-
-          <label for="piece_number">Piece Number</label>
-          <input type="number" id="piece_number" name="piece_number" placeholder="1" required />
-
-          <label for="date_code">Date Code</label>
-          <input type="text" id="date_code" name="date_code" placeholder="2604" required />
-
-          <label for="description">Description</label>
-          <input type="text" id="description" name="description" placeholder="Oval bonsai pot" />
-
-          <label for="clay_body">Clay Body</label>
-          <input type="text" id="clay_body" name="clay_body" placeholder="White stoneware" />
-
-          <label for="glaze">Glaze</label>
-          <input type="text" id="glaze" name="glaze" placeholder="Waxy satin matte" />
-
-          <label for="width">Width / Length</label>
-          <input type="text" id="width" name="width" placeholder="13" />
-
-          <label for="depth">Depth / Width</label>
-          <input type="text" id="depth" name="depth" placeholder="9" />
-
-          <label for="height">Height</label>
-          <input type="text" id="height" name="height" placeholder="5" />
-
-          <label for="firing">Firing</label>
-          <input type="text" id="firing" name="firing" placeholder="Cone 6 oxidation" />
-
-          <label for="image_path">Photo / Image Path</label>
-          <input type="text" id="image_path" name="image_path" placeholder="/images/bonsai/rectangles/rectangle-001.png" />
-
-          <label for="status">Status</label>
-          <select id="status" name="status">
-            <option value="available">available</option>
-            <option value="sold">sold</option>
-            <option value="held">held</option>
-            <option value="gifted">gifted</option>
-            <option value="archive">archive</option>
-          </select>
-
-          <label for="price">Price</label>
-          <input type="text" id="price" name="price" placeholder="125.00" />
-
-          <label for="sale_date">Sale Date</label>
-          <input type="date" id="sale_date" name="sale_date" />
-
-          <label for="patron">Patron</label>
-          <input type="text" id="patron" name="patron" placeholder="Joe Doke" />
-
-          <label for="patron_location">Patron Location</label>
-          <input type="text" id="patron_location" name="patron_location" placeholder="Norfolk, VA" />
-
-          <label for="patron_contact">Patron Contact</label>
-          <input type="text" id="patron_contact" name="patron_contact" placeholder="phone / email / address" />
-
-          <label for="context_of_sale">Context of Sale</label>
-          <select id="context_of_sale" name="context_of_sale">
-            <option value="">-- Select --</option>
-            <option value="studio">studio</option>
-            <option value="gallery">gallery</option>
-            <option value="show">show</option>
-            <option value="festival">festival</option>
-            <option value="online">online</option>
-            <option value="private sale">private sale</option>
-            <option value="gift">gift</option>
-          </select>
-
-          <label for="notes">Notes</label>
-          <textarea id="notes" name="notes" class="full-row" placeholder="Slip, firing placement, iron wash notes, buyer remarks, etc."></textarea>
-        </div>
-
-        <div class="preview" id="idPreview">ID Preview: —</div>
-
-        <div class="button-row">
-          <button type="submit" id="addBtn">Add Piece</button>
-          <button type="button" id="updateBtn">Update Piece</button>
-          <button type="button" id="archiveBtn">Archive Piece</button>
-          <button type="button" id="deleteBtn">Delete Piece</button>
-          <button type="button" id="clearBtn">Clear Form</button>
-          <button type="button" id="refreshBtn">Refresh Piece List</button>
-        </div>
-      </form>
-
-      <div class="status" id="statusBox">Ready.</div>
-
-      <div class="section-title">Current Inventory</div>
-      <div class="table-wrap">
-        <table id="piecesTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Price</th>
-              <th>Shape</th>
-              <th>#</th>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Clay Body</th>
-              <th>Glaze</th>
-              <th>W</th>
-              <th>D</th>
-              <th>H</th>
-              <th>Firing</th>
-              <th>Patron</th>
-              <th>Location</th>
-              <th>Sale Date</th>
-              <th>Context</th>
-              <th>Image</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="19">No pieces loaded yet.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/">ClaycrazE</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+        <a href="/bonsai.html">Bonsai</a>
+      </nav>
     </div>
-  </div>
+  </header>
+
+  <main class="admin-page">
+    <section class="gallery-intro">
+      <p class="eyebrow">Studio</p>
+      <h1>Admin Entry</h1>
+      <p>
+        Enter a piece once. This form saves directly to the SQLite master record
+        and refreshes the JSON used by the site.
+      </p>
+    </section>
+
+    <div class="admin-grid">
+      <section class="admin-panel">
+        <h2>Piece Entry</h2>
+
+        <form id="adminForm">
+          <div class="admin-form-grid">
+            <div class="field">
+              <label for="shape">Shape Code</label>
+              <select id="shape" name="shape">
+                <option value="OV">OV — Oval</option>
+                <option value="RC">RC — Rectangular</option>
+                <option value="RD">RD — Round</option>
+                <option value="CS">CS — Cascade</option>
+                <option value="SL">SL — Slab / Tray</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="pieceNumber">Piece Number</label>
+              <input id="pieceNumber" name="pieceNumber" type="number" min="1" max="999" value="1" />
+            </div>
+
+            <div class="field">
+              <label for="yearMonth">Year + Month</label>
+              <input id="yearMonth" name="yearMonth" type="text" maxlength="4" />
+            </div>
+
+            <div class="field">
+              <label for="title">Title</label>
+              <input id="title" name="title" type="text" value="Oval Bonsai Container" />
+            </div>
+
+            <div class="field">
+              <label for="category">Category</label>
+              <input id="category" name="category" type="text" value="Bonsai" />
+            </div>
+
+            <div class="field">
+              <label for="clay">Clay</label>
+              <input id="clay" name="clay" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="finish">Finish</label>
+              <input id="finish" name="finish" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="dimensions">Dimensions</label>
+              <input id="dimensions" name="dimensions" type="text" placeholder='Approx. 10" x 8" x 2.5"' />
+            </div>
+
+            <div class="field">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="Available">Available</option>
+                <option value="Sold">Sold</option>
+                <option value="Hold">Hold</option>
+                <option value="Not Listed">Not Listed</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="hasBottomImage">Bottom image ready?</label>
+              <select id="hasBottomImage" name="hasBottomImage">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="isPublished">Publish to website?</label>
+              <select id="isPublished" name="isPublished">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="description">Description</label>
+              <textarea id="description" name="description"></textarea>
+            </div>
+          </div>
+
+          <div class="admin-actions">
+            <button type="button" class="admin-btn" id="previewBtn">Preview Entry</button>
+            <button type="submit" class="admin-btn primary">Save to Database</button>
+            <button type="reset" class="admin-btn" id="resetBtn">Clear Form</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-panel">
+        <h2>Output</h2>
+
+        <p><strong>Piece ID</strong></p>
+        <div class="admin-output" id="pieceIdOutput">—</div>
+
+        <p><strong>Image files</strong></p>
+        <div class="admin-output" id="imageOutput">—</div>
+
+        <p><strong>Record Preview</strong></p>
+        <div class="admin-output" id="recordOutput">—</div>
+
+        <p><strong>Studio checklist</strong></p>
+        <ul class="admin-list">
+          <li>Save the thumbnail top image in <code>/public/images/thumbs/ID_top.jpg</code></li>
+          <li>Save the full top image in <code>/public/images/full/ID_top.jpg</code></li>
+          <li>Save the full bottom image in <code>/public/images/full/ID_bottom.jpg</code> if available</li>
+          <li>Click <strong>Save to Database</strong></li>
+          <li>The server refreshes <code>/public/data/pieces.json</code> automatically</li>
+          <li>Refresh the site</li>
+        </ul>
+
+        <p><strong>Status</strong></p>
+        <div class="admin-status" id="statusOutput">Fill out the form, then preview or save.</div>
+      </section>
+    </div>
+  </main>
 
   <script src="/js/admin.js"></script>
 </body>
