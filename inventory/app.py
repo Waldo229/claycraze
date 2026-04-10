@@ -1,3 +1,4 @@
+import base64
 import json
 import sqlite3
 from pathlib import Path
@@ -9,6 +10,8 @@ PUBLIC_DIR = BASE_DIR / "public"
 ADMIN_DIR = BASE_DIR / "admin"
 DB_PATH = BASE_DIR / "inventory" / "inventory.db"
 JSON_PATH = PUBLIC_DIR / "data" / "pieces.json"
+THUMBS_DIR = PUBLIC_DIR / "images" / "thumbs"
+FULL_DIR = PUBLIC_DIR / "images" / "full"
 
 
 def ensure_database() -> None:
@@ -38,6 +41,9 @@ def ensure_database() -> None:
     END;
     """
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    THUMBS_DIR.mkdir(parents=True, exist_ok=True)
+    FULL_DIR.mkdir(parents=True, exist_ok=True)
+
     conn = sqlite3.connect(DB_PATH)
     try:
         conn.executescript(schema)
@@ -104,6 +110,15 @@ def validate_piece_payload(data: dict) -> str | None:
     if len(piece_id) < 8 or "-" not in piece_id:
         return "Invalid piece ID format."
 
+    thumb_image = data.get("thumb_image")
+    full_top_image = data.get("full_top_image")
+
+    if not thumb_image:
+        return "Thumbnail image is required."
+
+    if not full_top_image:
+        return "Full top image is required."
+
     return None
 
 
@@ -154,6 +169,54 @@ def upsert_piece(data: dict) -> None:
         conn.close()
 
 
+def decode_data_url(data_url: str) -> tuple[bytes, str]:
+    if not data_url.startswith("data:"):
+        raise ValueError("Invalid image data.")
+
+    header, encoded = data_url.split(",", 1)
+    mime_type = header.split(";")[0].removeprefix("data:")
+    return base64.b64decode(encoded), mime_type
+
+
+def extension_from_mime(mime_type: str) -> str:
+    mapping = {
+        "image/jpeg": ".jpg",
+        "image/jpg": ".jpg",
+        "image/png": ".png",
+        "image/webp": ".webp",
+    }
+    if mime_type not in mapping:
+        raise ValueError(f"Unsupported image type: {mime_type}")
+    return mapping[mime_type]
+
+
+def save_images(data: dict) -> None:
+    piece_id = str(data["id"]).strip()
+
+    thumb_data = data.get("thumb_image")
+    full_top_data = data.get("full_top_image")
+    full_bottom_data = data.get("full_bottom_image")
+
+    thumb_bytes, thumb_mime = decode_data_url(thumb_data)
+    top_bytes, top_mime = decode_data_url(full_top_data)
+
+    thumb_ext = extension_from_mime(thumb_mime)
+    top_ext = extension_from_mime(top_mime)
+
+    if thumb_ext != ".jpg" or top_ext != ".jpg":
+        raise ValueError("Please upload JPEG files for thumbnail and full top image.")
+
+    (THUMBS_DIR / f"{piece_id}_top.jpg").write_bytes(thumb_bytes)
+    (FULL_DIR / f"{piece_id}_top.jpg").write_bytes(top_bytes)
+
+    if full_bottom_data:
+        bottom_bytes, bottom_mime = decode_data_url(full_bottom_data)
+        bottom_ext = extension_from_mime(bottom_mime)
+        if bottom_ext != ".jpg":
+            raise ValueError("Please upload JPEG files for bottom image.")
+        (FULL_DIR / f"{piece_id}_bottom.jpg").write_bytes(bottom_bytes)
+
+
 class ClaycrazEHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = unquote(self.path.split("?", 1)[0])
@@ -192,6 +255,7 @@ class ClaycrazEHandler(BaseHTTPRequestHandler):
             return
 
         try:
+            save_images(data)
             upsert_piece(data)
             exported_count = export_pieces_json()
         except Exception as exc:
@@ -202,7 +266,7 @@ class ClaycrazEHandler(BaseHTTPRequestHandler):
             200,
             {
                 "ok": True,
-                "message": "Piece saved successfully.",
+                "message": "Piece and images saved successfully.",
                 "piece_id": data["id"],
                 "exported_count": exported_count,
             },
@@ -267,7 +331,7 @@ class ClaycrazEHandler(BaseHTTPRequestHandler):
             return "application/javascript; charset=utf-8"
         if suffix == ".json":
             return "application/json; charset=utf-8"
-        if suffix == ".jpg" or suffix == ".jpeg":
+        if suffix in (".jpg", ".jpeg"):
             return "image/jpeg"
         if suffix == ".png":
             return "image/png"
@@ -289,7 +353,7 @@ def main() -> None:
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopping server...")
+        print("\\nStopping server...")
     finally:
         server.server_close()
 

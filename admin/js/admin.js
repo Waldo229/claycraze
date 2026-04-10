@@ -14,6 +14,10 @@
   const isPublishedInput = document.getElementById("isPublished");
   const descriptionInput = document.getElementById("description");
 
+  const thumbImageInput = document.getElementById("thumbImage");
+  const fullTopImageInput = document.getElementById("fullTopImage");
+  const fullBottomImageInput = document.getElementById("fullBottomImage");
+
   const previewBtn = document.getElementById("previewBtn");
   const resetBtn = document.getElementById("resetBtn");
 
@@ -32,18 +36,18 @@
       setDefaultYearMonth();
       updateTitleFromShape();
       clearOutputs();
-      setStatus("Fill out the form, then preview or save.");
+      setStatus("Fill out the form, choose the image files, then preview or save.");
     }, 0);
   });
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const payload = buildPayload();
+    const payload = await buildPayload();
     if (!payload) return;
 
     previewPayload(payload);
-    setStatus("Saving to database...");
+    setStatus("Saving to database and copying images...");
 
     try {
       const response = await fetch("/api/pieces", {
@@ -60,20 +64,20 @@
         throw new Error(result.error || "Save failed.");
       }
 
-      setStatus(`Saved ${result.piece_id}. JSON refreshed with ${result.exported_count} published piece(s).`);
+      setStatus(`Saved ${result.piece_id}. Images copied and JSON refreshed with ${result.exported_count} published piece(s).`);
     } catch (error) {
       setStatus(`Save failed: ${error.message}`);
     }
   });
 
-  function previewEntry() {
-    const payload = buildPayload();
+  async function previewEntry() {
+    const payload = await buildPayload(false);
     if (!payload) return;
     previewPayload(payload);
     setStatus("Preview generated. Ready to save.");
   }
 
-  function buildPayload() {
+  async function buildPayload(requireFiles = true) {
     const shape = getValue(shapeInput).toUpperCase().trim();
     const pieceNumber = Number(getValue(pieceNumberInput).trim());
     const yearMonth = getValue(yearMonthInput).trim();
@@ -114,6 +118,22 @@
       return null;
     }
 
+    if (requireFiles) {
+      if (!thumbImageInput.files[0]) {
+        setStatus("Thumbnail image is required.");
+        return null;
+      }
+
+      if (!fullTopImageInput.files[0]) {
+        setStatus("Full top image is required.");
+        return null;
+      }
+    }
+
+    const thumbImage = thumbImageInput.files[0] ? await fileToDataURL(thumbImageInput.files[0]) : null;
+    const fullTopImage = fullTopImageInput.files[0] ? await fileToDataURL(fullTopImageInput.files[0]) : null;
+    const fullBottomImage = fullBottomImageInput.files[0] ? await fileToDataURL(fullBottomImageInput.files[0]) : null;
+
     return {
       id,
       title,
@@ -124,7 +144,10 @@
       status,
       description,
       has_bottom_image: hasBottomImage,
-      is_published: isPublished
+      is_published: isPublished,
+      thumb_image: thumbImage,
+      full_top_image: fullTopImage,
+      full_bottom_image: fullBottomImage
     };
   }
 
@@ -140,7 +163,18 @@
       `Full bottom: ${bottomFull}`
     ].join("\n");
 
-    recordOutput.textContent = JSON.stringify(payload, null, 2);
+    recordOutput.textContent = JSON.stringify({
+      id: payload.id,
+      title: payload.title,
+      category: payload.category,
+      clay: payload.clay,
+      finish: payload.finish,
+      dimensions: payload.dimensions,
+      status: payload.status,
+      description: payload.description,
+      has_bottom_image: payload.has_bottom_image,
+      is_published: payload.is_published
+    }, null, 2);
   }
 
   function clearOutputs() {
@@ -173,5 +207,21 @@
 
   function setStatus(message) {
     statusOutput.textContent = message;
+  }
+
+  function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+
+      reader.onerror = function () {
+        reject(new Error(`Could not read file: ${file.name}`));
+      };
+
+      reader.readAsDataURL(file);
+    });
   }
 })();

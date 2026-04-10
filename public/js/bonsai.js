@@ -45,7 +45,7 @@
     galleryGrid.innerHTML = visiblePieces
       .map((piece) => {
         const thumbSrc = `/images/thumbs/${piece.id}_top.jpg`;
-        const href = `/piece.html?id=${encodeURIComponent(piece.id)}`;
+        const href = `/gallery/piece.html?id=${encodeURIComponent(piece.id)}`;
 
         return `
           <article class="gallery-card">
@@ -67,13 +67,14 @@
         `;
       })
       .join("");
-  } catch {
+  } catch (error) {
     galleryGrid.innerHTML = `
       <div class="empty-state">
         <h2>Gallery error</h2>
         <p>Something went wrong while loading the gallery data.</p>
       </div>
     `;
+    console.error("Gallery load error:", error);
   }
 
   function checkPieceThumbnail(piece) {
