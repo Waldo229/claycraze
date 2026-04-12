@@ -10,9 +10,9 @@
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
+      <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
       <button
@@ -31,35 +31,53 @@
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
         <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-        
+        <a href="/practice.html" class="active">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/gallery/bonsai.html">Bonsai</a>
-      <a href="/gallery/ovals.html">Ovals</a>
-      <a href="/gallery/rectangles.html">Rectangles</a>
-      <a href="/gallery/freestyle.html">Freestyle</a>
-      <a href="/gallery/rounds.html" class="active">Rounds</a>
-      <a href="/gallery/ikebana.html">Ikebana</a>
-      <a href="/gallery/sculpture.html">Sculpture</a>
-      <a href="/gallery/facejugs.html">Face Jugs</a>
-    </nav>
+  <nav class="sub-nav" aria-label="Practice sections">
+    <a href="/gallery/bonsai.html" class="active">Bonsai</a>
+    <a href="/gallery/ikebana.html">Ikebana</a>
+    <a href="/gallery/sculpture.html">Sculpture</a>
+    <a href="/gallery/facejugs.html">Face Jugs</a>
+  </nav>
 
-    <section class="gallery-intro">
-      <h2>Rounds</h2>
-      <p>Centered forms with gathered presence and circular composure.</p>
+  <nav class="sub-nav" aria-label="Bonsai form sections">
+    <a href="/gallery/bonsai.html">Bonsai</a>
+    <a href="/gallery/ovals.html">Ovals</a>
+    <a href="/gallery/rectangles.html">Rectangles</a>
+    <a href="/gallery/rounds.html" class="active">Rounds</a>
+    <a href="/gallery/freestyle.html">Freestyle</a>
+  </nav>
+
+  <main class="content-shell bonsai-page">
+    <section class="home-intro bonsai-intro">
+      <p class="breadcrumb">Practice / Bonsai</p>
+      <h1>Rounds</h1>
+
+      <div class="intro-copy">
+        <p>
+          Centered bonsai forms with a quieter rhythm and a more gathered presence.
+        </p>
+      </div>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading round bonsai forms...</div>
+    <section class="piece-grid" aria-label="Round bonsai pieces">
+      <article class="piece-card">
+        <img src="/images/bonsai/round.jpg" alt="Round bonsai pot" class="piece-image" />
+
+        <div class="piece-body">
+          <h2>Untitled Piece</h2>
+          <p class="piece-code">RD-0001-2604</p>
+          <p>Dimensions: —</p>
+          <p>Price: —</p>
+          <a href="#" class="piece-link">More</a>
+        </div>
+      </article>
     </section>
   </main>
 
   <script src="/js/nav.js"></script>
-  <script src="/js/rounds.js?v=6"></script>
 </body>
 </html>

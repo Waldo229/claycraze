@@ -10,9 +10,9 @@
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
+      <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
       <button
@@ -29,37 +29,56 @@
       </button>
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/l">Home</a>
+        <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-       
+        <a href="/practice.html" class="active">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/gallery/bonsai.html">Bonsai</a>
-      <a href="/gallery/ovals.html">Ovals</a>
-      <a href="/gallery/rectangles.html">Rectangles</a>
-      <a href="/gallery/freestyle.html" class="active">Freestyle</a>
-      <a href="/gallery/rounds.html">Rounds</a>
-      <a href="/gallery/ikebana.html">Ikebana</a>
-      <a href="/gallery/sculpture.html">Sculpture</a>
-      <a href="/gallery/facejugs.html">Face Jugs</a>
-    </nav>
+  <nav class="sub-nav" aria-label="Practice sections">
+    <a href="/gallery/bonsai.html" class="active">Bonsai</a>
+    <a href="/gallery/ikebana.html">Ikebana</a>
+    <a href="/gallery/sculpture.html">Sculpture</a>
+    <a href="/gallery/facejugs.html">Face Jugs</a>
+  </nav>
 
-    <section class="gallery-intro">
-      <h2>Freestyle</h2>
-      <p>Forms where utility and gesture begin to move more freely together.</p>
+  <nav class="sub-nav" aria-label="Bonsai form sections">
+    <a href="/gallery/bonsai.html">Bonsai</a>
+    <a href="/gallery/ovals.html">Ovals</a>
+    <a href="/gallery/rectangles.html">Rectangles</a>
+    <a href="/gallery/rounds.html">Rounds</a>
+    <a href="/gallery/freestyle.html" class="active">Freestyle</a>
+  </nav>
+
+  <main class="content-shell bonsai-page">
+    <section class="home-intro bonsai-intro">
+      <p class="breadcrumb">Practice / Bonsai</p>
+      <h1>Freestyle</h1>
+
+      <div class="intro-copy">
+        <p>
+          Freer bonsai forms with more movement, where utility remains important
+          but the silhouette carries extra character.
+        </p>
+      </div>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading freestyle bonsai forms...</div>
+    <section class="piece-grid" aria-label="Freestyle bonsai pieces">
+      <article class="piece-card">
+        <img src="/images/bonsai/freestyle.jpg" alt="Freestyle bonsai pot" class="piece-image" />
+
+        <div class="piece-body">
+          <h2>Untitled Piece</h2>
+          <p class="piece-code">FS-0001-2604</p>
+          <p>Dimensions: —</p>
+          <p>Price: —</p>
+          <a href="#" class="piece-link">More</a>
+        </div>
+      </article>
     </section>
   </main>
 
   <script src="/js/nav.js"></script>
-  <script src="/js/freestyle.js?v=6"></script>
 </body>
 </html>

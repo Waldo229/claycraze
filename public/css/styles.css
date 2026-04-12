@@ -58,7 +58,7 @@ p:last-child {
    HEADER
 ========================= */
 .site-header {
-  background: rgba(231, 219, 183, 0.96);
+  background: rgba(231, 219, 183, 0.97);
   border-bottom: 1px solid rgba(185, 140, 49, 0.28);
   box-shadow: 0 3px 12px rgba(73, 42, 18, 0.08);
   position: sticky;
@@ -70,7 +70,7 @@ p:last-child {
 .header-shell {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 1.25rem 1.25rem;
+  padding: 1.15rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -80,7 +80,7 @@ p:last-child {
 .site-brand {
   display: inline-flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .site-title {
@@ -93,6 +93,8 @@ p:last-child {
 .site-tag {
   font-size: 0.95rem;
   color: var(--muted);
+  line-height: 1.35;
+  max-width: 32rem;
 }
 
 .site-nav {
@@ -139,19 +141,16 @@ p:last-child {
 }
 
 /* =========================
-   PAGE WRAPPERS
+   WRAPPERS
 ========================= */
-main.gallery-page,
-main.theory-main,
-main.practice-main,
-main.home-main {
+.content-shell {
   max-width: var(--max-width);
   margin: 2rem auto 0;
   padding: 0 1.25rem 3rem;
 }
 
 /* =========================
-   INTRO / HERO CARDS
+   INTRO CARDS
 ========================= */
 .home-intro {
   background: var(--panel);
@@ -163,10 +162,16 @@ main.home-main {
 
 .home-intro h1,
 .home-intro h2 {
-  font-size: clamp(2.2rem, 4vw, 3.4rem);
-  line-height: 1.08;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.05;
   font-weight: normal;
-  margin-bottom: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
 }
 
 .intro-wrap {
@@ -186,254 +191,132 @@ main.home-main {
 .intro-copy {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
-  flex: 1 1 auto;
-  min-width: 0;
+  gap: 1rem;
+  max-width: 64ch;
 }
 
 .intro-copy p {
-  font-size: 1rem;
   line-height: 1.7;
-  max-width: 72ch;
   margin: 0;
 }
 
-/* Home page variation */
-.welcome-intro .intro-copy p,
-.home-intro.welcome-intro .intro-copy p {
-  max-width: 78ch;
-}
-
 /* =========================
-   SECTION / CARD GRIDS
+   THEORY BOXES
 ========================= */
-.gallery-grid,
-.theory-grid,
-.practice-sections,
-.theory-sections {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.8rem;
-  margin-top: 1.25rem;
+.theory-page-shell {
+  padding-top: 1rem;
 }
 
-.gallery-card,
+.theory-intro {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+}
+
+.theory-sections {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
 .theory-card {
   background: var(--panel);
   border-radius: var(--radius-lg);
-  box-shadow: 0 10px 28px var(--shadow);
   overflow: hidden;
-  min-height: 160px;
+  box-shadow: 0 10px 28px var(--shadow);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.gallery-card:hover,
-.gallery-card:focus-within,
 .theory-card:hover,
 .theory-card:focus-within {
   transform: translateY(-2px);
   box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
 }
 
-.gallery-card-link,
 .theory-card-link {
   display: block;
+  color: inherit;
+  text-decoration: none;
+  padding: 1.4rem 1.4rem 1.5rem;
   height: 100%;
-  padding: 1.5rem;
 }
 
-.gallery-card h3,
-.theory-card h3 {
-  font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+.theory-card-link h3 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.5rem, 2vw, 2rem);
   font-weight: normal;
-  margin-bottom: 0.65rem;
+  line-height: 1.15;
 }
 
-.gallery-card p,
-.theory-card p {
-  font-size: 1rem;
+.theory-card-link p {
+  margin: 0;
   color: var(--muted);
   line-height: 1.65;
 }
 
 /* =========================
-   THEORY CATEGORY NAV
+   PRACTICE BOXES
 ========================= */
-.category-nav,
-.sub-nav {
-  max-width: var(--max-width);
-  margin: 1.5rem auto 0;
-  padding: 0 1.25rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+.practice-landing-page {
+  padding-top: 1rem;
 }
 
-.category-nav a,
-.sub-nav a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.7rem 1rem;
-  background: rgba(231, 219, 183, 0.58);
-  border-radius: 999px;
-  transition: background-color 0.2s ease;
-  min-height: 44px;
+.practice-intro {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
 }
 
-.category-nav a:hover,
-.category-nav a:focus-visible,
-.sub-nav a:hover,
-.sub-nav a:focus-visible {
-  background: rgba(231, 219, 183, 0.9);
-  outline: none;
+.practice-map-row {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
 }
 
-.category-nav a.active,
-.sub-nav a.active {
-  background: var(--accent-soft);
-}
-
-/* =========================
-   GALLERY CHILD PAGES
-========================= */
-.content-shell {
-  max-width: var(--max-width);
-  margin: 2rem auto 0;
-  padding: 0 1.25rem 3rem;
-}
-
-.page-intro {
-  margin-bottom: 2rem;
-}
-
-.breadcrumb {
-  font-size: 0.95rem;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
-}
-
-.page-intro h1 {
-  font-size: clamp(2.4rem, 5vw, 4rem);
-  line-height: 1.05;
-  font-weight: normal;
-  margin-bottom: 1rem;
-}
-
-.intro-text {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  max-width: 54rem;
-}
-
-.gallery-section {
-  margin-top: 2.5rem;
-}
-
-.gallery-section h2 {
-  font-size: clamp(1.7rem, 3vw, 2.4rem);
-  font-weight: normal;
-  margin-bottom: 1rem;
-}
-
-.gallery-section .gallery-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.gallery-section .gallery-card {
-  min-height: unset;
-}
-
-.gallery-section .gallery-card img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.gallery-section .gallery-card p {
-  padding: 0.9rem 1rem 1rem;
-  color: var(--text);
-}
-
-/* =========================
-   IMAGE-CARD VARIANT
-========================= */
-.gallery-card.image-card {
-  padding: 0;
-}
-
-.gallery-card.image-card .gallery-card-link {
-  padding: 0;
-}
-
-.gallery-card.image-card img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.gallery-card.image-card .card-copy {
-  padding: 1rem 1.1rem 1.2rem;
-}
-
-.gallery-card.image-card .card-copy h3 {
-  margin-bottom: 0.35rem;
-}
-
-.gallery-card.image-card .card-copy p {
-  color: var(--muted);
-}
-
-/* =========================
-   BASIC CONTENT PAGES
-========================= */
-.page-shell {
-  max-width: 900px;
-  margin: 2rem auto 0;
-  padding: 0 1.25rem 3rem;
-}
-
-.page-card {
+.practice-map-card {
   background: var(--panel);
   border-radius: var(--radius-lg);
-  padding: 2rem;
+  overflow: hidden;
   box-shadow: 0 10px 28px var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.page-card h1 {
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
+.practice-map-card:hover,
+.practice-map-card:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
+}
+
+.practice-map-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.practice-map-link img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  filter: grayscale(100%);
+}
+
+.practice-map-link h2 {
+  margin: 0;
+  padding: 0.85rem 0.9rem 1rem;
+  font-size: clamp(1.2rem, 1.8vw, 1.6rem);
   font-weight: normal;
-  margin-bottom: 1rem;
-}
-
-.page-card p {
-  max-width: 70ch;
-  line-height: 1.75;
-}
-
-/* =========================
-   FOOTER
-========================= */
-.site-footer {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.25rem 2.5rem;
-  color: var(--muted);
-  font-size: 0.95rem;
+  line-height: 1.15;
+  text-align: center;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 @media (max-width: 980px) {
-  .gallery-grid,
-  .theory-grid,
-  .practice-sections,
-  .theory-sections,
-  .gallery-section .gallery-grid {
-    grid-template-columns: 1fr;
-  }
-
   .intro-wrap {
     flex-direction: column;
   }
@@ -443,8 +326,12 @@ main.home-main {
     flex: none;
   }
 
-  .intro-copy p {
-    max-width: none;
+  .theory-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-map-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -477,24 +364,16 @@ main.home-main {
     border-radius: 14px;
   }
 
-  .home-intro {
-    padding: 1.35rem 1.2rem 1.5rem;
-  }
-
-  .gallery-card-link,
-  .theory-card-link {
-    padding: 1.2rem;
-  }
-
-  .category-nav,
-  .sub-nav,
-  main.gallery-page,
-  main.theory-main,
-  main.practice-main,
-  main.home-main,
+  .home-intro,
   .content-shell {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .practice-map-row {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -512,391 +391,197 @@ main.home-main {
   }
 
   .home-intro h1,
-  .home-intro h2,
-  .page-intro h1,
-  .page-card h1 {
+  .home-intro h2 {
     font-size: 2.1rem;
   }
 
   .intro-monks {
     width: 145px;
   }
+}/* =========================
+   HOME PAGE
+========================= */
+.home-page-shell {
+  padding-top: 1rem;
+}
+
+.welcome-intro {
+  max-width: 1180px;
+  margin: 0 auto 2rem;
+}
+
+.welcome-intro .intro-copy {
+  max-width: none;
+}
+
+.home-door-row {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.home-door-card {
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 28px var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.home-door-card:hover,
+.home-door-card:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
+}
+
+.home-door-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.home-door-link h2 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+  font-weight: normal;
+  line-height: 1.15;
+}
+
+.home-door-link p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+@media (max-width: 760px) {
+  .home-door-row {
+    grid-template-columns: 1fr;
+  }
+}/* =========================
+   THEORY CHILD PAGES
+========================= */
+.theory-child-page {
+  padding-top: 1rem;
+}
+
+.theory-child-intro {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+}
+
+.theory-reading-card {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.theory-reading-card p {
+  max-width: 72ch;
+  line-height: 1.75;
+}/* =========================
+   SHARED SUB-NAV
+========================= */
+.sub-nav {
+  max-width: 1100px;
+  margin: 1.25rem auto 0;
+  padding: 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.sub-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  background: rgba(231, 219, 183, 0.58);
+  border-radius: 999px;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.sub-nav a:hover,
+.sub-nav a:focus-visible {
+  background: rgba(231, 219, 183, 0.9);
+  outline: none;
+}
+
+.sub-nav a.active {
+  background: var(--accent-soft);
+}
+
+/* =========================
+   SHARED READING CARD
+========================= */
+.page-card {
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: 0 10px 28px var(--shadow);
+}
+
+.theory-reading-card {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.theory-reading-card p {
+  max-width: 72ch;
+  line-height: 1.75;
+}
+
+@media (max-width: 760px) {
+  .sub-nav {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .page-card {
+    padding: 1.4rem;
+  }
 }.bonsai-page {
-  padding-top: 0.5rem;
-}
-
-.bonsai-intro {
-  max-width: 980px;
-  margin: 0 auto 2rem;
-}
-
-.bonsai-intro .intro-copy {
-  max-width: 64ch;
-}
-
-.bonsai-form-grid {
-  max-width: 980px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.75rem;
-}
-
-.bonsai-form-card {
-  background: var(--panel);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 10px 28px var(--shadow);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.bonsai-form-card:hover,
-.bonsai-form-card:focus-within {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
-}
-
-.bonsai-form-link {
-  display: block;
-}
-
-.bonsai-form-link img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.bonsai-form-link h2 {
-  margin: 0;
-  padding: 1rem 1.1rem 1.15rem;
-  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
-  font-weight: normal;
-  line-height: 1.15;
-}
-
-@media (max-width: 980px) {
-  .bonsai-form-grid {
-    grid-template-columns: 1fr;
-  }
-}/* =========================
-   BONSAI FORM NAV PAGE
-========================= */
-.bonsai-page {
-  padding-top: 0.5rem;
-}
-
-.bonsai-intro {
-  max-width: 980px;
-  margin: 0 auto 2rem;
-}
-
-.bonsai-intro .intro-copy {
-  max-width: 64ch;
-}
-
-.bonsai-form-grid {
-  max-width: 980px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.75rem;
-}
-
-.bonsai-form-card {
-  background: var(--panel);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 10px 28px var(--shadow);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.bonsai-form-card:hover,
-.bonsai-form-card:focus-within {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
-}
-
-.bonsai-form-link {
-  display: block;
-}
-
-.bonsai-form-link img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.bonsai-form-link h2 {
-  margin: 0;
-  padding: 1rem 1.1rem 1.15rem;
-  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
-  font-weight: normal;
-  line-height: 1.15;
-}
-
-@media (max-width: 980px) {
-  .bonsai-form-grid {
-    grid-template-columns: 1fr;
-  }
-}/* =========================
-   BONSAI RESET (kills old gallery behavior)
-========================= */
-
-.bonsai-form-card * {
-  all: unset;
-  display: revert;
-}
-
-.bonsai-form-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
-.bonsai-form-link img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.bonsai-form-link h2 {
-  margin: 0;
-  padding: 1rem 1.1rem 1.15rem;
-  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
-  font-weight: normal;
-  line-height: 1.15;
-}
-
-/* kill ANY stray paragraph styling */
-.bonsai-form-card p {
-  display: none !important;
-}
-
-/* kill pseudo-elements if any exist */
-.bonsai-form-card::before,
-.bonsai-form-card::after,
-.bonsai-form-link::before,
-.bonsai-form-link::after {
-  content: none !important;
-}.content-shell.bonsai-page {
-  padding-top: 2rem;
-}/* =========================
-   PRACTICE LANDING PAGE
-========================= */
-.practice-landing-page {
   padding-top: 1rem;
 }
 
-.practice-intro {
+.bonsai-intro {
   max-width: 1100px;
   margin: 0 auto 2rem;
 }
 
-.practice-intro .intro-wrap {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.6rem;
-}
-
-.practice-intro .intro-monks {
-  width: 175px;
-  flex: 0 0 175px;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-}
-
-.practice-intro .intro-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 64ch;
-}
-
-.practice-map-row {
+.bonsai-grid {
   max-width: 1100px;
   margin: 0 auto;
+}
+
+.gallery-grid.bonsai-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.25rem;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
 }
 
-.practice-map-card {
-  background: var(--panel);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 10px 28px var(--shadow);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.practice-map-card:hover,
-.practice-map-card:focus-within {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
-}
-
-.practice-map-link {
+.bonsai-card {
   display: block;
-  color: inherit;
   text-decoration: none;
-}
-
-.practice-map-link img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-}
-
-.practice-map-link h2 {
-  margin: 0;
-  padding: 0.85rem 0.9rem 1rem;
-  font-size: clamp(1.2rem, 1.8vw, 1.6rem);
-  font-weight: normal;
-  line-height: 1.15;
-  text-align: center;
-}
-
-@media (max-width: 980px) {
-  .practice-map-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .practice-intro .intro-wrap {
-    flex-direction: column;
-  }
-
-  .practice-intro .intro-monks {
-    width: 180px;
-    flex: none;
-  }
-}
-
-@media (max-width: 620px) {
-  .practice-map-row {
-    grid-template-columns: 1fr;
-  }
-}/* =========================
-   PRACTICE LANDING PAGE
-========================= */
-.practice-landing-page {
-  padding-top: 1rem;
-}
-
-.practice-intro {
-  max-width: 1100px;
-  margin: 0 auto 2rem;
-}
-
-.practice-intro .intro-wrap {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.6rem;
-}
-
-.practice-intro .intro-monks {
-  width: 175px;
-  flex: 0 0 175px;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-}
-
-.practice-intro .intro-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 64ch;
-}
-
-.practice-map-row {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.25rem;
-  align-items: start;
-}
-
-.practice-map-card {
-  background: var(--panel);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 10px 28px var(--shadow);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.practice-map-card:hover,
-.practice-map-card:focus-within {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(73, 42, 18, 0.22);
-}
-
-.practice-map-link {
-  display: block;
   color: inherit;
-  text-decoration: none;
 }
 
-.practice-map-link img {
-  display: block;
+.bonsai-card img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
+  border-radius: 10px;
+  display: block;
 }
 
-.practice-map-link h2 {
-  margin: 0;
-  padding: 0.85rem 0.9rem 1rem;
-  font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+.bonsai-card h3 {
+  margin-top: 0.75rem;
+  font-size: 1.15rem;
   font-weight: normal;
-  line-height: 1.15;
-  text-align: center;
-}
-
-@media (max-width: 980px) {
-  .practice-map-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .practice-intro .intro-wrap {
-    flex-direction: column;
-  }
-
-  .practice-intro .intro-monks {
-    width: 180px;
-    flex: none;
-  }
-}
-
-@media (max-width: 620px) {
-  .practice-map-row {
-    grid-template-columns: 1fr;
-  }
-}/* Practice card image consistency */
-.practice-map-link img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* Fine-tune individual images */
-.practice-map-card:nth-child(3) .practice-map-link img {
-  object-position: center top;
-}
-
-.practice-map-card:nth-child(4) .practice-map-link img {
-  object-position: center top;
-}.practice-map-card:nth-child(3) .practice-map-link img {
-  object-position: center 20%;
-}
-
-.practice-map-card:nth-child(4) .practice-map-link img {
-  object-position: center 15%;
+  line-height: 1.2;
 }

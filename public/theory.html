@@ -36,10 +36,10 @@
     </div>
   </header>
 
-  <main class="gallery-page">
-
+  <main class="content-shell theory-page-shell">
     <section class="home-intro theory-intro">
-      <h2>Theory</h2>
+      <p class="breadcrumb">Theory</p>
+      <h1>Theory</h1>
 
       <div class="intro-wrap">
         <img
@@ -64,17 +64,44 @@
       </div>
     </section>
 
-    <section
-      class="gallery-grid theory-sections"
-      id="theory-root"
-      aria-label="Theory sections"
-    >
-      <!-- theory.js injects the section cards here -->
-    </section>
+    <section class="theory-sections" aria-label="Theory sections">
+      <article class="theory-card">
+        <a class="theory-card-link" href="/studio.html">
+          <h3>Studio</h3>
+          <p>The physical and material ground of the work: places, materials, tools, and techniques.</p>
+        </a>
+      </article>
 
+      <article class="theory-card">
+        <a class="theory-card-link" href="/materials.html">
+          <h3>Materials</h3>
+          <p>Clay bodies, slips, glazes, and the accumulated behavior of matter under heat.</p>
+        </a>
+      </article>
+
+      <article class="theory-card">
+        <a class="theory-card-link" href="/places.html">
+          <h3>Places</h3>
+          <p>People, locations, and field notes that shape the larger geography of the work.</p>
+        </a>
+      </article>
+
+      <article class="theory-card">
+        <a class="theory-card-link" href="/kiln.html">
+          <h3>Kiln</h3>
+          <p>The transforming field of heat and time: the electric Skutt and the outdoor PoorBoy gas kiln.</p>
+        </a>
+      </article>
+
+      <article class="theory-card">
+        <a class="theory-card-link" href="/gene.html">
+          <h3>GENE Project</h3>
+          <p>The philosophical and technical work surrounding GENE: concept, build, observation, and notes.</p>
+        </a>
+      </article>
+    </section>
   </main>
 
   <script src="/js/nav.js"></script>
-  <script src="/js/theory.js"></script>
 </body>
 </html>

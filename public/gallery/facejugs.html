@@ -10,9 +10,9 @@
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
+      <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
       <button
@@ -31,30 +31,51 @@
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
         <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-       
+        <a href="/practice.html" class="active">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="gallery-page">
-        <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/practice.html">Back</a>
-      <a href="/gallery/facejugs.html" class="active">Face Jugs</a>
-    </nav>
+  <nav class="sub-nav" aria-label="Practice sections">
+    <a href="/gallery/bonsai.html">Bonsai</a>
+    <a href="/gallery/ikebana.html">Ikebana</a>
+    <a href="/gallery/sculpture.html">Sculpture</a>
+    <a href="/gallery/facejugs.html" class="active">Face Jugs</a>
+  </nav>
 
+  <main class="content-shell practice-child-page">
+    <section class="home-intro practice-child-intro">
+      <p class="breadcrumb">Practice</p>
+      <h1>Face Jugs</h1>
 
-    <section class="gallery-intro">
-      <h2>Face Jugs</h2>
-      <p>Southern vernacular pottery tradition, character, and force.</p>
+      <div class="intro-copy">
+        <p>
+          Face jugs belong to an older, more unruly current in the work. They carry
+          wit, character, exaggeration, and a kind of direct presence that asks to be met face to face.
+        </p>
+
+        <p>
+          I am interested in the point where humor, roughness, and personality become
+          form—where the vessel is still a vessel, but also something more animated and confrontational.
+        </p>
+      </div>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading face jugs...</div>
+    <section class="piece-grid" aria-label="Face jug pieces">
+      <article class="piece-card">
+        <img src="/images/facejug_001.jpg" alt="Face jug" class="piece-image" />
+
+        <div class="piece-body">
+          <h2>Untitled Piece</h2>
+          <p class="piece-code">FJ-0001-2604</p>
+          <p>Dimensions: —</p>
+          <p>Price: —</p>
+          <a href="#" class="piece-link">More</a>
+        </div>
+      </article>
     </section>
   </main>
 
   <script src="/js/nav.js"></script>
-  <script src="/js/facejugs.js?v=6"></script>
 </body>
 </html>
