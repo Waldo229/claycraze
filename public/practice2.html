@@ -36,14 +36,14 @@
     </div>
   </header>
 
-  <main class="content-shell practice-landing-page">
+  <main class="gallery-page">
+
     <section class="home-intro practice-intro">
-      <p class="breadcrumb">Practice</p>
-      <h1>Practice</h1>
+      <h2>Practice</h2>
 
       <div class="intro-wrap">
         <img
-          src="/images/practice2.jpg"
+          src="/images/practice1.jpg"
           alt="Monk figure for Practice"
           class="intro-monks"
         />
@@ -57,43 +57,25 @@
 
           <p>
             If Theory gathers the inward conditions of the work, Practice is where
-            those conditions become evidence.
+            those conditions become evidence. The objects shown here are not
+            illustrations of ideas, but the things themselves—made, fired, handled,
+            and sent out from the studio.
           </p>
         </div>
       </div>
     </section>
 
-    <section class="practice-map-row" aria-label="Practice sections">
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/bonsai">
-          <img src="/images/bonsai_001.png" alt="Bonsai" />
-          <h2>Bonsai</h2>
-        </a>
-      </article>
-
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/ikebana">
-          <img src="/images/ikebana_001s.png" alt="Ikebana" />
-          <h2>Ikebana</h2>
-        </a>
-      </article>
-
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/facejugs">
-          <img src="/images/facejug_001.jpg" alt="Face Jugs" />
-          <h2>Face Jugs</h2>
-        </a>
-      </article>
-
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/sculpture">
-          <img src="/images/sculpture_001.png" alt="Sculpture" />
-          <h2>Sculpture</h2>
-        </a>
-      </article>
+    <section
+      class="gallery-grid practice-sections"
+      id="practice-root"
+      aria-label="Practice sections"
+    >
+      <!-- practice.js injects the section cards here -->
     </section>
+
   </main>
 
   <script src="/js/nav.js"></script>
+  <script src="/js/practice.js"></script>
 </body>
 </html>

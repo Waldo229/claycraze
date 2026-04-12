@@ -1,0 +1,54 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.querySelector("#home-root");
+  if (!root) return;
+
+  root.innerHTML = `
+    <section class="home-intro">
+      <h2>Welcome</h2>
+
+      <div class="intro-wrap">
+        <img
+          src="/images/coldmountain.png"
+          alt="Han Shan and Shih-te"
+          class="intro-monks"
+        />
+
+        <p>
+          It is my hope that this website will be of interest to both potters and to bonsai and ikebana enthusiasts, and that they may discover here something useful in my clay and glaze choices, as well as in the way I have shaped a home studio and working environment.
+        </p>
+
+        <p>
+          While not quite the self-reliant potter described by Andrew Holden in his book of the same name, I have found it necessary to make my own way. Much of my equipment has been homemade or repurposed until I could afford to do better and make upgrades.
+        </p>
+
+        <p>
+          I use simple techniques; if the ancient Chinese potters didn’t need it, I probably don’t either. I continue the journey, now more than fifty years on, with a light heart and the knowledge that theory and practice are companions in the mischief surrounding creation.
+        </p>
+
+        <p>
+          Han Shan and Shih-te, the monks of Cold Mountain, stand at the threshold of my creative space as guides: Han Shan, the thinker, opening the way toward theory, reflection, and understanding; and Shih-te, the worker, opening the way toward practice, making, and the life of the hand. You are invited to enter, to explore, and to enjoy this respite.
+        </p>
+      </div>
+    </section>
+
+    <section class="door-grid" aria-label="Site sections">
+      <article class="door-card">
+        <a class="door-link" href="/theory.html">
+          <h3>Theory</h3>
+          <p>
+            Thought, material understanding, notes, place, memory, and the ideas that shape the work.
+          </p>
+        </a>
+      </article>
+
+      <article class="door-card">
+        <a class="door-link" href="/practice.html">
+          <h3>Practice</h3>
+          <p>
+            The made work: bonsai, ikebana, sculpture, and face jugs, leading into gallery pages populated by the database.
+          </p>
+        </a>
+      </article>
+    </section>
+  `;
+});

@@ -12,7 +12,7 @@
     <div class="header-shell">
       <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
       <button
@@ -36,64 +36,45 @@
     </div>
   </header>
 
-  <main class="theory-main">
-    <nav class="category-nav" aria-label="Theory sections">
-      <a href="/studio.html">Studio</a>
-      <a href="/materials.html">Materials</a>
-      <a href="/processes.html">Processes</a>
-      <a href="/places.html">Places</a>
-      <a href="/kiln.html">Kiln</a>
-      <a href="/gene.html">GENE Project</a>
-    </nav>
+  <main class="gallery-page">
 
-    <div class="theory-intro">
+    <section class="home-intro theory-intro">
       <h2>Theory</h2>
-      <p>
-        Theory is the inward side of the work: the studio, the kilns, and the
-        GENE project. These are the places where material understanding,
-        process, reflection, and orientation gather before the work appears in
-        Practice.
-      </p>
-      <p>
-        This side of the site is guided by the monks and shaped by the continuity
-        of the studio story: place, matter, heat, method, and the larger ideas
-        that hold them together.
-      </p>
-    </div>
 
-    <div class="theory-grid" aria-label="Theory portals">
-      <article class="theory-card">
-        <a class="theory-card-link" href="/studio.html">
-          <h3>Studio</h3>
-          <p>
-            The physical and material ground of the work: places, materials,
-            and techniques.
-          </p>
-        </a>
-      </article>
+      <div class="intro-wrap">
+        <img
+          src="/images/practice2.jpg"
+          alt="Monk figure for Theory"
+          class="intro-monks"
+        />
 
-      <article class="theory-card">
-        <a class="theory-card-link" href="/kiln.html">
-          <h3>Kiln</h3>
+        <div class="intro-copy">
           <p>
-            The transforming field of heat and time: the Electric Skutt 1027
-            and the outdoor PoorBoy gas kiln.
+            Theory is the inward side of the work: the studio, the kilns,
+            materials, places, and the GENE project. These are the conditions
+            under which understanding gathers before the work appears in Practice.
           </p>
-        </a>
-      </article>
 
-      <article class="theory-card">
-        <a class="theory-card-link" href="/gene.html">
-          <h3>GENE Project</h3>
           <p>
-            The philosophical and technical work surrounding GENE: concept,
-            build, observation, and notes.
+            This side of the site concerns process, reflection, method, and
+            orientation. It follows the continuity of the studio story: place,
+            matter, heat, judgment, and the larger ideas that hold them together.
           </p>
-        </a>
-      </article>
-    </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="gallery-grid theory-sections"
+      id="theory-root"
+      aria-label="Theory sections"
+    >
+      <!-- theory.js injects the section cards here -->
+    </section>
+
   </main>
 
   <script src="/js/nav.js"></script>
+  <script src="/js/theory.js"></script>
 </body>
 </html>
