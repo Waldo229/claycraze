@@ -3,37 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Piece View</title>
+  <title>ClaycrazE | Piece</title>
+  <link rel="stylesheet" href="/css/styles.css" />
   <link rel="stylesheet" href="/css/gallery.css" />
 </head>
-<body>
+<body class="piece-page">
+
   <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="/">ClaycrazE</a>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="/">Home</a>
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+        aria-controls="siteNav"
+      >
+        ☰
+      </button>
+
+      <nav class="site-nav" id="siteNav">
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-        <a href="/bonsai.html">Bonsai</a>
+        <a href="/gallery/bonsai/">Bonsai</a>
       </nav>
     </div>
   </header>
 
-  <main class="piece-page" id="piecePage">
-    <p class="back-link-wrap">
-      <a class="back-link" href="/bonsai.html">&larr; Back to Bonsai</a>
-    </p>
-
-    <section class="piece-layout" id="pieceLayout">
-      <!-- Filled by JS -->
+  <main class="piece-main">
+    <section class="piece-shell">
+      <div class="piece-stage" id="pieceStage"></div>
+      <div class="piece-details" id="pieceDetails"></div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <p>&copy; ClaycrazE</p>
-  </footer>
-
-  <script src="/js/pieces.js"></script>
   <script src="/js/piece.js"></script>
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const isOpen = siteNav.classList.toggle("open");
+        navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+    }
+  </script>
 </body>
 </html>

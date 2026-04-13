@@ -1,174 +1,147 @@
-(async function () {
-  const pieceLayout = document.getElementById("pieceLayout");
-  if (!pieceLayout) return;
+const navToggle = document.getElementById("navToggle");
+const siteNav = document.getElementById("siteNav");
 
+if (navToggle && siteNav) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = siteNav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+}
+
+const pieceStage = document.getElementById("pieceStage");
+const pieceDetails = document.getElementById("pieceDetails");
+
+function getPieceId() {
   const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
+  return params.get("id");
+}
 
-  if (!id) {
-    pieceLayout.innerHTML = `
-      <section class="not-found">
-        <h1>Piece not found</h1>
-        <p>No piece ID was provided.</p>
-      </section>
+function renderError(message) {
+  if (pieceStage) {
+    pieceStage.innerHTML = `
+      <div class="piece-message">
+        <p>${message}</p>
+      </div>
     `;
-    return;
   }
 
-  try {
-    const response = await fetch("/data/pieces.json", { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("Could not load pieces.json");
-    }
+  if (pieceDetails) {
+    pieceDetails.innerHTML = "";
+  }
+}
 
-    const pieces = await response.json();
-    const piece = Array.isArray(pieces) ? pieces.find((item) => item.id === id) : null;
+function renderPiece(piece) {
+  const id = piece.id || piece.pieceId || piece.code || piece.name || "Untitled";
+  const title = piece.title || piece.name || id;
+  const clay = piece.clay || "";
+  const glaze = piece.glaze || "";
+  const description = piece.description || "";
 
-    if (!piece) {
-      pieceLayout.innerHTML = `
-        <section class="not-found">
-          <h1>Piece not found</h1>
-          <p>The requested piece could not be found in <code>/data/pieces.json</code>.</p>
-        </section>
-      `;
-      return;
-    }
+  const topImage =
+    piece.topImage ||
+    piece.image_top ||
+    piece.top ||
+    `/images/full/${id}_top.jpg`;
 
-    const topSrc = `/images/full/${piece.id}_top.jpg`;
-    const bottomSrc = `/images/full/${piece.id}_bottom.jpg`;
+  const bottomImage =
+    piece.bottomImage ||
+    piece.image_bottom ||
+    piece.bottom ||
+    `/images/full/${id}_bottom.jpg`;
 
-    const [hasTop, hasBottom] = await Promise.all([
-      imageExists(topSrc),
-      imageExists(bottomSrc)
-    ]);
-
-    if (!hasTop) {
-      pieceLayout.innerHTML = `
-        <section class="not-found">
-          <h1>${escapeHtml(piece.title || "Piece view unavailable")}</h1>
-          <p>The full top image for <code>${escapeHtml(piece.id)}</code> could not be found.</p>
-          <p>Expected file:</p>
-          <p><code>${topSrc}</code></p>
-        </section>
-      `;
-      return;
-    }
-
-    pieceLayout.innerHTML = `
-      <section class="viewer-shell">
-        <div class="flip-stage">
-          <div class="flip-card-large">
-            <div class="flip-inner" id="flipInner">
-              <img
-                src="${topSrc}"
-                alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} top view"
-                class="flip-face front"
-              />
-              ${
-                hasBottom
-                  ? `
-              <img
-                src="${bottomSrc}"
-                alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} underside"
-                class="flip-face back"
-              />
-              `
-                  : ""
-              }
-            </div>
+  if (pieceStage) {
+    pieceStage.innerHTML = `
+      <div class="flip-stage">
+        <div class="flip-card-large">
+          <div class="flip-inner" id="flipInner">
+            <img
+              src="${topImage}"
+              alt="${title} top view"
+              class="flip-face front"
+            />
+            <img
+              src="${bottomImage}"
+              alt="${title} bottom view"
+              class="flip-face back"
+            />
           </div>
         </div>
 
         <div class="viewer-controls">
-          ${
-            hasBottom
-              ? `<button class="flip-btn" id="flipBtn" type="button">View underside</button>`
-              : ""
-          }
-          <a class="secondary-link" href="/bonsai.html">Back to gallery</a>
+          <button class="flip-btn" id="flipBtn" type="button">Flip</button>
         </div>
-
-        <p class="viewer-note">
-          ${
-            hasBottom
-              ? "The gallery shows the top image only. Here you can inspect the full piece and its underside."
-              : "The gallery shows the top image only. The underside image has not been added yet."
-          }
-        </p>
-      </section>
-
-      <aside class="piece-info">
-        <p class="eyebrow">${escapeHtml(piece.category || "Piece")}</p>
-        <h1>${escapeHtml(piece.title)}</h1>
-        <p class="piece-id">${escapeHtml(piece.id)}</p>
-
-        <p class="piece-description">
-          ${escapeHtml(piece.description || "")}
-        </p>
-
-        <dl class="piece-details">
-          <div>
-            <dt>Clay</dt>
-            <dd>${escapeHtml(piece.clay || "—")}</dd>
-          </div>
-          <div>
-            <dt>Finish</dt>
-            <dd>${escapeHtml(piece.finish || "—")}</dd>
-          </div>
-          <div>
-            <dt>Size</dt>
-            <dd>${escapeHtml(piece.dimensions || "—")}</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd>${escapeHtml(piece.price || "—")}</dd>
-          </div>
-        </dl>
-      </aside>
-    `;
-
-    const flipBtn = document.getElementById("flipBtn");
-    const flipInner = document.getElementById("flipInner");
-
-    if (hasBottom && flipBtn && flipInner) {
-      flipBtn.addEventListener("click", function () {
-        flipInner.classList.toggle("flipped");
-        flipBtn.textContent = flipInner.classList.contains("flipped")
-          ? "View top"
-          : "View underside";
-      });
-    }
-  } catch {
-    pieceLayout.innerHTML = `
-      <section class="not-found">
-        <h1>Piece view unavailable</h1>
-        <p>Something went wrong while loading the piece data.</p>
-      </section>
+      </div>
     `;
   }
 
-  function imageExists(src) {
-    return new Promise((resolve) => {
-      const img = new Image();
+  if (pieceDetails) {
+    pieceDetails.innerHTML = `
+      <article class="piece-info">
+        <h1>${title}</h1>
+        <div class="piece-details">
+          <p><strong>Piece ID:</strong> ${id}</p>
+          ${clay ? `<p><strong>Clay:</strong> ${clay}</p>` : ""}
+          ${glaze ? `<p><strong>Glaze:</strong> ${glaze}</p>` : ""}
+          ${description ? `<p>${description}</p>` : ""}
+        </div>
+      </article>
+    `;
+  }
 
-      img.onload = function () {
-        resolve(true);
-      };
+  const flipInner = document.getElementById("flipInner");
+  const flipBtn = document.getElementById("flipBtn");
 
-      img.onerror = function () {
-        resolve(false);
-      };
-
-      img.src = src;
+  if (flipInner && flipBtn) {
+    flipBtn.addEventListener("click", () => {
+      flipInner.classList.toggle("flipped");
     });
   }
+}
 
-  function escapeHtml(value) {
-    return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+async function fetchPieces() {
+  const response = await fetch("/data/pieces.json", { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Could not load /data/pieces.json (${response.status})`);
   }
-})();
+
+  return await response.json();
+}
+
+async function loadPiece() {
+  const pieceId = getPieceId();
+
+  if (!pieceId) {
+    renderError("No piece ID was provided in the URL.");
+    return;
+  }
+
+  try {
+    const data = await fetchPieces();
+
+    const pieces = Array.isArray(data)
+      ? data
+      : Array.isArray(data.pieces)
+        ? data.pieces
+        : [];
+
+    const piece = pieces.find((item) =>
+      item.id === pieceId ||
+      item.pieceId === pieceId ||
+      item.code === pieceId ||
+      item.name === pieceId
+    );
+
+    if (!piece) {
+      renderError(`Piece "${pieceId}" was not found in /data/pieces.json.`);
+      return;
+    }
+
+    renderPiece(piece);
+  } catch (error) {
+    console.error("piece.js load error:", error);
+    renderError(error.message);
+  }
+}
+
+loadPiece();
