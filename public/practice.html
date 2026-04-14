@@ -4,13 +4,164 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Practice</title>
+
+  <link rel="shortcut icon" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
   <link rel="stylesheet" href="/css/styles.css" />
+
+  <style>
+    .section-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 24px 72px;
+    }
+
+    .section-hero {
+      background: rgba(247, 240, 220, 0.84);
+      border-radius: 30px;
+      padding: 30px 30px 34px;
+      box-shadow: 0 18px 40px rgba(60, 35, 10, 0.16);
+    }
+
+    .section-title {
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 0.95;
+      font-weight: 500;
+      margin: 0 0 26px;
+    }
+
+    .section-intro {
+      display: grid;
+      grid-template-columns: 90px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 34px;
+    }
+
+    .section-monks {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .section-monks img {
+      display: block;
+      width: 100%;
+      max-width: 60px;
+      height: auto;
+    }
+
+    .section-copy p {
+      font-size: 1.08rem;
+      line-height: 1.7;
+      margin: 0 0 18px;
+      max-width: 700px;
+    }
+
+    .section-copy p:last-child {
+      margin-bottom: 0;
+    }
+
+    .practice-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .practice-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: rgba(255, 248, 230, 0.5);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(60, 35, 10, 0.1);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .practice-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 248, 230, 0.72);
+    }
+
+.practice-card img {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+    .practice-card h2 {
+      font-size: 1.35rem;
+      margin: 0 0 10px;
+      font-weight: 500;
+    }
+
+    .practice-card p {
+      margin: 0;
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+
+    @media (max-width: 900px) {
+      .section-intro {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .section-monks {
+        justify-content: center;
+      }
+
+      .section-monks img {
+        max-width: 90px;
+      }
+
+      .practice-links {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .section-shell {
+        padding: 18px 16px 56px;
+      }
+
+      .section-hero {
+        border-radius: 24px;
+        padding: 24px 20px 26px;
+      }
+
+      .section-title {
+        line-height: 1;
+        margin-bottom: 20px;
+      }
+
+      .section-copy p {
+        font-size: 1rem;
+      }
+
+      .practice-card {
+        border-radius: 18px;
+        padding: 16px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .section-monks img {
+        max-width: 78px;
+      }
+    }
+  </style>
 </head>
 <body class="practice-page">
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
@@ -20,80 +171,89 @@
         id="navToggle"
         aria-expanded="false"
         aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
+        aria-label="Toggle navigation">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html" class="active">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="content-shell practice-landing-page">
-    <section class="home-intro practice-intro">
-      <p class="breadcrumb">Practice</p>
-      <h1>Practice</h1>
+  <main class="section-shell">
+    <section class="section-hero">
+      <h1 class="section-title">Practice</h1>
 
-      <div class="intro-wrap">
-        <img
-          src="/images/practice1.jpg"
-          alt="Monk figure for Practice"
-          class="intro-monks"
-        />
+      <div class="section-intro">
+        <div class="section-monks">
+          <img
+            src="/images/practice1.jpg"
+            alt="Monk figure representing Practice" />
+        </div>
 
-        <div class="intro-copy">
+        <div class="section-copy">
           <p>
-            Practice is where the work takes visible form: bonsai pots, ikebana
-            containers, face jugs, sculpture, and other fired pieces that carry
-            the studio’s thought into the world of use and looking.
+            Practice is where thought is tested by material. It is the daily work of shaping,
+            trimming, firing, failing, adjusting, and beginning again until the hand learns what
+            the mind alone cannot teach.
           </p>
 
           <p>
-            If Theory gathers the inward conditions of the work, Practice is where
-            those conditions become evidence.
+            These pages gather the made forms: bonsai containers, ikebana vessels, sculpture,
+            and face jugs. Together they show the work as it appears in the world, carrying both
+            intention and accident.
+          </p>
+
+          <p>
+            If theory is reflection, practice is contact—the place where clay, fire, and judgment
+            finally have to answer for themselves.
           </p>
         </div>
       </div>
-    </section>
 
-    <section class="practice-map-row" aria-label="Practice sections">
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/bonsai">
-          <img src="/images/bonsai_001.png" alt="Bonsai" />
-          <h2>Bonsai</h2>
-        </a>
-      </article>
+      <div class="practice-links">
+  <a class="practice-card" href="/gallery/bonsai.html">
+    <img src="/images/bonsai_001s.png" alt="Bonsai forms" />
+    <h2>Bonsai</h2>
+  
+  </a>
 
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/ikebana">
-          <img src="/images/ikebana_005.jpg" alt="Ikebana" />
-          <h2>Ikebana</h2>
-        </a>
-      </article>
+  <a class="practice-card" href="/gallery/ikebana.html">
+    <img src="\images\ikebana_005.jpg" alt="Ikebana vessel" />
+    <h2>Ikebana</h2>
+    
+  </a>
 
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/facejugs">
-          <img src="/images/facejug_001.jpg" alt="Face Jugs" />
-          <h2>Face Jugs</h2>
-        </a>
-      </article>
+  <a class="practice-card" href="/gallery/sculpture.html">
+    <img src="/images/sculpture_001.png" alt="Clay sculpture" />
+    <h2>Sculpture</h2>
+  
 
-      <article class="practice-map-card">
-        <a class="practice-map-link" href="/gallery/sculpture">
-          <img src="/images/sculpture_001.png" alt="Sculpture" />
-          <h2>Sculpture</h2>
-        </a>
-      </article>
+  <a class="practice-card" href="/gallery/face-jugs.html">
+    <img src="/images/facejug_001.jpg" alt="Face jug" />
+    <h2>Face Jugs</h2>
+   
+  </a>
+</div>       
     </section>
   </main>
 
-  <script src="/js/nav.js"></script>
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const expanded = navToggle.getAttribute("aria-expanded") === "true";
+        navToggle.setAttribute("aria-expanded", String(!expanded));
+        siteNav.classList.toggle("open");
+      });
+    }
+  </script>
 </body>
 </html>

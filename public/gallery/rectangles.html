@@ -1,95 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Rectangles</title>
+
+  <link rel="shortcut icon" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body class="practice-page">
-
-  <header class="site-header">
+<body class="bonsai-page">
+  <header class="site-header minimal-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
+      <a class="site-brand" href="/index.html" aria-label="ClaycrazE home">
+        <img src="/images/logo2.svg" alt="ClaycrazE" class="site-logo" />
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
-      </nav>
+      <a class="back-link" href="/gallery/bonsai.html">← Back to Bonsai</a>
     </div>
   </header>
 
-  <nav class="sub-nav" aria-label="Practice sections">
-    <a href="/gallery/bonsai.html" class="active">Bonsai</a>
-    <a href="/gallery/ikebana.html">Ikebana</a>
-    <a href="/gallery/sculpture.html">Sculpture</a>
-    <a href="/gallery/facejugs.html">Face Jugs</a>
-  </nav>
-
-  <nav class="sub-nav" aria-label="Bonsai form sections">
-    <a href="/gallery/bonsai.html">Bonsai</a>
-    <a href="/gallery/ovals.html">Ovals</a>
-    <a href="/gallery/rectangles.html" class="active">Rectangles</a>
-    <a href="/gallery/rounds.html">Rounds</a>
-    <a href="/gallery/freestyle.html">Freestyle</a>
-  </nav>
-
   <main class="content-shell bonsai-page">
-    <section class="home-intro bonsai-intro">
+    <section class="page-card bonsai-intro">
       <p class="breadcrumb">Practice / Bonsai</p>
       <h1>Rectangles</h1>
-
       <div class="intro-copy">
-        <p>
-          Architectural bonsai forms with structure, clarity, and edge.
-        </p>
+        <p>Architectural bonsai forms with structure, clarity, and edge.</p>
       </div>
     </section>
 
-    <section class="piece-grid" aria-label="Rectangular bonsai pieces">
-      <article class="piece-card">
-        <img src="/images/bonsai/rectangles.jpg" alt="Rectangular bonsai pot" class="piece-image" />
-
-        <div class="piece-body">
-          <h2>Untitled Piece</h2>
-          <p class="piece-code">RC-0005-2604</p>
-          <p>Dimensions: —</p>
-          <p>Price: —</p>
-          <a href="#" class="piece-link">More</a>
-        </div>
-      </article>
-
-      <article class="piece-card">
-        <img src="/images/bonsai/rectangles.jpg" alt="Rectangular bonsai pot" class="piece-image" />
-
-        <div class="piece-body">
-          <h2>Rectangular Bonsai Pot</h2>
-          <p class="piece-code">RC-0001-2604</p>
-          <p>Dimensions: —</p>
-          <p>Price: —</p>
-          <a href="#" class="piece-link">More</a>
-        </div>
-      </article>
+    <section class="gallery-grid bonsai-grid" aria-label="Rectangular bonsai pieces">
+      <a href="/gallery/piece.html?id=RC-0005-2604" class="piece-thumb-card">
+        <img src="/images/bonsai/rectangles.jpg" alt="Rectangular bonsai pot" />
+      </a>
     </section>
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>

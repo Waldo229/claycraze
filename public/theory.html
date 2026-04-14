@@ -4,13 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Theory</title>
+
+  <link rel="shortcut icon" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
   <link rel="stylesheet" href="/css/styles.css" />
+
+  <style>
+    /* Theory page only: tame the monk without touching global layout */
+    .theory-intro .intro-monks {
+      width: 60px;
+      flex: 0 0 60px;
+      align-self: flex-start;
+    }
+
+    .theory-intro .intro-copy {
+      max-width: 72ch;
+    }
+
+    @media (max-width: 980px) {
+      .theory-intro .intro-monks {
+        width: 90px;
+        flex: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .theory-intro .intro-monks {
+        width: 78px;
+      }
+    }
+  </style>
 </head>
-<body class="theory-page">
+<body>
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
@@ -20,16 +50,14 @@
         id="navToggle"
         aria-expanded="false"
         aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
+        aria-label="Toggle navigation">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
+        <a href="/index.html">Home</a>
         <a href="/theory.html" class="active">Theory</a>
         <a href="/practice.html">Practice</a>
       </nav>
@@ -38,27 +66,30 @@
 
   <main class="content-shell theory-page-shell">
     <section class="home-intro theory-intro">
-      <p class="breadcrumb">Theory</p>
       <h1>Theory</h1>
 
       <div class="intro-wrap">
         <img
           src="/images/practice2.jpg"
-          alt="Monk figure for Theory"
+          alt="Monk figure representing Theory"
           class="intro-monks"
         />
 
         <div class="intro-copy">
           <p>
-            Theory is the inward side of the work: the studio, the kilns,
-            materials, places, and the GENE project. These are the conditions
-            under which understanding gathers before the work appears in Practice.
+            Theory is not separate from making. It is the slower, quieter companion to practice:
+            the place where observation, history, material understanding, and reflection begin to gather
+            into a way of seeing.
           </p>
 
           <p>
-            This side of the site concerns process, reflection, method, and
-            orientation. It follows the continuity of the studio story: place,
-            matter, heat, judgment, and the larger ideas that hold them together.
+            Here I keep the ideas that shape the work—thoughts on kilns, clays, glazes, tools, traditions,
+            and the accumulated lessons that make the hand more intelligent.
+          </p>
+
+          <p>
+            If practice is the blow struck, theory is the stance, the breath, and the knowledge of where
+            the blow belongs.
           </p>
         </div>
       </div>
@@ -66,42 +97,69 @@
 
     <section class="theory-sections" aria-label="Theory sections">
       <article class="theory-card">
-        <a class="theory-card-link" href="/studio.html">
+        <a class="theory-card-link" href="/theory/studio.html">
           <h3>Studio</h3>
-          <p>The physical and material ground of the work: places, materials, tools, and techniques.</p>
+          <p>
+            Notes on the working space itself—its arrangement, limitations, rhythms,
+            and the practical wisdom that comes from making do.
+          </p>
         </a>
       </article>
 
       <article class="theory-card">
-        <a class="theory-card-link" href="/materials.html">
+        <a class="theory-card-link" href="/theory/materials.html">
           <h3>Materials</h3>
-          <p>Clay bodies, slips, glazes, and the accumulated behavior of matter under heat.</p>
+          <p>
+            Clay bodies, slips, glazes, and the behavior of materials under hand, tool,
+            and fire.
+          </p>
         </a>
       </article>
 
       <article class="theory-card">
-        <a class="theory-card-link" href="/places.html">
+        <a class="theory-card-link" href="/theory/places.html">
           <h3>Places</h3>
-          <p>People, locations, and field notes that shape the larger geography of the work.</p>
+          <p>
+            Landscapes, regions, and working traditions that continue to inform the eye
+            and shape the work.
+          </p>
         </a>
       </article>
 
       <article class="theory-card">
-        <a class="theory-card-link" href="/kiln.html">
-          <h3>Kiln</h3>
-          <p>The transforming field of heat and time: the electric Skutt and the outdoor PoorBoy gas kiln.</p>
+        <a class="theory-card-link" href="/theory/kiln.html">
+          <h3>Kilns</h3>
+          <p>
+            Firing, heatwork, cooling, atmosphere, and the way time and temperature alter
+            both clay and expectation.
+          </p>
         </a>
       </article>
 
       <article class="theory-card">
-        <a class="theory-card-link" href="/gene.html">
+        <a class="theory-card-link" href=gene.html
           <h3>GENE Project</h3>
-          <p>The philosophical and technical work surrounding GENE: concept, build, observation, and notes.</p>
+          <p>
+            Reflections on the reasoning machine as studio companion, registering presence,
+            tension, and the rhythms of making.
+          </p>
         </a>
       </article>
     </section>
   </main>
 
-  <script src="/js/nav.js"></script>
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const expanded = navToggle.getAttribute("aria-expanded") === "true";
+        navToggle.setAttribute("aria-expanded", String(!expanded));
+        siteNav.classList.toggle("open");
+      });
+    }
+  </script>
+
 </body>
 </html>

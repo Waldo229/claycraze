@@ -552,52 +552,6 @@ p:last-child {
     padding: 1.4rem;
   }
 }
-/* =========================
-   BONSAI PAGE
-========================= */
-.bonsai-page {
-  padding-top: 1rem;
-}
-
-.bonsai-intro {
-  max-width: 1100px;
-  margin: 0 auto 2rem;
-}
-
-.bonsai-grid {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.gallery-grid.bonsai-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
-  gap: 1.5rem;
-  justify-content: start;
-}
-
-.bonsai-card {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  text-decoration: none;
-  color: inherit;
-  background: var(--panel);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
-  box-shadow: 0 10px 28px var(--shadow);
-}
-
-.bonsai-card img {
-  display: block;
-  width: auto;
-  max-width: 220px;
-  max-height: 160px;
-  height: auto;
-  object-fit: contain;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-}
 
 /* =========================
    PIECE VIEWER
@@ -686,11 +640,62 @@ p:last-child {
   .piece-view-layout {
     grid-template-columns: 1fr;
   }
-  /* =========================
+}
+
+/* =========================
+   BONSAI PAGE
+========================= */
+.bonsai-page {
+  padding-top: 1rem;
+}
+
+.bonsai-intro {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+}
+
+.bonsai-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.gallery-grid.bonsai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.bonsai-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 28px var(--shadow);
+  padding: 1rem;
+}
+
+.bonsai-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.bonsai-card h3 {
+  margin-top: 0.75rem;
+  font-size: 1.15rem;
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+/* =========================
    MINIMAL HEADER / LOGO
    (Piece pages + reduced nav)
 ========================= */
-}.site-logo {
+.site-logo {
   height: 70px;
   width: auto;
   display: block;
@@ -699,7 +704,6 @@ p:last-child {
 .minimal-header .header-shell {
   justify-content: space-between;
 }
-
 
 .back-link {
   display: inline-flex;
@@ -734,4 +738,75 @@ p:last-child {
   .site-logo {
     height: 48px;
   }
+}
+
+/* =========================
+   CATEGORY THUMBNAIL TILE
+========================= */
+.piece-thumb-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+  color: inherit;
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: 0 10px 28px var(--shadow);
+}
+
+.piece-thumb-card img {
+  display: block;
+  width: auto;
+  max-width: 220px;
+  max-height: 160px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}/* =========================
+   MONKS IMAGE
+========================= */
+
+.monks-image {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.monks-image img {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+}/* =========================
+   KILN PAGE NAV (SIBLING)
+========================= */
+
+.kiln-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(60, 35, 10, 0.15);
+}
+
+.kiln-link,
+.kiln-link-center {
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: var(--text);
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.kiln-link:hover,
+.kiln-link-center:hover {
+  opacity: 1;
+}
+
+.kiln-link-center {
+  font-size: 0.9rem;
 }
