@@ -9,29 +9,13 @@
 </head>
 <body class="piece-page">
 
-  <header class="site-header">
+  <header class="site-header minimal-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+      <a class="site-brand" href="/index.html" aria-label="ClaycrazE home">
+        <img src="/images/logo2.svg" alt="ClaycrazE" class="site-logo" />
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-label="Toggle navigation"
-        aria-expanded="false"
-        aria-controls="siteNav"
-      >
-        ☰
-      </button>
-
-      <nav class="site-nav" id="siteNav">
-        <a href="/index.html">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-        <a href="/gallery/bonsai/">Bonsai</a>
-      </nav>
+      <a class="back-link" href="/gallery/ovals.html">← Back to Ovals</a>
     </div>
   </header>
 
@@ -43,16 +27,5 @@
   </main>
 
   <script src="/js/piece.js"></script>
-  <script>
-    const navToggle = document.getElementById("navToggle");
-    const siteNav = document.getElementById("siteNav");
-
-    if (navToggle && siteNav) {
-      navToggle.addEventListener("click", () => {
-        const isOpen = siteNav.classList.toggle("open");
-        navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-      });
-    }
-  </script>
 </body>
 </html>

@@ -6,86 +6,33 @@
   <title>ClaycrazE | Ovals</title>
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body class="practice-page">
+<body class="bonsai-page">
 
-  <header class="site-header">
+  <header class="site-header minimal-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
+      <a class="site-brand" href="/index.html" aria-label="ClaycrazE home">
+        <img src="/images/logo2.svg" alt="ClaycrazE" class="site-logo" />
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
-      </nav>
+      <a class="back-link" href="/gallery/bonsai.html">← Back to Bonsai</a>
     </div>
   </header>
 
-  <nav class="sub-nav" aria-label="Practice sections">
-    <a href="/gallery/bonsai.html" class="active">Bonsai</a>
-    <a href="/gallery/ikebana.html">Ikebana</a>
-    <a href="/gallery/sculpture.html">Sculpture</a>
-    <a href="/gallery/facejugs.html">Face Jugs</a>
-  </nav>
-
-  <nav class="sub-nav" aria-label="Bonsai form sections">
-    <a href="/gallery/bonsai.html">Bonsai</a>
-    <a href="/gallery/ovals.html" class="active">Ovals</a>
-    <a href="/gallery/rectangles.html">Rectangles</a>
-    <a href="/gallery/rounds.html">Rounds</a>
-    <a href="/gallery/freestyle.html">Freestyle</a>
-  </nav>
-
   <main class="content-shell bonsai-page">
-    <section class="home-intro bonsai-intro">
+    <section class="page-card bonsai-intro">
       <p class="breadcrumb">Practice / Bonsai</p>
       <h1>Ovals</h1>
-
       <div class="intro-copy">
         <p>Elongated bonsai forms with lateral movement and quiet pull.</p>
       </div>
     </section>
 
-    <section class="piece-grid" aria-label="Oval bonsai pieces">
-      <article class="piece-card">
-        <a href="/gallery/piece.html?id=OV-2604-01" class="piece-card-link">
-          <img
-            src="/images/thumbs/OV-2604-01_thumb.jpg"
-            alt="Oval bonsai pot"
-            class="piece-image"
-          />
-        </a>
-
-        <div class="piece-body">
-          <h2>
-            <a href="/gallery/piece.html?id=OV-2604-01" class="piece-title-link">
-              Untitled Piece
-            </a>
-          </h2>
-          <p class="piece-code">OV-2604-01</p>
-          <p>Dimensions: —</p>
-          <p>Price: —</p>
-          <a href="/gallery/piece.html?id=OV-2604-01" class="piece-link">View Piece</a>
-        </div>
-      </article>
+    <section class="gallery-grid bonsai-grid" aria-label="Oval bonsai pieces">
+      <a href="/gallery/piece.html?id=OV-2604-01" class="bonsai-card">
+        <img src="/images/thumbs/OV-2604-01_thumb.jpg" alt="Oval bonsai pot" />
+      </a>
     </section>
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>

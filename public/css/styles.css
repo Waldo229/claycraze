@@ -398,7 +398,9 @@ p:last-child {
   .intro-monks {
     width: 145px;
   }
-}/* =========================
+}
+
+/* =========================
    HOME PAGE
 ========================= */
 .home-page-shell {
@@ -461,7 +463,9 @@ p:last-child {
   .home-door-row {
     grid-template-columns: 1fr;
   }
-}/* =========================
+}
+
+/* =========================
    THEORY CHILD PAGES
 ========================= */
 .theory-child-page {
@@ -481,7 +485,9 @@ p:last-child {
 .theory-reading-card p {
   max-width: 72ch;
   line-height: 1.75;
-}/* =========================
+}
+
+/* =========================
    SHARED SUB-NAV
 ========================= */
 .sub-nav {
@@ -545,7 +551,11 @@ p:last-child {
   .page-card {
     padding: 1.4rem;
   }
-}.bonsai-page {
+}
+/* =========================
+   BONSAI PAGE
+========================= */
+.bonsai-page {
   padding-top: 1rem;
 }
 
@@ -561,27 +571,167 @@ p:last-child {
 
 .gallery-grid.bonsai-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+  gap: 1.5rem;
+  justify-content: start;
 }
 
 .bonsai-card {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
   text-decoration: none;
   color: inherit;
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: 0 10px 28px var(--shadow);
 }
 
 .bonsai-card img {
+  display: block;
+  width: auto;
+  max-width: 220px;
+  max-height: 160px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* =========================
+   PIECE VIEWER
+========================= */
+.piece-view-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.piece-view-card {
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 28px var(--shadow);
+  padding: 1rem;
+}
+
+.piece-main-image-wrap {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.piece-main-image {
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+
+.piece-thumb-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.piece-thumb {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 0.35rem;
+  cursor: pointer;
+  text-align: center;
+  color: inherit;
+}
+
+.piece-thumb.active {
+  border-color: var(--accent-soft);
+  background: rgba(212, 187, 114, 0.18);
+}
+
+.piece-thumb img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
   display: block;
 }
 
-.bonsai-card h3 {
-  margin-top: 0.75rem;
-  font-size: 1.15rem;
+.piece-thumb span {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.92rem;
+}
+
+.piece-meta-card h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(1.4rem, 2vw, 2rem);
   font-weight: normal;
-  line-height: 1.2;
+}
+
+.piece-meta-card p {
+  margin-bottom: 0.9rem;
+}
+
+.piece-back-links {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .piece-view-layout {
+    grid-template-columns: 1fr;
+  }
+  /* =========================
+   MINIMAL HEADER / LOGO
+   (Piece pages + reduced nav)
+========================= */
+}.site-logo {
+  height: 70px;
+  width: auto;
+  display: block;
+}
+
+.minimal-header .header-shell {
+  justify-content: space-between;
+}
+
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  margin-top: 6px;
+  background: rgba(231, 219, 183, 0.72);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  background: rgba(212, 187, 114, 0.55);
+  outline: none;
+}
+
+@media (max-width: 760px) {
+  .minimal-header .header-shell {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .back-link {
+    width: 100%;
+  }
+
+  .site-logo {
+    height: 48px;
+  }
 }
