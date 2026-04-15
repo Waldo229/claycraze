@@ -20,6 +20,82 @@ const THUMBS_DIR = path.join(IMAGES_DIR, "thumbs");
 const DB_PATH = path.join(ROOT_DIR, "claycraze_inventory.db");
 
 /* -------------------------
+   HELPERS
+-------------------------- */
+function ensureDirSync(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+function sanitizePieceId(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-_]/g, "");
+}
+
+function sanitizeTitle(value) {
+  return String(value || "").trim();
+}
+
+function fileUrlFromRelative(relativePath) {
+  return "/" + String(relativePath || "").replace(/\\/g, "/");
+}
+
+async function fileExists(filePath) {
+  try {
+    await fsp.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function deleteIfExists(filePath) {
+  try {
+    await fsp.unlink(filePath);
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      throw err;
+    }
+  }
+}
+
+async function processImageBuffer(buffer, fullOutputPath, thumbOutputPath) {
+  await sharp(buffer)
+    .rotate()
+    .resize({
+      width: 1600,
+      height: 1600,
+      fit: "inside",
+      withoutEnlargement: true
+    })
+    .jpeg({ quality: 88, mozjpeg: true })
+    .toFile(fullOutputPath);
+
+  await sharp(buffer)
+    .rotate()
+    .resize({
+      width: 420,
+      height: 420,
+      fit: "inside",
+      withoutEnlargement: true
+    })
+    .jpeg({ quality: 82, mozjpeg: true })
+    .toFile(thumbOutputPath);
+}
+
+/* -------------------------
+   ENSURE DIRECTORIES EXIST
+-------------------------- */
+ensureDirSync(PUBLIC_DIR);
+ensureDirSync(IMAGES_DIR);
+ensureDirSync(FULL_DIR);
+ensureDirSync(THUMBS_DIR);
+
+/* -------------------------
    DATABASE
 -------------------------- */
 const db = new sqlite3.Database(DB_PATH, (err) => {
@@ -30,9 +106,6 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
   console.log("Connected to SQLite database.");
 });
 
-/* -------------------------
-   DATABASE SETUP
--------------------------- */
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS uploaded_pieces (
@@ -48,60 +121,60 @@ db.serialize(() => {
   `);
 });
 
-/* -------------------------
-   HELPERS
--------------------------- */
-function ensureDirSync(dirPath) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
+function getPieceById(pieceId) {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `
+      SELECT
+        id,
+        piece_id,
+        title,
+        top_full_path,
+        top_thumb_path,
+        bottom_full_path,
+        bottom_thumb_path,
+        created_at
+      FROM uploaded_pieces
+      WHERE piece_id = ?
+      `,
+      [pieceId],
+      (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(row || null);
+      }
+    );
+  });
 }
 
-ensureDirSync(PUBLIC_DIR);
-ensureDirSync(IMAGES_DIR);
-ensureDirSync(FULL_DIR);
-ensureDirSync(THUMBS_DIR);
-
-function sanitizePieceId(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9\-_]/g, "");
-}
-
-function sanitizeTitle(value) {
-  return String(value || "").trim();
-}
-
-function fileUrlFromRelative(relativePath) {
-  return "/" + relativePath.replace(/\\/g, "/");
-}
-
-async function processImageBuffer(buffer, fullOutputPath, thumbOutputPath) {
-  // Full image: contained within 1600x1600, good quality JPEG
-  await sharp(buffer)
-    .rotate()
-    .resize({
-      width: 1600,
-      height: 1600,
-      fit: "inside",
-      withoutEnlargement: true
-    })
-    .jpeg({ quality: 88, mozjpeg: true })
-    .toFile(fullOutputPath);
-
-  // Thumbnail: contained within 420x420
-  await sharp(buffer)
-    .rotate()
-    .resize({
-      width: 420,
-      height: 420,
-      fit: "inside",
-      withoutEnlargement: true
-    })
-    .jpeg({ quality: 82, mozjpeg: true })
-    .toFile(thumbOutputPath);
+function getAllPieces() {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `
+      SELECT
+        id,
+        piece_id,
+        title,
+        top_full_path,
+        top_thumb_path,
+        bottom_full_path,
+        bottom_thumb_path,
+        created_at
+      FROM uploaded_pieces
+      ORDER BY created_at DESC, id DESC
+      `,
+      [],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(rows);
+      }
+    );
+  });
 }
 
 function upsertPieceRecord(piece) {
@@ -143,41 +216,11 @@ function upsertPieceRecord(piece) {
   });
 }
 
-function getAllPieces() {
-  return new Promise((resolve, reject) => {
-    db.all(
-      `
-      SELECT
-        id,
-        piece_id,
-        title,
-        top_full_path,
-        top_thumb_path,
-        bottom_full_path,
-        bottom_thumb_path,
-        created_at
-      FROM uploaded_pieces
-      ORDER BY created_at DESC, id DESC
-      `,
-      [],
-      (err, rows) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(rows);
-      }
-    );
-  });
-}
-
 /* -------------------------
    MIDDLEWARE
 -------------------------- */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-/* Public website root */
 app.use(express.static(PUBLIC_DIR));
 
 /* Optional extra image mount if you still use a root-level images folder */
@@ -189,7 +232,7 @@ app.use("/images", express.static(path.join(ROOT_DIR, "images")));
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 25 * 1024 * 1024 // 25 MB per file
+    fileSize: 25 * 1024 * 1024
   },
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = new Set([
@@ -213,10 +256,14 @@ const upload = multer({
 /* -------------------------
    ROUTES
 -------------------------- */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "index.html"));
+});
 
-/**
- * Health check
- */
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "admin.html"));
+});
+
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
@@ -225,12 +272,10 @@ app.get("/health", (req, res) => {
   });
 });
 
-/**
- * List uploaded pieces
- */
 app.get("/api/pieces", async (req, res) => {
   try {
     const rows = await getAllPieces();
+
     res.json({
       ok: true,
       count: rows.length,
@@ -254,15 +299,6 @@ app.get("/api/pieces", async (req, res) => {
   }
 });
 
-/**
- * Upload a piece with top and/or bottom image
- *
- * Expected form-data fields:
- * - pieceId (required)
- * - title (optional)
- * - topImage (optional file)
- * - bottomImage (optional file)
- */
 app.post(
   "/admin/upload-piece",
   upload.fields([
@@ -291,10 +327,12 @@ app.post(
         });
       }
 
-      let topFullPath = null;
-      let topThumbPath = null;
-      let bottomFullPath = null;
-      let bottomThumbPath = null;
+      const existing = await getPieceById(pieceId);
+
+      let topFullPath = existing?.top_full_path || null;
+      let topThumbPath = existing?.top_thumb_path || null;
+      let bottomFullPath = existing?.bottom_full_path || null;
+      let bottomThumbPath = existing?.bottom_thumb_path || null;
 
       if (topFile) {
         const topFullFilename = `${pieceId}_top.jpg`;
@@ -353,10 +391,6 @@ app.post(
   }
 );
 
-/**
- * Simple delete endpoint by pieceId
- * This deletes DB record and generated image files if they exist.
- */
 app.delete("/admin/piece/:pieceId", async (req, res) => {
   try {
     const pieceId = sanitizePieceId(req.params.pieceId);
@@ -368,28 +402,7 @@ app.delete("/admin/piece/:pieceId", async (req, res) => {
       });
     }
 
-    const row = await new Promise((resolve, reject) => {
-      db.get(
-        `
-        SELECT
-          piece_id,
-          top_full_path,
-          top_thumb_path,
-          bottom_full_path,
-          bottom_thumb_path
-        FROM uploaded_pieces
-        WHERE piece_id = ?
-        `,
-        [pieceId],
-        (err, result) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve(result || null);
-        }
-      );
-    });
+    const row = await getPieceById(pieceId);
 
     if (!row) {
       return res.status(404).json({
@@ -408,13 +421,7 @@ app.delete("/admin/piece/:pieceId", async (req, res) => {
       .map((relativePath) => path.join(PUBLIC_DIR, relativePath));
 
     for (const filePath of filesToDelete) {
-      try {
-        await fsp.unlink(filePath);
-      } catch (err) {
-        if (err.code !== "ENOENT") {
-          throw err;
-        }
-      }
+      await deleteIfExists(filePath);
     }
 
     await new Promise((resolve, reject) => {
@@ -462,9 +469,6 @@ app.use((err, req, res, next) => {
     error: err.message || "Internal server error."
   });
 });
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "admin.html"));
-});
 
 /* -------------------------
    START SERVER
@@ -477,7 +481,6 @@ app.listen(PORT, () => {
     console.log(`Theory: http://localhost:${PORT}/theory.html`);
     console.log(`Practice: http://localhost:${PORT}/practice.html`);
     console.log(`Admin: http://localhost:${PORT}/admin`);
-    console.log(`Bonsai: http://localhost:${PORT}/gallery/bonsai`);
     console.log(`Health: http://localhost:${PORT}/health`);
     console.log(`Pieces API: http://localhost:${PORT}/api/pieces`);
   }
