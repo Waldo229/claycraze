@@ -1,15 +1,17 @@
 {
-  "dependencies": {
-    "express": "^5.2.1",
-    "sqlite3": "^6.0.1"
-  },
   "name": "claycraze",
   "version": "1.0.0",
   "description": "New Repository for ClaycrazE September 6, 2025",
   "main": "server.js",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
   },
   "repository": {
     "type": "git",
