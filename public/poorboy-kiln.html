@@ -4,57 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | PoorBoy Kiln</title>
-
-  <link rel="shortcut icon" href="/images/favicon-32.png" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-
-<body class="theory-child-page">
+<body class="theory-page">
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
+      <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
-      <nav class="site-nav">
-        <a href="/index.html">Home</a>
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open navigation"
+        type="button"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+        <a href="/">Home</a>
         <a href="/theory.html" class="active">Theory</a>
         <a href="/practice.html">Practice</a>
       </nav>
     </div>
   </header>
 
-  <div class="sub-nav">
+  <nav class="sub-nav" aria-label="Theory sections">
     <a href="/studio.html">Studio</a>
     <a href="/materials.html">Materials</a>
     <a href="/places.html">Places</a>
-    <a href="/kilns.html" class="active">Kilns</a>
+    <a href="/kiln.html" class="active">Kilns</a>
     <a href="/gene.html">GENE Project</a>
-  </div>
+  </nav>
 
-  <main class="content-shell theory-child-intro">
+  <main class="content-shell theory-child-page" style="margin-top: 2rem;">
+    <section class="home-intro theory-child-intro">
+      <div class="page-back">
+        <a href="/kiln.html">← Back to Kilns</a>
+      </div>
 
-    <section class="page-card">
-      <p class="breadcrumb">Theory / Kilns</p>
       <h1>PoorBoy Kiln</h1>
 
-      <div class="intro-wrap">
-        <img src="/images/poorboy.jpg" alt="PoorBoy Kiln" class="intro-monks" />
+      <div class="theory-lead theory-lead-with-image">
+        <img
+          src="/images/cc_poorboy.jpg"
+          alt="PoorBoy kiln"
+          class="theory-lead-image"
+          style="max-width: 180px; width: 100%; height: auto; border-radius: 12px; float: left; margin: 0 1.5rem 1rem 0;"
+        />
 
         <div class="intro-copy">
           <p>
-            The PoorBoy kiln is the outdoor gas line in the studio: more exposed, more atmospheric,
-            and bound to a different rhythm of firing.
+            The PoorBoy kiln is the outdoor gas line in the studio: more exposed, more
+            atmospheric, and bound to a different rhythm of firing.
           </p>
 
           <p>
-            Where the electric kiln offers steadiness and repeatability, the gas kiln asks for a broader
-            bodily attention—flame path, weather, adjustment, reduction, and the larger physical presence
-            of the firing itself.
+            Where the electric kiln offers steadiness and repeatability, the gas kiln asks
+            for a broader bodily attention—flame path, weather, adjustment, reduction, and
+            the larger physical presence of the firing itself.
           </p>
 
           <p>
@@ -63,27 +81,28 @@
         </div>
       </div>
 
-      <div class="kiln-nav">
-        <span></span>
-        <a href="/electric-kiln.html" class="kiln-link">See the Electric Kiln →</a>
+      <div style="clear: both;"></div>
+
+      <div class="page-jump">
+        <a href="/electric-kiln.html">View Electric Kiln →</a>
       </div>
     </section>
 
-    <section class="page-card theory-reading-card" style="margin-top: 2rem;">
+    <section class="content-panel">
       <p>
-        The PoorBoy introduces another order of judgment. It asks not only for technical control,
-        but for responsiveness: to timing, to atmosphere, to the way heat moves through space and
-        touches different surfaces unevenly.
+        The PoorBoy introduces another order of judgment. It asks not only for technical
+        control, but for responsiveness: to timing, to atmosphere, to the way heat moves
+        through space and touches different surfaces unevenly.
       </p>
 
       <p>
-        That variability is part of its appeal. The gas kiln can reward patience with surfaces and
-        transitions that feel less prescribed and more weathered into being. It is less insulated
-        from circumstance, and therefore sometimes more revealing.
+        That variability is part of its appeal. The gas kiln can reward patience with
+        surfaces and transitions that feel less prescribed and more weathered into being.
+        It is less insulated from circumstance, and therefore more revealing of it.
       </p>
     </section>
-
   </main>
 
+  <script src="/js/nav.js"></script>
 </body>
 </html>
