@@ -3,280 +3,539 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Admin Entry</title>
-  <link rel="stylesheet" href="/css/gallery.css" />
+  <title>ClaycrazE | Admin Upload</title>
+
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+
   <style>
-    .admin-page {
-      max-width: 1180px;
+    .admin-shell {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 1.5rem 1rem 2.5rem;
+      padding: 2rem 1rem 4rem;
     }
 
     .admin-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 1.2rem;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
 
-    .admin-panel {
-      background: rgba(244, 231, 198, 0.84);
-      border: 1px solid rgba(122, 77, 28, 0.16);
-      border-radius: 14px;
-      box-shadow: 0 10px 28px rgba(55, 31, 12, 0.16);
-      padding: 1.2rem;
+    @media (min-width: 900px) {
+      .admin-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
     }
 
-    .admin-panel h2 {
-      margin: 0 0 1rem;
+    .admin-card {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(60, 40, 20, 0.12);
+      border-radius: 18px;
+      padding: 1.25rem;
+      box-shadow: 0 12px 28px rgba(20, 10, 5, 0.08);
     }
 
-    .admin-form-grid {
+    .admin-card h2,
+    .admin-card h3 {
+      margin: 0 0 0.75rem;
+    }
+
+    .admin-card p {
+      margin: 0 0 0.85rem;
+      line-height: 1.5;
+    }
+
+    .admin-form {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.9rem;
+      gap: 1rem;
     }
 
-    .field {
+    .form-row {
       display: grid;
-      gap: 0.35rem;
+      gap: 0.4rem;
     }
 
-    .field.full {
-      grid-column: 1 / -1;
+    .form-row label {
+      font-weight: 600;
     }
 
-    .field label {
-      font-weight: 700;
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
+    .form-row input[type="text"],
+    .form-row input[type="file"] {
       width: 100%;
-      font: inherit;
-      border: 1px solid rgba(122, 77, 28, 0.22);
+      padding: 0.7rem 0.8rem;
       border-radius: 10px;
-      padding: 0.75rem 0.85rem;
-      background: #fffaf0;
-      color: #2c1a10;
+      border: 1px solid rgba(60, 40, 20, 0.2);
+      font: inherit;
+      background: #fff;
     }
 
-    .field textarea {
-      min-height: 120px;
-      resize: vertical;
+    .helper {
+      font-size: 0.94rem;
+      opacity: 0.85;
     }
 
-    .admin-actions {
+    .button-row {
       display: flex;
-      gap: 0.7rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
-    .admin-btn {
+    .admin-button {
       appearance: none;
-      border: 1px solid rgba(122, 77, 28, 0.2);
-      background: #f4e7c6;
-      color: #2c1a10;
+      border: none;
       border-radius: 999px;
-      padding: 0.75rem 1rem;
+      padding: 0.8rem 1.1rem;
       font: inherit;
+      font-weight: 600;
       cursor: pointer;
+      background: #3f2b1d;
+      color: #fff;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
-    .admin-btn.primary {
-      background: #7a4d1c;
-      color: #fff7ea;
-      border-color: #7a4d1c;
+    .admin-button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
     }
 
-    .admin-status,
-    .admin-output {
-      background: #fffaf0;
-      border: 1px solid rgba(122, 77, 28, 0.18);
-      border-radius: 10px;
-      padding: 0.95rem;
-      white-space: pre-wrap;
-      word-break: break-word;
+    .admin-button.secondary {
+      background: #8a6b52;
     }
 
-    .admin-list {
+    .status-box {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      display: none;
+      line-height: 1.45;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-box.success {
+      background: rgba(34, 139, 34, 0.1);
+      border: 1px solid rgba(34, 139, 34, 0.25);
+    }
+
+    .status-box.error {
+      background: rgba(178, 34, 34, 0.1);
+      border: 1px solid rgba(178, 34, 34, 0.25);
+    }
+
+    .upload-result {
+      margin-top: 1rem;
+      display: none;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(63, 43, 29, 0.06);
+      border: 1px solid rgba(63, 43, 29, 0.1);
+    }
+
+    .upload-result.show {
+      display: block;
+    }
+
+    .piece-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .piece-item {
+      border: 1px solid rgba(60, 40, 20, 0.14);
+      border-radius: 14px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .piece-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .piece-item h3 {
       margin: 0;
-      padding-left: 1.2rem;
-      line-height: 1.7;
+      font-size: 1.05rem;
     }
 
-    .required-note {
-      color: #6a4b2d;
+    .piece-meta {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-top: 0.2rem;
+    }
+
+    .piece-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .piece-image-card {
+      border: 1px solid rgba(60, 40, 20, 0.12);
+      border-radius: 12px;
+      padding: 0.75rem;
+      background: #fff;
+    }
+
+    .piece-image-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+      background: #f7f4ef;
+      margin-bottom: 0.6rem;
+    }
+
+    .piece-image-card a {
+      display: inline-block;
+      margin-right: 0.5rem;
+      margin-bottom: 0.35rem;
       font-size: 0.92rem;
     }
 
-    @media (max-width: 860px) {
-      .admin-grid,
-      .admin-form-grid {
-        grid-template-columns: 1fr;
-      }
+    .small-button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 0.55rem 0.9rem;
+      font: inherit;
+      font-size: 0.92rem;
+      cursor: pointer;
+      background: #6a2c2c;
+      color: #fff;
+    }
+
+    .empty-note {
+      opacity: 0.8;
+      font-style: italic;
+    }
+
+    .admin-top-note {
+      max-width: 760px;
+      margin-bottom: 1.5rem;
     }
   </style>
 </head>
-<body>
+
+<body class="practice-page">
   <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="/bonsai.html">ClaycrazE</a>
-      <nav class="site-nav" aria-label="Primary navigation">
-        <a href="/bonsai.html">Bonsai</a>
-        <a href="/piece.html">Piece View</a>
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
+      </a>
+
+      <nav class="site-nav">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html" class="active">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="admin-page">
-    <section class="gallery-intro">
-      <p class="eyebrow">Studio</p>
-      <h1>Admin Entry</h1>
+  <main class="admin-shell">
+    <section class="admin-top-note">
+      <p class="breadcrumb">Admin / Upload</p>
+      <h1>Upload pottery images</h1>
       <p>
-        Enter the piece once, choose the image files, and save. The form writes to
-        the SQLite master record and places the JPEG files in the correct site folders.
+        This page sends images to the server, converts them to web-ready JPEGs,
+        makes thumbnails, and stores the file paths in the ClaycrazE database.
       </p>
     </section>
 
-    <div class="admin-grid">
-      <section class="admin-panel">
-        <h2>Piece Entry</h2>
+    <section class="admin-grid">
+      <article class="admin-card">
+        <h2>Add or update a piece</h2>
+        <p class="helper">
+          Use the same Piece ID again if you want to replace an existing upload.
+          Example: <strong>ov-2604-01</strong>
+        </p>
 
-        <form id="adminForm">
-          <div class="admin-form-grid">
-            <div class="field">
-              <label for="shape">Shape Code</label>
-              <select id="shape" name="shape">
-                <option value="OV">OV — Oval</option>
-                <option value="RC">RC — Rectangular</option>
-                <option value="RD">RD — Round</option>
-                <option value="CS">CS — Cascade</option>
-                <option value="SL">SL — Slab / Tray</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="pieceNumber">Piece Number</label>
-              <input id="pieceNumber" name="pieceNumber" type="number" min="1" max="999" value="1" />
-            </div>
-
-            <div class="field">
-              <label for="yearMonth">Year + Month</label>
-              <input id="yearMonth" name="yearMonth" type="text" maxlength="4" />
-            </div>
-
-            <div class="field">
-              <label for="title">Title</label>
-              <input id="title" name="title" type="text" value="Oval Bonsai Container" />
-            </div>
-
-            <div class="field">
-              <label for="category">Category</label>
-              <input id="category" name="category" type="text" value="Bonsai" />
-            </div>
-
-            <div class="field">
-              <label for="clay">Clay</label>
-              <input id="clay" name="clay" type="text" />
-            </div>
-
-            <div class="field">
-              <label for="finish">Finish</label>
-              <input id="finish" name="finish" type="text" />
-            </div>
-
-            <div class="field">
-              <label for="dimensions">Dimensions</label>
-              <input id="dimensions" name="dimensions" type="text" placeholder='Approx. 10" x 8" x 2.5"' />
-            </div>
-
-            <div class="field">
-              <label for="status">Status</label>
-              <select id="status" name="status">
-                <option value="Available">Available</option>
-                <option value="Sold">Sold</option>
-                <option value="Hold">Hold</option>
-                <option value="Not Listed">Not Listed</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="hasBottomImage">Bottom image ready?</label>
-              <select id="hasBottomImage" name="hasBottomImage">
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="isPublished">Publish to website?</label>
-              <select id="isPublished" name="isPublished">
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-              </select>
-            </div>
-
-            <div class="field full">
-              <label for="description">Description</label>
-              <textarea id="description" name="description"></textarea>
-            </div>
-
-            <div class="field full">
-              <label for="thumbImage">Thumbnail top image (required, JPEG)</label>
-              <input id="thumbImage" name="thumbImage" type="file" accept=".jpg,.jpeg" />
-            </div>
-
-            <div class="field full">
-              <label for="fullTopImage">Full top image (required, JPEG)</label>
-              <input id="fullTopImage" name="fullTopImage" type="file" accept=".jpg,.jpeg" />
-            </div>
-
-            <div class="field full">
-              <label for="fullBottomImage">Full bottom image (optional, JPEG)</label>
-              <input id="fullBottomImage" name="fullBottomImage" type="file" accept=".jpg,.jpeg" />
-              <div class="required-note">Leave blank if the underside image is not ready yet.</div>
-            </div>
+        <form id="uploadForm" class="admin-form" enctype="multipart/form-data">
+          <div class="form-row">
+            <label for="pieceId">Piece ID</label>
+            <input
+              id="pieceId"
+              name="pieceId"
+              type="text"
+              placeholder="ov-2604-01"
+              required
+            />
           </div>
 
-          <div class="admin-actions">
-            <button type="button" class="admin-btn" id="previewBtn">Preview Entry</button>
-            <button type="submit" class="admin-btn primary">Save to Database</button>
-            <button type="reset" class="admin-btn" id="resetBtn">Clear Form</button>
+          <div class="form-row">
+            <label for="title">Title</label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              placeholder="Oval bonsai pot"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="topImage">Top image</label>
+            <input
+              id="topImage"
+              name="topImage"
+              type="file"
+              accept="image/*"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="bottomImage">Bottom image</label>
+            <input
+              id="bottomImage"
+              name="bottomImage"
+              type="file"
+              accept="image/*"
+            />
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="admin-button">Upload piece</button>
+            <button type="button" class="admin-button secondary" id="reloadPieces">
+              Refresh list
+            </button>
           </div>
         </form>
-      </section>
 
-      <section class="admin-panel">
-        <h2>Output</h2>
+        <div id="statusBox" class="status-box"></div>
 
-        <p><strong>Piece ID</strong></p>
-        <div class="admin-output" id="pieceIdOutput">—</div>
+        <div id="uploadResult" class="upload-result">
+          <h3>Last upload</h3>
+          <div id="uploadResultContent"></div>
+        </div>
+      </article>
 
-        <p><strong>Image files</strong></p>
-        <div class="admin-output" id="imageOutput">—</div>
+      <article class="admin-card">
+        <h2>Uploaded pieces</h2>
+        <p class="helper">
+          These are the records currently stored in SQLite and served from the generated image folders.
+        </p>
 
-        <p><strong>Record Preview</strong></p>
-        <div class="admin-output" id="recordOutput">—</div>
-
-        <p><strong>Studio checklist</strong></p>
-        <ul class="admin-list">
-          <li>Choose the thumbnail top JPEG</li>
-          <li>Choose the full top JPEG</li>
-          <li>Choose the full bottom JPEG if available</li>
-          <li>Click <strong>Save to Database</strong></li>
-          <li>The server saves the files with the correct names automatically</li>
-          <li>The server refreshes <code>/public/data/pieces.json</code> automatically</li>
-          <li>Refresh the site</li>
-        </ul>
-
-        <p><strong>Status</strong></p>
-        <div class="admin-status" id="statusOutput">Fill out the form, choose the image files, then preview or save.</div>
-      </section>
-    </div>
+        <div id="pieceList" class="piece-list">
+          <p class="empty-note">Loading pieces…</p>
+        </div>
+      </article>
+    </section>
   </main>
 
-  <script src="/admin/js/admin.js"></script>
+  <script>
+    const uploadForm = document.getElementById("uploadForm");
+    const statusBox = document.getElementById("statusBox");
+    const uploadResult = document.getElementById("uploadResult");
+    const uploadResultContent = document.getElementById("uploadResultContent");
+    const pieceList = document.getElementById("pieceList");
+    const reloadPiecesButton = document.getElementById("reloadPieces");
+
+    function setStatus(message, type) {
+      statusBox.textContent = message;
+      statusBox.className = "status-box show " + type;
+    }
+
+    function clearStatus() {
+      statusBox.textContent = "";
+      statusBox.className = "status-box";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderUploadResult(piece) {
+      const blocks = [];
+
+      blocks.push(`<p><strong>Piece ID:</strong> ${escapeHtml(piece.pieceId)}</p>`);
+
+      if (piece.title) {
+        blocks.push(`<p><strong>Title:</strong> ${escapeHtml(piece.title)}</p>`);
+      }
+
+      if (piece.topFullUrl || piece.topThumbUrl) {
+        blocks.push(`
+          <p>
+            <strong>Top:</strong>
+            ${piece.topFullUrl ? `<a href="${piece.topFullUrl}" target="_blank" rel="noopener">full</a>` : ""}
+            ${piece.topThumbUrl ? `<a href="${piece.topThumbUrl}" target="_blank" rel="noopener">thumb</a>` : ""}
+          </p>
+        `);
+      }
+
+      if (piece.bottomFullUrl || piece.bottomThumbUrl) {
+        blocks.push(`
+          <p>
+            <strong>Bottom:</strong>
+            ${piece.bottomFullUrl ? `<a href="${piece.bottomFullUrl}" target="_blank" rel="noopener">full</a>` : ""}
+            ${piece.bottomThumbUrl ? `<a href="${piece.bottomThumbUrl}" target="_blank" rel="noopener">thumb</a>` : ""}
+          </p>
+        `);
+      }
+
+      uploadResultContent.innerHTML = blocks.join("");
+      uploadResult.classList.add("show");
+    }
+
+    function renderImageCard(label, thumbUrl, fullUrl) {
+      if (!thumbUrl && !fullUrl) {
+        return "";
+      }
+
+      const preview = thumbUrl || fullUrl;
+
+      return `
+        <div class="piece-image-card">
+          <img src="${preview}" alt="${escapeHtml(label)} preview" />
+          <div><strong>${escapeHtml(label)}</strong></div>
+          ${fullUrl ? `<a href="${fullUrl}" target="_blank" rel="noopener">full</a>` : ""}
+          ${thumbUrl ? `<a href="${thumbUrl}" target="_blank" rel="noopener">thumb</a>` : ""}
+        </div>
+      `;
+    }
+
+    async function loadPieces() {
+      pieceList.innerHTML = `<p class="empty-note">Loading pieces…</p>`;
+
+      try {
+        const response = await fetch("/api/pieces");
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "Could not load pieces.");
+        }
+
+        if (!data.pieces || data.pieces.length === 0) {
+          pieceList.innerHTML = `<p class="empty-note">No uploaded pieces yet.</p>`;
+          return;
+        }
+
+        pieceList.innerHTML = data.pieces.map((piece) => `
+          <div class="piece-item">
+            <div class="piece-item-header">
+              <div>
+                <h3>${escapeHtml(piece.title || piece.pieceId)}</h3>
+                <div class="piece-meta">
+                  Piece ID: ${escapeHtml(piece.pieceId)}
+                  ${piece.createdAt ? ` · Created: ${escapeHtml(piece.createdAt)}` : ""}
+                </div>
+              </div>
+
+              <button
+                class="small-button"
+                type="button"
+                onclick="deletePiece('${encodeURIComponent(piece.pieceId)}')"
+              >
+                Delete
+              </button>
+            </div>
+
+            <div class="piece-images">
+              ${renderImageCard("Top", piece.topThumbUrl, piece.topFullUrl)}
+              ${renderImageCard("Bottom", piece.bottomThumbUrl, piece.bottomFullUrl)}
+            </div>
+          </div>
+        `).join("");
+      } catch (error) {
+        pieceList.innerHTML = `
+          <p class="empty-note">Could not load pieces.</p>
+          <p>${escapeHtml(error.message)}</p>
+        `;
+      }
+    }
+
+    async function deletePiece(encodedPieceId) {
+      const pieceId = decodeURIComponent(encodedPieceId);
+
+      const confirmed = window.confirm(`Delete piece "${pieceId}"? This removes generated files and the database record.`);
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/admin/piece/${encodeURIComponent(pieceId)}`, {
+          method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "Delete failed.");
+        }
+
+        setStatus(`Deleted piece ${pieceId}.`, "success");
+        await loadPieces();
+      } catch (error) {
+        setStatus(error.message || "Delete failed.", "error");
+      }
+    }
+
+    window.deletePiece = deletePiece;
+
+    uploadForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus();
+
+      const formData = new FormData(uploadForm);
+
+      const pieceId = String(formData.get("pieceId") || "").trim();
+      const hasTop = formData.get("topImage") && formData.get("topImage").size > 0;
+      const hasBottom = formData.get("bottomImage") && formData.get("bottomImage").size > 0;
+
+      if (!pieceId) {
+        setStatus("Piece ID is required.", "error");
+        return;
+      }
+
+      if (!hasTop && !hasBottom) {
+        setStatus("Choose at least one image: top or bottom.", "error");
+        return;
+      }
+
+      setStatus("Uploading and processing images…", "success");
+
+      try {
+        const response = await fetch("/admin/upload-piece", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "Upload failed.");
+        }
+
+        setStatus(data.message || "Upload succeeded.", "success");
+        renderUploadResult(data.piece);
+        uploadForm.reset();
+        await loadPieces();
+      } catch (error) {
+        setStatus(error.message || "Upload failed.", "error");
+      }
+    });
+
+    reloadPiecesButton.addEventListener("click", async () => {
+      clearStatus();
+      await loadPieces();
+    });
+
+    loadPieces();
+  </script>
 </body>
 </html>
