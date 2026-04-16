@@ -3,32 +3,333 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Piece</title>
+  <title>ClaycrazE | Piece View</title>
+
   <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
   <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/gallery.css" />
+
+  <style>
+    .piece-page {
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #d9c379 0%, #cfa947 100%);
+    }
+
+    .piece-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    .piece-header {
+      margin-bottom: 1.75rem;
+    }
+
+    .piece-header a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .piece-logo {
+      width: 160px;
+      max-width: 45vw;
+      display: block;
+    }
+
+    .piece-card {
+      background: rgba(234, 212, 148, 0.96);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(70, 45, 12, 0.18);
+      padding: 1.25rem;
+    }
+
+    .piece-frame {
+      background: rgba(239, 221, 167, 0.95);
+      border-radius: 16px;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 1.25rem;
+      box-shadow: inset 0 0 0 1px rgba(105, 70, 18, 0.08);
+    }
+
+    .piece-title {
+      font-size: 1.15rem;
+      line-height: 1.35;
+      margin: 0 0 1rem;
+      color: #2d1b12;
+    }
+
+    .piece-image-stage {
+      flex: 1;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: rgba(223, 203, 146, 0.5);
+      overflow: hidden;
+    }
+
+    .piece-image-stage img {
+      max-width: 100%;
+      max-height: 560px;
+      width: auto;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .piece-message {
+      text-align: center;
+      font-size: 1rem;
+      color: #4a3221;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 620px;
+    }
+
+    .piece-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .piece-button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 0.85rem 1.25rem;
+      font: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #f1e6c2;
+      color: #6a3d1d;
+      box-shadow: 0 6px 16px rgba(70, 45, 12, 0.12);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .piece-button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .piece-meta {
+      margin-top: 1rem;
+      text-align: center;
+      color: #5d3c1d;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .piece-nav {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .piece-nav a {
+      color: #5f3817;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .piece-nav a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 700px) {
+      .piece-wrap {
+        padding: 1.5rem 0.8rem 3rem;
+      }
+
+      .piece-frame {
+        min-height: 440px;
+        padding: 1rem;
+      }
+
+      .piece-image-stage {
+        min-height: 320px;
+      }
+
+      .piece-title {
+        font-size: 1.02rem;
+      }
+    }
+  </style>
 </head>
+
 <body class="piece-page">
-
-  <header class="site-header minimal-header">
-    <div class="header-shell">
-      <a class="site-brand" href="/index.html" aria-label="ClaycrazE home">
-        <img src="/images/logo2.svg" alt="ClaycrazE" class="site-logo" />
+  <main class="piece-wrap">
+    <header class="piece-header">
+      <a href="/practice.html" aria-label="Return to Practice">
+        <img
+          class="piece-logo"
+          src="/images/claycraze-logo.png"
+          alt="ClaycrazE"
+          onerror="this.style.display='none';"
+        />
       </a>
+    </header>
 
-      <a class="back-link" href="/gallery/ovals.html">← Back to Ovals</a>
-    </div>
-  </header>
+    <section class="piece-card">
+      <div class="piece-frame">
+        <h1 id="pieceTitle" class="piece-title">Loading piece…</h1>
 
-  <main class="piece-main">
-    <section class="piece-shell">
-      <div class="piece-stage" id="pieceStage"></div>
-      <div class="piece-details" id="pieceDetails"></div>
+        <div class="piece-image-stage" id="pieceStage">
+          <div class="piece-message">Loading image…</div>
+        </div>
+
+        <div class="piece-controls">
+          <button id="flipButton" class="piece-button" type="button" disabled>
+            Flip
+          </button>
+        </div>
+
+        <div class="piece-meta" id="pieceMeta"></div>
+
+        <div class="piece-nav">
+          <a href="/practice.html">← Back to Practice</a>
+        </div>
+      </div>
     </section>
   </main>
 
-  <script src="/js/piece.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const rawId = params.get("id") || "";
+    const pieceId = rawId.trim().toLowerCase();
+
+    const pieceTitleEl = document.getElementById("pieceTitle");
+    const pieceStageEl = document.getElementById("pieceStage");
+    const pieceMetaEl = document.getElementById("pieceMeta");
+    const flipButton = document.getElementById("flipButton");
+
+    let currentView = "top";
+    let availableViews = {
+      top: false,
+      bottom: false
+    };
+
+    function titleFromId(id) {
+      if (!id) return "Untitled piece";
+
+      const shapeMap = {
+        ov: "Oval Bonsai Container",
+        rc: "Rectangle Bonsai Container",
+        rd: "Round Bonsai Container",
+        fs: "Freestyle Bonsai Container"
+      };
+
+      const prefix = id.split("-")[0];
+      return shapeMap[prefix] || "Bonsai Container";
+    }
+
+    function viewLabel(view) {
+      return view === "bottom" ? "bottom view" : "top view";
+    }
+
+    function updateHeading() {
+      const baseTitle = titleFromId(pieceId);
+      pieceTitleEl.textContent = `${baseTitle} ${viewLabel(currentView)}`;
+    }
+
+    function showMessage(message) {
+      pieceStageEl.innerHTML = `<div class="piece-message">${message}</div>`;
+    }
+
+    function imageUrl(view) {
+      return `/images/full/${pieceId}_${view}.jpg`;
+    }
+
+    function checkImage(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
+    function renderImage(view) {
+      const url = imageUrl(view);
+      pieceStageEl.innerHTML = `
+        <img
+          src="${url}"
+          alt="${titleFromId(pieceId)} ${viewLabel(view)}"
+        />
+      `;
+      updateHeading();
+    }
+
+    function nextView() {
+      if (availableViews.top && availableViews.bottom) {
+        currentView = currentView === "top" ? "bottom" : "top";
+        renderImage(currentView);
+        return;
+      }
+
+      if (availableViews.top) {
+        currentView = "top";
+        renderImage("top");
+        return;
+      }
+
+      if (availableViews.bottom) {
+        currentView = "bottom";
+        renderImage("bottom");
+      }
+    }
+
+    async function initPiecePage() {
+      if (!pieceId) {
+        pieceTitleEl.textContent = "No piece selected";
+        showMessage("No piece ID was provided in the URL.");
+        pieceMetaEl.textContent = "";
+        flipButton.disabled = true;
+        return;
+      }
+
+      const topExists = await checkImage(imageUrl("top"));
+      const bottomExists = await checkImage(imageUrl("bottom"));
+
+      availableViews.top = topExists;
+      availableViews.bottom = bottomExists;
+
+      pieceMetaEl.textContent = `Piece ID: ${pieceId}`;
+
+      if (!topExists && !bottomExists) {
+        pieceTitleEl.textContent = `${titleFromId(pieceId)}`;
+        showMessage(
+          `No images were found for piece ID "${pieceId}".`
+        );
+        flipButton.disabled = true;
+        return;
+      }
+
+      if (topExists) {
+        currentView = "top";
+      } else {
+        currentView = "bottom";
+      }
+
+      renderImage(currentView);
+
+      if (topExists && bottomExists) {
+        flipButton.disabled = false;
+      } else {
+        flipButton.disabled = true;
+      }
+    }
+
+    flipButton.addEventListener("click", () => {
+      nextView();
+    });
+
+    initPiecePage();
+  </script>
 </body>
 </html>
