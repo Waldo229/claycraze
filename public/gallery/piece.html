@@ -303,9 +303,7 @@
 
       if (!topExists && !bottomExists) {
         pieceTitleEl.textContent = `${titleFromId(pieceId)}`;
-        showMessage(
-          `No images were found for piece ID "${pieceId}".`
-        );
+        showMessage(`No images were found for piece ID "${pieceId}".`);
         flipButton.disabled = true;
         return;
       }
@@ -317,12 +315,7 @@
       }
 
       renderImage(currentView);
-
-      if (topExists && bottomExists) {
-        flipButton.disabled = false;
-      } else {
-        flipButton.disabled = true;
-      }
+      flipButton.disabled = !(topExists && bottomExists);
     }
 
     flipButton.addEventListener("click", () => {
