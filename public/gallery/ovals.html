@@ -217,14 +217,20 @@
   </main>
 
   <script>
+    console.log("[ovals] script loaded");
+
     const navToggle = document.getElementById("navToggle");
     const siteNav = document.getElementById("siteNav");
+
+    console.log("[ovals] navToggle:", navToggle);
+    console.log("[ovals] siteNav:", siteNav);
 
     if (navToggle && siteNav) {
       navToggle.addEventListener("click", () => {
         const expanded = navToggle.getAttribute("aria-expanded") === "true";
         navToggle.setAttribute("aria-expanded", String(!expanded));
         siteNav.classList.toggle("open");
+        console.log("[ovals] nav toggled, expanded:", !expanded);
       });
     }
 
@@ -235,17 +241,26 @@
       { id: "ov-2604-04", title: "Oval bonsai container" }
     ];
 
+    console.log("[ovals] ovalPieces:", ovalPieces);
+
     const grid = document.getElementById("ovalsGrid");
+    console.log("[ovals] grid element:", grid);
 
     function thumbUrl(id) {
-      return `/images/thumbs/${id}_top_thumb.jpg`;
+      const url = `/images/thumbs/${id}_top_thumb.jpg`;
+      console.log("[ovals] thumbUrl for", id, "=>", url);
+      return url;
     }
 
     function pieceUrl(id) {
-      return `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+      const url = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+      console.log("[ovals] pieceUrl for", id, "=>", url);
+      return url;
     }
 
     function makeCard(piece) {
+      console.log("[ovals] making card for:", piece);
+
       const card = document.createElement("a");
       card.className = "piece-card";
       card.href = pieceUrl(piece.id);
@@ -258,7 +273,12 @@
       img.src = thumbUrl(piece.id);
       img.alt = piece.title;
 
+      img.onload = () => {
+        console.log("[ovals] thumb loaded:", piece.id, img.src);
+      };
+
       img.onerror = () => {
+        console.error("[ovals] thumb missing:", piece.id, img.src);
         thumbShell.innerHTML = `<div class="piece-fallback">Thumbnail not found for ${piece.id}.</div>`;
       };
 
@@ -280,17 +300,34 @@
     }
 
     function renderGrid() {
+      console.log("[ovals] renderGrid called");
+
+      if (!grid) {
+        console.error("[ovals] ovalsGrid not found");
+        return;
+      }
+
       if (!ovalPieces.length) {
+        console.warn("[ovals] no ovalPieces found");
         grid.innerHTML = `<div class="empty-state">No oval pieces are listed yet.</div>`;
         return;
       }
 
       ovalPieces.forEach((piece) => {
-        grid.appendChild(makeCard(piece));
+        const card = makeCard(piece);
+        grid.appendChild(card);
       });
+
+      console.log("[ovals] rendered cards:", grid.children.length);
+      console.log("[ovals] final grid HTML:", grid.innerHTML);
     }
 
-    renderGrid();
+    try {
+      renderGrid();
+      console.log("[ovals] render complete");
+    } catch (error) {
+      console.error("[ovals] render failed:", error);
+    }
   </script>
 </body>
 </html>
