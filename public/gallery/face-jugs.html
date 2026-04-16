@@ -5,110 +5,200 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Face Jugs</title>
 
-  <link rel="shortcut icon" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/css/styles.css" />
 
   <style>
-    .practice-content {
-      max-width: 1200px;
+    .shape-page-shell {
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 22px 24px 80px;
+      padding: 2rem 1.5rem 4rem;
     }
 
-    .page-back {
-      margin: 0 0 24px;
+    .shape-hero,
+    .detail-shell {
+      background: #ded0a1;
+      border-radius: 1.8rem;
+      padding: 2rem 1.6rem;
+      box-shadow: 0 16px 40px rgba(80, 56, 20, 0.18);
     }
 
-    .page-back a {
+    .shape-hero {
+      margin-bottom: 2rem;
+    }
+
+    .shape-kicker {
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7d5628;
+      margin-bottom: 0.85rem;
+    }
+
+    .shape-hero h1,
+    .detail-header h2 {
+      margin: 0 0 0.75rem;
+      color: #2f1b0f;
+    }
+
+    .shape-hero p {
+      margin: 0 0 1.25rem;
+      line-height: 1.55;
+      max-width: 760px;
+      color: #3f2a18;
+    }
+
+    .hero-actions,
+    .detail-topbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-button,
+    .detail-back-link {
       display: inline-block;
-      padding: 12px 20px;
+      padding: 0.8rem 1.1rem;
       border-radius: 999px;
-      background: rgba(255, 248, 230, 0.38);
-      color: inherit;
       text-decoration: none;
-      font-size: 1rem;
-      transition: background 0.2s ease, transform 0.2s ease;
+      font-weight: 600;
     }
 
-    .page-back a:hover {
-      background: rgba(255, 248, 230, 0.55);
-      transform: translateY(-1px);
+    .hero-button.primary,
+    .detail-back-link.primary {
+      background: #6c4b28;
+      color: #fff8ec;
     }
 
-    .facejugs-intro {
-      max-width: 1140px;
-      background: rgba(247, 240, 220, 0.82);
-      border-radius: 28px;
-      padding: 30px 28px 34px;
-      box-shadow: 0 18px 40px rgba(60, 35, 10, 0.16);
-      margin-bottom: 32px;
+    .hero-button.secondary,
+    .detail-back-link.secondary {
+      background: #efe6cf;
+      color: #6c4b28;
+      border: 1px solid rgba(108, 75, 40, 0.18);
     }
 
-    .facejugs-intro .kicker {
-      font-size: 1rem;
-      margin: 0 0 10px;
-      opacity: 0.85;
+    .piece-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
     }
 
-    .facejugs-intro h1 {
-      font-size: clamp(3rem, 6vw, 4.6rem);
-      line-height: 0.95;
-      margin: 0 0 22px;
-      font-weight: 500;
+    .piece-card {
+      background: #efe1b7;
+      border-radius: 1.35rem;
+      padding: 1rem;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 10px 24px rgba(80, 56, 20, 0.12);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .facejugs-intro p {
-      font-size: 1.05rem;
-      line-height: 1.65;
-      max-width: 760px;
-      margin: 0 0 18px;
+    .piece-card:hover,
+    .piece-card:focus {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px rgba(80, 56, 20, 0.18);
     }
 
-    .facejugs-intro p:last-child {
-      margin-bottom: 0;
+    .piece-card-media {
+      background: #e2d3ab;
+      border-radius: 1rem;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      overflow: hidden;
     }
 
-    .facejugs-image {
-      max-width: 760px;
-    }
-
-    .facejugs-image figure {
-      margin: 0;
-    }
-
-    .facejugs-image img {
+    .piece-card-media img {
+      width: 70%;
+      max-width: 220px;
+      object-fit: contain;
       display: block;
+    }
+
+    .piece-card h3 {
+      margin: 0 0 0.35rem;
+    }
+
+    .piece-card p {
+      margin: 0;
+      color: #7d5628;
+    }
+
+    .detail-shell {
+      display: none;
+    }
+
+    .detail-shell.active {
+      display: block;
+    }
+
+    .detail-topbar {
+      margin-bottom: 1rem;
+    }
+
+    .detail-header {
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .detail-code {
+      margin: 0;
+      color: #7d5628;
+    }
+
+    .detail-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.4rem;
+    }
+
+    .detail-panel {
+      background: #f2eee7;
+      border-radius: 1.1rem;
+      padding: 0.9rem;
+    }
+
+    .detail-panel img {
       width: 100%;
       height: auto;
+      display: block;
+      background: #efefef;
+      border-radius: 0.9rem;
+      padding: 0.75rem;
+      box-sizing: border-box;
+    }
+
+    .detail-panel-label {
+      text-align: center;
+      margin-top: 0.75rem;
+      font-weight: 700;
+      color: #2f1b0f;
+    }
+
+    @media (max-width: 980px) {
+      .piece-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 700px) {
-      .practice-content {
-        padding: 18px 16px 56px;
+      .shape-page-shell {
+        padding: 1.25rem 1rem 3rem;
       }
 
-      .facejugs-intro {
-        border-radius: 22px;
-        padding: 24px 20px 26px;
-      }
-
-      .facejugs-intro h1 {
-        line-height: 1;
-      }
-
-      .facejugs-intro p {
-        font-size: 1rem;
+      .piece-grid,
+      .detail-images {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body class="practice-page">
-
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
+      <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
@@ -118,54 +208,138 @@
         id="navToggle"
         aria-expanded="false"
         aria-controls="siteNav"
-        aria-label="Toggle navigation">
+        aria-label="Open menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/index.html">Home</a>
+        <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
+        <a href="/practice.html" class="is-current">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="practice-content">
-    <div class="page-back">
-      <a href="/practice.html">← Back to Practice</a>
-    </div>
-
-    <section class="facejugs-intro">
-      <p class="kicker">Practice</p>
+  <main class="shape-page-shell">
+    <section class="shape-hero" id="gridView">
+      <p class="shape-kicker">Practice / Face Jugs</p>
       <h1>Face Jugs</h1>
-
       <p>
-        Face jugs belong to an older, more unruly current in the work. They carry wit,
-        character, exaggeration, and a kind of direct presence that asks to be met face to face.
+        Character-driven forms where surface, expression, and gesture carry the work.
+        These are less about symmetry and more about presence.
       </p>
 
-      <p>
-        I am interested in the point where humor, roughness, and personality become form—
-        where the vessel is still a vessel, but also something more animated and confrontational.
-      </p>
+      <div class="hero-actions">
+        <a class="hero-button primary" href="/practice.html">Back to Practice</a>
+      </div>
     </section>
 
-    <section class="facejugs-image">
-      <figure>
-        <img
-          src="/images/face-jugs/face-jug-01.jpg"
-          alt="Face jug by Jim Alexander"
-          loading="lazy"
-        />
-      </figure>
+    <section class="piece-grid" id="piecesGrid" aria-label="Face jugs"></section>
+
+    <section class="detail-shell" id="detailView">
+      <div class="detail-topbar">
+        <a class="detail-back-link primary" href="#" id="backToGrid">Back to Face Jugs</a>
+        <a class="detail-back-link secondary" href="/practice.html">Back to Practice</a>
+      </div>
+
+      <div class="detail-header">
+        <h2 id="detailTitle"></h2>
+        <p class="detail-code" id="detailCode"></p>
+      </div>
+
+      <div class="detail-images">
+        <div class="detail-panel">
+          <img id="topImage" alt="" />
+          <div class="detail-panel-label">Top View</div>
+        </div>
+
+        <div class="detail-panel">
+          <img id="bottomImage" alt="" />
+          <div class="detail-panel-label">Bottom View</div>
+        </div>
+      </div>
     </section>
   </main>
 
   <script>
+    const pieces = [
+      { id: "fj-2604-01", title: "Face jug" }
+    ];
+
     const navToggle = document.getElementById("navToggle");
     const siteNav = document.getElementById("siteNav");
+    const gridView = document.getElementById("gridView");
+    const piecesGrid = document.getElementById("piecesGrid");
+    const detailView = document.getElementById("detailView");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCode = document.getElementById("detailCode");
+    const topImage = document.getElementById("topImage");
+    const bottomImage = document.getElementById("bottomImage");
+    const backToGrid = document.getElementById("backToGrid");
+
+    function thumbUrl(id) {
+      return `/images/thumbs/${id}_top_thumb.jpg`;
+    }
+
+    function topUrl(id) {
+      return `/images/full/${id}_top.jpg`;
+    }
+
+    function bottomUrl(id) {
+      return `/images/full/${id}_bottom.jpg`;
+    }
+
+    function renderGrid() {
+      piecesGrid.innerHTML = "";
+
+      pieces.forEach((piece) => {
+        const card = document.createElement("a");
+        card.href = "#";
+        card.className = "piece-card";
+
+        card.innerHTML = `
+          <div class="piece-card-media">
+            <img src="${thumbUrl(piece.id)}" alt="${piece.title}" loading="lazy">
+          </div>
+          <h3>${piece.title}</h3>
+          <p>${piece.id}</p>
+        `;
+
+        card.addEventListener("click", (event) => {
+          event.preventDefault();
+          openPiece(piece.id);
+        });
+
+        piecesGrid.appendChild(card);
+      });
+    }
+
+    function openPiece(id) {
+      const piece = pieces.find((x) => x.id === id);
+      if (!piece) return;
+
+      detailTitle.textContent = piece.title;
+      detailCode.textContent = piece.id;
+
+      topImage.src = topUrl(id);
+      topImage.alt = `${piece.title} top view`;
+
+      bottomImage.src = bottomUrl(id);
+      bottomImage.alt = `${piece.title} bottom view`;
+
+      gridView.style.display = "none";
+      piecesGrid.style.display = "none";
+      detailView.classList.add("active");
+    }
+
+    backToGrid.addEventListener("click", (event) => {
+      event.preventDefault();
+      detailView.classList.remove("active");
+      gridView.style.display = "";
+      piecesGrid.style.display = "grid";
+    });
 
     if (navToggle && siteNav) {
       navToggle.addEventListener("click", () => {
@@ -174,7 +348,8 @@
         siteNav.classList.toggle("open");
       });
     }
-  </script>
 
+    renderGrid();
+  </script>
 </body>
 </html>

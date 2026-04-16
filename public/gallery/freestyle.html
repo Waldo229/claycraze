@@ -5,40 +5,351 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Freestyle</title>
 
-  <link rel="shortcut icon" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
   <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-
   <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body class="bonsai-page">
 
-  <header class="site-header minimal-header">
+  <style>
+    .shape-page-shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .shape-hero,
+    .detail-shell {
+      background: #ded0a1;
+      border-radius: 1.8rem;
+      padding: 2rem 1.6rem;
+      box-shadow: 0 16px 40px rgba(80, 56, 20, 0.18);
+    }
+
+    .shape-hero {
+      margin-bottom: 2rem;
+    }
+
+    .shape-kicker {
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7d5628;
+      margin-bottom: 0.85rem;
+    }
+
+    .shape-hero h1,
+    .detail-header h2 {
+      margin: 0 0 0.75rem;
+      color: #2f1b0f;
+    }
+
+    .shape-hero p {
+      margin: 0 0 1.25rem;
+      line-height: 1.55;
+      max-width: 760px;
+      color: #3f2a18;
+    }
+
+    .hero-actions,
+    .detail-topbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-button,
+    .detail-back-link {
+      display: inline-block;
+      padding: 0.8rem 1.1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero-button.primary,
+    .detail-back-link.primary {
+      background: #6c4b28;
+      color: #fff8ec;
+    }
+
+    .hero-button.secondary,
+    .detail-back-link.secondary {
+      background: #efe6cf;
+      color: #6c4b28;
+      border: 1px solid rgba(108, 75, 40, 0.18);
+    }
+
+    .piece-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
+    }
+
+    .piece-card {
+      background: #efe1b7;
+      border-radius: 1.35rem;
+      padding: 1rem;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 10px 24px rgba(80, 56, 20, 0.12);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .piece-card:hover,
+    .piece-card:focus {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px rgba(80, 56, 20, 0.18);
+    }
+
+    .piece-card-media {
+      background: #e2d3ab;
+      border-radius: 1rem;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .piece-card-media img {
+      width: 70%;
+      max-width: 220px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .piece-card h3 {
+      margin: 0 0 0.35rem;
+    }
+
+    .piece-card p {
+      margin: 0;
+      color: #7d5628;
+    }
+
+    .detail-shell {
+      display: none;
+    }
+
+    .detail-shell.active {
+      display: block;
+    }
+
+    .detail-topbar {
+      margin-bottom: 1rem;
+    }
+
+    .detail-header {
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .detail-code {
+      margin: 0;
+      color: #7d5628;
+    }
+
+    .detail-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.4rem;
+    }
+
+    .detail-panel {
+      background: #f2eee7;
+      border-radius: 1.1rem;
+      padding: 0.9rem;
+    }
+
+    .detail-panel img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #efefef;
+      border-radius: 0.9rem;
+      padding: 0.75rem;
+      box-sizing: border-box;
+    }
+
+    .detail-panel-label {
+      text-align: center;
+      margin-top: 0.75rem;
+      font-weight: 700;
+      color: #2f1b0f;
+    }
+
+    @media (max-width: 980px) {
+      .piece-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .shape-page-shell {
+        padding: 1.25rem 1rem 3rem;
+      }
+
+      .piece-grid,
+      .detail-images {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="practice-page">
+  <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html" aria-label="ClaycrazE home">
-        <img src="/images/logo2.svg" alt="ClaycrazE" class="site-logo" />
+      <a class="site-brand" href="/">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
-      <a class="back-link" href="/gallery/bonsai.html">← Back to Bonsai</a>
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html" class="is-current">Practice</a>
+      </nav>
     </div>
   </header>
 
-  <main class="content-shell bonsai-page">
-    <section class="page-card bonsai-intro">
-      <p class="breadcrumb">Practice / Bonsai</p>
+  <main class="shape-page-shell">
+    <section class="shape-hero" id="gridView">
+      <p class="shape-kicker">Practice / Freestyle</p>
       <h1>Freestyle</h1>
-      <div class="intro-copy">
-        <p>Irregular bonsai forms shaped by intuition, movement, and response.</p>
+      <p>
+        Pieces gathered outside the stricter shape families. This section is for work
+        that follows its own logic and stands on its own terms.
+      </p>
+
+      <div class="hero-actions">
+        <a class="hero-button primary" href="/practice.html">Back to Practice</a>
       </div>
     </section>
 
-    <section class="gallery-grid bonsai-grid" aria-label="Freestyle bonsai pieces">
-      <a href="/gallery/piece.html?id=FS-0001-2604" class="piece-thumb-card">
-        <img src="/images/bonsai/freestyle.jpg" alt="Freestyle bonsai pot" />
-      </a>
+    <section class="piece-grid" id="piecesGrid" aria-label="Freestyle pottery"></section>
+
+    <section class="detail-shell" id="detailView">
+      <div class="detail-topbar">
+        <a class="detail-back-link primary" href="#" id="backToGrid">Back to Freestyle</a>
+        <a class="detail-back-link secondary" href="/practice.html">Back to Practice</a>
+      </div>
+
+      <div class="detail-header">
+        <h2 id="detailTitle"></h2>
+        <p class="detail-code" id="detailCode"></p>
+      </div>
+
+      <div class="detail-images">
+        <div class="detail-panel">
+          <img id="topImage" alt="" />
+          <div class="detail-panel-label">Top View</div>
+        </div>
+
+        <div class="detail-panel">
+          <img id="bottomImage" alt="" />
+          <div class="detail-panel-label">Bottom View</div>
+        </div>
+      </div>
     </section>
   </main>
 
+  <script>
+    const pieces = [
+      { id: "fs-2604-01", title: "Freestyle piece" }
+    ];
+
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+    const gridView = document.getElementById("gridView");
+    const piecesGrid = document.getElementById("piecesGrid");
+    const detailView = document.getElementById("detailView");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCode = document.getElementById("detailCode");
+    const topImage = document.getElementById("topImage");
+    const bottomImage = document.getElementById("bottomImage");
+    const backToGrid = document.getElementById("backToGrid");
+
+    function thumbUrl(id) {
+      return `/images/thumbs/${id}_top_thumb.jpg`;
+    }
+
+    function topUrl(id) {
+      return `/images/full/${id}_top.jpg`;
+    }
+
+    function bottomUrl(id) {
+      return `/images/full/${id}_bottom.jpg`;
+    }
+
+    function renderGrid() {
+      piecesGrid.innerHTML = "";
+
+      pieces.forEach((piece) => {
+        const card = document.createElement("a");
+        card.href = "#";
+        card.className = "piece-card";
+
+        card.innerHTML = `
+          <div class="piece-card-media">
+            <img src="${thumbUrl(piece.id)}" alt="${piece.title}" loading="lazy">
+          </div>
+          <h3>${piece.title}</h3>
+          <p>${piece.id}</p>
+        `;
+
+        card.addEventListener("click", (event) => {
+          event.preventDefault();
+          openPiece(piece.id);
+        });
+
+        piecesGrid.appendChild(card);
+      });
+    }
+
+    function openPiece(id) {
+      const piece = pieces.find((x) => x.id === id);
+      if (!piece) return;
+
+      detailTitle.textContent = piece.title;
+      detailCode.textContent = piece.id;
+
+      topImage.src = topUrl(id);
+      topImage.alt = `${piece.title} top view`;
+
+      bottomImage.src = bottomUrl(id);
+      bottomImage.alt = `${piece.title} bottom view`;
+
+      gridView.style.display = "none";
+      piecesGrid.style.display = "none";
+      detailView.classList.add("active");
+    }
+
+    backToGrid.addEventListener("click", (event) => {
+      event.preventDefault();
+      detailView.classList.remove("active");
+      gridView.style.display = "";
+      piecesGrid.style.display = "grid";
+    });
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const expanded = navToggle.getAttribute("aria-expanded") === "true";
+        navToggle.setAttribute("aria-expanded", String(!expanded));
+        siteNav.classList.toggle("open");
+      });
+    }
+
+    renderGrid();
+  </script>
 </body>
 </html>
