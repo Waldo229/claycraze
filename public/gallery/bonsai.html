@@ -5,144 +5,169 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Bonsai</title>
 
-  <link rel="shortcut icon" href="/images/favicon-32.png" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
   <link rel="stylesheet" href="/css/styles.css" />
 
   <style>
-    .practice-content {
-      max-width: 1200px;
+    .bonsai-page-shell {
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 22px 24px 80px;
+      padding: 2rem 1.5rem 4rem;
     }
 
-    .page-back {
-      margin: 0 0 24px;
+    .bonsai-hero {
+      background: #ded0a1;
+      border-radius: 1.8rem;
+      padding: 2rem 1.6rem;
+      box-shadow: 0 16px 40px rgba(80, 56, 20, 0.18);
+      margin-bottom: 2rem;
     }
 
-    .page-back a {
-      display: inline-block;
-      padding: 12px 20px;
-      border-radius: 999px;
-      background: rgba(255, 248, 230, 0.38);
-      color: inherit;
-      text-decoration: none;
-      font-size: 1rem;
-      transition: background 0.2s ease, transform 0.2s ease;
+    .bonsai-kicker {
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7d5628;
+      margin: 0 0 0.85rem;
     }
 
-    .page-back a:hover {
-      background: rgba(255, 248, 230, 0.55);
-      transform: translateY(-1px);
+    .bonsai-hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1.05;
+      margin: 0 0 1rem;
+      color: #2f1b0f;
     }
 
-    .bonsai-intro-card {
-      max-width: 1140px;
-      background: rgba(247, 240, 220, 0.82);
-      border-radius: 28px;
-      padding: 30px 28px 34px;
-      box-shadow: 0 18px 40px rgba(60, 35, 10, 0.16);
-      margin-bottom: 32px;
-    }
-
-    .bonsai-intro-card h1 {
-      font-size: clamp(3rem, 6vw, 4.6rem);
-      line-height: 0.95;
-      margin: 0 0 22px;
-      font-weight: 500;
-    }
-
-    .bonsai-intro-card p {
-      font-size: 1.05rem;
-      line-height: 1.65;
+    .bonsai-hero p {
       max-width: 760px;
-      margin: 0 0 18px;
+      font-size: 1.15rem;
+      line-height: 1.55;
+      margin: 0 0 1.5rem;
+      color: #3f2a18;
     }
 
-    .bonsai-intro-card p:last-child {
-      margin-bottom: 0;
+    .hero-actions {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
     }
 
-    .bonsai-grid {
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0.9rem 1.35rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .hero-button:hover,
+    .hero-button:focus {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .hero-button.primary {
+      background: #6c4b28;
+      color: #fff8ec;
+    }
+
+    .hero-button.secondary {
+      background: #efe6cf;
+      color: #6c4b28;
+      border: 1px solid rgba(108, 75, 40, 0.12);
+    }
+
+    .shape-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
     }
 
-    .bonsai-card {
-      display: block;
+    .shape-card {
+      display: flex;
+      flex-direction: column;
+      background: #efe1b7;
+      border-radius: 1.45rem;
+      padding: 1rem;
       text-decoration: none;
       color: inherit;
-      background: rgba(247, 240, 220, 0.82);
-      border-radius: 22px;
-      padding: 16px;
-      box-shadow: 0 12px 28px rgba(60, 35, 10, 0.14);
-      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 14px 32px rgba(80, 56, 20, 0.16);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .bonsai-card:hover {
-      transform: translateY(-2px);
-      background: rgba(255, 248, 230, 0.9);
+    .shape-card:hover,
+    .shape-card:focus {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 38px rgba(80, 56, 20, 0.2);
     }
 
-    .bonsai-card img {
+    .shape-card-media {
+      background: #e2d3ab;
+      border-radius: 1.15rem;
+      min-height: 245px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .shape-card-media img {
+      width: 72%;
+      max-width: 260px;
+      height: auto;
       display: block;
-      width: 100%;
-      height: 220px;
       object-fit: contain;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      background: rgba(255, 255, 255, 0.18);
     }
 
-    .bonsai-card h2 {
-      font-size: 1.05rem;
-      line-height: 1.25;
-      font-weight: 500;
+    .shape-card h2 {
+      margin: 0 0 0.55rem;
+      font-size: 1.7rem;
+      color: #2f1b0f;
+    }
+
+    .shape-card p {
       margin: 0;
+      color: #5a3a1f;
+      line-height: 1.5;
     }
 
     @media (max-width: 980px) {
-      .bonsai-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .shape-grid {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
     @media (max-width: 700px) {
-      .practice-content {
-        padding: 18px 16px 56px;
+      .bonsai-page-shell {
+        padding: 1.25rem 1rem 3rem;
       }
 
-      .bonsai-intro-card {
-        border-radius: 22px;
-        padding: 24px 20px 26px;
+      .bonsai-hero {
+        padding: 1.5rem 1.2rem;
       }
 
-      .bonsai-intro-card h1 {
-        line-height: 1;
-      }
-
-      .bonsai-intro-card p {
-        font-size: 1rem;
-      }
-
-      .bonsai-grid {
+      .shape-grid {
         grid-template-columns: 1fr;
       }
 
-      .bonsai-card {
-        border-radius: 18px;
-        padding: 14px;
+      .shape-card-media {
+        min-height: 210px;
       }
     }
   </style>
 </head>
 <body class="practice-page">
-
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html">
+      <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
@@ -152,70 +177,57 @@
         id="navToggle"
         aria-expanded="false"
         aria-controls="siteNav"
-        aria-label="Toggle navigation">
+        aria-label="Open menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/index.html">Home</a>
+        <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
+        <a href="/practice.html" class="is-current">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="practice-content">
-    <div class="page-back">
-      <a href="/practice.html">← Back to Practice</a>
-    </div>
-
-    <section class="bonsai-intro-card">
-      <h1>Bonsai</h1>
-
+  <main class="bonsai-page-shell">
+    <section class="bonsai-hero">
+      <p class="bonsai-kicker">Practice / Bonsai</p>
+      <h1>Bonsai Containers</h1>
       <p>
-        Bonsai pottery asks for quietness, proportion, and restraint. These forms are made to
-        serve the tree without disappearing entirely.
+        These forms are grouped by shape so the differences can be seen more clearly.
+        Each page opens into a quiet grid of pieces, with top and bottom views for closer study.
       </p>
 
-      <p>
-        I am interested in work that feels settled, useful, and alive in the hand.
-      </p>
+      <div class="hero-actions">
+        <a class="hero-button primary" href="/practice.html">Back to Practice</a>
+      </div>
     </section>
 
-    <section class="bonsai-grid" aria-label="Bonsai categories">
-      <a class="bonsai-card" href="/gallery/ovals.html">
-        <img
-          src="/images/thumbs/ov-2604-01_top_thumb.jpg"
-          alt="Oval bonsai forms"
-        />
-        <h2>Oval Forms</h2>
+    <section class="shape-grid" aria-label="Bonsai shape categories">
+      <a class="shape-card" href="/gallery/ovals.html">
+        <div class="shape-card-media">
+          <img src="/images/thumbs/ov-2604-01_top_thumb.jpg" alt="Oval bonsai container" loading="lazy" />
+        </div>
+        <h2>Ovals</h2>
+        <p>Broad, settled forms that hold movement quietly.</p>
       </a>
 
-      <a class="bonsai-card" href="/gallery/rectangles.html">
-        <img
-          src="/images/thumbs/rc-2604-05_top_thumb.jpg"
-          alt="Rectangular bonsai forms"
-        />
-        <h2>Rectangular Forms</h2>
+      <a class="shape-card" href="/gallery/rectangles.html">
+        <div class="shape-card-media">
+          <img src="/images/thumbs/rc-2604-05_top_thumb.jpg" alt="Rectangle bonsai container" loading="lazy" />
+        </div>
+        <h2>Rectangles</h2>
+        <p>Grounded, architectural forms with a steadier visual edge.</p>
       </a>
 
-      <a class="bonsai-card" href="/gallery/rounds.html">
-        <img
-          src="/images/thumbs/rd-2604-06_top_thumb.jpg"
-          alt="Round bonsai forms"
-        />
-        <h2>Round Forms</h2>
-      </a>
-
-      <a class="bonsai-card" href="/gallery/freestyle.html">
-        <img
-          src="/images/thumbs/fs-2604-07_top_thumb.jpg"
-          alt="Freestyle bonsai forms"
-          onerror="this.src='/images/thumbs/ov-2604-01_top_thumb.jpg';"
-        />
-        <h2>Freestyle</h2>
+      <a class="shape-card" href="/gallery/rounds.html">
+        <div class="shape-card-media">
+          <img src="/images/thumbs/rd-2604-06_top_thumb.jpg" alt="Round bonsai pot" loading="lazy" />
+        </div>
+        <h2>Rounds</h2>
+        <p>Simple circular forms with a quieter, centered presence.</p>
       </a>
     </section>
   </main>

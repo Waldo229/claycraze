@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Rounds</title>
+  <title>ClaycrazE | Rectangles</title>
 
   <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
@@ -198,20 +198,20 @@
   <main>
     <section class="shape-gallery" id="galleryView">
       <div class="shape-intro">
-        <h1>Round Bonsai Pots</h1>
-        <p>A selection of round forms. Choose a piece to view top and bottom details.</p>
+        <h1>Rectangle Bonsai Containers</h1>
+        <p>A selection of rectangular forms. Choose a piece to view top and bottom details.</p>
       </div>
 
-      <section class="shape-grid" id="roundsGrid" aria-label="Round bonsai pieces"></section>
+      <section class="shape-grid" id="rectanglesGrid" aria-label="Rectangle bonsai pieces"></section>
     </section>
 
     <section class="piece-view" id="pieceView" aria-live="polite">
       <div class="piece-back-row">
-        <a href="#" class="piece-back-link" id="backToGrid">&larr; Back to rounds</a>
+        <a href="#" class="piece-back-link" id="backToGrid">&larr; Back to rectangles</a>
       </div>
 
       <div class="piece-header">
-        <h2 id="pieceTitle">Round Piece</h2>
+        <h2 id="pieceTitle">Rectangle Bonsai Container</h2>
         <p id="pieceCode">Code</p>
       </div>
 
@@ -234,11 +234,11 @@
   </main>
 
   <script>
-    const roundPieces = [
-      { id: "rd-2604-06", title: "Round Bonsai Pot 06" }
+    const rectanglePieces = [
+      { id: "rc-2604-05", title: "Rectangle Bonsai Container" }
     ];
 
-    const grid = document.getElementById("roundsGrid");
+    const grid = document.getElementById("rectanglesGrid");
     const galleryView = document.getElementById("galleryView");
     const pieceView = document.getElementById("pieceView");
     const pieceTitle = document.getElementById("pieceTitle");
@@ -248,7 +248,7 @@
     const backToGrid = document.getElementById("backToGrid");
 
     function thumbUrl(id) {
-      return `/images/thumbs/${id}_thumb.jpg`;
+      return `/images/thumbs/${id}_top_thumb.jpg`;
     }
 
     function topUrl(id) {
@@ -262,7 +262,7 @@
     function renderGrid() {
       grid.innerHTML = "";
 
-      roundPieces.forEach(piece => {
+      rectanglePieces.forEach(piece => {
         const card = document.createElement("a");
         card.href = `#${piece.id}`;
         card.className = "shape-card";
@@ -288,7 +288,7 @@
     }
 
     function openPiece(id) {
-      const piece = roundPieces.find(item => item.id === id);
+      const piece = rectanglePieces.find(item => item.id === id);
       if (!piece) return;
 
       pieceTitle.textContent = piece.title;

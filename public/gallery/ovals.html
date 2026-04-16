@@ -11,165 +11,243 @@
   <link rel="stylesheet" href="/css/styles.css" />
 
   <style>
-    .ovals-page {
-      min-height: 100vh;
-    }
-
-    .ovals-shell {
-      width: min(1180px, calc(100% - 2rem));
+    .shape-page-shell {
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 2rem 0 4rem;
+      padding: 2rem 1.5rem 4rem;
     }
 
-    .ovals-hero {
-      background: rgba(244, 233, 194, 0.72);
-      border: 1px solid rgba(90, 65, 32, 0.14);
-      border-radius: 28px;
-      box-shadow: 0 18px 40px rgba(49, 29, 13, 0.08);
-      padding: 1.8rem 1.5rem;
-      margin-bottom: 1.75rem;
+    .shape-hero,
+    .detail-shell {
+      background: #ded0a1;
+      border-radius: 1.8rem;
+      padding: 2rem 1.6rem;
+      box-shadow: 0 16px 40px rgba(80, 56, 20, 0.18);
     }
 
-    .ovals-kicker {
+    .shape-hero {
+      margin-bottom: 2rem;
+    }
+
+    .shape-kicker {
       font-size: 0.95rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #775126;
-      margin: 0 0 0.4rem;
+      color: #7d5628;
+      margin: 0 0 0.85rem;
     }
 
-    .ovals-title {
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      line-height: 1.02;
-      margin: 0 0 0.65rem;
-      color: #2f1d12;
+    .shape-hero h1,
+    .detail-header h2 {
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      line-height: 1.05;
+      margin: 0 0 1rem;
+      color: #2f1b0f;
     }
 
-    .ovals-copy {
-      font-size: 1.05rem;
-      line-height: 1.6;
-      color: #4b3422;
-      max-width: 48rem;
-      margin: 0;
+    .shape-hero p {
+      max-width: 760px;
+      font-size: 1.15rem;
+      line-height: 1.55;
+      margin: 0 0 1.5rem;
+      color: #3f2a18;
     }
 
-    .ovals-actions {
+    .hero-actions {
       display: flex;
+      gap: 0.9rem;
       flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 1.25rem;
     }
 
-    .ovals-link {
+    .hero-button,
+    .detail-back-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0.8rem 1.15rem;
+      min-height: 52px;
+      padding: 0.9rem 1.35rem;
       border-radius: 999px;
-      background: rgba(87, 57, 28, 0.9);
-      color: #f7eed7;
       text-decoration: none;
-      font-weight: 600;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: transform 0.18s ease, opacity 0.18s ease;
     }
 
-    .ovals-link.secondary {
-      background: rgba(255, 250, 240, 0.7);
-      color: #5d3b1c;
-      border: 1px solid rgba(90, 65, 32, 0.14);
-    }
-
-    .ovals-link:hover {
+    .hero-button:hover,
+    .hero-button:focus,
+    .detail-back-link:hover,
+    .detail-back-link:focus {
       transform: translateY(-1px);
-      opacity: 0.96;
+      opacity: 0.95;
     }
 
-    .ovals-grid {
+    .hero-button.primary,
+    .detail-back-link.primary {
+      background: #6c4b28;
+      color: #fff8ec;
+    }
+
+    .hero-button.secondary,
+    .detail-back-link.secondary {
+      background: #efe6cf;
+      color: #6c4b28;
+      border: 1px solid rgba(108, 75, 40, 0.12);
+    }
+
+    .piece-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.4rem;
     }
 
     .piece-card {
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      background: #efe1b7;
+      border-radius: 1.35rem;
       padding: 1rem;
-      border-radius: 22px;
-      background: rgba(246, 237, 206, 0.86);
-      border: 1px solid rgba(90, 65, 32, 0.12);
-      box-shadow: 0 14px 32px rgba(49, 29, 13, 0.08);
       text-decoration: none;
       color: inherit;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 14px 32px rgba(80, 56, 20, 0.16);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .piece-card:hover {
+    .piece-card:hover,
+    .piece-card:focus {
       transform: translateY(-3px);
-      box-shadow: 0 18px 38px rgba(49, 29, 13, 0.12);
+      box-shadow: 0 18px 38px rgba(80, 56, 20, 0.2);
     }
 
-    .piece-thumb-shell {
-      aspect-ratio: 1 / 1;
-      border-radius: 16px;
-      background: rgba(225, 210, 170, 0.72);
+    .piece-card-media {
+      background: #e2d3ab;
+      border-radius: 1.05rem;
+      min-height: 245px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      padding: 0.7rem;
+      margin-bottom: 1rem;
     }
 
-    .piece-thumb {
-      width: 100%;
-      height: 100%;
+    .piece-card-media img {
+      width: 72%;
+      max-width: 250px;
+      height: auto;
+      display: block;
       object-fit: contain;
+    }
+
+    .piece-card h2 {
+      margin: 0 0 0.55rem;
+      font-size: 1.05rem;
+      color: #2f1b0f;
+    }
+
+    .piece-card p {
+      margin: 0;
+      font-size: 0.98rem;
+      color: #7d5628;
+      letter-spacing: 0.02em;
+    }
+
+    .detail-shell {
+      display: none;
+    }
+
+    .detail-shell.active {
       display: block;
     }
 
-    .piece-fallback {
+    .detail-topbar {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-header {
       text-align: center;
-      line-height: 1.5;
-      color: #6c4a27;
-      font-size: 0.96rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-code {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #7d5628;
+    }
+
+    .detail-images {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.4rem;
+    }
+
+    .detail-panel {
+      background: #f2eee7;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(80, 56, 20, 0.12);
+    }
+
+    .detail-panel-media {
+      min-height: 390px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 1rem;
+      background: #efefef;
     }
 
-    .piece-name {
-      margin: 0;
-      font-size: 1.08rem;
-      color: #2f1d12;
+    .detail-panel-media img {
+      max-width: 100%;
+      max-height: 520px;
+      width: auto;
+      height: auto;
+      display: block;
+      object-fit: contain;
     }
 
-    .piece-id {
-      margin: 0;
-      font-size: 0.94rem;
-      color: #6a4a2a;
-      letter-spacing: 0.03em;
+    .detail-panel-label {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #2f1b0f;
+      background: #f4efe6;
     }
 
-    .empty-state {
-      padding: 1.25rem;
-      border-radius: 18px;
-      background: rgba(246, 237, 206, 0.86);
-      border: 1px solid rgba(90, 65, 32, 0.12);
-      color: #4a3221;
+    @media (max-width: 1100px) {
+      .piece-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
-    @media (max-width: 700px) {
-      .ovals-shell {
-        width: min(100% - 1rem, 1180px);
-        padding-top: 1rem;
+    @media (max-width: 760px) {
+      .shape-page-shell {
+        padding: 1.25rem 1rem 3rem;
       }
 
-      .ovals-hero {
-        padding: 1.3rem 1rem;
+      .shape-hero,
+      .detail-shell {
+        padding: 1.5rem 1.2rem;
+      }
+
+      .piece-grid,
+      .detail-images {
+        grid-template-columns: 1fr;
+      }
+
+      .piece-card-media {
+        min-height: 210px;
+      }
+
+      .detail-panel-media {
+        min-height: 260px;
       }
     }
   </style>
 </head>
-
-<body class="practice-page ovals-page">
+<body class="practice-page">
   <header class="site-header">
     <div class="header-shell">
       <a class="site-brand" href="/">
@@ -180,154 +258,176 @@
       <button
         class="nav-toggle"
         id="navToggle"
-        type="button"
         aria-expanded="false"
         aria-controls="siteNav"
-        aria-label="Toggle navigation"
-      >
+        aria-label="Open menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
-      <nav class="site-nav" id="siteNav">
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
         <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
+        <a href="/practice.html" class="is-current">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main class="ovals-shell">
-    <section class="ovals-hero">
-      <p class="ovals-kicker">Practice / Bonsai</p>
-      <h1 class="ovals-title">Oval Bonsai Containers</h1>
-      <p class="ovals-copy">
+  <main class="shape-page-shell">
+    <section class="shape-hero" id="gridView">
+      <p class="shape-kicker">Practice / Bonsai</p>
+      <h1>Oval Bonsai Containers</h1>
+      <p>
         Oval forms hold movement quietly. They are broad enough to feel settled,
         but never so fixed that they lose the suggestion of drift.
       </p>
 
-      <div class="ovals-actions">
-        <a class="ovals-link" href="/practice.html">Back to Practice</a>
-        <a class="ovals-link secondary" href="/gallery/bonsai.html">Back to Bonsai</a>
+      <div class="hero-actions">
+        <a class="hero-button primary" href="/practice.html">Back to Practice</a>
+        <a class="hero-button secondary" href="/gallery/bonsai.html">Back to Bonsai</a>
       </div>
     </section>
 
-    <section class="ovals-grid" id="ovalsGrid" aria-label="Oval bonsai pieces"></section>
+    <section class="piece-grid" id="piecesGrid" aria-label="Oval bonsai containers"></section>
+
+    <section class="detail-shell" id="detailView" aria-live="polite">
+      <div class="detail-topbar">
+        <a class="detail-back-link primary" href="#" id="backToGrid">Back to Ovals</a>
+        <a class="detail-back-link secondary" href="/gallery/bonsai.html">Back to Bonsai</a>
+      </div>
+
+      <div class="detail-header">
+        <h2 id="detailTitle">Oval Bonsai Container</h2>
+        <p class="detail-code" id="detailCode">ov-2604-01</p>
+      </div>
+
+      <div class="detail-images">
+        <article class="detail-panel">
+          <div class="detail-panel-media">
+            <img id="topImage" src="" alt="" />
+          </div>
+          <div class="detail-panel-label">Top View</div>
+        </article>
+
+        <article class="detail-panel">
+          <div class="detail-panel-media">
+            <img id="bottomImage" src="" alt="" />
+          </div>
+          <div class="detail-panel-label">Bottom View</div>
+        </article>
+      </div>
+    </section>
   </main>
 
   <script>
-    console.log("[ovals] script loaded");
-
-    const navToggle = document.getElementById("navToggle");
-    const siteNav = document.getElementById("siteNav");
-
-    console.log("[ovals] navToggle:", navToggle);
-    console.log("[ovals] siteNav:", siteNav);
-
-    if (navToggle && siteNav) {
-      navToggle.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        siteNav.classList.toggle("open");
-        console.log("[ovals] nav toggled, expanded:", !expanded);
-      });
-    }
-
-    const ovalPieces = [
+    const pieces = [
       { id: "ov-2604-01", title: "Oval bonsai container" },
       { id: "ov-2604-02", title: "Oval bonsai container" },
       { id: "ov-2604-03", title: "Oval bonsai container" },
       { id: "ov-2604-04", title: "Oval bonsai container" }
     ];
 
-    console.log("[ovals] ovalPieces:", ovalPieces);
-
-    const grid = document.getElementById("ovalsGrid");
-    console.log("[ovals] grid element:", grid);
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+    const gridView = document.getElementById("gridView");
+    const piecesGrid = document.getElementById("piecesGrid");
+    const detailView = document.getElementById("detailView");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCode = document.getElementById("detailCode");
+    const topImage = document.getElementById("topImage");
+    const bottomImage = document.getElementById("bottomImage");
+    const backToGrid = document.getElementById("backToGrid");
 
     function thumbUrl(id) {
-      const url = `/images/thumbs/${id}_top_thumb.jpg`;
-      console.log("[ovals] thumbUrl for", id, "=>", url);
-      return url;
+      return `/images/thumbs/${id}_top_thumb.jpg`;
     }
 
-    function pieceUrl(id) {
-      const url = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
-      console.log("[ovals] pieceUrl for", id, "=>", url);
-      return url;
+    function topUrl(id) {
+      return `/images/full/${id}_top.jpg`;
     }
 
-    function makeCard(piece) {
-      console.log("[ovals] making card for:", piece);
-
-      const card = document.createElement("a");
-      card.className = "piece-card";
-      card.href = pieceUrl(piece.id);
-
-      const thumbShell = document.createElement("div");
-      thumbShell.className = "piece-thumb-shell";
-
-      const img = document.createElement("img");
-      img.className = "piece-thumb";
-      img.src = thumbUrl(piece.id);
-      img.alt = piece.title;
-
-      img.onload = () => {
-        console.log("[ovals] thumb loaded:", piece.id, img.src);
-      };
-
-      img.onerror = () => {
-        console.error("[ovals] thumb missing:", piece.id, img.src);
-        thumbShell.innerHTML = `<div class="piece-fallback">Thumbnail not found for ${piece.id}.</div>`;
-      };
-
-      thumbShell.appendChild(img);
-
-      const title = document.createElement("h2");
-      title.className = "piece-name";
-      title.textContent = piece.title;
-
-      const meta = document.createElement("p");
-      meta.className = "piece-id";
-      meta.textContent = piece.id.toUpperCase();
-
-      card.appendChild(thumbShell);
-      card.appendChild(title);
-      card.appendChild(meta);
-
-      return card;
+    function bottomUrl(id) {
+      return `/images/full/${id}_bottom.jpg`;
     }
 
     function renderGrid() {
-      console.log("[ovals] renderGrid called");
+      piecesGrid.innerHTML = "";
 
-      if (!grid) {
-        console.error("[ovals] ovalsGrid not found");
-        return;
-      }
+      pieces.forEach((piece) => {
+        const card = document.createElement("a");
+        card.href = `#${piece.id}`;
+        card.className = "piece-card";
+        card.setAttribute("data-id", piece.id);
 
-      if (!ovalPieces.length) {
-        console.warn("[ovals] no ovalPieces found");
-        grid.innerHTML = `<div class="empty-state">No oval pieces are listed yet.</div>`;
-        return;
-      }
+        card.innerHTML = `
+          <div class="piece-card-media">
+            <img src="${thumbUrl(piece.id)}" alt="${piece.title}" loading="lazy" />
+          </div>
+          <h2>${piece.title}</h2>
+          <p>${piece.id.toUpperCase()}</p>
+        `;
 
-      ovalPieces.forEach((piece) => {
-        const card = makeCard(piece);
-        grid.appendChild(card);
+        card.addEventListener("click", (event) => {
+          event.preventDefault();
+          openPiece(piece.id);
+        });
+
+        piecesGrid.appendChild(card);
       });
-
-      console.log("[ovals] rendered cards:", grid.children.length);
-      console.log("[ovals] final grid HTML:", grid.innerHTML);
     }
 
-    try {
-      renderGrid();
-      console.log("[ovals] render complete");
-    } catch (error) {
-      console.error("[ovals] render failed:", error);
+    function openPiece(id) {
+      const piece = pieces.find((item) => item.id === id);
+      if (!piece) return;
+
+      detailTitle.textContent = piece.title;
+      detailCode.textContent = piece.id;
+
+      topImage.src = topUrl(piece.id);
+      topImage.alt = `${piece.title} top view`;
+
+      bottomImage.src = bottomUrl(piece.id);
+      bottomImage.alt = `${piece.title} bottom view`;
+
+      gridView.style.display = "none";
+      piecesGrid.style.display = "none";
+      detailView.classList.add("active");
+
+      history.replaceState(null, "", `#${piece.id}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
+
+    function closePiece() {
+      detailView.classList.remove("active");
+      gridView.style.display = "";
+      piecesGrid.style.display = "grid";
+
+      history.replaceState(null, "", window.location.pathname);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openFromHash() {
+      const id = window.location.hash.replace("#", "").trim();
+      if (!id) return;
+      openPiece(id);
+    }
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const expanded = navToggle.getAttribute("aria-expanded") === "true";
+        navToggle.setAttribute("aria-expanded", String(!expanded));
+        siteNav.classList.toggle("open");
+      });
+    }
+
+    backToGrid.addEventListener("click", (event) => {
+      event.preventDefault();
+      closePiece();
+    });
+
+    renderGrid();
+    openFromHash();
   </script>
 </body>
 </html>

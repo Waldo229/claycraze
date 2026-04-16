@@ -11,169 +11,248 @@
   <link rel="stylesheet" href="/css/styles.css" />
 
   <style>
-    .shape-gallery {
-      max-width: 1200px;
+    .shape-page-shell {
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 4rem;
+      padding: 2rem 1.5rem 4rem;
     }
 
-    .shape-intro {
+    .shape-hero,
+    .detail-shell {
+      background: #ded0a1;
+      border-radius: 1.8rem;
+      padding: 2rem 1.6rem;
+      box-shadow: 0 16px 40px rgba(80, 56, 20, 0.18);
+    }
+
+    .shape-hero {
+      margin-bottom: 2rem;
+    }
+
+    .shape-kicker {
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7d5628;
+      margin: 0 0 0.85rem;
+    }
+
+    .shape-hero h1,
+    .detail-header h2 {
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      line-height: 1.05;
+      margin: 0 0 1rem;
+      color: #2f1b0f;
+    }
+
+    .shape-hero p {
       max-width: 760px;
-      margin: 0 auto 2rem;
-      text-align: center;
+      font-size: 1.15rem;
+      line-height: 1.55;
+      margin: 0 0 1.5rem;
+      color: #3f2a18;
     }
 
-    .shape-intro h1 {
-      margin-bottom: 0.5rem;
+    .hero-actions {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
     }
 
-    .shape-intro p {
-      margin: 0;
+    .hero-button,
+    .detail-back-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0.9rem 1.35rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: transform 0.18s ease, opacity 0.18s ease;
     }
 
-    .shape-grid {
+    .hero-button:hover,
+    .hero-button:focus,
+    .detail-back-link:hover,
+    .detail-back-link:focus {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .hero-button.primary,
+    .detail-back-link.primary {
+      background: #6c4b28;
+      color: #fff8ec;
+    }
+
+    .hero-button.secondary,
+    .detail-back-link.secondary {
+      background: #efe6cf;
+      color: #6c4b28;
+      border: 1px solid rgba(108, 75, 40, 0.12);
+    }
+
+    .piece-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      align-items: start;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.4rem;
     }
 
-    .shape-card {
-      display: block;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 14px;
-      overflow: hidden;
+    .piece-card {
+      display: flex;
+      flex-direction: column;
+      background: #efe1b7;
+      border-radius: 1.35rem;
+      padding: 1rem;
       text-decoration: none;
       color: inherit;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      box-shadow: 0 14px 32px rgba(80, 56, 20, 0.16);
       transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .shape-card:hover,
-    .shape-card:focus {
+    .piece-card:hover,
+    .piece-card:focus {
       transform: translateY(-3px);
-      box-shadow: 0 14px 34px rgba(0,0,0,0.10);
+      box-shadow: 0 18px 38px rgba(80, 56, 20, 0.2);
     }
 
-    .shape-card-image {
-      aspect-ratio: 1 / 1;
-      background: #f3f3f3;
+    .piece-card-media {
+      background: #e2d3ab;
+      border-radius: 1.05rem;
+      min-height: 245px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      margin-bottom: 1rem;
     }
 
-    .shape-card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .piece-card-media img {
+      width: 72%;
+      max-width: 250px;
+      height: auto;
       display: block;
+      object-fit: contain;
     }
 
-    .shape-card-body {
-      padding: 0.9rem 1rem 1rem;
+    .piece-card h2 {
+      margin: 0 0 0.55rem;
+      font-size: 1.05rem;
+      color: #2f1b0f;
     }
 
-    .shape-card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin: 0 0 0.3rem;
-    }
-
-    .shape-card-code {
-      font-size: 0.92rem;
-      opacity: 0.72;
+    .piece-card p {
       margin: 0;
+      font-size: 0.98rem;
+      color: #7d5628;
+      letter-spacing: 0.02em;
     }
 
-    .piece-view {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.25rem 4rem;
+    .detail-shell {
       display: none;
     }
 
-    .piece-view.active {
+    .detail-shell.active {
       display: block;
     }
 
-    .piece-back-row {
-      margin-bottom: 1.25rem;
+    .detail-topbar {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
     }
 
-    .piece-back-link {
-      display: inline-block;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .piece-header {
+    .detail-header {
       text-align: center;
       margin-bottom: 1.5rem;
     }
 
-    .piece-header h2 {
-      margin-bottom: 0.35rem;
-    }
-
-    .piece-header p {
+    .detail-code {
       margin: 0;
-      opacity: 0.75;
+      font-size: 1.15rem;
+      color: #7d5628;
     }
 
-    .piece-images {
+    .detail-images {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.25rem;
+      gap: 1.4rem;
     }
 
-    .piece-panel {
-      background: #fff;
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 14px;
+    .detail-panel {
+      background: #f2eee7;
+      border-radius: 1.25rem;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      box-shadow: 0 10px 24px rgba(80, 56, 20, 0.12);
     }
 
-    .piece-panel-image {
-      aspect-ratio: 4 / 3;
-      background: #f3f3f3;
+    .detail-panel-media {
+      min-height: 390px;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      padding: 1rem;
+      background: #efefef;
     }
 
-    .piece-panel-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    .detail-panel-media img {
+      max-width: 100%;
+      max-height: 520px;
+      width: auto;
+      height: auto;
       display: block;
-      background: #f8f8f8;
+      object-fit: contain;
     }
 
-    .piece-panel-label {
-      padding: 0.85rem 1rem 1rem;
-      font-weight: 600;
+    .detail-panel-label {
       text-align: center;
+      padding: 1rem;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #2f1b0f;
+      background: #f4efe6;
+    }
+
+    @media (max-width: 1100px) {
+      .piece-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 760px) {
-      .piece-images {
+      .shape-page-shell {
+        padding: 1.25rem 1rem 3rem;
+      }
+
+      .shape-hero,
+      .detail-shell {
+        padding: 1.5rem 1.2rem;
+      }
+
+      .piece-grid,
+      .detail-images {
         grid-template-columns: 1fr;
+      }
+
+      .piece-card-media {
+        min-height: 210px;
+      }
+
+      .detail-panel-media {
+        min-height: 260px;
       }
     }
   </style>
 </head>
 <body class="practice-page">
-
   <header class="site-header">
     <div class="header-shell">
       <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
       </a>
 
       <button
@@ -188,67 +267,77 @@
       </button>
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+        <a href="/">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-        <a href="/gallery/bonsai.html">Bonsai</a>
+        <a href="/practice.html" class="is-current">Practice</a>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section class="shape-gallery" id="galleryView">
-      <div class="shape-intro">
-        <h1>Round Bonsai Pots</h1>
-        <p>A selection of round forms. Choose a piece to view top and bottom details.</p>
-      </div>
+  <main class="shape-page-shell">
+    <section class="shape-hero" id="gridView">
+      <p class="shape-kicker">Practice / Bonsai</p>
+      <h1>Round Bonsai Pots</h1>
+      <p>
+        Round forms gather attention toward the center. They tend to read as calmer,
+        more contained, and less directional than the longer shapes.
+      </p>
 
-      <section class="shape-grid" id="roundsGrid" aria-label="Round bonsai pieces"></section>
+      <div class="hero-actions">
+        <a class="hero-button primary" href="/practice.html">Back to Practice</a>
+        <a class="hero-button secondary" href="/gallery/bonsai.html">Back to Bonsai</a>
+      </div>
     </section>
 
-    <section class="piece-view" id="pieceView" aria-live="polite">
-      <div class="piece-back-row">
-        <a href="#" class="piece-back-link" id="backToGrid">&larr; Back to rounds</a>
+    <section class="piece-grid" id="piecesGrid" aria-label="Round bonsai pots"></section>
+
+    <section class="detail-shell" id="detailView" aria-live="polite">
+      <div class="detail-topbar">
+        <a class="detail-back-link primary" href="#" id="backToGrid">Back to Rounds</a>
+        <a class="detail-back-link secondary" href="/gallery/bonsai.html">Back to Bonsai</a>
       </div>
 
-      <div class="piece-header">
-        <h2 id="pieceTitle">Round Piece</h2>
-        <p id="pieceCode">Code</p>
+      <div class="detail-header">
+        <h2 id="detailTitle">Round bonsai pot</h2>
+        <p class="detail-code" id="detailCode">rd-2604-06</p>
       </div>
 
-      <div class="piece-images">
-        <article class="piece-panel">
-          <div class="piece-panel-image">
+      <div class="detail-images">
+        <article class="detail-panel">
+          <div class="detail-panel-media">
             <img id="topImage" src="" alt="" />
           </div>
-          <div class="piece-panel-label">Top View</div>
+          <div class="detail-panel-label">Top View</div>
         </article>
 
-        <article class="piece-panel">
-          <div class="piece-panel-image">
+        <article class="detail-panel">
+          <div class="detail-panel-media">
             <img id="bottomImage" src="" alt="" />
           </div>
-          <div class="piece-panel-label">Bottom View</div>
+          <div class="detail-panel-label">Bottom View</div>
         </article>
       </div>
     </section>
   </main>
 
   <script>
-    const roundPieces = [
-      { id: "rd-2604-06", title: "Round Bonsai Pot 06" }
+    const pieces = [
+      { id: "rd-2604-06", title: "Round bonsai pot" }
     ];
 
-    const grid = document.getElementById("roundsGrid");
-    const galleryView = document.getElementById("galleryView");
-    const pieceView = document.getElementById("pieceView");
-    const pieceTitle = document.getElementById("pieceTitle");
-    const pieceCode = document.getElementById("pieceCode");
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+    const gridView = document.getElementById("gridView");
+    const piecesGrid = document.getElementById("piecesGrid");
+    const detailView = document.getElementById("detailView");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCode = document.getElementById("detailCode");
     const topImage = document.getElementById("topImage");
     const bottomImage = document.getElementById("bottomImage");
     const backToGrid = document.getElementById("backToGrid");
 
     function thumbUrl(id) {
-      return `/images/thumbs/${id}_thumb.jpg`;
+      return `/images/thumbs/${id}_top_thumb.jpg`;
     }
 
     function topUrl(id) {
@@ -260,22 +349,20 @@
     }
 
     function renderGrid() {
-      grid.innerHTML = "";
+      piecesGrid.innerHTML = "";
 
-      roundPieces.forEach(piece => {
+      pieces.forEach((piece) => {
         const card = document.createElement("a");
         card.href = `#${piece.id}`;
-        card.className = "shape-card";
+        card.className = "piece-card";
         card.setAttribute("data-id", piece.id);
 
         card.innerHTML = `
-          <div class="shape-card-image">
+          <div class="piece-card-media">
             <img src="${thumbUrl(piece.id)}" alt="${piece.title}" loading="lazy" />
           </div>
-          <div class="shape-card-body">
-            <h2 class="shape-card-title">${piece.title}</h2>
-            <p class="shape-card-code">${piece.id}</p>
-          </div>
+          <h2>${piece.title}</h2>
+          <p>${piece.id.toUpperCase()}</p>
         `;
 
         card.addEventListener("click", (event) => {
@@ -283,16 +370,16 @@
           openPiece(piece.id);
         });
 
-        grid.appendChild(card);
+        piecesGrid.appendChild(card);
       });
     }
 
     function openPiece(id) {
-      const piece = roundPieces.find(item => item.id === id);
+      const piece = pieces.find((item) => item.id === id);
       if (!piece) return;
 
-      pieceTitle.textContent = piece.title;
-      pieceCode.textContent = piece.id;
+      detailTitle.textContent = piece.title;
+      detailCode.textContent = piece.id;
 
       topImage.src = topUrl(piece.id);
       topImage.alt = `${piece.title} top view`;
@@ -300,32 +387,28 @@
       bottomImage.src = bottomUrl(piece.id);
       bottomImage.alt = `${piece.title} bottom view`;
 
-      galleryView.style.display = "none";
-      pieceView.classList.add("active");
+      gridView.style.display = "none";
+      piecesGrid.style.display = "none";
+      detailView.classList.add("active");
+
       history.replaceState(null, "", `#${piece.id}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function closePiece() {
-      pieceView.classList.remove("active");
-      galleryView.style.display = "";
+      detailView.classList.remove("active");
+      gridView.style.display = "";
+      piecesGrid.style.display = "grid";
+
       history.replaceState(null, "", window.location.pathname);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
-    backToGrid.addEventListener("click", (event) => {
-      event.preventDefault();
-      closePiece();
-    });
 
     function openFromHash() {
       const id = window.location.hash.replace("#", "").trim();
       if (!id) return;
       openPiece(id);
     }
-
-    const navToggle = document.getElementById("navToggle");
-    const siteNav = document.getElementById("siteNav");
 
     if (navToggle && siteNav) {
       navToggle.addEventListener("click", () => {
@@ -334,6 +417,11 @@
         siteNav.classList.toggle("open");
       });
     }
+
+    backToGrid.addEventListener("click", (event) => {
+      event.preventDefault();
+      closePiece();
+    });
 
     renderGrid();
     openFromHash();
