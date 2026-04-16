@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Rectangles</title>
+  <title>ClaycrazE | Rounds</title>
 
   <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
@@ -11,241 +11,332 @@
   <link rel="stylesheet" href="/css/styles.css" />
 
   <style>
-    .rectangles-page {
-      min-height: 100vh;
-    }
-
-    .rectangles-shell {
-      width: min(1180px, calc(100% - 2rem));
+    .shape-gallery {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem 0 4rem;
+      padding: 2rem 1.25rem 4rem;
     }
 
-    .rectangles-hero {
-      background: rgba(244, 233, 194, 0.72);
-      border: 1px solid rgba(90, 65, 32, 0.14);
-      border-radius: 28px;
-      box-shadow: 0 18px 40px rgba(49, 29, 13, 0.08);
-      padding: 1.8rem 1.5rem;
-      margin-bottom: 1.75rem;
+    .shape-intro {
+      max-width: 760px;
+      margin: 0 auto 2rem;
+      text-align: center;
     }
 
-    .rectangles-kicker {
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #775126;
-      margin: 0 0 0.4rem;
+    .shape-intro h1 {
+      margin-bottom: 0.5rem;
     }
 
-    .rectangles-title {
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      line-height: 1.02;
-      margin: 0 0 0.65rem;
-      color: #2f1d12;
-    }
-
-    .rectangles-copy {
-      font-size: 1.05rem;
-      line-height: 1.6;
-      color: #4b3422;
-      max-width: 48rem;
+    .shape-intro p {
       margin: 0;
     }
 
-    .rectangles-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 1.25rem;
-    }
-
-    .rectangles-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.8rem 1.15rem;
-      border-radius: 999px;
-      background: rgba(87, 57, 28, 0.9);
-      color: #f7eed7;
-      text-decoration: none;
-      font-weight: 600;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    .rectangles-link.secondary {
-      background: rgba(255, 250, 240, 0.7);
-      color: #5d3b1c;
-      border: 1px solid rgba(90, 65, 32, 0.14);
-    }
-
-    .rectangles-link:hover {
-      transform: translateY(-1px);
-      opacity: 0.96;
-    }
-
-    .rectangles-grid {
+    .shape-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
+      gap: 1.5rem;
+      align-items: start;
     }
 
-    .piece-card {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-      padding: 1rem;
-      border-radius: 22px;
-      background: rgba(246, 237, 206, 0.86);
-      border: 1px solid rgba(90, 65, 32, 0.12);
-      box-shadow: 0 14px 32px rgba(49, 29, 13, 0.08);
+    .shape-card {
+      display: block;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      overflow: hidden;
       text-decoration: none;
       color: inherit;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .piece-card:hover {
+    .shape-card:hover,
+    .shape-card:focus {
       transform: translateY(-3px);
-      box-shadow: 0 18px 38px rgba(49, 29, 13, 0.12);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.10);
     }
 
-    .piece-thumb-shell {
+    .shape-card-image {
       aspect-ratio: 1 / 1;
-      border-radius: 16px;
-      background: rgba(225, 210, 170, 0.72);
+      background: #f3f3f3;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      padding: 0.7rem;
     }
 
-    .piece-thumb {
+    .shape-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .shape-card-body {
+      padding: 0.9rem 1rem 1rem;
+    }
+
+    .shape-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.3rem;
+    }
+
+    .shape-card-code {
+      font-size: 0.92rem;
+      opacity: 0.72;
+      margin: 0;
+    }
+
+    .piece-view {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+      display: none;
+    }
+
+    .piece-view.active {
+      display: block;
+    }
+
+    .piece-back-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .piece-back-link {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .piece-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .piece-header h2 {
+      margin-bottom: 0.35rem;
+    }
+
+    .piece-header p {
+      margin: 0;
+      opacity: 0.75;
+    }
+
+    .piece-images {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .piece-panel {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .piece-panel-image {
+      aspect-ratio: 4 / 3;
+      background: #f3f3f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .piece-panel-image img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
+      background: #f8f8f8;
     }
 
-    .piece-fallback {
+    .piece-panel-label {
+      padding: 0.85rem 1rem 1rem;
+      font-weight: 600;
       text-align: center;
-      line-height: 1.5;
-      color: #6c4a27;
-      font-size: 0.96rem;
-      padding: 1rem;
     }
 
-    .piece-name {
-      margin: 0;
-      font-size: 1.08rem;
-      color: #2f1d12;
-    }
-
-    .piece-id {
-      margin: 0;
-      font-size: 0.94rem;
-      color: #6a4a2a;
-      letter-spacing: 0.03em;
+    @media (max-width: 760px) {
+      .piece-images {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+<body class="practice-page">
 
-<body class="practice-page rectangles-page">
   <header class="site-header">
     <div class="header-shell">
       <a class="site-brand" href="/">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
+        <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button class="nav-toggle" id="navToggle">
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
-      <nav class="site-nav" id="siteNav">
-        <a href="/">Home</a>
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
+        <a href="/practice.html">Practice</a>
+        <a href="/gallery/bonsai.html">Bonsai</a>
       </nav>
     </div>
   </header>
 
-  <main class="rectangles-shell">
-    <section class="rectangles-hero">
-      <p class="rectangles-kicker">Practice / Bonsai</p>
-      <h1 class="rectangles-title">Rectangular Bonsai Containers</h1>
-      <p class="rectangles-copy">
-        Rectangular forms introduce direction and structure. They hold the tree
-        with a quiet firmness, offering stability without stiffness.
-      </p>
-
-      <div class="rectangles-actions">
-        <a class="rectangles-link" href="/practice.html">Back to Practice</a>
-        <a class="rectangles-link secondary" href="/gallery/bonsai.html">Back to Bonsai</a>
+  <main>
+    <section class="shape-gallery" id="galleryView">
+      <div class="shape-intro">
+        <h1>Round Bonsai Pots</h1>
+        <p>A selection of round forms. Choose a piece to view top and bottom details.</p>
       </div>
+
+      <section class="shape-grid" id="roundsGrid" aria-label="Round bonsai pieces"></section>
     </section>
 
-    <section class="rectangles-grid" id="rectanglesGrid"></section>
+    <section class="piece-view" id="pieceView" aria-live="polite">
+      <div class="piece-back-row">
+        <a href="#" class="piece-back-link" id="backToGrid">&larr; Back to rounds</a>
+      </div>
+
+      <div class="piece-header">
+        <h2 id="pieceTitle">Round Piece</h2>
+        <p id="pieceCode">Code</p>
+      </div>
+
+      <div class="piece-images">
+        <article class="piece-panel">
+          <div class="piece-panel-image">
+            <img id="topImage" src="" alt="" />
+          </div>
+          <div class="piece-panel-label">Top View</div>
+        </article>
+
+        <article class="piece-panel">
+          <div class="piece-panel-image">
+            <img id="bottomImage" src="" alt="" />
+          </div>
+          <div class="piece-panel-label">Bottom View</div>
+        </article>
+      </div>
+    </section>
   </main>
 
   <script>
-    const rectanglePieces = [
-      { id: "rc-2604-05", title: "Rectangle bonsai container" }
+    const roundPieces = [
+      { id: "rd-2604-06", title: "Round Bonsai Pot 06" }
     ];
 
-    const grid = document.getElementById("rectanglesGrid");
+    const grid = document.getElementById("roundsGrid");
+    const galleryView = document.getElementById("galleryView");
+    const pieceView = document.getElementById("pieceView");
+    const pieceTitle = document.getElementById("pieceTitle");
+    const pieceCode = document.getElementById("pieceCode");
+    const topImage = document.getElementById("topImage");
+    const bottomImage = document.getElementById("bottomImage");
+    const backToGrid = document.getElementById("backToGrid");
 
     function thumbUrl(id) {
-      return `/images/thumbs/${id}_top_thumb.jpg`;
+      return `/images/thumbs/${id}_thumb.jpg`;
     }
 
-    function pieceUrl(id) {
-      return `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+    function topUrl(id) {
+      return `/images/full/${id}_top.jpg`;
     }
 
-    function makeCard(piece) {
-      const card = document.createElement("a");
-      card.className = "piece-card";
-      card.href = pieceUrl(piece.id);
-
-      const thumbShell = document.createElement("div");
-      thumbShell.className = "piece-thumb-shell";
-
-      const img = document.createElement("img");
-      img.className = "piece-thumb";
-      img.src = thumbUrl(piece.id);
-      img.alt = piece.title;
-
-      img.onerror = () => {
-        thumbShell.innerHTML = `<div class="piece-fallback">No thumbnail for ${piece.id}</div>`;
-      };
-
-      thumbShell.appendChild(img);
-
-      const title = document.createElement("h2");
-      title.className = "piece-name";
-      title.textContent = piece.title;
-
-      const meta = document.createElement("p");
-      meta.className = "piece-id";
-      meta.textContent = piece.id.toUpperCase();
-
-      card.appendChild(thumbShell);
-      card.appendChild(title);
-      card.appendChild(meta);
-
-      return card;
+    function bottomUrl(id) {
+      return `/images/full/${id}_bottom.jpg`;
     }
 
     function renderGrid() {
-      rectanglePieces.forEach(piece => {
-        grid.appendChild(makeCard(piece));
+      grid.innerHTML = "";
+
+      roundPieces.forEach(piece => {
+        const card = document.createElement("a");
+        card.href = `#${piece.id}`;
+        card.className = "shape-card";
+        card.setAttribute("data-id", piece.id);
+
+        card.innerHTML = `
+          <div class="shape-card-image">
+            <img src="${thumbUrl(piece.id)}" alt="${piece.title}" loading="lazy" />
+          </div>
+          <div class="shape-card-body">
+            <h2 class="shape-card-title">${piece.title}</h2>
+            <p class="shape-card-code">${piece.id}</p>
+          </div>
+        `;
+
+        card.addEventListener("click", (event) => {
+          event.preventDefault();
+          openPiece(piece.id);
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openPiece(id) {
+      const piece = roundPieces.find(item => item.id === id);
+      if (!piece) return;
+
+      pieceTitle.textContent = piece.title;
+      pieceCode.textContent = piece.id;
+
+      topImage.src = topUrl(piece.id);
+      topImage.alt = `${piece.title} top view`;
+
+      bottomImage.src = bottomUrl(piece.id);
+      bottomImage.alt = `${piece.title} bottom view`;
+
+      galleryView.style.display = "none";
+      pieceView.classList.add("active");
+      history.replaceState(null, "", `#${piece.id}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function closePiece() {
+      pieceView.classList.remove("active");
+      galleryView.style.display = "";
+      history.replaceState(null, "", window.location.pathname);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    backToGrid.addEventListener("click", (event) => {
+      event.preventDefault();
+      closePiece();
+    });
+
+    function openFromHash() {
+      const id = window.location.hash.replace("#", "").trim();
+      if (!id) return;
+      openPiece(id);
+    }
+
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const expanded = navToggle.getAttribute("aria-expanded") === "true";
+        navToggle.setAttribute("aria-expanded", String(!expanded));
+        siteNav.classList.toggle("open");
       });
     }
 
     renderGrid();
+    openFromHash();
   </script>
 </body>
 </html>

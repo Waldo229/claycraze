@@ -5,40 +5,338 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Rounds</title>
 
-  <link rel="shortcut icon" href="/images/favicon-32.png" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
-  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-
   <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body class="bonsai-page">
 
-  <header class="site-header minimal-header">
+  <style>
+    .shape-gallery {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .shape-intro {
+      max-width: 760px;
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+
+    .shape-intro h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .shape-intro p {
+      margin: 0;
+    }
+
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .shape-card {
+      display: block;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .shape-card:hover,
+    .shape-card:focus {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.10);
+    }
+
+    .shape-card-image {
+      aspect-ratio: 1 / 1;
+      background: #f3f3f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .shape-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .shape-card-body {
+      padding: 0.9rem 1rem 1rem;
+    }
+
+    .shape-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.3rem;
+    }
+
+    .shape-card-code {
+      font-size: 0.92rem;
+      opacity: 0.72;
+      margin: 0;
+    }
+
+    .piece-view {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+      display: none;
+    }
+
+    .piece-view.active {
+      display: block;
+    }
+
+    .piece-back-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .piece-back-link {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .piece-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .piece-header h2 {
+      margin-bottom: 0.35rem;
+    }
+
+    .piece-header p {
+      margin: 0;
+      opacity: 0.75;
+    }
+
+    .piece-images {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .piece-panel {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .piece-panel-image {
+      aspect-ratio: 4 / 3;
+      background: #f3f3f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .piece-panel-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #f8f8f8;
+    }
+
+    .piece-panel-label {
+      padding: 0.85rem 1rem 1rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .piece-images {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="practice-page">
+
+  <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/index.html" aria-label="ClaycrazE home">
-        <img src="/images/logo2.svg" alt="ClaycrazE" class="site-logo" />
+      <a class="site-brand" href="/">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <a class="back-link" href="/gallery/bonsai.html">← Back to Bonsai</a>
+      <button
+        class="nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+        <a href="/gallery/bonsai.html">Bonsai</a>
+      </nav>
     </div>
   </header>
 
-  <main class="content-shell bonsai-page">
-    <section class="page-card bonsai-intro">
-      <p class="breadcrumb">Practice / Bonsai</p>
-      <h1>Rounds</h1>
-      <div class="intro-copy">
-        <p>Contained bonsai forms with calm volume and centered presence.</p>
+  <main>
+    <section class="shape-gallery" id="galleryView">
+      <div class="shape-intro">
+        <h1>Round Bonsai Pots</h1>
+        <p>A selection of round forms. Choose a piece to view top and bottom details.</p>
       </div>
+
+      <section class="shape-grid" id="roundsGrid" aria-label="Round bonsai pieces"></section>
     </section>
 
-    <section class="gallery-grid bonsai-grid" aria-label="Round bonsai pieces">
-      <a href="/gallery/piece.html?id=RD-0001-2604" class="piece-thumb-card">
-        <img src="/images/bonsai/rounds.jpg" alt="Round bonsai pot" />
-      </a>
+    <section class="piece-view" id="pieceView" aria-live="polite">
+      <div class="piece-back-row">
+        <a href="#" class="piece-back-link" id="backToGrid">&larr; Back to rounds</a>
+      </div>
+
+      <div class="piece-header">
+        <h2 id="pieceTitle">Round Piece</h2>
+        <p id="pieceCode">Code</p>
+      </div>
+
+      <div class="piece-images">
+        <article class="piece-panel">
+          <div class="piece-panel-image">
+            <img id="topImage" src="" alt="" />
+          </div>
+          <div class="piece-panel-label">Top View</div>
+        </article>
+
+        <article class="piece-panel">
+          <div class="piece-panel-image">
+            <img id="bottomImage" src="" alt="" />
+          </div>
+          <div class="piece-panel-label">Bottom View</div>
+        </article>
+      </div>
     </section>
   </main>
 
+  <script>
+    const roundPieces = [
+      { id: "rd-2604-06", title: "Round Bonsai Pot 06" }
+    ];
+
+    const grid = document.getElementById("roundsGrid");
+    const galleryView = document.getElementById("galleryView");
+    const pieceView = document.getElementById("pieceView");
+    const pieceTitle = document.getElementById("pieceTitle");
+    const pieceCode = document.getElementById("pieceCode");
+    const topImage = document.getElementById("topImage");
+    const bottomImage = document.getElementById("bottomImage");
+    const backToGrid = document.getElementById("backToGrid");
+
+    function thumbUrl(id) {
+      return `/images/thumbs/${id}_thumb.jpg`;
+    }
+
+    function topUrl(id) {
+      return `/images/full/${id}_top.jpg`;
+    }
+
+    function bottomUrl(id) {
+      return `/images/full/${id}_bottom.jpg`;
+    }
+
+    function renderGrid() {
+      grid.innerHTML = "";
+
+      roundPieces.forEach(piece => {
+        const card = document.createElement("a");
+        card.href = `#${piece.id}`;
+        card.className = "shape-card";
+        card.setAttribute("data-id", piece.id);
+
+        card.innerHTML = `
+          <div class="shape-card-image">
+            <img src="${thumbUrl(piece.id)}" alt="${piece.title}" loading="lazy" />
+          </div>
+          <div class="shape-card-body">
+            <h2 class="shape-card-title">${piece.title}</h2>
+            <p class="shape-card-code">${piece.id}</p>
+          </div>
+        `;
+
+        card.addEventListener("click", (event) => {
+          event.preventDefault();
+          openPiece(piece.id);
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openPiece(id) {
+      const piece = roundPieces.find(item => item.id === id);
+      if (!piece) return;
+
+      pieceTitle.textContent = piece.title;
+      pieceCode.textContent = piece.id;
+
+      topImage.src = topUrl(piece.id);
+      topImage.alt = `${piece.title} top view`;
+
+      bottomImage.src = bottomUrl(piece.id);
+      bottomImage.alt = `${piece.title} bottom view`;
+
+      galleryView.style.display = "none";
+      pieceView.classList.add("active");
+      history.replaceState(null, "", `#${piece.id}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function closePiece() {
+      pieceView.classList.remove("active");
+      galleryView.style.display = "";
+      history.replaceState(null, "", window.location.pathname);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    backToGrid.addEventListener("click", (event) => {
+      event.preventDefault();
+      closePiece();
+    });
+
+    function openFromHash() {
+      const id = window.location.hash.replace("#", "").trim();
+      if (!id) return;
+      openPiece(id);
+    }
+
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+
+    if (navToggle && siteNav) {
+      navToggle.addEventListener("click", () => {
+        const expanded = navToggle.getAttribute("aria-expanded") === "true";
+        navToggle.setAttribute("aria-expanded", String(!expanded));
+        siteNav.classList.toggle("open");
+      });
+    }
+
+    renderGrid();
+    openFromHash();
+  </script>
 </body>
 </html>
