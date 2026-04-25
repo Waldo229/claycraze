@@ -3,7 +3,7 @@ const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 
 const app = express();
-const PORT = 3010;
+const PORT = process.env.PORT || 3010;
 
 /* -------------------------
    DATABASE
@@ -24,6 +24,19 @@ const db = new sqlite3.Database(
 -------------------------- */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+/* Allow SiteGround pages to fetch Render data */
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 /* Public website root */
 app.use(express.static(path.join(__dirname, "public")));
@@ -79,9 +92,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-/* PAGE + PIECE PAGE
+/* -------------------------
+   ADMIN PAGE + PIECE PAGE
 -------------------------- */
-
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "Xadmin.html"));
 });
@@ -89,6 +102,7 @@ app.get("/admin", (req, res) => {
 app.get("/piece/:id", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "gallery", "piece.html"));
 });
+
 /* -------------------------
    GALLERY PAGE ROUTES
 -------------------------- */
@@ -225,6 +239,7 @@ app.post("/add-piece", (req, res) => {
       }
       return res.status(500).send("Database error: " + err.message);
     }
+
     res.send(`Piece ${id} added successfully.`);
   });
 });
@@ -408,6 +423,7 @@ app.get("/pieces", (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
+
     res.json(rows);
   });
 });
@@ -501,6 +517,7 @@ function getPublicPiecesByShape(shapeCode, res) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
+
     res.json(rows);
   });
 }
@@ -523,6 +540,7 @@ function getPublicPiecesByShapes(shapeCodes, res) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
+
     res.json(rows);
   });
 }
@@ -539,6 +557,7 @@ app.get("/gallery-data/all", (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
+
     res.json(rows);
   });
 });
@@ -579,7 +598,7 @@ app.get("/gallery-data/sculpture", (req, res) => {
    START SERVER
 -------------------------- */
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
   console.log(`Home: http://localhost:${PORT}/`);
   console.log(`Theory: http://localhost:${PORT}/theory.html`);
   console.log(`Practice: http://localhost:${PORT}/practice.html`);
