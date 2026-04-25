@@ -5,6 +5,9 @@
   },
   "name": "claycraze",
   "version": "1.0.0",
+  "engines": {
+    "node": "20.x"
+  },
   "description": "New Repository for ClaycrazE September 6, 2025",
   "main": "server.js",
   "scripts": {
