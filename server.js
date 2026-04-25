@@ -79,17 +79,16 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-/* -------------------------
-   ADMIN PAGE + PIECE PAGE
+/* PAGE + PIECE PAGE
 -------------------------- */
+
 app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
+  res.sendFile(path.join(__dirname, "public", "Xadmin.html"));
 });
 
 app.get("/piece/:id", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "gallery", "piece.html"));
 });
-
 /* -------------------------
    GALLERY PAGE ROUTES
 -------------------------- */
