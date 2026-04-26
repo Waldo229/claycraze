@@ -1,282 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Admin Entry</title>
-  <link rel="stylesheet" href="/css/gallery.css" />
-  <style>
-    .admin-page {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem 2.5rem;
+(function () {
+  const form = document.getElementById("adminForm");
+
+  const shapeInput = document.getElementById("shape");
+  const yearMonthInput = document.getElementById("yearMonth");
+  const pieceIdPreviewInput = document.getElementById("pieceIdPreview");
+
+  const titleInput = document.getElementById("title");
+  const categoryInput = document.getElementById("category");
+  const clayInput = document.getElementById("clay");
+  const finishInput = document.getElementById("finish");
+  const dimensionsInput = document.getElementById("dimensions");
+  const statusInput = document.getElementById("status");
+  const hasBottomImageInput = document.getElementById("hasBottomImage");
+  const isPublishedInput = document.getElementById("isPublished");
+  const descriptionInput = document.getElementById("description");
+
+  const thumbImageInput = document.getElementById("thumbImage");
+  const fullTopImageInput = document.getElementById("fullTopImage");
+  const fullBottomImageInput = document.getElementById("fullBottomImage");
+
+  const previewBtn = document.getElementById("previewBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  const pieceIdOutput = document.getElementById("pieceIdOutput");
+  const imageOutput = document.getElementById("imageOutput");
+  const recordOutput = document.getElementById("recordOutput");
+  const statusOutput = document.getElementById("statusOutput");
+
+  init();
+
+  function init() {
+    setDefaultYearMonth();
+    updateTitleFromShape();
+
+    shapeInput.addEventListener("change", async function () {
+      updateTitleFromShape();
+      await refreshGeneratedId();
+    });
+
+    yearMonthInput.addEventListener("change", refreshGeneratedId);
+    yearMonthInput.addEventListener("blur", refreshGeneratedId);
+
+    previewBtn.addEventListener("click", previewEntry);
+
+    resetBtn.addEventListener("click", function () {
+      setTimeout(async () => {
+        form.reset();
+        setDefaultYearMonth();
+        updateTitleFromShape();
+        clearOutputs();
+        await refreshGeneratedId();
+        setStatus("Fill out the form, choose the image files, then preview or save.");
+      }, 0);
+    });
+
+    form.addEventListener("submit", submitForm);
+
+    refreshGeneratedId().catch((error) => {
+      setStatus(`Could not generate next ID: ${error.message}`);
+    });
+  }
+
+  async function submitForm(event) {
+    event.preventDefault();
+
+    const payload = await buildPayload(true);
+    if (!payload) return;
+
+    previewPayload(payload, payload.preview_id);
+    setStatus("Saving to database and processing images...");
+
+    try {
+      const response = await fetch("/api/pieces", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Save failed.");
+      }
+
+      const finalId = String(result.piece_id || payload.preview_id || "").trim();
+      const previewId = String(payload.preview_id || "").trim();
+
+      pieceIdPreviewInput.value = finalId;
+      pieceIdOutput.textContent = finalId;
+      updateImagePreview(finalId);
+      updateRecordOutput(payload, finalId);
+
+      if (finalId && previewId && finalId !== previewId) {
+        setStatus(
+          `Saved as ${finalId}. Another save happened first, so the final ID advanced from ${previewId}.`
+        );
+      } else {
+        setStatus(
+          `Saved ${finalId}. Images processed and gallery data refreshed.`
+        );
+      }
+
+      await refreshGeneratedId();
+    } catch (error) {
+      setStatus(`Save failed: ${error.message}`);
+    }
+  }
+
+  async function previewEntry() {
+    const payload = await buildPayload(false);
+    if (!payload) return;
+
+    previewPayload(payload, payload.preview_id);
+    setStatus("Preview generated. Ready to save.");
+  }
+
+  async function refreshGeneratedId() {
+    const shape = getValue(shapeInput).toUpperCase();
+    const yearMonth = getValue(yearMonthInput);
+
+    pieceIdPreviewInput.value = "";
+    pieceIdOutput.textContent = "—";
+
+    if (!/^[A-Z]{2}$/.test(shape)) return;
+    if (!/^\d{4}$/.test(yearMonth)) return;
+
+    const response = await fetch(
+      `/api/pieces/next-id?shape=${encodeURIComponent(shape)}&yearMonth=${encodeURIComponent(yearMonth)}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || "Could not fetch next ID.");
     }
 
-    .admin-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 1.2rem;
+    const previewId = String(result.preview_id || "").trim();
+
+    pieceIdPreviewInput.value = previewId;
+    pieceIdOutput.textContent = previewId;
+    updateImagePreview(previewId);
+  }
+
+  async function buildPayload(requireFiles) {
+    const shape = getValue(shapeInput).toUpperCase();
+    const yearMonth = getValue(yearMonthInput);
+    const previewId = getValue(pieceIdPreviewInput);
+
+    if (!/^[A-Z]{2}$/.test(shape)) {
+      setStatus("Shape code must be 2 letters.");
+      return null;
     }
 
-    .admin-panel {
-      background: rgba(244, 231, 198, 0.84);
-      border: 1px solid rgba(122, 77, 28, 0.16);
-      border-radius: 14px;
-      box-shadow: 0 10px 28px rgba(55, 31, 12, 0.16);
-      padding: 1.2rem;
+    if (!/^\d{4}$/.test(yearMonth)) {
+      setStatus("Year + Month must be 4 digits, like 2604.");
+      return null;
     }
 
-    .admin-panel h2 {
-      margin: 0 0 1rem;
+    if (!previewId) {
+      setStatus("Could not generate a piece ID yet.");
+      return null;
     }
 
-    .admin-form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.9rem;
+    const title = getValue(titleInput);
+    const category = getValue(categoryInput);
+    const clay = getValue(clayInput);
+    const finish = getValue(finishInput);
+    const dimensions = getValue(dimensionsInput);
+    const status = getValue(statusInput);
+    const hasBottomImage = getValue(hasBottomImageInput) === "1";
+    const isPublished = getValue(isPublishedInput) === "1";
+    const description = getValue(descriptionInput);
+
+    if (!title) {
+      setStatus("Title is required.");
+      return null;
     }
 
-    .field {
-      display: grid;
-      gap: 0.35rem;
+    if (!category) {
+      setStatus("Category is required.");
+      return null;
     }
 
-    .field.full {
-      grid-column: 1 / -1;
-    }
+    if (requireFiles) {
+      if (!thumbImageInput.files[0]) {
+        setStatus("Thumbnail / top source image is required.");
+        return null;
+      }
 
-    .field label {
-      font-weight: 700;
-    }
+      if (!fullTopImageInput.files[0]) {
+        setStatus("Full top image is required.");
+        return null;
+      }
 
-    .field input,
-    .field select,
-    .field textarea {
-      width: 100%;
-      font: inherit;
-      border: 1px solid rgba(122, 77, 28, 0.22);
-      border-radius: 10px;
-      padding: 0.75rem 0.85rem;
-      background: #fffaf0;
-      color: #2c1a10;
-    }
-
-    .field textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .admin-actions {
-      display: flex;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-
-    .admin-btn {
-      appearance: none;
-      border: 1px solid rgba(122, 77, 28, 0.2);
-      background: #f4e7c6;
-      color: #2c1a10;
-      border-radius: 999px;
-      padding: 0.75rem 1rem;
-      font: inherit;
-      cursor: pointer;
-    }
-
-    .admin-btn.primary {
-      background: #7a4d1c;
-      color: #fff7ea;
-      border-color: #7a4d1c;
-    }
-
-    .admin-status,
-    .admin-output {
-      background: #fffaf0;
-      border: 1px solid rgba(122, 77, 28, 0.18);
-      border-radius: 10px;
-      padding: 0.95rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .admin-list {
-      margin: 0;
-      padding-left: 1.2rem;
-      line-height: 1.7;
-    }
-
-    .required-note {
-      color: #6a4b2d;
-      font-size: 0.92rem;
-    }
-
-    @media (max-width: 860px) {
-      .admin-grid,
-      .admin-form-grid {
-        grid-template-columns: 1fr;
+      if (hasBottomImage && !fullBottomImageInput.files[0]) {
+        setStatus("Full bottom image is required when bottom image is set to Yes.");
+        return null;
       }
     }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="/bonsai.html">ClaycrazE</a>
-      <nav class="site-nav" aria-label="Primary navigation">
-        <a href="/bonsai.html">Bonsai</a>
-        <a href="/piece.html">Piece View</a>
-      </nav>
-    </div>
-  </header>
 
-  <main class="admin-page">
-    <section class="gallery-intro">
-      <p class="eyebrow">Studio</p>
-      <h1>Admin Entry</h1>
-      <p>
-        Enter the piece once, choose the image files, and save. The form writes to
-        the SQLite master record and places the JPEG files in the correct site folders.
-      </p>
-    </section>
+    const thumbImage = thumbImageInput.files[0]
+      ? await fileToDataURL(thumbImageInput.files[0])
+      : null;
 
-    <div class="admin-grid">
-      <section class="admin-panel">
-        <h2>Piece Entry</h2>
+    const fullTopImage = fullTopImageInput.files[0]
+      ? await fileToDataURL(fullTopImageInput.files[0])
+      : null;
 
-        <form id="adminForm">
-          <div class="admin-form-grid">
-            <div class="field">
-              <label for="shape">Shape Code</label>
-              <select id="shape" name="shape">
-                <option value="OV">OV — Oval</option>
-                <option value="RC">RC — Rectangular</option>
-                <option value="RD">RD — Round</option>
-                <option value="CS">CS — Cascade</option>
-                <option value="SL">SL — Slab / Tray</option>
-              </select>
-            </div>
+    const fullBottomImage = fullBottomImageInput.files[0]
+      ? await fileToDataURL(fullBottomImageInput.files[0])
+      : null;
 
-            <div class="field">
-              <label for="pieceNumber">Piece Number</label>
-              <input id="pieceNumber" name="pieceNumber" type="number" min="1" max="999" value="1" />
-            </div>
+    return {
+      shape,
+      year_month: yearMonth,
+      preview_id: previewId,
+      title,
+      category,
+      clay,
+      finish,
+      dimensions,
+      status,
+      description,
+      has_bottom_image: hasBottomImage,
+      is_published: isPublished,
+      thumb_image: thumbImage,
+      full_top_image: fullTopImage,
+      full_bottom_image: fullBottomImage
+    };
+  }
 
-            <div class="field">
-              <label for="yearMonth">Year + Month</label>
-              <input id="yearMonth" name="yearMonth" type="text" maxlength="4" />
-            </div>
+  function previewPayload(payload, displayId) {
+    const id = String(displayId || payload.preview_id || "").trim();
 
-            <div class="field">
-              <label for="title">Title</label>
-              <input id="title" name="title" type="text" value="Oval Bonsai Container" />
-            </div>
+    pieceIdOutput.textContent = id || "—";
+    updateImagePreview(id);
+    updateRecordOutput(payload, id);
+  }
 
-            <div class="field">
-              <label for="category">Category</label>
-              <input id="category" name="category" type="text" value="Bonsai" />
-            </div>
+  function updateImagePreview(id) {
+    if (!id) {
+      imageOutput.textContent = "—";
+      return;
+    }
 
-            <div class="field">
-              <label for="clay">Clay</label>
-              <input id="clay" name="clay" type="text" />
-            </div>
+    const topThumb = `/images/thumbs/${id}_top_thumb.jpg`;
+    const topFull = `/images/full/${id}_top.jpg`;
+    const bottomFull = `/images/full/${id}_bottom.jpg`;
 
-            <div class="field">
-              <label for="finish">Finish</label>
-              <input id="finish" name="finish" type="text" />
-            </div>
+    imageOutput.textContent = [
+      `Thumbnail: ${topThumb}`,
+      `Full top: ${topFull}`,
+      `Full bottom: ${bottomFull}`
+    ].join("\n");
+  }
 
-            <div class="field">
-              <label for="dimensions">Dimensions</label>
-              <input id="dimensions" name="dimensions" type="text" placeholder='Approx. 10" x 8" x 2.5"' />
-            </div>
+  function updateRecordOutput(payload, id) {
+    recordOutput.textContent = JSON.stringify(
+      {
+        id,
+        title: payload.title,
+        category: payload.category,
+        clay: payload.clay,
+        finish: payload.finish,
+        dimensions: payload.dimensions,
+        status: payload.status,
+        description: payload.description,
+        has_bottom_image: payload.has_bottom_image,
+        is_published: payload.is_published
+      },
+      null,
+      2
+    );
+  }
 
-            <div class="field">
-              <label for="status">Status</label>
-              <select id="status" name="status">
-                <option value="Available">Available</option>
-                <option value="Sold">Sold</option>
-                <option value="Hold">Hold</option>
-                <option value="Not Listed">Not Listed</option>
-              </select>
-            </div>
+  function clearOutputs() {
+    pieceIdOutput.textContent = "—";
+    imageOutput.textContent = "—";
+    recordOutput.textContent = "—";
 
-            <div class="field">
-              <label for="hasBottomImage">Bottom image ready?</label>
-              <select id="hasBottomImage" name="hasBottomImage">
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-              </select>
-            </div>
+    if (pieceIdPreviewInput) {
+      pieceIdPreviewInput.value = "";
+    }
+  }
 
-            <div class="field">
-              <label for="isPublished">Publish to website?</label>
-              <select id="isPublished" name="isPublished">
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-              </select>
-            </div>
+  function setDefaultYearMonth() {
+    const now = new Date();
+    const year = String(now.getFullYear()).slice(-2);
+    const month = String(now.getMonth() + 1).padStart(2, "0");
 
-            <div class="field full">
-              <label for="description">Description</label>
-              <textarea id="description" name="description"></textarea>
-            </div>
+    yearMonthInput.value = year + month;
+  }
 
-            <div class="field full">
-              <label for="thumbImage">Thumbnail top image (required, JPEG)</label>
-              <input id="thumbImage" name="thumbImage" type="file" accept=".jpg,.jpeg" />
-            </div>
+  function updateTitleFromShape() {
+    const map = {
+      OV: "Oval Bonsai Container",
+      RC: "Rectangular Bonsai Container",
+      RD: "Round Bonsai Container",
+      CS: "Cascade Container",
+      SL: "Slab Planting Tray"
+    };
 
-            <div class="field full">
-              <label for="fullTopImage">Full top image (required, JPEG)</label>
-              <input id="fullTopImage" name="fullTopImage" type="file" accept=".jpg,.jpeg" />
-            </div>
+    titleInput.value = map[shapeInput.value] || "Bonsai Container";
+  }
 
-            <div class="field full">
-              <label for="fullBottomImage">Full bottom image (optional, JPEG)</label>
-              <input id="fullBottomImage" name="fullBottomImage" type="file" accept=".jpg,.jpeg" />
-              <div class="required-note">Leave blank if the underside image is not ready yet.</div>
-            </div>
-          </div>
+  function getValue(el) {
+    return String(el?.value || "").trim();
+  }
 
-          <div class="admin-actions">
-            <button type="button" class="admin-btn" id="previewBtn">Preview Entry</button>
-            <button type="submit" class="admin-btn primary">Save to Database</button>
-            <button type="reset" class="admin-btn" id="resetBtn">Clear Form</button>
-          </div>
-        </form>
-      </section>
+  function setStatus(message) {
+    statusOutput.textContent = message;
+  }
 
-      <section class="admin-panel">
-        <h2>Output</h2>
+  function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
 
-        <p><strong>Piece ID</strong></p>
-        <div class="admin-output" id="pieceIdOutput">—</div>
+      reader.onload = function () {
+        resolve(reader.result);
+      };
 
-        <p><strong>Image files</strong></p>
-        <div class="admin-output" id="imageOutput">—</div>
+      reader.onerror = function () {
+        reject(new Error(`Could not read file: ${file.name}`));
+      };
 
-        <p><strong>Record Preview</strong></p>
-        <div class="admin-output" id="recordOutput">—</div>
-
-        <p><strong>Studio checklist</strong></p>
-        <ul class="admin-list">
-          <li>Choose the thumbnail top JPEG</li>
-          <li>Choose the full top JPEG</li>
-          <li>Choose the full bottom JPEG if available</li>
-          <li>Click <strong>Save to Database</strong></li>
-          <li>The server saves the files with the correct names automatically</li>
-          <li>The server refreshes <code>/public/data/pieces.json</code> automatically</li>
-          <li>Refresh the site</li>
-        </ul>
-
-        <p><strong>Status</strong></p>
-        <div class="admin-status" id="statusOutput">Fill out the form, choose the image files, then preview or save.</div>
-      </section>
-    </div>
-  </main>
-
-  <script src="/admin/js/admin.js"></script>
-</body>
-</html>
+      reader.readAsDataURL(file);
+    });
+  }
+})();
