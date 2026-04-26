@@ -1,104 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body class="home-page">
+(function () {
+  const form = document.getElementById("adminForm");
 
-  <header class="site-header">
-    <div class="header-shell">
-      <a class="site-brand" href="/">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">The Pottery and Studio Wisdom of Jim Alexander</span>
-      </a>
+  const shapeInput = document.getElementById("shape");
+  const yearMonthInput = document.getElementById("yearMonth");
+  const pieceIdPreviewInput = document.getElementById("pieceIdPreview");
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+  const titleInput = document.getElementById("title");
+  const categoryInput = document.getElementById("category");
+  const clayInput = document.getElementById("clay");
+  const finishInput = document.getElementById("finish");
+  const dimensionsInput = document.getElementById("dimensions");
+  const statusInput = document.getElementById("status");
+  const hasBottomImageInput = document.getElementById("hasBottomImage");
+  const isPublishedInput = document.getElementById("isPublished");
+  const descriptionInput = document.getElementById("description");
 
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/" class="active">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-      </nav>
-    </div>
-  </header>
+  const thumbImageInput = document.getElementById("thumbImage");
+  const fullTopImageInput = document.getElementById("fullTopImage");
+  const fullBottomImageInput = document.getElementById("fullBottomImage");
 
-  <main class="home-main">
-    <section class="home-intro">
-      <h2>Welcome</h2>
+  const previewBtn = document.getElementById("previewBtn");
+  const resetBtn = document.getElementById("resetBtn");
 
-      <div class="intro-wrap">
-        <img
-          src="/images/coldmountain.png"
-          alt="Han Shan and Shih-te of Cold Mountain"
-          class="intro-monks"
-        />
+  const pieceIdOutput = document.getElementById("pieceIdOutput");
+  const imageOutput = document.getElementById("imageOutput");
+  const recordOutput = document.getElementById("recordOutput");
+  const statusOutput = document.getElementById("statusOutput");
 
-        <p>
-          It be my hope that this website will prove to be of interest to both
-          potters and to bonsai and ikebana enthusiasts, and that they may discover
-          here some useful information regarding my clay and glaze choices, as well
-          as the way I have chosen to create a home studio and environment that works
-          for me. While not quite the self-reliant potter described by Andrew Holden
-          in his book of the same name, I have found it necessary to make my own way.
-          Much of my equipment has been homemade or repurposed until I could afford
-          to do better and make upgrades.
-        </p>
+  init();
 
-        <p>
-          I use simple techniques; if the ancient Chinese potters didn’t need it, I
-          probably don’t either. I continue the journey, now more than fifty years
-          on, with a light heart and the knowledge that theory and practice are
-          companions in the mischief surrounding creation.
-        </p>
+  function init() {
+    setDefaultYearMonth();
+    updateTitleFromShape();
 
-        <p>
-          Han Shan and Shih-te, the monks of
-          <a href="/cold_mountain.html">Cold Mountain</a>, stand at the threshold of
-          my creative space as guides: Han Shan, the thinker, opening the way toward
-          theory, reflection, and understanding; and Shih-te, the worker, opening
-          the way toward practice, making, and the life of the hand. You are invited
-          to enter, to explore, and to enjoy this respite.
-        </p>
-      </div>
-    </section>
+    shapeInput.addEventListener("change", async function () {
+      updateTitleFromShape();
+      await refreshGeneratedId();
+    });
 
-    <section class="door-grid" aria-label="Main site sections">
-      <article class="door-card theory-door">
-        <a class="door-link" href="/theory.html">
-          <h3>Theory</h3>
-          <p>
-            Thought, material understanding, notes, place, memory, and the
-            ideas that shape the work.
-          </p>
-        </a>
-      </article>
+    yearMonthInput.addEventListener("change", refreshGeneratedId);
+    yearMonthInput.addEventListener("blur", refreshGeneratedId);
 
-      <article class="door-card practice-door">
-        <a class="door-link" href="/practice.html">
-          <h3>Practice</h3>
-          <p>
-            The made work: bonsai, ikebana, sculpture, and face jugs, leading
-            into gallery pages populated by the database.
-          </p>
-        </a>
-      </article>
-    </section>
-  </main>
+    previewBtn.addEventListener("click", previewEntry);
 
-  <script src="/js/nav.js"></script>
-</body>
-</html>
+    resetBtn.addEventListener("click", function () {
+      setTimeout(async () => {
+        form.reset();
+        setDefaultYearMonth();
+        updateTitleFromShape();
+        clearOutputs();
+        await refreshGeneratedId();
+        setStatus("Fill out the form, choose the image files, then preview or save.");
+      }, 0);
+    });
+
+    form.addEventListener("submit", submitForm);
+
+    refreshGeneratedId().catch((error) => {
+      setStatus(`Could not generate next ID: ${error.message}`);
+    });
+  }
+
+  async function submitForm(event) {
+    event.preventDefault();
+
+    const payload = await buildPayload(true);
+    if (!payload) return;
+
+    previewPayload(payload, payload.preview_id);
+    setStatus("Saving to database and processing images...");
+
+    try {
+      const response = await fetch("/api/pieces", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Save failed.");
+      }
+
+      const finalId = String(result.piece_id || payload.preview_id || "").trim();
+      const previewId = String(payload.preview_id || "").trim();
+
+      pieceIdPreviewInput.value = finalId;
+      pieceIdOutput.textContent = finalId;
+      updateImagePreview(finalId);
+      updateRecordOutput(payload, finalId);
+
+      if (finalId && previewId && finalId !== previewId) {
+        setStatus(
+          `Saved as ${finalId}. Another save happened first, so the final ID advanced from ${previewId}.`
+        );
+      } else {
+        setStatus(
+          `Saved ${finalId}. Images processed and gallery data refreshed.`
+        );
+      }
+
+      await refreshGeneratedId();
+    } catch (error) {
+      setStatus(`Save failed: ${error.message}`);
+    }
+  }
+
+  async function previewEntry() {
+    const payload = await buildPayload(false);
+    if (!payload) return;
+
+    previewPayload(payload, payload.preview_id);
+    setStatus("Preview generated. Ready to save.");
+  }
+
+  async function refreshGeneratedId() {
+    const shape = getValue(shapeInput).toUpperCase();
+    const yearMonth = getValue(yearMonthInput);
+
+    pieceIdPreviewInput.value = "";
+    pieceIdOutput.textContent = "—";
+
+    if (!/^[A-Z]{2}$/.test(shape)) return;
+    if (!/^\d{4}$/.test(yearMonth)) return;
+
+    const response = await fetch(
+      `/api/pieces/next-id?shape=${encodeURIComponent(shape)}&yearMonth=${encodeURIComponent(yearMonth)}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || "Could not fetch next ID.");
+    }
+
+    const previewId = String(result.preview_id || "").trim();
+
+    pieceIdPreviewInput.value = previewId;
+    pieceIdOutput.textContent = previewId;
+    updateImagePreview(previewId);
+  }
+
+  async function buildPayload(requireFiles) {
+    const shape = getValue(shapeInput).toUpperCase();
+    const yearMonth = getValue(yearMonthInput);
+    const previewId = getValue(pieceIdPreviewInput);
+
+    if (!/^[A-Z]{2}$/.test(shape)) {
+      setStatus("Shape code must be 2 letters.");
+      return null;
+    }
+
+    if (!/^\d{4}$/.test(yearMonth)) {
+      setStatus("Year + Month must be 4 digits, like 2604.");
+      return null;
+    }
+
+    if (!previewId) {
+      setStatus("Could not generate a piece ID yet.");
+      return null;
+    }
+
+    const title = getValue(titleInput);
+    const category = getValue(categoryInput);
+    const clay = getValue(clayInput);
+    const finish = getValue(finishInput);
+    const dimensions = getValue(dimensionsInput);
+    const status = getValue(statusInput);
+    const hasBottomImage = getValue(hasBottomImageInput) === "1";
+    const isPublished = getValue(isPublishedInput) === "1";
+    const description = getValue(descriptionInput);
+
+    if (!title) {
+      setStatus("Title is required.");
+      return null;
+    }
+
+    if (!category) {
+      setStatus("Category is required.");
+      return null;
+    }
+
+    if (requireFiles) {
+      if (!thumbImageInput.files[0]) {
+        setStatus("Thumbnail / top source image is required.");
+        return null;
+      }
+
+      if (!fullTopImageInput.files[0]) {
+        setStatus("Full top image is required.");
+        return null;
+      }
+
+      if (hasBottomImage && !fullBottomImageInput.files[0]) {
+        setStatus("Full bottom image is required when bottom image is set to Yes.");
+        return null;
+      }
+    }
+
+    const thumbImage = thumbImageInput.files[0]
+      ? await fileToDataURL(thumbImageInput.files[0])
+      : null;
+
+    const fullTopImage = fullTopImageInput.files[0]
+      ? await fileToDataURL(fullTopImageInput.files[0])
+      : null;
+
+    const fullBottomImage = fullBottomImageInput.files[0]
+      ? await fileToDataURL(fullBottomImageInput.files[0])
+      : null;
+
+    return {
+      shape,
+      year_month: yearMonth,
+      preview_id: previewId,
+      title,
+      category,
+      clay,
+      finish,
+      dimensions,
+      status,
+      description,
+      has_bottom_image: hasBottomImage,
+      is_published: isPublished,
+      thumb_image: thumbImage,
+      full_top_image: fullTopImage,
+      full_bottom_image: fullBottomImage
+    };
+  }
+
+  function previewPayload(payload, displayId) {
+    const id = String(displayId || payload.preview_id || "").trim();
+
+    pieceIdOutput.textContent = id || "—";
+    updateImagePreview(id);
+    updateRecordOutput(payload, id);
+  }
+
+  function updateImagePreview(id) {
+    if (!id) {
+      imageOutput.textContent = "—";
+      return;
+    }
+
+    const topThumb = `/images/thumbs/${id}_top_thumb.jpg`;
+    const topFull = `/images/full/${id}_top.jpg`;
+    const bottomFull = `/images/full/${id}_bottom.jpg`;
+
+    imageOutput.textContent = [
+      `Thumbnail: ${topThumb}`,
+      `Full top: ${topFull}`,
+      `Full bottom: ${bottomFull}`
+    ].join("\n");
+  }
+
+  function updateRecordOutput(payload, id) {
+    recordOutput.textContent = JSON.stringify(
+      {
+        id,
+        title: payload.title,
+        category: payload.category,
+        clay: payload.clay,
+        finish: payload.finish,
+        dimensions: payload.dimensions,
+        status: payload.status,
+        description: payload.description,
+        has_bottom_image: payload.has_bottom_image,
+        is_published: payload.is_published
+      },
+      null,
+      2
+    );
+  }
+
+  function clearOutputs() {
+    pieceIdOutput.textContent = "—";
+    imageOutput.textContent = "—";
+    recordOutput.textContent = "—";
+
+    if (pieceIdPreviewInput) {
+      pieceIdPreviewInput.value = "";
+    }
+  }
+
+  function setDefaultYearMonth() {
+    const now = new Date();
+    const year = String(now.getFullYear()).slice(-2);
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+
+    yearMonthInput.value = year + month;
+  }
+
+  function updateTitleFromShape() {
+    const map = {
+      OV: "Oval Bonsai Container",
+      RC: "Rectangular Bonsai Container",
+      RD: "Round Bonsai Container",
+      CS: "Cascade Container",
+      SL: "Slab Planting Tray"
+    };
+
+    titleInput.value = map[shapeInput.value] || "Bonsai Container";
+  }
+
+  function getValue(el) {
+    return String(el?.value || "").trim();
+  }
+
+  function setStatus(message) {
+    statusOutput.textContent = message;
+  }
+
+  function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+
+      reader.onerror = function () {
+        reject(new Error(`Could not read file: ${file.name}`));
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+})();
