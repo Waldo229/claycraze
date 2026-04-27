@@ -1,0 +1,109 @@
+# Query: <a href="/practice.html">Practice</a>
+# Flags: CaseSensitive
+# ContextLines: 1
+
+21 results - 21 files
+
+public\cold_mountain.html:
+  33          <a href="/theory.html">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\gene.html:
+  33          <a href="/theory.html">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35         
+
+public\index.html:
+  33          <a href="/theory.html">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\kiln.html:
+  33          <a href="/theory.html" class="active">Theory</a>
+  34:        <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\materials.html:
+  33          <a href="/theory.html" class="active">Theory</a>
+  34:        <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\places.html:
+  37          <a href="/theory.html" class="active">Theory</a>
+  38:        <a href="/gallery/">Practice</a>
+  39        </nav>
+
+public\poorboy.html:
+  34          <a href="/theory.html" class="active">Theory</a>
+  35:         <a href="/gallery/">Practice</a>
+  36        </nav>
+
+public\processes.html:
+  33          <a href="/theory.html" class="active">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\skutt1027.html:
+  33          <a href="/theory.html" class="active">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\studio.html:
+  33          <a href="/theory.html" class="active">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\theory.html:
+  33          <a href="/theory.html" class="active">Theory</a>
+  34:        <a href="/gallery/">Practice</a>
+  35        </nav>
+
+public\Xadmin.html:
+  123          <a href="/theory.html">Theory</a>
+  124:        <a href="/gallery/">Practice</a>
+  125          <a href="/bonsai.html">Bonsai</a>
+
+public\gallery\bonsai.html:
+  15          <a href="/theory.html">Theory</a>
+  16:        <a href="/gallery/">Practice</a>
+  17          <a href="/gallery/bonsai.html" aria-current="page">Bonsai</a>
+
+public\gallery\facejugs.html:
+  33          <a href="/theory.html">Theory</a>
+  34:        <a href="/gallery/">Practice</a>
+  35         
+
+public\gallery\freestyle.html:
+  33          <a href="/theory.html">Theory</a>
+  34:         <a href="/gallery/">Practice</a>
+  35         
+
+public\gallery\ovals.html:
+  33          <a href="/theory.html">Theory</a>
+  34:        <a href="/gallery/">Practice</a>
+  35          
+
+public\gallery\piece.html:
+  15          <a href="/theory.html">Theory</a>
+  16:         <a href="/gallery/">Practice</a>
+  17          <a href="/bonsai.html">Bonsai</a>
+
+public\gallery\rectangles.html:
+  33          <a href="/theory.html">Theory</a>
+  34:       <a href="/gallery/">Practice</a>
+  35          
+
+public\gallery\rounds.html:
+  33          <a href="/theory.html">Theory</a>
+  34:        <a href="/gallery/">Practice</a>
+  35          
+
+public\js\site\entry-form.html:
+  294          <a href="/theory.html">Theory</a>
+  295:         <a href="/practice.html">Practice</a>
+  296         <a href="/gallery/">Practice</a>
+trash\studio.html:
+  33          <a href="/theory.html">Theory</a>
+  34:      <a href="/gallery/">Practice</a>
+  35          <a href="/studio.html">Studio</a>
