@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ClaycrazE Piece</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      margin: 0;
+      background: #f5f1ea;
+      color: #2b2118;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: auto;
+      padding: 28px;
+    }
+
+    .images {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .images img {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid #ded2c0;
+      cursor: zoom-in;
+      display: block;
+      background: white;
+    }
+
+    .note {
+      margin-top: 22px;
+      padding: 20px;
+      background: #fffaf2;
+      border: 1px solid #ded2c0;
+      border-radius: 18px;
+      line-height: 1.55;
+    }
+
+    .viewer {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: rgba(18, 13, 9, 0.96);
+      z-index: 9999;
+    }
+
+    .viewer.open {
+      display: block;
+    }
+
+    .viewer-stage {
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      box-sizing: border-box;
+    }
+
+    .viewer-stage img {
+      transform-origin: center;
+      transition: transform 0.1s;
+      background: white;
+      max-width: none;
+      max-height: none;
+      cursor: grab;
+    }
+
+    @media (max-width: 760px) {
+      .images {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="piece">Loading…</main>
+
+  <div class="viewer" id="viewer">
+    <div class="viewer-stage" id="viewerStage">
+      <img id="viewerImage" alt="">
+    </div>
+  </div>
+
+  <script>
+    const id = new URLSearchParams(location.search).get("id");
+    let zoom = 1;
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function applyZoom() {
+      document.getElementById("viewerImage").style.transform = `scale(${zoom})`;
+    }
+
+    function openViewer(src, alt) {
+      const viewer = document.getElementById("viewer");
+      const img = document.getElementById("viewerImage");
+
+      zoom = 1;
+      img.src = src;
+      img.alt = alt || "";
+      applyZoom();
+
+      viewer.classList.add("open");
+    }
+
+    function closeViewer() {
+      const viewer = document.getElementById("viewer");
+      const img = document.getElementById("viewerImage");
+
+      viewer.classList.remove("open");
+      img.src = "";
+      img.alt = "";
+      zoom = 1;
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeViewer();
+    });
+
+    fetch("/api/pieces")
+      .then(r => r.json())
+      .then(data => {
+        const p = data.pieces.find(x => x.id === id);
+        const root = document.getElementById("piece");
+
+        if (!p) {
+          root.textContent = "Piece not found.";
+          return;
+        }
+
+        const top = p.images?.top?.full;
+        const bottom = p.images?.bottom?.full;
+
+        root.innerHTML = `
+          <p><a href="/gallery/bonsai/ovals.html">← Back to Ovals</a></p>
+
+          <h1>${escapeHTML(p.title || p.id)}</h1>
+          <p><strong>${escapeHTML(p.id)}</strong>${p.dimensions ? " · " + escapeHTML(p.dimensions) : ""}${p.price ? " · $" + escapeHTML(p.price) : ""}</p>
+
+          <div class="images">
+            ${top ? `<img src="${top}" data-full="${top}" alt="${escapeHTML(p.id)} top image">` : ""}
+            ${bottom ? `<img src="${bottom}" data-full="${bottom}" alt="${escapeHTML(p.id)} bottom image">` : ""}
+          </div>
+
+          ${p.description ? `<div class="note"><h2>Description</h2><p>${escapeHTML(p.description)}</p></div>` : ""}
+          ${p.studioNote ? `<div class="note"><h2>Studio Note</h2><p>${escapeHTML(p.studioNote)}</p></div>` : ""}
+        `;
+
+        document.querySelectorAll(".images img").forEach(img => {
+          img.addEventListener("click", () => {
+            openViewer(img.dataset.full, img.alt);
+          });
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById("piece").textContent = "Could not load piece data.";
+      });
+
+    const viewer = document.getElementById("viewer");
+    const viewerImg = document.getElementById("viewerImage");
+
+    viewer.addEventListener("click", e => {
+      if (e.target.id === "viewer" || e.target.id === "viewerStage") {
+        closeViewer();
+      }
+    });
+
+    viewerImg.addEventListener("dblclick", e => {
+      e.stopPropagation();
+      zoom = Math.min(zoom + 0.5, 6);
+      applyZoom();
+    });
+
+    viewerImg.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      zoom = Math.max(zoom - 0.5, 0.5);
+      applyZoom();
+    });
+  </script>
+</body>
+</html>

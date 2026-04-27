@@ -1,61 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Sculpture</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ClaycrazE | Scluptures</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; margin: 0; background: #f5f1ea; color: #2b2118; }
+    main { max-width: 1120px; margin: auto; padding: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+    .card { display: block; text-decoration: none; color: inherit; background: #fffaf2; border: 1px solid #ded2c0; border-radius: 18px; overflow: hidden; }
+    img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+    .body { padding: 14px; }
+  </style>
 </head>
-<body class="practice-page">
-
-  <header class="site-header">
-    <div class="header-shell">
-      <a class="site-brand" href="/index.html">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
-      </a>
-
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-       
-      </nav>
-    </div>
-  </header>
-
-  <main class="gallery-page">
-  <main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/practice.html">Back</a>
-      <a href="/gallery/sclupture.html" class="active">Sculpture</a>
-    </nav>
-
-
-    <section class="gallery-intro">
-      <h2>Sculpture</h2>
-      <p>Figural and narrative clay forms.</p>
-    </section>
-
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading sculpture...</div>
-    </section>
+<body>
+  <main>
+    <p><a href="/">← Home</a></p>
+    <h1>Oval Bonsai Pots</h1>
+    <section class="grid" id="grid">Loading…</section>
   </main>
-
-  <script src="/js/nav.js"></script>
-  <script src="/js/sculpture.js?v=6"></script>
+  <script>
+    fetch("/api/pieces?shape=SC").then(r => r.json()).then(data => {
+      const grid = document.getElementById("grid");
+      const pieces = data.pieces || [];
+      if (!pieces.length) { grid.textContent = "No oval records yet."; return; }
+      grid.innerHTML = pieces.map(p => `
+        <a class="card" href="/piece.html?id=${encodeURIComponent(p.id)}">
+          <img src="${p.images?.top?.thumb || p.images?.bottom?.thumb || ""}" alt="${p.id} thumbnail">
+          <div class="body">
+            <strong>${p.title || p.id}</strong><br>
+            <small>${p.id}${p.dimensions ? " · " + p.dimensions : ""}</small>
+          </div>
+        </a>
+      `).join("");
+    });
+  </script>
 </body>
 </html>

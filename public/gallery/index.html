@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ClaycrazE | Practice Gallery</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      margin: 0;
+      background: #f5f1ea;
+      color: #2b2118;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: auto;
+      padding: 28px;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .intro {
+      max-width: 720px;
+      margin-bottom: 28px;
+      line-height: 1.55;
+    }
+
+    .section-title {
+      margin-top: 34px;
+      margin-bottom: 14px;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #fffaf2;
+      border: 1px solid #ded2c0;
+      border-radius: 18px;
+      padding: 22px;
+      min-height: 130px;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(43, 33, 24, 0.12);
+    }
+
+    .card.primary {
+      background: #efe4d5;
+      border-color: #cdbda8;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .card p {
+      margin: 0;
+      line-height: 1.45;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <p><a href="/practice.html">← Practice</a></p>
+
+    <h1>Practice Gallery</h1>
+
+    <p class="intro">
+      Browse the practical side of ClaycrazE: bonsai pots, vessels, sculpture,
+      face jugs, and other studio work. Search directly when you already know
+      what you need, or browse by category when you want to look slowly.
+    </p>
+
+    <section class="grid" aria-label="Search gallery">
+      <a class="card primary" href="/gallery/find.html">
+        <h2>Find a Pot</h2>
+        <p>Search by size, shape, surface, color, and availability.</p>
+      </a>
+    </section>
+
+    <h2 class="section-title">Bonsai Pots</h2>
+
+    <section class="grid" aria-label="Bonsai pot categories">
+      <a class="card" href="/gallery/bonsai/ovals.html">
+        <h2>Ovals</h2>
+        <p>Oval bonsai pots with a quieter, horizontal stance.</p>
+      </a>
+
+      <a class="card" href="/gallery/bonsai/rounds.html">
+        <h2>Rounds</h2>
+        <p>Round forms for centered planting and compact visual balance.</p>
+      </a>
+
+      <a class="card" href="/gallery/bonsai/rectangles.html">
+        <h2>Rectangles</h2>
+        <p>Grounded rectangular bonsai pots with formal presence.</p>
+      </a>
+
+      <a class="card" href="/gallery/bonsai/cascades.html">
+        <h2>Cascades</h2>
+        <p>Deeper forms for falling, descending, and extended compositions.</p>
+      </a>
+
+      <a class="card" href="/gallery/bonsai/freestyle.html">
+        <h2>Freestyle</h2>
+        <p>Intentional departures from standard bonsai pot categories.</p>
+      </a>
+    </section>
+
+    <h2 class="section-title">Other Studio Work</h2>
+
+    <section class="grid" aria-label="Other studio categories">
+      <a class="card" href="/gallery/ikebana.html">
+        <h2>Ikebana</h2>
+        <p>Vessels and forms for floral arrangement and seasonal placement.</p>
+      </a>
+
+      <a class="card" href="/gallery/sculpture.html">
+        <h2>Sculpture</h2>
+        <p>Figural, abstract, and object-based ceramic work.</p>
+      </a>
+
+      <a class="card" href="/gallery/face-jugs.html">
+        <h2>Face Jugs</h2>
+        <p>Character vessels, expressive forms, and clay personalities.</p>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

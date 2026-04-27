@@ -1,589 +1,262 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
+const fs = require("fs");
+const fsp = require("fs/promises");
+const multer = require("multer");
+const sharp = require("sharp");
 
 const app = express();
-const PORT = 3010;
+const PORT = process.env.PORT || 3010;
 
-/* -------------------------
-   DATABASE
--------------------------- */
-const db = new sqlite3.Database(
-  path.join(__dirname, "claycraze_inventory.db"),
-  (err) => {
-    if (err) {
-      console.error("Could not open database:", err.message);
-      process.exit(1);
+const ROOT = __dirname;
+const PUBLIC_DIR = path.join(ROOT, "public");
+const DATA_DIR = path.join(ROOT, "data");
+const PIECES_FILE = path.join(DATA_DIR, "pieces.json");
+const FULL_DIR = path.join(PUBLIC_DIR, "images", "full");
+const THUMB_DIR = path.join(PUBLIC_DIR, "images", "thumbs");
+const TMP_DIR = path.join(ROOT, "tmp_uploads");
+
+for (const dir of [DATA_DIR, FULL_DIR, THUMB_DIR, TMP_DIR]) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+if (!fs.existsSync(PIECES_FILE)) {
+  fs.writeFileSync(PIECES_FILE, "[]\n");
+}
+
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(PUBLIC_DIR));
+
+const upload = multer({
+  dest: TMP_DIR,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (/^image\/(jpeg|png|webp)$/i.test(file.mimetype)) cb(null, true);
+    else cb(new Error("Only JPG, PNG, or WEBP images are allowed."));
+  }
+});
+
+async function readPieces() {
+  try {
+    const raw = await fsp.readFile(PIECES_FILE, "utf8");
+    return JSON.parse(raw || "[]");
+  } catch {
+    return [];
+  }
+}
+
+async function writePieces(pieces) {
+  await fsp.writeFile(PIECES_FILE, JSON.stringify(pieces, null, 2) + "\n");
+}
+
+function normalizeShape(shape) {
+  const s = String(shape || "OV").toUpperCase().replace(/[^A-Z]/g, "");
+  return s || "OV";
+}
+
+function currentYYMM() {
+  const d = new Date();
+  return (
+    String(d.getFullYear()).slice(2) +
+    String(d.getMonth() + 1).padStart(2, "0")
+  );
+}
+
+async function nextPieceId(shapeRaw) {
+  const shape = normalizeShape(shapeRaw);
+  const yymm = currentYYMM();
+  const prefix = `${shape}-${yymm}-`;
+
+  const pieces = await readPieces();
+
+  const nums = pieces
+    .map(p => String(p.id || ""))
+    .filter(id => id.startsWith(prefix))
+    .map(id => parseInt(id.slice(prefix.length), 10))
+    .filter(Number.isFinite);
+
+  const next = nums.length ? Math.max(...nums) + 1 : 1;
+  return `${prefix}${String(next).padStart(2, "0")}`;
+}
+
+async function saveImagePair(file, outBase) {
+  if (!file) return null;
+
+  const fullName = `${outBase}.jpg`;
+  const thumbName = `${outBase}_thumb.jpg`;
+
+  const fullPath = path.join(FULL_DIR, fullName);
+  const thumbPath = path.join(THUMB_DIR, thumbName);
+
+  try {
+    await sharp(file.path)
+      .rotate()
+      .resize({
+        width: 1800,
+        height: 1800,
+        fit: "inside",
+        withoutEnlargement: true
+      })
+      .jpeg({
+        quality: 88,
+        mozjpeg: true
+      })
+      .toFile(fullPath);
+
+    await sharp(file.path)
+      .rotate()
+      .resize(700, 700, {
+        fit: "cover",
+        position: "centre"
+      })
+      .jpeg({
+        quality: 82,
+        mozjpeg: true
+      })
+      .toFile(thumbPath);
+
+    await fsp.unlink(file.path).catch(() => {});
+
+    return {
+      full: `/images/full/${fullName}`,
+      thumb: `/images/thumbs/${thumbName}`
+    };
+  } catch (err) {
+    console.error("Image processing failed:", err);
+    throw new Error(`Image processing failed for ${file.originalname}: ${err.message}`);
+  }
+}
+
+function numberOrNull(value) {
+  if (value === undefined || value === null || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function colorsArray(value) {
+  return String(value || "")
+    .split(",")
+    .map(c => c.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
+});
+
+app.get(["/admin", "/admin/"], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "admin", "index.html"));
+});
+
+app.get("/api/pieces", async (req, res, next) => {
+  try {
+    let pieces = await readPieces();
+
+    if (req.query.shape) {
+      const shape = normalizeShape(req.query.shape);
+      pieces = pieces.filter(p => normalizeShape(p.shape) === shape);
     }
-    console.log("Connected to SQLite database.");
+
+    res.json({ ok: true, pieces });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/api/next-piece-number", async (req, res, next) => {
+  try {
+    const id = await nextPieceId(req.query.shape || "OV");
+    res.json({ ok: true, id });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/api/suggest-critique", async (req, res) => {
+  const {
+    shape = "oval",
+    dimensions = "",
+    description = ""
+  } = req.body || {};
+
+  const note = [
+    `This ${String(shape).toLowerCase()} form reads with a quiet, serviceable presence.`,
+    dimensions
+      ? `At ${dimensions}, its proportions should be considered in relation to the visual weight of the tree it will support.`
+      : `Its proportions should be considered in relation to the visual weight of the tree it will support.`,
+    `The strongest note is the relationship between rim, body, and foot: the piece should feel settled without becoming heavy.`,
+    description
+      ? `The description already points toward its character; the final note should stay specific and avoid overexplaining the object.`
+      : `A final note should stay specific, observational, and restrained.`
+  ].join(" ");
+
+  res.json({ ok: true, note });
+});
+
+app.post(
+  "/api/pieces",
+  upload.fields([
+    { name: "topImage", maxCount: 1 },
+    { name: "bottomImage", maxCount: 1 }
+  ]),
+  async (req, res, next) => {
+    try {
+      const shape = normalizeShape(req.body.shape || "OV");
+      const id = await nextPieceId(shape);
+
+      const top = await saveImagePair(
+        req.files?.topImage?.[0],
+        `${id}_top`
+      );
+
+      const bottom = await saveImagePair(
+        req.files?.bottomImage?.[0],
+        `${id}_bottom`
+      );
+
+      const piece = {
+        id,
+        shape,
+        title: String(req.body.title || "Untitled").trim(),
+        dimensions: String(req.body.dimensions || "").trim(),
+
+        length: numberOrNull(req.body.length),
+        width: numberOrNull(req.body.width),
+        height: numberOrNull(req.body.height),
+        surface: String(req.body.surface || "").trim().toLowerCase(),
+        colors: colorsArray(req.body.colors),
+        useType: String(req.body.useType || "").trim().toLowerCase(),
+
+        description: String(req.body.description || "").trim(),
+        studioNote: String(req.body.studioNote || "").trim(),
+        price: String(req.body.price || "").trim(),
+        status: String(req.body.status || "available").trim().toLowerCase(),
+
+        images: { top, bottom },
+        createdAt: new Date().toISOString()
+      };
+
+      const pieces = await readPieces();
+      pieces.push(piece);
+      await writePieces(pieces);
+
+      res.json({ ok: true, piece });
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
-/* -------------------------
-   MIDDLEWARE
--------------------------- */
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use((err, req, res, next) => {
+  console.error(err);
 
-/* Public website root */
-app.use(express.static(path.join(__dirname, "public")));
-
-/* Optional extra image mount if you still use a root-level images folder */
-app.use("/images", express.static(path.join(__dirname, "images")));
-
-/* -------------------------
-   HELPERS
--------------------------- */
-function normalizeImagePath(imagePath) {
-  const raw = String(imagePath || "").trim();
-  if (!raw) return "";
-
-  let cleaned = raw.replace(/\\/g, "/").replace(/^"+|"+$/g, "");
-
-  const marker = "/images/";
-  const idx = cleaned.toLowerCase().indexOf(marker);
-
-  if (idx !== -1) {
-    cleaned = cleaned.substring(idx);
-  } else {
-    cleaned = cleaned.replace(/^\.?\/*/, "");
-    cleaned = cleaned.replace(/^claycraze\//i, "");
-
-    if (!cleaned.toLowerCase().startsWith("images/")) {
-      cleaned = `images/${cleaned}`;
-    }
-
-    cleaned = `/${cleaned}`;
-  }
-
-  return cleaned;
-}
-
-function cleanShape(shape) {
-  return String(shape || "").trim().toUpperCase();
-}
-
-function cleanStatus(status) {
-  return String(status || "available").trim().toLowerCase();
-}
-
-function buildId(shape, pieceNumber, dateCode) {
-  const paddedNumber = String(pieceNumber).padStart(4, "0");
-  return `${cleanShape(shape)}-${paddedNumber}-${String(dateCode || "").trim()}`;
-}
-
-/* -------------------------
-   HOME ROUTE
--------------------------- */
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-/* -------------------------
-   ADMIN PAGE + PIECE PAGE
--------------------------- */
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
-});
-
-app.get("/piece/:id", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "piece.html"));
-});
-
-/* -------------------------
-   GALLERY PAGE ROUTES
--------------------------- */
-app.get("/gallery/bonsai", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "bonsai.html"));
-});
-
-app.get("/gallery/ovals", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "ovals.html"));
-});
-
-app.get("/gallery/rounds", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "rounds.html"));
-});
-
-app.get("/gallery/rectangles", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "rectangles.html"));
-});
-
-app.get("/gallery/facejugs", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "facejugs.html"));
-});
-
-app.get("/gallery/freestyle", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "freestyle.html"));
-});
-
-app.get("/gallery/ikebana", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "ikebana.html"));
-});
-
-app.get("/gallery/sculpture", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "gallery", "sculpture.html"));
-});
-
-/* -------------------------
-   NEXT PIECE NUMBER
--------------------------- */
-app.get("/next-piece-number", (req, res) => {
-  db.get(
-    `SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_piece_number FROM inventory`,
-    [],
-    (err, row) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-
-      res.json({
-        next_piece_number: row?.next_piece_number || 1,
-      });
-    }
-  );
-});
-
-/* -------------------------
-   ADD PIECE
--------------------------- */
-app.post("/add-piece", (req, res) => {
-  const {
-    shape,
-    piece_number,
-    date_code,
-    description = "",
-    clay_body = "",
-    glaze = "",
-    notes = "",
-    width = "",
-    depth = "",
-    height = "",
-    firing = "",
-    image_path = "",
-    image_path_2 = "",
-    image_path_3 = "",
-    image_path_4 = "",
-    status = "available",
-    sale_date = "",
-    price = "",
-    patron = "",
-    patron_location = "",
-    patron_contact = "",
-    context_of_sale = "",
-  } = req.body;
-
-  if (!shape || !piece_number || !date_code) {
-    return res.status(400).send("Shape, Piece Number, and Date are required.");
-  }
-
-  const pieceNum = parseInt(piece_number, 10);
-  if (Number.isNaN(pieceNum)) {
-    return res.status(400).send("Piece Number must be a valid number.");
-  }
-
-  const id = buildId(shape, pieceNum, date_code);
-
-  const sql = `
-    INSERT INTO inventory (
-      id, shape, piece_number, date_code, description, clay_body, glaze, notes,
-      width, depth, height, firing, image_path, image_path_2, image_path_3, image_path_4,
-      status, sale_date, price, patron, patron_location, patron_contact, context_of_sale
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    id,
-    cleanShape(shape),
-    pieceNum,
-    String(date_code).trim(),
-    description,
-    clay_body,
-    glaze,
-    notes,
-    width,
-    depth,
-    height,
-    firing,
-    normalizeImagePath(image_path),
-    normalizeImagePath(image_path_2),
-    normalizeImagePath(image_path_3),
-    normalizeImagePath(image_path_4),
-    cleanStatus(status),
-    sale_date,
-    price,
-    patron,
-    patron_location,
-    patron_contact,
-    context_of_sale,
-  ];
-
-  db.run(sql, values, function (err) {
-    if (err) {
-      if (err.message.includes("UNIQUE")) {
-        return res.status(400).send(`Piece ${id} already exists.`);
-      }
-      return res.status(500).send("Database error: " + err.message);
-    }
-    res.send(`Piece ${id} added successfully.`);
+  res.status(500).json({
+    ok: false,
+    error: err.message || "Server error"
   });
 });
 
-/* -------------------------
-   UPDATE PIECE
--------------------------- */
-app.post("/update-piece", (req, res) => {
-  const {
-    original_id,
-    shape,
-    piece_number,
-    date_code,
-    description = "",
-    clay_body = "",
-    glaze = "",
-    notes = "",
-    width = "",
-    depth = "",
-    height = "",
-    firing = "",
-    image_path = "",
-    image_path_2 = "",
-    image_path_3 = "",
-    image_path_4 = "",
-    status = "available",
-    sale_date = "",
-    price = "",
-    patron = "",
-    patron_location = "",
-    patron_contact = "",
-    context_of_sale = "",
-  } = req.body;
-
-  if (!original_id) {
-    return res.status(400).send("Original ID is required for update.");
-  }
-
-  if (!shape || !piece_number || !date_code) {
-    return res.status(400).send("Shape, Piece Number, and Date are required.");
-  }
-
-  const pieceNum = parseInt(piece_number, 10);
-  if (Number.isNaN(pieceNum)) {
-    return res.status(400).send("Piece Number must be a valid number.");
-  }
-
-  const newId = buildId(shape, pieceNum, date_code);
-
-  const sql = `
-    UPDATE inventory
-    SET
-      id = ?,
-      shape = ?,
-      piece_number = ?,
-      date_code = ?,
-      description = ?,
-      clay_body = ?,
-      glaze = ?,
-      notes = ?,
-      width = ?,
-      depth = ?,
-      height = ?,
-      firing = ?,
-      image_path = ?,
-      image_path_2 = ?,
-      image_path_3 = ?,
-      image_path_4 = ?,
-      status = ?,
-      sale_date = ?,
-      price = ?,
-      patron = ?,
-      patron_location = ?,
-      patron_contact = ?,
-      context_of_sale = ?
-    WHERE id = ?
-  `;
-
-  const values = [
-    newId,
-    cleanShape(shape),
-    pieceNum,
-    String(date_code).trim(),
-    description,
-    clay_body,
-    glaze,
-    notes,
-    width,
-    depth,
-    height,
-    firing,
-    normalizeImagePath(image_path),
-    normalizeImagePath(image_path_2),
-    normalizeImagePath(image_path_3),
-    normalizeImagePath(image_path_4),
-    cleanStatus(status),
-    sale_date,
-    price,
-    patron,
-    patron_location,
-    patron_contact,
-    context_of_sale,
-    String(original_id).trim(),
-  ];
-
-  db.run(sql, values, function (err) {
-    if (err) {
-      if (err.message.includes("UNIQUE")) {
-        return res.status(400).send(`Cannot update: piece ${newId} already exists.`);
-      }
-      return res.status(500).send("Database error: " + err.message);
-    }
-
-    if (this.changes === 0) {
-      return res.status(404).send(`No record found for ${original_id}.`);
-    }
-
-    res.send(`Piece ${newId} updated successfully.`);
-  });
-});
-
-/* -------------------------
-   ARCHIVE PIECE
--------------------------- */
-app.post("/archive-piece", (req, res) => {
-  const { original_id } = req.body;
-
-  if (!original_id) {
-    return res.status(400).send("Original ID is required to archive a piece.");
-  }
-
-  db.run(
-    `UPDATE inventory SET status = 'archive' WHERE id = ?`,
-    [String(original_id).trim()],
-    function (err) {
-      if (err) {
-        return res.status(500).send("Database error: " + err.message);
-      }
-
-      if (this.changes === 0) {
-        return res.status(404).send(`No record found for ${original_id}.`);
-      }
-
-      res.send(`Piece ${original_id} archived successfully.`);
-    }
-  );
-});
-
-/* -------------------------
-   DELETE PIECE
--------------------------- */
-app.post("/delete-piece", (req, res) => {
-  const { original_id } = req.body;
-
-  if (!original_id) {
-    return res.status(400).send("Original ID is required to delete a piece.");
-  }
-
-  db.run(
-    `DELETE FROM inventory WHERE id = ?`,
-    [String(original_id).trim()],
-    function (err) {
-      if (err) {
-        return res.status(500).send("Database error: " + err.message);
-      }
-
-      if (this.changes === 0) {
-        return res.status(404).send(`No record found for ${original_id}.`);
-      }
-
-      res.send(`Piece ${original_id} deleted successfully.`);
-    }
-  );
-});
-
-/* -------------------------
-   ADMIN DATA
--------------------------- */
-app.get("/pieces", (req, res) => {
-  db.all(`SELECT * FROM inventory ORDER BY id DESC`, [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
-});
-
-/* -------------------------
-   PIECE DETAIL DATA
--------------------------- */
-app.get("/piece-data/:id", (req, res) => {
-  const pieceId = String(req.params.id || "").trim();
-
-  db.get(
-    `
-    SELECT
-      id,
-      shape,
-      piece_number,
-      date_code,
-      description,
-      clay_body,
-      glaze,
-      width,
-      depth,
-      height,
-      firing,
-      image_path,
-      image_path_2,
-      image_path_3,
-      image_path_4,
-      status,
-      price,
-      notes
-    FROM inventory
-    WHERE id = ?
-    `,
-    [pieceId],
-    (err, row) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-
-      if (!row) {
-        return res.status(404).json({ error: "Piece not found." });
-      }
-
-      res.json(row);
-    }
-  );
-});
-
-/* -------------------------
-   PUBLIC DATA
--------------------------- */
-const PUBLIC_FIELDS = `
-  id,
-  shape,
-  piece_number,
-  date_code,
-  description,
-  clay_body,
-  glaze,
-  width,
-  depth,
-  height,
-  firing,
-  image_path,
-  image_path_2,
-  image_path_3,
-  image_path_4,
-  status,
-  price,
-  notes
-`;
-
-const PUBLIC_STATUSES = ["available", "sold", "held", "gifted"];
-
-function getPublicPiecesByShape(shapeCode, res) {
-  const sql = `
-    SELECT ${PUBLIC_FIELDS}
-    FROM inventory
-    WHERE TRIM(UPPER(shape)) = ?
-      AND TRIM(LOWER(status)) IN (${PUBLIC_STATUSES.map(() => "?").join(", ")})
-    ORDER BY piece_number DESC
-  `;
-
-  const params = [
-    cleanShape(shapeCode),
-    ...PUBLIC_STATUSES.map((s) => s.toLowerCase()),
-  ];
-
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
-}
-
-function getPublicPiecesByShapes(shapeCodes, res) {
-  const sql = `
-    SELECT ${PUBLIC_FIELDS}
-    FROM inventory
-    WHERE TRIM(UPPER(shape)) IN (${shapeCodes.map(() => "?").join(", ")})
-      AND TRIM(LOWER(status)) IN (${PUBLIC_STATUSES.map(() => "?").join(", ")})
-    ORDER BY shape ASC, piece_number DESC
-  `;
-
-  const params = [
-    ...shapeCodes.map((code) => cleanShape(code)),
-    ...PUBLIC_STATUSES.map((s) => s.toLowerCase()),
-  ];
-
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
-}
-
-app.get("/gallery-data/all", (req, res) => {
-  const sql = `
-    SELECT ${PUBLIC_FIELDS}
-    FROM inventory
-    WHERE TRIM(LOWER(status)) IN (${PUBLIC_STATUSES.map(() => "?").join(", ")})
-    ORDER BY shape ASC, piece_number DESC
-  `;
-
-  db.all(sql, PUBLIC_STATUSES.map((s) => s.toLowerCase()), (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
-});
-
-app.get("/gallery-data/bonsai", (req, res) => {
-  getPublicPiecesByShapes(["OV", "RD", "RC", "FS"], res);
-});
-
-app.get("/gallery-data/ovals", (req, res) => {
-  getPublicPiecesByShape("OV", res);
-});
-
-app.get("/gallery-data/rounds", (req, res) => {
-  getPublicPiecesByShape("RD", res);
-});
-
-app.get("/gallery-data/rectangles", (req, res) => {
-  getPublicPiecesByShape("RC", res);
-});
-
-app.get("/gallery-data/facejugs", (req, res) => {
-  getPublicPiecesByShape("FJ", res);
-});
-
-app.get("/gallery-data/freestyle", (req, res) => {
-  getPublicPiecesByShape("FS", res);
-});
-
-app.get("/gallery-data/ikebana", (req, res) => {
-  getPublicPiecesByShape("IKE", res);
-});
-
-app.get("/gallery-data/sculpture", (req, res) => {
-  getPublicPiecesByShape("SCP", res);
-});
-
-/* -------------------------
-   START SERVER
--------------------------- */
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`Home: http://localhost:${PORT}/`);
-  console.log(`Theory: http://localhost:${PORT}/theory.html`);
-  console.log(`Practice: http://localhost:${PORT}/practice.html`);
-  console.log(`Admin: http://localhost:${PORT}/admin`);
-  console.log(`Bonsai: http://localhost:${PORT}/gallery/bonsai`);
+  console.log(`ClaycrazE server running on port ${PORT}`);
 });

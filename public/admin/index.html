@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ClaycrazE Studio Entry</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      margin: 0;
+      background: #f5f1ea;
+      color: #2b2118;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: auto;
+      padding: 28px;
+    }
+
+    .card {
+      background: #fffaf2;
+      border: 1px solid #ded2c0;
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #cdbda8;
+      border-radius: 10px;
+      padding: 12px;
+      font: inherit;
+      background: white;
+      color: #2b2118;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #2b2118;
+      color: #fffaf2;
+    }
+
+    button.secondary {
+      background: #8a7358;
+    }
+
+    .status {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #efe4d5;
+      min-height: 22px;
+    }
+
+    @media (max-width: 760px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>ClaycrazE Studio Entry</h1>
+    <p>Upload real pot images. The server assigns the ID, creates full images and thumbnails, then saves the record.</p>
+
+    <section class="card">
+      <form id="pieceForm">
+        <div class="row">
+          <div>
+            <label for="shape">Shape / Category</label>
+            <select name="shape" id="shape" required>
+              <option value="OV">Oval Bonsai Pot</option>
+              <option value="RD">Round Bonsai Pot</option>
+              <option value="RC">Rectangle Bonsai Pot</option>
+              <option value="CA">Cascade Bonsai Pot</option>
+              <option value="FS">Freestyle Bonsai Pot</option>
+              <option value="IK">Ikebana</option>
+              <option value="SC">Sculpture</option>
+              <option value="FJ">Face Jug</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="nextId">Next Piece ID</label>
+            <input id="nextId" type="text" readonly value="Loading…" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="title">Title</label>
+            <input id="title" name="title" type="text" placeholder="Shade, Quiet Oval, etc." required />
+          </div>
+
+          <div>
+            <label for="dimensions">Display Dimensions</label>
+            <input id="dimensions" name="dimensions" type="text" placeholder="12 x 10 x 2.25 in" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="length">Length</label>
+            <input id="length" name="length" type="number" step="0.25" placeholder="6" />
+          </div>
+
+          <div>
+            <label for="width">Width</label>
+            <input id="width" name="width" type="number" step="0.25" placeholder="4" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="height">Height / Side Depth</label>
+            <input id="height" name="height" type="number" step="0.25" placeholder="2" />
+          </div>
+
+          <div>
+            <label for="surface">Surface</label>
+            <select id="surface" name="surface">
+              <option value="">Not specified</option>
+              <option value="matte">Matte</option>
+              <option value="satin">Satin</option>
+              <option value="gloss">Gloss</option>
+              <option value="textured">Textured</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="colors">Colors</label>
+            <input id="colors" name="colors" type="text" placeholder="blue, green, iron" />
+          </div>
+
+          <div>
+            <label for="useType">Use / Fit</label>
+            <input id="useType" name="useType" type="text" placeholder="bonsai, cascade, accent, ikebana" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="price">Price</label>
+            <input id="price" name="price" type="text" placeholder="185" />
+          </div>
+
+          <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="available">Available</option>
+              <option value="sold">Sold</option>
+              <option value="archive">Archive</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="description">Description / Voice</label>
+          <textarea id="description" name="description" placeholder="Public-facing description in your voice."></textarea>
+        </div>
+
+        <div>
+          <label for="studioNote">Studio Note</label>
+          <textarea id="studioNote" name="studioNote" placeholder="AI suggestion or edited critique appears here before saving."></textarea>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="topImage">Top Image</label>
+            <input id="topImage" name="topImage" type="file" accept="image/jpeg,image/png,image/webp" />
+          </div>
+
+          <div>
+            <label for="bottomImage">Bottom Image</label>
+            <input id="bottomImage" name="bottomImage" type="file" accept="image/jpeg,image/png,image/webp" />
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button type="button" class="secondary" id="suggestBtn">Suggest Studio Note</button>
+          <button type="submit">Save Record</button>
+        </div>
+
+        <div class="status" id="message">Ready.</div>
+      </form>
+    </section>
+  </main>
+
+  <script src="./admin.js"></script>
+</body>
+</html>

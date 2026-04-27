@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClaycrazE | Ikebana</title>
+  <title>ClaycrazE | Freestyle</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; margin: 0; background: #f5f1ea; color: #2b2118; }
     main { max-width: 1120px; margin: auto; padding: 28px; }
@@ -16,11 +16,11 @@
 <body>
   <main>
     <p><a href="/">← Home</a></p>
-    <h1>Oval Bonsai Pots</h1>
+    <h1>Freestyle Bonsai Pots</h1>
     <section class="grid" id="grid">Loading…</section>
   </main>
   <script>
-    fetch("/api/pieces?shape=IK").then(r => r.json()).then(data => {
+    fetch("/api/pieces?shape=FS").then(r => r.json()).then(data => {
       const grid = document.getElementById("grid");
       const pieces = data.pieces || [];
       if (!pieces.length) { grid.textContent = "No oval records yet."; return; }

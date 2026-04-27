@@ -1,0 +1,79 @@
+[
+  {
+    "id": "OV-2604-01",
+    "shape": "OV",
+    "title": "more shade",
+    "dimensions": "12 x 12 x 12",
+    "description": "my bad",
+    "studioNote": "",
+    "price": "10",
+    "images": {
+      "top": {
+        "full": "/images/full/OV-2604-01_top.jpg",
+        "thumb": "/images/thumbs/OV-2604-01_top_thumb.jpg"
+      },
+      "bottom": {
+        "full": "/images/full/OV-2604-01_bottom.jpg",
+        "thumb": "/images/thumbs/OV-2604-01_bottom_thumb.jpg"
+      }
+    },
+    "createdAt": "2026-04-26T22:31:01.407Z"
+  },
+  {
+    "id": "OV-2604-01",
+    "shape": "OV",
+    "title": "more shade",
+    "dimensions": "12 x 12 x 12",
+    "description": "my bad",
+    "studioNote": "",
+    "price": "10",
+    "images": {
+      "top": {
+        "full": "/images/full/OV-2604-01_top.jpg",
+        "thumb": "/images/thumbs/OV-2604-01_top_thumb.jpg"
+      },
+      "bottom": {
+        "full": "/images/full/OV-2604-01_bottom.jpg",
+        "thumb": "/images/thumbs/OV-2604-01_bottom_thumb.jpg"
+      }
+    },
+    "createdAt": "2026-04-26T22:31:03.488Z"
+  },
+  {
+    "id": "RC-2604-01",
+    "shape": "RC",
+    "title": "recked one",
+    "dimensions": "4x4x4",
+    "description": "You're sq.",
+    "studioNote": "",
+    "price": "125",
+    "images": {
+      "top": {
+        "full": "/images/full/RC-2604-01_top.jpg",
+        "thumb": "/images/thumbs/RC-2604-01_top_thumb.jpg"
+      },
+      "bottom": {
+        "full": "/images/full/RC-2604-01_bottom.jpg",
+        "thumb": "/images/thumbs/RC-2604-01_bottom_thumb.jpg"
+      }
+    },
+    "createdAt": "2026-04-26T22:46:07.570Z"
+  },
+  {
+    "id": "FJ-2604-01",
+    "shape": "FJ",
+    "title": "Shade",
+    "dimensions": "10x5",
+    "description": "Big Head",
+    "studioNote": "",
+    "price": "",
+    "images": {
+      "top": {
+        "full": "/images/full/FJ-2604-01_top.jpg",
+        "thumb": "/images/thumbs/FJ-2604-01_top_thumb.jpg"
+      },
+      "bottom": null
+    },
+    "createdAt": "2026-04-26T22:48:07.879Z"
+  }
+]
