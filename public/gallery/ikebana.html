@@ -1,39 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ClaycrazE | Ikebana</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; margin: 0; background: #f5f1ea; color: #2b2118; }
-    main { max-width: 1120px; margin: auto; padding: 28px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
-    .card { display: block; text-decoration: none; color: inherit; background: #fffaf2; border: 1px solid #ded2c0; border-radius: 18px; overflow: hidden; }
-    img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
-    .body { padding: 14px; }
-  </style>
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+  <link rel="stylesheet" href="/css/gallery.css" />
 </head>
+
 <body>
-  <main>
-    <p><a href="/">← Home</a></p>
-    <h1>Oval Bonsai Pots</h1>
-    <section class="grid" id="grid">Loading…</section>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="https://claycraze.com/">ClaycrazE</a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <a href="https://claycraze.com/">Home</a>
+        <a href="https://claycraze.com/theory.html">Theory</a>
+        <a href="/gallery/" class="active">Practice</a>
+        <a href="/gallery/ikebana.html" aria-current="page">Ikebana</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="gallery-page">
+    <section class="gallery-intro">
+      <p class="eyebrow">Practice</p>
+      <h1>Ikebana</h1>
+      <p>
+        Containers designed for line, space, and balance—supporting arrangement
+        rather than dominating it.
+      </p>
+    </section>
+
+    <section class="gallery-grid" id="grid" aria-live="polite">
+      <div class="loading">Loading ikebana pieces...</div>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <p>&copy; ClaycrazE</p>
+  </footer>
+
   <script>
-    fetch("/api/pieces?shape=IK").then(r => r.json()).then(data => {
-      const grid = document.getElementById("grid");
-      const pieces = data.pieces || [];
-      if (!pieces.length) { grid.textContent = "No oval records yet."; return; }
-      grid.innerHTML = pieces.map(p => `
-        <a class="card" href="/piece.html?id=${encodeURIComponent(p.id)}">
-          <img src="${p.images?.top?.thumb || p.images?.bottom?.thumb || ""}" alt="${p.id} thumbnail">
-          <div class="body">
-            <strong>${p.title || p.id}</strong><br>
-            <small>${p.id}${p.dimensions ? " · " + p.dimensions : ""}</small>
-          </div>
-        </a>
-      `).join("");
-    });
+    fetch("/api/pieces?shape=IK")
+      .then(r => r.json())
+      .then(data => {
+        const grid = document.getElementById("grid");
+        const pieces = data.pieces || [];
+
+        if (!pieces.length) {
+          grid.innerHTML = "<div class='loading'>No ikebana records yet.</div>";
+          return;
+        }
+
+        grid.innerHTML = pieces.map(p => `
+          <a class="card" href="/piece.html?id=${encodeURIComponent(p.id)}">
+            <img src="${p.images?.top?.thumb || p.images?.bottom?.thumb || ""}" alt="${p.id} thumbnail">
+            <div class="card-body">
+              <strong>${p.title || p.id}</strong><br>
+              <small>${p.id}${p.dimensions ? " · " + p.dimensions : ""}</small>
+            </div>
+          </a>
+        `).join("");
+      })
+      .catch(() => {
+        document.getElementById("grid").innerHTML =
+          "<div class='loading'>Unable to load ikebana pieces.</div>";
+      });
   </script>
 </body>
 </html>
