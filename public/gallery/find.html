@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -142,7 +142,7 @@
 
 <body>
   <main>
-    <p><a href="/gallery/">← Gallery</a></p>
+    <p><a href="https://claycraze-admin-test.onrender.com/gallery/">← Gallery</a></p>
 
     <h1>Find a Pot</h1>
 
@@ -229,6 +229,7 @@
   </main>
 
   <script>
+    const RENDER_BASE = "https://claycraze-admin-test.onrender.com";
     let allPieces = [];
 
     const shapeNames = {
@@ -269,19 +270,19 @@
       const maxHeight = numberOrNull(document.getElementById("maxHeight").value);
 
       if (shape && piece.shape !== shape) return false;
-      if (surface && piece.surface !== surface) return false;
+      if (surface && String(piece.surface || "").toLowerCase() !== surface) return false;
       if (status && piece.status !== status) return false;
 
       if (color) {
         const colors = Array.isArray(piece.colors) ? piece.colors : [];
-        const haystack = colors.join(" ");
+        const haystack = colors.join(" ").toLowerCase();
         if (!haystack.includes(color)) return false;
       }
 
-      if (minLength !== null && (piece.length === null || piece.length < minLength)) return false;
-      if (maxLength !== null && (piece.length === null || piece.length > maxLength)) return false;
-      if (minHeight !== null && (piece.height === null || piece.height < minHeight)) return false;
-      if (maxHeight !== null && (piece.height === null || piece.height > maxHeight)) return false;
+      if (minLength !== null && (piece.length == null || piece.length < minLength)) return false;
+      if (maxLength !== null && (piece.length == null || piece.length > maxLength)) return false;
+      if (minHeight !== null && (piece.height == null || piece.height < minHeight)) return false;
+      if (maxHeight !== null && (piece.height == null || piece.height > maxHeight)) return false;
 
       return true;
     }
@@ -300,6 +301,7 @@
       results.innerHTML = pieces.map(p => {
         const thumb = p.images?.top?.thumb || p.images?.bottom?.thumb || "";
         const shape = shapeNames[p.shape] || p.shape || "Piece";
+
         const dims = p.dimensions || [
           p.length ? `${p.length}" L` : "",
           p.width ? `${p.width}" W` : "",
@@ -311,7 +313,7 @@
           : "";
 
         return `
-          <a class="card" href="/piece.html?id=${encodeURIComponent(p.id)}">
+          <a class="card" href="${RENDER_BASE}/piece.html?id=${encodeURIComponent(p.id)}">
             <img src="${escapeHTML(thumb)}" alt="${escapeHTML(p.id)} thumbnail">
             <div class="body">
               <strong>${escapeHTML(p.title || p.id)}</strong><br>
@@ -346,15 +348,21 @@
       applyFilters();
     });
 
-    fetch("/api/pieces")
-      .then(r => r.json())
+    fetch(`${RENDER_BASE}/api/pieces`)
+      .then(r => {
+        if (!r.ok) {
+          throw new Error(`API returned ${r.status}`);
+        }
+        return r.json();
+      })
       .then(data => {
         allPieces = data.pieces || [];
         applyFilters();
       })
       .catch(error => {
         console.error(error);
-        document.getElementById("count").textContent = "Could not load records.";
+        document.getElementById("count").textContent =
+          "Could not load records from Render.";
       });
   </script>
 </body>
