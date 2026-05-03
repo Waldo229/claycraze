@@ -81,7 +81,7 @@ function injectPathNav(activeKey) {
   nav.id = "gallery-path-nav";
   nav.innerHTML = `
     <a href="/"${activeKey === "home" ? ' class="active"' : ""}>Home</a>
-    <a href="href="https://waldo229.github.io/cc-rebuild/""${activeKey === "theory" ? ' class="active"' : ""}>Theory</a>
+    <a href="https://waldo229.github.io/cc-rebuild<a href="https://waldo229.github.io/cc-rebuild/">Theory</a>${activeKey === "theory" ? ' class="active"' : ""}>Theory</a>
     <a href="/practice.html"${activeKey === "practice" ? ' class="active"' : ""}>Practice</a>
   `;
 

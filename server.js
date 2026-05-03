@@ -7,6 +7,8 @@ const multer = require("multer");
 const sharp = require("sharp");
 
 const app = express();
+// Serve the website from /public
+app.use(express.static(path.join(__dirname, "public")));
 const PORT = process.env.PORT || 3010;
 
 /* -------------------------

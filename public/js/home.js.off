@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <section class="door-grid" aria-label="Site sections">
       <article class="door-card">
-        <a class="door-link" href="href="https://waldo229.github.io/cc-rebuild/"">
+        <a class="door-link" href="https://waldo229.github.io/cc-rebuild<a href="https://waldo229.github.io/cc-rebuild/">Theory</a>>
           <h3>Theory</h3>
           <p>
             Thought, material understanding, notes, place, memory, and the ideas that shape the work.
