@@ -478,7 +478,7 @@ app.listen(PORT, () => {
 
   if (!process.env.PORT) {
     console.log(`Home: http://localhost:${PORT}/`);
-    console.log(`Theory: http://localhost:${PORT}/theory.html`);
+    console.log(`Theory: http://localhost:${PORT}href="https://waldo229.github.io/cc-rebuild/"`);
     console.log(`Practice: http://localhost:${PORT}/practice.html`);
     console.log(`Admin: http://localhost:${PORT}/admin`);
     console.log(`Health: http://localhost:${PORT}/health`);
