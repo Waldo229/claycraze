@@ -75,6 +75,16 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   border-radius: 14px;
 }
 .ai-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.upload-box {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .5);
+}
+.upload-box label { margin-top: 0; }
+.upload-box button { margin-top: .25rem; }
+
 .incoming-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

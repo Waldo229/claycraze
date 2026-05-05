@@ -74,7 +74,14 @@
 
     <section class="card image-card">
       <h2>Incoming Images</h2>
-      <p class="hint">Select one top image. Select one bottom image only if it exists.</p>
+      <p class="hint">Upload images first, then select one top image and one bottom image only if it exists.</p>
+      <div class="upload-box">
+        <label>Upload new incoming images
+          <input id="imageUpload" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+        </label>
+        <button id="uploadImagesBtn" type="button">Upload Selected Images</button>
+        <p id="uploadStatus" class="status"></p>
+      </div>
       <div class="selected-strip">
         <div><strong>Top:</strong> <span id="topSelected">none</span></div>
         <div><strong>Bottom:</strong> <span id="bottomSelected">none</span></div>

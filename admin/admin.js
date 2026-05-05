@@ -46,6 +46,33 @@ async function loadIncoming() {
   setStatus(`${result.images.length} incoming image(s) found.`);
 }
 
+
+async function uploadIncomingImages() {
+  const input = $("imageUpload");
+  const uploadStatus = $("uploadStatus");
+  const files = Array.from(input.files || []);
+
+  if (!files.length) {
+    uploadStatus.textContent = "Choose one or more JPG, PNG, or WebP images first.";
+    return;
+  }
+
+  const formData = new FormData();
+  for (const file of files) formData.append("images", file);
+
+  uploadStatus.textContent = `Uploading ${files.length} image(s)...`;
+  const response = await fetch("/api/upload-incoming", {
+    method: "POST",
+    body: formData
+  });
+  const result = await response.json();
+  if (!response.ok || !result.ok) throw new Error(result.error || "Upload failed.");
+
+  input.value = "";
+  uploadStatus.textContent = `Uploaded ${result.uploaded.length} image(s).`;
+  await loadIncoming();
+}
+
 function renderIncoming() {
   topSelected.textContent = state.topImage || "none";
   bottomSelected.textContent = state.bottomImage || "none";
@@ -181,6 +208,14 @@ incomingGrid.addEventListener("click", (event) => {
   }
   renderIncoming();
   renderPreview();
+});
+
+$("uploadImagesBtn").addEventListener("click", async () => {
+  const btn = $("uploadImagesBtn");
+  btn.disabled = true;
+  try { await uploadIncomingImages(); }
+  catch (err) { $("uploadStatus").textContent = `Upload failed: ${err.message}`; }
+  finally { btn.disabled = false; }
 });
 
 $("refreshImagesBtn").addEventListener("click", async () => {

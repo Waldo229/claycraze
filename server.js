@@ -3,6 +3,7 @@ const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
 const sharp = require("sharp");
+const multer = require("multer");
 const { execFile } = require("child_process");
 
 const app = express();
@@ -62,6 +63,40 @@ function cleanIncomingName(name) {
   return base;
 }
 
+
+function safeUploadFilename(originalName) {
+  const parsed = path.parse(path.basename(String(originalName || "image.jpg")));
+  const ext = parsed.ext.toLowerCase();
+  if (!/\.(jpe?g|png|webp)$/i.test(ext)) return null;
+  const base = (parsed.name || "image")
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "image";
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const random = Math.random().toString(36).slice(2, 8);
+  return `${stamp}_${random}_${base}${ext}`;
+}
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, INCOMING_DIR),
+    filename: (_req, file, cb) => {
+      const name = safeUploadFilename(file.originalname);
+      if (!name) return cb(new Error("Only JPG, PNG, and WebP images are allowed."));
+      cb(null, name);
+    }
+  }),
+  limits: {
+    fileSize: 25 * 1024 * 1024,
+    files: 50
+  },
+  fileFilter: (_req, file, cb) => {
+    const ok = /\.(jpe?g|png|webp)$/i.test(file.originalname || "");
+    cb(ok ? null : new Error("Only JPG, PNG, and WebP images are allowed."), ok);
+  }
+});
+
 function yearMonthNow() {
   const d = new Date();
   return String(d.getFullYear()).slice(-2) + String(d.getMonth() + 1).padStart(2, "0");
@@ -95,6 +130,21 @@ async function archiveOriginal(src, id, role) {
 }
 
 app.get("/api/shapes", (_req, res) => res.json({ ok: true, shapes: SHAPES }));
+
+
+app.post("/api/upload-incoming", upload.array("images", 50), async (req, res) => {
+  try {
+    await ensureDirs();
+    const uploaded = (req.files || []).map((file) => ({
+      filename: file.filename,
+      original_name: file.originalname,
+      url: `/incoming/${encodeURIComponent(file.filename)}`
+    }));
+    res.json({ ok: true, uploaded });
+  } catch (error) {
+    res.status(500).json({ ok: false, error: error.message });
+  }
+});
 
 app.get("/api/incoming-images", async (_req, res) => {
   try {
