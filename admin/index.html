@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClaycrazE Apprentice Inventory</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">ClaycrazE</p>
+      <h1>Apprentice Inventory</h1>
+      <p class="subhead">Choose top and optional bottom images. The system creates the customer views.</p>
+    </div>
+    <button id="refreshImagesBtn" type="button">Refresh Incoming Images</button>
+  </header>
+
+  <main class="layout">
+    <section class="card form-card">
+      <h2>New Piece</h2>
+      <form id="pieceForm">
+        <div class="grid two">
+          <label>Shape
+            <select id="shape" required>
+              <option value="OV">Oval</option>
+              <option value="RC">Rectangle</option>
+              <option value="RD">Round</option>
+              <option value="CS">Cascade</option>
+              <option value="SL">Slab</option>
+              <option value="FJ">Face Jug</option>
+            </select>
+          </label>
+          <label>Year/Month
+            <input id="yearMonth" pattern="\d{4}" maxlength="4" required />
+          </label>
+        </div>
+
+        <label>Generated ID
+          <input id="pieceIdPreview" readonly />
+        </label>
+
+        <label>Dimensions <span class="required">required</span>
+          <input id="dimensions" placeholder="12 x 10 x 3 in; planting depth 2 in" required />
+        </label>
+
+        <label>Raw notes for AI / human description
+          <textarea id="notes" rows="3" placeholder="Quiet oval; iron blush on rim; good for informal upright..."></textarea>
+        </label>
+
+        <div class="ai-box">
+          <div class="ai-head">
+            <h3>AI Suggestions</h3>
+            <button id="suggestBtn" type="button">Suggest Text & Price</button>
+          </div>
+          <label>Title
+            <input id="title" placeholder="AI suggested, human approved" />
+          </label>
+          <label>Description
+            <textarea id="description" rows="5" placeholder="AI suggested, human approved"></textarea>
+          </label>
+          <label>Price
+            <input id="price" placeholder="$125" />
+          </label>
+        </div>
+
+        <div class="grid two">
+          <button id="saveDraftBtn" type="submit">Save Draft</button>
+          <button id="publishBtn" type="button">Approve & Publish</button>
+        </div>
+      </form>
+      <p id="status" class="status">Ready. Put raw images in the incoming folder, then refresh.</p>
+    </section>
+
+    <section class="card image-card">
+      <h2>Incoming Images</h2>
+      <p class="hint">Select one top image. Select one bottom image only if it exists.</p>
+      <div class="selected-strip">
+        <div><strong>Top:</strong> <span id="topSelected">none</span></div>
+        <div><strong>Bottom:</strong> <span id="bottomSelected">none</span></div>
+      </div>
+      <div id="incomingGrid" class="incoming-grid"></div>
+    </section>
+
+    <section class="card preview-card">
+      <h2>Customer Preview</h2>
+      <div id="preview" class="preview empty">Save or fill the form to preview the listing.</div>
+    </section>
+
+    <section class="card sales-card">
+      <h2>Record Sale</h2>
+      <form id="saleForm">
+        <div class="grid two">
+          <label>Piece ID
+            <input id="salePieceId" required />
+          </label>
+          <label>Sale Date
+            <input id="saleDate" type="date" />
+          </label>
+        </div>
+        <label>Customer Name
+          <input id="customerName" required />
+        </label>
+        <div class="grid two">
+          <label>Email
+            <input id="customerEmail" type="email" />
+          </label>
+          <label>Phone
+            <input id="customerPhone" />
+          </label>
+        </div>
+        <div class="grid two">
+          <label>Sale Price
+            <input id="salePrice" />
+          </label>
+          <label>Payment Method
+            <input id="paymentMethod" placeholder="cash, card, check, etc." />
+          </label>
+        </div>
+        <label>Notes
+          <textarea id="saleNotes" rows="3"></textarea>
+        </label>
+        <button type="submit">Save Sale</button>
+      </form>
+      <p id="saleStatus" class="status"></p>
+    </section>
+
+    <section class="card deploy-card">
+      <h2>Deploy to SiteGround</h2>
+      <p class="hint">Runs <code>deploy.sh</code>. Configure SSH details before using.</p>
+      <button id="deployBtn" type="button">Deploy to SiteGround</button>
+      <pre id="deployStatus" class="log"></pre>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

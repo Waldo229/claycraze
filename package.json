@@ -1,0 +1,13 @@
+{
+  "name": "claycraze-apprentice-inventory",
+  "version": "1.0.0",
+  "description": "Local-first ClaycrazE apprentice inventory workflow with local image processing and optional SSH deploy to SiteGround.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "sharp": "^0.33.5"
+  }
+}
