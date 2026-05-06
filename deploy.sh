@@ -1,24 +1,39 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
 
-DRY_RUN=""
-if [ "$1" = "--dry-run" ]; then
-  DRY_RUN="-n"
-fi
+set -euo pipefail
 
-SG_USER="YOUR_SG_USER"
-SG_HOST="YOUR_SG_HOST"
-SG_PUBLIC_HTML="/home/YOUR_SG_USER/public_html"
+echo "Starting ClaycrazE deploy..."
 
-if [ "$SG_USER" = "YOUR_SG_USER" ] || [ "$SG_HOST" = "YOUR_SG_HOST" ]; then
-  echo "ERROR: Edit deploy.sh and set SG_USER, SG_HOST, and SG_PUBLIC_HTML first." >&2
+if [ -z "${SG_USER:-}" ] || [ -z "${SG_HOST:-}" ] || [ -z "${SG_PUBLIC_HTML:-}" ]; then
+  echo "ERROR: Missing SG_USER, SG_HOST, or SG_PUBLIC_HTML."
   exit 1
 fi
 
-echo "Uploading images..."
-rsync -avz $DRY_RUN public/images/ "$SG_USER@$SG_HOST:$SG_PUBLIC_HTML/images/"
+SSH_KEY="/etc/secrets/sg_key"
+
+if [ ! -f "$SSH_KEY" ]; then
+  echo "ERROR: SSH key not found at $SSH_KEY."
+  echo "Add it in Render as a Secret File named sg_key."
+  exit 1
+fi
+
+chmod 600 "$SSH_KEY"
+
+SSH_OPTS="-i $SSH_KEY -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+echo "Deploy target:"
+echo "$SG_USER@$SG_HOST:$SG_PUBLIC_HTML"
+
+echo "Creating remote folders..."
+ssh $SSH_OPTS "$SG_USER@$SG_HOST" "mkdir -p '$SG_PUBLIC_HTML/images/full' '$SG_PUBLIC_HTML/images/thumbs' '$SG_PUBLIC_HTML/data'"
+
+echo "Uploading full images..."
+rsync -avz -e "ssh $SSH_OPTS" public/images/full/ "$SG_USER@$SG_HOST:$SG_PUBLIC_HTML/images/full/"
+
+echo "Uploading thumbnails..."
+rsync -avz -e "ssh $SSH_OPTS" public/images/thumbs/ "$SG_USER@$SG_HOST:$SG_PUBLIC_HTML/images/thumbs/"
 
 echo "Uploading data..."
-rsync -avz $DRY_RUN data/ "$SG_USER@$SG_HOST:$SG_PUBLIC_HTML/data/"
+rsync -avz -e "ssh $SSH_OPTS" data/ "$SG_USER@$SG_HOST:$SG_PUBLIC_HTML/data/"
 
-echo "ClaycrazE deployment complete."
+echo "ClaycrazE deploy complete."
