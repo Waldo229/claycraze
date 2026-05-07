@@ -2,7 +2,7 @@
 
 set -e
 
-chmod 600 /etc/secrets/render-sg
+
 
 echo "Testing SSH connection..."
 
