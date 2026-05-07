@@ -1,10 +1,12 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
+const os = require("os");
+const { execFile } = require("child_process");
 
 const app = express();
-const PORT = process.env.PORT || 3010;
+const PORT = process.env.PORT || 10000;
 
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
@@ -137,6 +139,89 @@ function saveDataUrlImage(dataUrl, filepath) {
   const buffer = Buffer.from(match[1], "base64");
   fs.writeFileSync(filepath, buffer);
   return true;
+}
+
+function runCommand(command, args) {
+  return new Promise((resolve, reject) => {
+    execFile(command, args, { timeout: 120000 }, (error, stdout, stderr) => {
+      if (error) {
+        error.stdout = stdout;
+        error.stderr = stderr;
+        return reject(error);
+      }
+
+      resolve({ stdout, stderr });
+    });
+  });
+}
+
+function getSgConfig() {
+  const SG_HOST = process.env.SG_HOST;
+  const SG_PORT = process.env.SG_PORT || "22";
+  const SG_USER = process.env.SG_USER;
+  const SG_CI_KEY = process.env.SG_CI_KEY;
+
+  if (!SG_HOST || !SG_USER || !SG_CI_KEY) {
+    throw new Error("Missing one or more SiteGround environment variables: SG_HOST, SG_USER, SG_CI_KEY.");
+  }
+
+  return { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY };
+}
+
+function writeSshKey(keyText) {
+  const keyPath = path.join(os.tmpdir(), "sg_ci_key");
+
+  fs.writeFileSync(keyPath, String(keyText).replace(/\r/g, ""), {
+    mode: 0o600,
+  });
+
+  fs.chmodSync(keyPath, 0o600);
+  return keyPath;
+}
+
+async function deployToSiteGround(filesToDeploy) {
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY } = getSgConfig();
+  const keyPath = writeSshKey(SG_CI_KEY);
+
+  const sshBase = [
+    "-p",
+    SG_PORT,
+    "-i",
+    keyPath,
+    "-o",
+    "StrictHostKeyChecking=no",
+  ];
+
+  const remote = `${SG_USER}@${SG_HOST}`;
+
+  await runCommand("ssh", [
+    ...sshBase,
+    remote,
+    "mkdir -p $HOME/public_html/images/full $HOME/public_html/images/thumbs $HOME/public_html/data",
+  ]);
+
+  for (const item of filesToDeploy) {
+    if (!item.localPath || !item.remotePath) continue;
+    if (!fs.existsSync(item.localPath)) continue;
+
+    await runCommand("scp", [
+      "-P",
+      SG_PORT,
+      "-i",
+      keyPath,
+      "-o",
+      "StrictHostKeyChecking=no",
+      item.localPath,
+      `${remote}:${item.remotePath}`,
+    ]);
+  }
+
+  return {
+    ok: true,
+    deployed_files: filesToDeploy
+      .filter((item) => item.localPath && fs.existsSync(item.localPath))
+      .map((item) => item.remotePath),
+  };
 }
 
 const PUBLIC_FIELDS = `
@@ -321,7 +406,7 @@ app.post("/api/pieces", (req, res) => {
         });
       }
 
-      exportPiecesJson((exportErr, exportedCount) => {
+      exportPiecesJson(async (exportErr, exportedCount) => {
         if (exportErr) {
           return res.status(500).json({
             ok: false,
@@ -329,11 +414,55 @@ app.post("/api/pieces", (req, res) => {
           });
         }
 
-        res.json({
-          ok: true,
-          piece_id: parsed.id,
-          exported_count: exportedCount,
-        });
+        const piecesJsonPath = path.join(DATA_DIR, "pieces.json");
+
+        const filesToDeploy = [
+          {
+            localPath: topPath,
+            remotePath: `$HOME/public_html/images/full/${parsed.id}_top.jpg`,
+          },
+          {
+            localPath: thumbPath,
+            remotePath: `$HOME/public_html/images/thumbs/${parsed.id}_top.jpg`,
+          },
+          {
+            localPath: piecesJsonPath,
+            remotePath: "$HOME/public_html/data/pieces.json",
+          },
+        ];
+
+        if (bottomSaved) {
+          filesToDeploy.push({
+            localPath: bottomPath,
+            remotePath: `$HOME/public_html/images/full/${parsed.id}_bottom.jpg`,
+          });
+        }
+
+        try {
+          const deployResult = await deployToSiteGround(filesToDeploy);
+
+          res.json({
+            ok: true,
+            piece_id: parsed.id,
+            exported_count: exportedCount,
+            deployed_to_siteground: true,
+            deploy_result: deployResult,
+          });
+        } catch (deployErr) {
+          console.error("SiteGround deploy failed:", deployErr.message);
+          console.error("STDOUT:", deployErr.stdout || "");
+          console.error("STDERR:", deployErr.stderr || "");
+
+          res.status(500).json({
+            ok: false,
+            piece_id: parsed.id,
+            exported_count: exportedCount,
+            local_save_completed: true,
+            deployed_to_siteground: false,
+            error: `Local save succeeded, but SiteGround deploy failed: ${deployErr.message}`,
+            stderr: deployErr.stderr || "",
+          });
+        }
       });
     });
   } catch (err) {
@@ -433,9 +562,26 @@ app.get("/gallery-data/slabs", (req, res) => {
   getPublicPiecesByShape("SL", res);
 });
 
+app.get("/deploy-health", (req, res) => {
+  const hasHost = Boolean(process.env.SG_HOST);
+  const hasUser = Boolean(process.env.SG_USER);
+  const hasKey = Boolean(process.env.SG_CI_KEY);
+  const hasPort = Boolean(process.env.SG_PORT);
+
+  res.json({
+    ok: hasHost && hasUser && hasKey,
+    SG_HOST: hasHost,
+    SG_USER: hasUser,
+    SG_PORT: hasPort,
+    SG_CI_KEY: hasKey,
+    target: "$HOME/public_html/",
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Home: http://localhost:${PORT}/`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Gallery data: http://localhost:${PORT}/gallery-data/all`);
+  console.log(`Deploy health: http://localhost:${PORT}/deploy-health`);
 });
