@@ -6,152 +6,403 @@
   <title>ClaycrazE Admin</title>
 
   <style>
+    :root {
+      --bg: #f3efe7;
+      --panel: #fffaf1;
+      --ink: #26211b;
+      --muted: #766b5d;
+      --line: #d8cdbc;
+      --accent: #7a3f20;
+      --accent-dark: #4f2815;
+      --field: #fffdf8;
+      --shadow: 0 18px 45px rgba(48, 34, 20, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f4f4f4;
-      color: #222;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, #fff8e8 0, transparent 36%),
+        linear-gradient(135deg, #efe3d0, var(--bg));
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 36px 18px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: normal;
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    form,
+    .output {
+      background: rgba(255, 250, 241, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
     }
 
     form {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
+      padding: 26px;
+    }
+
+    .section {
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-of-type {
+      border-bottom: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: normal;
+      margin: 0 0 16px;
+      color: var(--accent-dark);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
     }
 
     label {
       display: block;
-      margin-top: 16px;
-      font-weight: bold;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-bottom: 6px;
     }
 
     input,
     textarea,
     select {
       width: 100%;
-      padding: 10px;
-      margin-top: 4px;
-      box-sizing: border-box;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: var(--field);
+      color: var(--ink);
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(122, 63, 32, 0.14);
+    }
+
+    input[readonly] {
+      background: #efe7d8;
+      color: #5d5144;
     }
 
     textarea {
-      min-height: 120px;
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      background: #fff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 26px;
     }
 
     button {
-      margin-top: 20px;
-      padding: 12px 20px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
       cursor: pointer;
+      font: inherit;
+      background: #e7d8c4;
+      color: var(--ink);
     }
 
-    pre {
-      background: #111;
-      color: #0f0;
-      padding: 12px;
-      overflow-x: auto;
+    button[type="submit"] {
+      background: var(--accent);
+      color: #fffaf1;
+      min-width: 140px;
+    }
+
+    button:hover {
+      filter: brightness(0.96);
     }
 
     .output {
-      margin-top: 30px;
+      padding: 22px;
+      position: sticky;
+      top: 24px;
+    }
+
+    .output h2 {
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-size: 0.94rem;
+    }
+
+    .output h2:first-child {
+      margin-top: 0;
+    }
+
+    pre {
+      margin: 0;
+      padding: 12px;
+      background: #211a15;
+      color: #d7f5c4;
+      border-radius: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      min-height: 42px;
+    }
+
+    .note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .output {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 18px 10px;
+      }
+
+      form,
+      .output {
+        border-radius: 16px;
+      }
+
+      form {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
+  <div class="page">
+    <header>
+      <div class="eyebrow">ClaycrazE Practice</div>
+      <h1>Inventory Entry</h1>
+      <div class="subtitle">
+        Add a finished piece to the ClaycrazE practice archive. Render handles the form;
+        SiteGround preserves the images and public record.
+      </div>
+    </header>
 
-  <h1>ClaycrazE Admin</h1>
+    <div class="layout">
+      <form id="adminForm">
+        <div class="section">
+          <h2>Piece Identity</h2>
 
-  <form id="adminForm">
+          <div class="grid">
+            <div>
+              <label for="shape">Shape</label>
+              <select id="shape">
+                <option value="OV">OV — Oval</option>
+                <option value="RC">RC — Rectangle</option>
+                <option value="RD">RD — Round</option>
+                <option value="CS">CS — Cascade</option>
+                <option value="SL">SL — Slab</option>
+              </select>
+            </div>
 
-    <label>Shape</label>
-    <select id="shape">
-      <option value="OV">OV</option>
-      <option value="RC">RC</option>
-      <option value="RD">RD</option>
-      <option value="CS">CS</option>
-      <option value="SL">SL</option>
-    </select>
+            <div>
+              <label for="yearMonth">YearMonth</label>
+              <input id="yearMonth" type="text" placeholder="2605" />
+            </div>
 
-    <label>YearMonth</label>
-    <input id="yearMonth" type="text" />
+            <div class="full">
+              <label for="pieceIdPreview">Generated Piece ID</label>
+              <input id="pieceIdPreview" type="text" readonly />
+            </div>
+          </div>
+        </div>
 
-    <label>Generated Piece ID</label>
-    <input id="pieceIdPreview" type="text" readonly />
+        <div class="section">
+          <h2>Public Description</h2>
 
-    <label>Title</label>
-    <input id="title" type="text" />
+          <div class="grid">
+            <div>
+              <label for="title">Title</label>
+              <input id="title" type="text" placeholder="Small oval bonsai pot" />
+            </div>
 
-    <label>Category</label>
-    <input id="category" type="text" />
+            <div>
+              <label for="category">Category</label>
+              <input id="category" type="text" placeholder="ovals" />
+            </div>
 
-    <label>Clay</label>
-    <input id="clay" type="text" />
+            <div>
+              <label for="clay">Clay</label>
+              <input id="clay" type="text" placeholder="stoneware / local clay / porcelain" />
+            </div>
 
-    <label>Finish</label>
-    <input id="finish" type="text" />
+            <div>
+              <label for="finish">Finish</label>
+              <input id="finish" type="text" placeholder="ash glaze / satin iron / oxide wash" />
+            </div>
 
-    <label>Dimensions</label>
-    <input id="dimensions" type="text" />
+            <div>
+              <label for="dimensions">Dimensions</label>
+              <input id="dimensions" type="text" placeholder="8 x 6 x 3 in." />
+            </div>
 
-    <label>Status</label>
-    <select id="status">
-      <option value="available">available</option>
-      <option value="sold">sold</option>
-      <option value="held">held</option>
-      <option value="gifted">gifted</option>
-      <option value="archive">archive</option>
-    </select>
+            <div>
+              <label for="status">Status</label>
+              <select id="status">
+                <option value="available">available</option>
+                <option value="sold">sold</option>
+                <option value="held">held</option>
+                <option value="gifted">gifted</option>
+                <option value="archive">archive</option>
+              </select>
+            </div>
 
-    <label>Has Bottom Image?</label>
-    <select id="hasBottomImage">
-      <option value="1">Yes</option>
-      <option value="0">No</option>
-    </select>
+            <div>
+              <label for="hasBottomImage">Has Bottom Image?</label>
+              <select id="hasBottomImage">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
 
-    <label>Published?</label>
-    <select id="isPublished">
-      <option value="1">Yes</option>
-      <option value="0">No</option>
-    </select>
+            <div>
+              <label for="isPublished">Published?</label>
+              <select id="isPublished">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
 
-    <label>Description</label>
-    <textarea id="description"></textarea>
+            <div class="full">
+              <label for="description">Description</label>
+              <textarea id="description" placeholder="A short field note for the public gallery. Let the image carry most of the meaning."></textarea>
+            </div>
+          </div>
+        </div>
 
-    <label>Thumbnail Image</label>
-    <input id="thumbImage" type="file" accept="image/jpeg" />
+        <div class="section">
+          <h2>Images</h2>
 
-    <label>Full Top Image</label>
-    <input id="fullTopImage" type="file" accept="image/jpeg" />
+          <div class="grid">
+            <div>
+              <label for="thumbImage">Thumbnail Image</label>
+              <input id="thumbImage" type="file" accept="image/jpeg" />
+            </div>
 
-    <label>Full Bottom Image</label>
-    <input id="fullBottomImage" type="file" accept="image/jpeg" />
+            <div>
+              <label for="fullTopImage">Full Top Image</label>
+              <input id="fullTopImage" type="file" accept="image/jpeg" />
+            </div>
 
-    <button type="button" id="previewBtn">Preview</button>
-    <button type="reset" id="resetBtn">Reset</button>
-    <button type="submit">Save Piece</button>
+            <div class="full">
+              <label for="fullBottomImage">Full Bottom Image</label>
+              <input id="fullBottomImage" type="file" accept="image/jpeg" />
+            </div>
+          </div>
 
-  </form>
+          <div class="note">
+            JPEG images only. The system stores full images and thumbnails on SiteGround,
+            then refreshes the public pieces JSON.
+          </div>
+        </div>
 
-  <div class="output">
-    <h2>Piece ID</h2>
-    <pre id="pieceIdOutput">—</pre>
+        <div class="actions">
+          <button type="button" id="previewBtn">Preview</button>
+          <button type="reset" id="resetBtn">Reset</button>
+          <button type="submit">Save Piece</button>
+        </div>
+      </form>
 
-    <h2>Image Output</h2>
-    <pre id="imageOutput">—</pre>
+      <div class="output">
+        <h2>Piece ID</h2>
+        <pre id="pieceIdOutput">—</pre>
 
-    <h2>Record Output</h2>
-    <pre id="recordOutput">—</pre>
+        <h2>Image Output</h2>
+        <pre id="imageOutput">—</pre>
 
-    <h2>Status</h2>
-    <pre id="statusOutput">Ready.</pre>
+        <h2>Record Output</h2>
+        <pre id="recordOutput">—</pre>
+
+        <h2>Status</h2>
+        <pre id="statusOutput">Ready.</pre>
+      </div>
+    </div>
   </div>
 
   <script src="/admin/js/admin.js"></script>
-
 </body>
 </html>
