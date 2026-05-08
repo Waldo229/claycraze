@@ -123,12 +123,13 @@ function runCommand(command, args) {
 function getSgConfig() {
   const { SG_HOST, SG_USER, SG_CI_KEY } = process.env;
   const SG_PORT = process.env.SG_PORT || "22";
+  const SG_PUBLIC_HTML = process.env.SG_PUBLIC_HTML || "~/public_html";
 
   if (!SG_HOST || !SG_USER || !SG_CI_KEY) {
     throw new Error("Missing SG_HOST, SG_USER, or SG_CI_KEY.");
   }
 
-  return { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY };
+  return { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML };
 }
 
 function writeSshKey(keyText) {
@@ -139,7 +140,7 @@ function writeSshKey(keyText) {
 }
 
 async function deployToSiteGround(filesToDeploy) {
-  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY } = getSgConfig();
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } = getSgConfig();
   const keyPath = writeSshKey(SG_CI_KEY);
   const remote = `${SG_USER}@${SG_HOST}`;
 
@@ -152,7 +153,7 @@ async function deployToSiteGround(filesToDeploy) {
   await runCommand("ssh", [
     ...sshArgs,
     remote,
-    "mkdir -p ~/public_html/images/full ~/public_html/images/thumbs ~/public_html/data",
+    `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/data`,
   ]);
 
   for (const item of filesToDeploy) {
@@ -228,7 +229,8 @@ app.get("/deploy-health", (req, res) => {
     SG_USER: Boolean(process.env.SG_USER),
     SG_PORT: Boolean(process.env.SG_PORT),
     SG_CI_KEY: Boolean(process.env.SG_CI_KEY),
-    target: "~/public_html/",
+    SG_PUBLIC_HTML: Boolean(process.env.SG_PUBLIC_HTML),
+    target: process.env.SG_PUBLIC_HTML || "~/public_html",
   });
 });
 
@@ -361,25 +363,27 @@ app.post("/api/pieces", (req, res) => {
           return res.status(500).json({ ok: false, error: exportErr.message });
         }
 
+        const sgRoot = process.env.SG_PUBLIC_HTML || "~/public_html";
+
         const filesToDeploy = [
           {
             localPath: topPath,
-            remotePath: `~/public_html/images/full/${parsed.id}_top.jpg`,
+            remotePath: `${sgRoot}/images/full/${parsed.id}_top.jpg`,
           },
           {
             localPath: thumbPath,
-            remotePath: `~/public_html/images/thumbs/${parsed.id}_top_thumb.jpg`,
+            remotePath: `${sgRoot}/images/thumbs/${parsed.id}_top_thumb.jpg`,
           },
           {
             localPath: piecesJsonPath,
-            remotePath: "~/public_html/data/pieces.json",
+            remotePath: `${sgRoot}/data/pieces.json`,
           },
         ];
 
         if (bottomSaved) {
           filesToDeploy.push({
             localPath: bottomPath,
-            remotePath: `~/public_html/images/full/${parsed.id}_bottom.jpg`,
+            remotePath: `${sgRoot}/images/full/${parsed.id}_bottom.jpg`,
           });
         }
 
@@ -508,7 +512,7 @@ app.get("/gallery-data/slabs", (req, res) => {
   getPublicPiecesByShape("SL", res);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Deploy health: http://localhost:${PORT}/deploy-health`);
