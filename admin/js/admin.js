@@ -1,11 +1,10 @@
 (function () {
-  const API_BASE = window.location.origin;
-
   const form = document.getElementById("adminForm");
 
   const shapeInput = document.getElementById("shape");
-  const pieceNumberInput = document.getElementById("pieceNumber");
   const yearMonthInput = document.getElementById("yearMonth");
+  const pieceIdPreviewInput = document.getElementById("pieceIdPreview");
+
   const titleInput = document.getElementById("title");
   const categoryInput = document.getElementById("category");
   const clayInput = document.getElementById("clay");
@@ -30,93 +29,131 @@
 
   init();
 
-  async function init() {
+  function init() {
     setDefaultYearMonth();
     updateTitleFromShape();
-    await loadNextPieceNumber();
 
-    shapeInput.addEventListener("change", function () {
+    shapeInput.addEventListener("change", async function () {
       updateTitleFromShape();
-      previewEntry();
+      await refreshGeneratedId();
     });
 
-    yearMonthInput.addEventListener("input", previewEntry);
+    yearMonthInput.addEventListener("change", refreshGeneratedId);
+    yearMonthInput.addEventListener("blur", refreshGeneratedId);
+
     previewBtn.addEventListener("click", previewEntry);
 
     resetBtn.addEventListener("click", function () {
       setTimeout(async () => {
+        form.reset();
         setDefaultYearMonth();
         updateTitleFromShape();
-        await loadNextPieceNumber();
         clearOutputs();
+        await refreshGeneratedId();
         setStatus("Fill out the form, choose the image files, then preview or save.");
       }, 0);
     });
 
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
+    form.addEventListener("submit", submitForm);
 
-      const payload = await buildPayload();
-      if (!payload) return;
-
-      previewPayload(payload);
-      setStatus("Saving to database...");
-
-      try {
-        const response = await fetch(`${API_BASE}/add-piece`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(convertPayloadForServer(payload))
-        });
-
-        const text = await response.text();
-
-        if (!response.ok) {
-          throw new Error(text || "Save failed.");
-        }
-
-        setStatus(text || `Saved ${payload.id}.`);
-        await loadNextPieceNumber();
-      } catch (error) {
-        setStatus(`Save failed: ${error.message}`);
-      }
+    refreshGeneratedId().catch((error) => {
+      setStatus(`Could not generate next ID: ${error.message}`);
     });
   }
 
-  async function loadNextPieceNumber() {
+  async function submitForm(event) {
+    event.preventDefault();
+
+    const payload = await buildPayload(true);
+    if (!payload) return;
+
+    previewPayload(payload, payload.preview_id);
+    setStatus("Saving to database and processing images...");
+
     try {
-      setStatus("Getting next piece number...");
+      const response = await fetch("/api/pieces", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-      const response = await fetch(`${API_BASE}/next-piece-number`);
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "Could not get next piece number.");
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Save failed.");
       }
 
-      pieceNumberInput.value = data.next_piece_number || 1;
-      pieceNumberInput.readOnly = true;
+      const finalId = String(result.piece_id || payload.preview_id || "").trim();
+      const previewId = String(payload.preview_id || "").trim();
 
-      previewEntry();
-      setStatus("Next piece number assigned automatically.");
+      pieceIdPreviewInput.value = finalId;
+      pieceIdOutput.textContent = finalId;
+      updateImagePreview(finalId);
+      updateRecordOutput(payload, finalId);
+
+      if (finalId && previewId && finalId !== previewId) {
+        setStatus(
+          `Saved as ${finalId}. Another save happened first, so the final ID advanced from ${previewId}.`
+        );
+      } else {
+        setStatus(
+          `Saved ${finalId}. Images processed and gallery data refreshed.`
+        );
+      }
+
+      await refreshGeneratedId();
     } catch (error) {
-      pieceNumberInput.readOnly = false;
-      setStatus(`Could not auto-assign piece number: ${error.message}`);
+      setStatus(`Save failed: ${error.message}`);
     }
   }
 
   async function previewEntry() {
     const payload = await buildPayload(false);
     if (!payload) return;
-    previewPayload(payload);
+
+    previewPayload(payload, payload.preview_id);
+    setStatus("Preview generated. Ready to save.");
   }
 
-  async function buildPayload(requireFiles = true) {
-    const shape = getValue(shapeInput).toUpperCase().trim();
-    const pieceNumber = Number(getValue(pieceNumberInput).trim());
-    const yearMonth = getValue(yearMonthInput).trim();
+  async function refreshGeneratedId() {
+    const shape = getValue(shapeInput).toUpperCase();
+    const yearMonth = getValue(yearMonthInput);
+
+    pieceIdPreviewInput.value = "";
+    pieceIdOutput.textContent = "—";
+
+    if (!/^[A-Z]{2}$/.test(shape)) return;
+    if (!/^\d{4}$/.test(yearMonth)) return;
+
+    const response = await fetch(
+      `/api/pieces/next-id?shape=${encodeURIComponent(shape)}&yearMonth=${encodeURIComponent(yearMonth)}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || "Could not fetch next ID.");
+    }
+
+    const previewId = String(result.preview_id || "").trim();
+
+    pieceIdPreviewInput.value = previewId;
+    pieceIdOutput.textContent = previewId;
+    updateImagePreview(previewId);
+  }
+
+  async function buildPayload(requireFiles) {
+    const shape = getValue(shapeInput).toUpperCase();
+    const yearMonth = getValue(yearMonthInput);
+    const previewId = getValue(pieceIdPreviewInput);
 
     if (!/^[A-Z]{2}$/.test(shape)) {
       setStatus("Shape code must be 2 letters.");
@@ -128,12 +165,10 @@
       return null;
     }
 
-    if (!Number.isInteger(pieceNumber) || pieceNumber < 1 || pieceNumber > 9999) {
-      setStatus("Piece number must be a valid number.");
+    if (!previewId) {
+      setStatus("Could not generate a piece ID yet.");
       return null;
     }
-
-    const id = `${shape}-${yearMonth}-${String(pieceNumber).padStart(2, "0")}`;
 
     const title = getValue(titleInput);
     const category = getValue(categoryInput);
@@ -157,7 +192,7 @@
 
     if (requireFiles) {
       if (!thumbImageInput.files[0]) {
-        setStatus("Thumbnail image is required.");
+        setStatus("Thumbnail / top source image is required.");
         return null;
       }
 
@@ -165,17 +200,29 @@
         setStatus("Full top image is required.");
         return null;
       }
+
+      if (hasBottomImage && !fullBottomImageInput.files[0]) {
+        setStatus("Full bottom image is required when bottom image is set to Yes.");
+        return null;
+      }
     }
 
-    const thumbImage = thumbImageInput.files[0] ? await fileToDataURL(thumbImageInput.files[0]) : null;
-    const fullTopImage = fullTopImageInput.files[0] ? await fileToDataURL(fullTopImageInput.files[0]) : null;
-    const fullBottomImage = fullBottomImageInput.files[0] ? await fileToDataURL(fullBottomImageInput.files[0]) : null;
+    const thumbImage = thumbImageInput.files[0]
+      ? await fileToDataURL(thumbImageInput.files[0])
+      : null;
+
+    const fullTopImage = fullTopImageInput.files[0]
+      ? await fileToDataURL(fullTopImageInput.files[0])
+      : null;
+
+    const fullBottomImage = fullBottomImageInput.files[0]
+      ? await fileToDataURL(fullBottomImageInput.files[0])
+      : null;
 
     return {
-      id,
       shape,
-      piece_number: pieceNumber,
       year_month: yearMonth,
+      preview_id: previewId,
       title,
       category,
       clay,
@@ -191,79 +238,65 @@
     };
   }
 
-  function convertPayloadForServer(payload) {
-    return {
-      shape: payload.shape,
-      piece_number: payload.piece_number,
-      date_code: payload.year_month,
-      description: payload.description,
-      clay_body: payload.clay,
-      glaze: payload.finish,
-      notes: payload.title,
-      width: payload.dimensions,
-      depth: "",
-      height: "",
-      firing: "",
-      image_path: `/images/thumbs/${payload.id}_top.jpg`,
-      image_path_2: `/images/full/${payload.id}_top.jpg`,
-      image_path_3: payload.has_bottom_image ? `/images/full/${payload.id}_bottom.jpg` : "",
-      image_path_4: "",
-      status: normalizeStatusForServer(payload.status),
-      sale_date: "",
-      price: "",
-      patron: "",
-      patron_location: "",
-      patron_contact: "",
-      context_of_sale: ""
-    };
+  function previewPayload(payload, displayId) {
+    const id = String(displayId || payload.preview_id || "").trim();
+
+    pieceIdOutput.textContent = id || "—";
+    updateImagePreview(id);
+    updateRecordOutput(payload, id);
   }
 
-  function normalizeStatusForServer(status) {
-    const raw = String(status || "").trim().toLowerCase();
+  function updateImagePreview(id) {
+    if (!id) {
+      imageOutput.textContent = "—";
+      return;
+    }
 
-    if (raw === "hold") return "held";
-    if (raw === "not listed") return "archive";
-
-    return raw || "available";
-  }
-
-  function previewPayload(payload) {
-    const topThumb = `/images/thumbs/${payload.id}_top.jpg`;
-    const topFull = `/images/full/${payload.id}_top.jpg`;
-    const bottomFull = `/images/full/${payload.id}_bottom.jpg`;
-
-    pieceIdOutput.textContent = payload.id;
+    const topThumb = `/images/thumbs/${id}_top_thumb.jpg`;
+    const topFull = `/images/full/${id}_top.jpg`;
+    const bottomFull = `/images/full/${id}_bottom.jpg`;
 
     imageOutput.textContent = [
       `Thumbnail: ${topThumb}`,
       `Full top: ${topFull}`,
-      payload.has_bottom_image ? `Full bottom: ${bottomFull}` : "Full bottom: —"
+      `Full bottom: ${bottomFull}`
     ].join("\n");
+  }
 
-    recordOutput.textContent = JSON.stringify({
-      id: payload.id,
-      title: payload.title,
-      category: payload.category,
-      clay: payload.clay,
-      finish: payload.finish,
-      dimensions: payload.dimensions,
-      status: payload.status,
-      description: payload.description,
-      has_bottom_image: payload.has_bottom_image,
-      is_published: payload.is_published
-    }, null, 2);
+  function updateRecordOutput(payload, id) {
+    recordOutput.textContent = JSON.stringify(
+      {
+        id,
+        title: payload.title,
+        category: payload.category,
+        clay: payload.clay,
+        finish: payload.finish,
+        dimensions: payload.dimensions,
+        status: payload.status,
+        description: payload.description,
+        has_bottom_image: payload.has_bottom_image,
+        is_published: payload.is_published
+      },
+      null,
+      2
+    );
   }
 
   function clearOutputs() {
     pieceIdOutput.textContent = "—";
     imageOutput.textContent = "—";
     recordOutput.textContent = "—";
+
+    if (pieceIdPreviewInput) {
+      pieceIdPreviewInput.value = "";
+    }
   }
 
   function setDefaultYearMonth() {
     const now = new Date();
     const year = String(now.getFullYear()).slice(-2);
     const month = String(now.getMonth() + 1).padStart(2, "0");
+
     yearMonthInput.value = year + month;
   }
 
@@ -280,7 +313,7 @@
   }
 
   function getValue(el) {
-    return String(el.value || "").trim();
+    return String(el?.value || "").trim();
   }
 
   function setStatus(message) {
