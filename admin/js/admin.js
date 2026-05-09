@@ -6,7 +6,6 @@
   const pieceIdPreviewInput = document.getElementById("pieceIdPreview");
 
   const titleInput = document.getElementById("title");
-  const categoryInput = document.getElementById("category");
   const clayInput = document.getElementById("clay");
   const finishInput = document.getElementById("finish");
   const dimensionsInput = document.getElementById("dimensions");
@@ -15,7 +14,6 @@
   const isPublishedInput = document.getElementById("isPublished");
   const descriptionInput = document.getElementById("description");
 
-  const thumbImageInput = document.getElementById("thumbImage");
   const fullTopImageInput = document.getElementById("fullTopImage");
   const fullBottomImageInput = document.getElementById("fullBottomImage");
 
@@ -50,7 +48,7 @@
         updateTitleFromShape();
         clearOutputs();
         await refreshGeneratedId();
-        setStatus("Fill out the form, choose the image files, then preview or save.");
+        setStatus("Fill out the form, choose the top image, then preview or save.");
       }, 0);
     });
 
@@ -68,15 +66,15 @@
     if (!payload) return;
 
     previewPayload(payload, payload.preview_id);
-    setStatus("Saving to database and processing images...");
+    setStatus("Saving to database, generating thumbnail, and processing images...");
 
     try {
       const response = await fetch("/api/pieces", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -90,7 +88,7 @@
 
       pieceIdPreviewInput.value = finalId;
       pieceIdOutput.textContent = finalId;
-      updateImagePreview(finalId);
+      updateImagePreview(finalId, payload.has_bottom_image);
       updateRecordOutput(payload, finalId);
 
       if (finalId && previewId && finalId !== previewId) {
@@ -98,9 +96,7 @@
           `Saved as ${finalId}. Another save happened first, so the final ID advanced from ${previewId}.`
         );
       } else {
-        setStatus(
-          `Saved ${finalId}. Images processed and gallery data refreshed.`
-        );
+        setStatus(`Saved ${finalId}. Images processed and gallery data refreshed.`);
       }
 
       await refreshGeneratedId();
@@ -114,7 +110,7 @@
     if (!payload) return;
 
     previewPayload(payload, payload.preview_id);
-    setStatus("Preview generated. Ready to save.");
+    setStatus("Preview generated. Thumbnail will be created automatically from the top image.");
   }
 
   async function refreshGeneratedId() {
@@ -124,7 +120,7 @@
     pieceIdPreviewInput.value = "";
     pieceIdOutput.textContent = "—";
 
-    if (!/^[A-Z]{2}$/.test(shape)) return;
+    if (!isValidShapeCode(shape)) return;
     if (!/^\d{4}$/.test(yearMonth)) return;
 
     const response = await fetch(
@@ -132,8 +128,8 @@
       {
         method: "GET",
         headers: {
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+        },
       }
     );
 
@@ -147,7 +143,7 @@
 
     pieceIdPreviewInput.value = previewId;
     pieceIdOutput.textContent = previewId;
-    updateImagePreview(previewId);
+    updateImagePreview(previewId, getValue(hasBottomImageInput) === "1");
   }
 
   async function buildPayload(requireFiles) {
@@ -155,13 +151,13 @@
     const yearMonth = getValue(yearMonthInput);
     const previewId = getValue(pieceIdPreviewInput);
 
-    if (!/^[A-Z]{2}$/.test(shape)) {
-      setStatus("Shape code must be 2 letters.");
+    if (!isValidShapeCode(shape)) {
+      setStatus("Choose a valid shape code.");
       return null;
     }
 
     if (!/^\d{4}$/.test(yearMonth)) {
-      setStatus("Year + Month must be 4 digits, like 2604.");
+      setStatus("Year + Month must be 4 digits, like 2605.");
       return null;
     }
 
@@ -171,7 +167,6 @@
     }
 
     const title = getValue(titleInput);
-    const category = getValue(categoryInput);
     const clay = getValue(clayInput);
     const finish = getValue(finishInput);
     const dimensions = getValue(dimensionsInput);
@@ -185,46 +180,29 @@
       return null;
     }
 
-    if (!category) {
-      setStatus("Category is required.");
+    if (requireFiles && !fullTopImageInput.files[0]) {
+      setStatus("Top image is required.");
       return null;
     }
 
-    if (requireFiles) {
-      if (!thumbImageInput.files[0]) {
-        setStatus("Thumbnail / top source image is required.");
-        return null;
-      }
-
-      if (!fullTopImageInput.files[0]) {
-        setStatus("Full top image is required.");
-        return null;
-      }
-
-      if (hasBottomImage && !fullBottomImageInput.files[0]) {
-        setStatus("Full bottom image is required when bottom image is set to Yes.");
-        return null;
-      }
+    if (requireFiles && hasBottomImage && !fullBottomImageInput.files[0]) {
+      setStatus("Bottom image is required when bottom image is set to Yes.");
+      return null;
     }
 
-    const thumbImage = thumbImageInput.files[0]
-      ? await fileToDataURL(thumbImageInput.files[0])
-      : null;
+    const topFile = fullTopImageInput.files[0] || null;
+    const bottomFile = fullBottomImageInput.files[0] || null;
 
-    const fullTopImage = fullTopImageInput.files[0]
-      ? await fileToDataURL(fullTopImageInput.files[0])
-      : null;
-
-    const fullBottomImage = fullBottomImageInput.files[0]
-      ? await fileToDataURL(fullBottomImageInput.files[0])
-      : null;
+    const fullTopImage = topFile ? await fileToDataURL(topFile) : null;
+    const thumbImage = topFile ? await createThumbnailDataURL(topFile) : null;
+    const fullBottomImage = bottomFile ? await fileToDataURL(bottomFile) : null;
 
     return {
       shape,
       year_month: yearMonth,
       preview_id: previewId,
       title,
-      category,
+      category: shapeToCategory(shape),
       clay,
       finish,
       dimensions,
@@ -234,7 +212,7 @@
       is_published: isPublished,
       thumb_image: thumbImage,
       full_top_image: fullTopImage,
-      full_bottom_image: fullBottomImage
+      full_bottom_image: fullBottomImage,
     };
   }
 
@@ -242,11 +220,11 @@
     const id = String(displayId || payload.preview_id || "").trim();
 
     pieceIdOutput.textContent = id || "—";
-    updateImagePreview(id);
+    updateImagePreview(id, payload.has_bottom_image);
     updateRecordOutput(payload, id);
   }
 
-  function updateImagePreview(id) {
+  function updateImagePreview(id, hasBottomImage) {
     if (!id) {
       imageOutput.textContent = "—";
       return;
@@ -256,26 +234,34 @@
     const topFull = `/images/full/${id}_top.jpg`;
     const bottomFull = `/images/full/${id}_bottom.jpg`;
 
-    imageOutput.textContent = [
+    const lines = [
       `Thumbnail: ${topThumb}`,
       `Full top: ${topFull}`,
-      `Full bottom: ${bottomFull}`
-    ].join("\n");
+    ];
+
+    if (hasBottomImage) {
+      lines.push(`Full bottom: ${bottomFull}`);
+    } else {
+      lines.push("Full bottom: not used");
+    }
+
+    imageOutput.textContent = lines.join("\n");
   }
 
   function updateRecordOutput(payload, id) {
     recordOutput.textContent = JSON.stringify(
       {
         id,
-        title: payload.title,
+        shape: payload.shape,
         category: payload.category,
+        title: payload.title,
         clay: payload.clay,
         finish: payload.finish,
         dimensions: payload.dimensions,
         status: payload.status,
         description: payload.description,
         has_bottom_image: payload.has_bottom_image,
-        is_published: payload.is_published
+        is_published: payload.is_published,
       },
       null,
       2
@@ -303,13 +289,35 @@
   function updateTitleFromShape() {
     const map = {
       OV: "Oval Bonsai Container",
-      RC: "Rectangular Bonsai Container",
       RD: "Round Bonsai Container",
-      CS: "Cascade Container",
-      SL: "Slab Planting Tray"
+      RC: "Rectangle Bonsai Container",
+      FREE: "Freeform Bonsai Container",
+      CS: "Cascade Bonsai Container",
+      FJ: "Face Jug",
+      IKE: "Ikebana Vessel",
+      SCULP: "Sculpture",
     };
 
-    titleInput.value = map[shapeInput.value] || "Bonsai Container";
+    titleInput.value = map[shapeInput.value] || "ClaycrazE Piece";
+  }
+
+  function shapeToCategory(shape) {
+    const map = {
+      OV: "bonsai",
+      RD: "bonsai",
+      RC: "bonsai",
+      FREE: "bonsai",
+      CS: "bonsai",
+      FJ: "facejugs",
+      IKE: "ikebana",
+      SCULP: "sculpture",
+    };
+
+    return map[shape] || "archive";
+  }
+
+  function isValidShapeCode(shape) {
+    return ["OV", "RD", "RC", "FREE", "CS", "FJ", "IKE", "SCULP"].includes(shape);
   }
 
   function getValue(el) {
@@ -330,6 +338,47 @@
 
       reader.onerror = function () {
         reject(new Error(`Could not read file: ${file.name}`));
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function createThumbnailDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        img.src = reader.result;
+      };
+
+      reader.onerror = function () {
+        reject(new Error(`Could not read image for thumbnail: ${file.name}`));
+      };
+
+      img.onload = function () {
+        const maxSize = 900;
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        const width = Math.round(img.width * scale);
+        const height = Math.round(img.height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Could not create thumbnail canvas."));
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+
+      img.onerror = function () {
+        reject(new Error(`Could not load image for thumbnail: ${file.name}`));
       };
 
       reader.readAsDataURL(file);
