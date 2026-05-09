@@ -22,7 +22,9 @@
     }
 
     const pieces = await response.json();
-    const piece = Array.isArray(pieces) ? pieces.find((item) => item.id === id) : null;
+    const piece = Array.isArray(pieces)
+      ? pieces.find((item) => item.id === id)
+      : null;
 
     if (!piece) {
       pieceLayout.innerHTML = `
@@ -39,7 +41,7 @@
 
     const [hasTop, hasBottom] = await Promise.all([
       imageExists(topSrc),
-      imageExists(bottomSrc)
+      imageExists(bottomSrc),
     ]);
 
     if (!hasTop) {
@@ -61,7 +63,7 @@
             <div class="flip-inner" id="flipInner">
               <img
                 src="${topSrc}"
-                alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} top view"
+                alt="${escapeHtml(piece.title || piece.id)} ${escapeHtml(piece.id)} top view"
                 class="flip-face front"
               />
               ${
@@ -69,7 +71,7 @@
                   ? `
               <img
                 src="${bottomSrc}"
-                alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} underside"
+                alt="${escapeHtml(piece.title || piece.id)} ${escapeHtml(piece.id)} underside"
                 class="flip-face back"
               />
               `
@@ -85,7 +87,7 @@
               ? `<button class="flip-btn" id="flipBtn" type="button">View underside</button>`
               : ""
           }
-          <a class="secondary-link" href="/bonsai.html">Back to gallery</a>
+          <a class="secondary-link" href="/gallery/bonsai.html">Back to gallery</a>
         </div>
 
         <p class="viewer-note">
@@ -98,8 +100,8 @@
       </section>
 
       <aside class="piece-info">
-        <p class="eyebrow">${escapeHtml(piece.category || "Piece")}</p>
-        <h1>${escapeHtml(piece.title)}</h1>
+        <p class="eyebrow">${escapeHtml(shapeLabel(piece.id))}</p>
+        <h1>${escapeHtml(piece.title || "Untitled piece")}</h1>
         <p class="piece-id">${escapeHtml(piece.id)}</p>
 
         <p class="piece-description">
@@ -121,6 +123,10 @@
           </div>
           <div>
             <dt>Status</dt>
+            <dd>${escapeHtml(piece.status || "—")}</dd>
+          </div>
+          <div>
+            <dt>Price</dt>
             <dd>${escapeHtml(piece.price || "—")}</dd>
           </div>
         </dl>
@@ -138,13 +144,14 @@
           : "View underside";
       });
     }
-  } catch {
+  } catch (error) {
     pieceLayout.innerHTML = `
       <section class="not-found">
         <h1>Piece view unavailable</h1>
         <p>Something went wrong while loading the piece data.</p>
       </section>
     `;
+    console.error("Piece view error:", error);
   }
 
   function imageExists(src) {
@@ -161,6 +168,21 @@
 
       img.src = src;
     });
+  }
+
+  function shapeLabel(id) {
+    if (!id) return "Piece";
+
+    if (id.startsWith("OV")) return "Oval Bonsai";
+    if (id.startsWith("RD")) return "Round Bonsai";
+    if (id.startsWith("RC")) return "Rectangle Bonsai";
+    if (id.startsWith("FREE")) return "Freeform Bonsai";
+    if (id.startsWith("CS")) return "Cascade Bonsai";
+    if (id.startsWith("FJ")) return "Face Jug";
+    if (id.startsWith("IKE")) return "Ikebana";
+    if (id.startsWith("SCULP")) return "Sculpture";
+
+    return "Piece";
   }
 
   function escapeHtml(value) {
