@@ -17,6 +17,16 @@
   const fullTopImageInput = document.getElementById("fullTopImage");
   const fullBottomImageInput = document.getElementById("fullBottomImage");
 
+  const aiDescriptionInput = document.getElementById("aiDescription");
+  const aiPriceLowInput = document.getElementById("aiPriceLow");
+  const aiPriceHighInput = document.getElementById("aiPriceHigh");
+  const aiLaoTzuInput = document.getElementById("aiLaoTzu");
+
+  const suggestDescriptionBtn = document.getElementById("suggestDescriptionBtn");
+  const suggestPriceBtn = document.getElementById("suggestPriceBtn");
+  const suggestLaoTzuBtn = document.getElementById("suggestLaoTzuBtn");
+  const applyAiBtn = document.getElementById("applyAiBtn");
+
   const previewBtn = document.getElementById("previewBtn");
   const resetBtn = document.getElementById("resetBtn");
 
@@ -41,12 +51,18 @@
 
     previewBtn.addEventListener("click", previewEntry);
 
+    suggestDescriptionBtn.addEventListener("click", suggestDescription);
+    suggestPriceBtn.addEventListener("click", suggestPriceRange);
+    suggestLaoTzuBtn.addEventListener("click", suggestLaoTzuLine);
+    applyAiBtn.addEventListener("click", applyAiSuggestions);
+
     resetBtn.addEventListener("click", function () {
       setTimeout(async () => {
         form.reset();
         setDefaultYearMonth();
         updateTitleFromShape();
         clearOutputs();
+        clearAiOutputs();
         await refreshGeneratedId();
         setStatus("Fill out the form, choose the top image, then preview or save.");
       }, 0);
@@ -268,6 +284,94 @@
     );
   }
 
+  function suggestDescription() {
+    const shape = getValue(shapeInput);
+    const clay = getValue(clayInput);
+    const finish = getValue(finishInput);
+
+    const descriptions = [
+      `Quiet ${shapeLabel(shape).toLowerCase()} with softened edges and a restrained ${finish || "studio"} surface. The ${clay || "clay body"} remains visible beneath the firing atmosphere.`,
+
+      `Handmade ${shapeLabel(shape).toLowerCase()} preserving traces of throwing, firing, and touch. The surface favors depth and restraint over excess movement.`,
+
+      `A calm studio vessel with subtle variation across the surface and softened transitions along the rim and foot.`,
+
+      `${shapeLabel(shape)} with a quiet presence and a surface that rewards close looking. Made as a functional object, but carrying the trace of a particular firing and hand.`
+    ];
+
+    aiDescriptionInput.value = randomItem(descriptions);
+    setStatus("Wine-label description suggestion generated.");
+  }
+
+  function suggestPriceRange() {
+    const shape = getValue(shapeInput);
+
+    const ranges = {
+      OV: [85, 165],
+      RD: [75, 150],
+      RC: [95, 185],
+      FREE: [120, 240],
+      CS: [95, 190],
+      FJ: [140, 350],
+      IKE: [95, 240],
+      SCULP: [175, 600],
+    };
+
+    const selected = ranges[shape] || [100, 200];
+
+    aiPriceLowInput.value = `$${selected[0]}`;
+    aiPriceHighInput.value = `$${selected[1]}`;
+
+    setStatus("Price range suggestion generated. Potter remains final authority.");
+  }
+
+  function suggestLaoTzuLine() {
+    const lines = [
+      "My time here is not long.",
+      "The river moves east whether the pot is purchased or not.",
+      "Another traveler may arrive before you.",
+      "The wise man acquires vessels before regret.",
+      "Like you, I passed here.",
+      "A quiet vessel survives many loud arguments.",
+      "The kiln cools whether we are ready or not.",
+      "The bowl waits longer than the buyer.",
+      "The pot waits. The buyer hurries.",
+      "Even the empty pot has already begun its journey.",
+      "Do not ask the vessel to wait forever.",
+      "The hand has passed. The clay remains."
+    ];
+
+    aiLaoTzuInput.value = randomItem(lines);
+    setStatus("Lao Tzu / Cold Mountain line generated.");
+  }
+
+  function applyAiSuggestions() {
+    if (aiDescriptionInput.value.trim()) {
+      descriptionInput.value = aiDescriptionInput.value.trim();
+    }
+
+    const priceLow = getValue(aiPriceLowInput);
+    const priceHigh = getValue(aiPriceHighInput);
+    const laoTzu = getValue(aiLaoTzuInput);
+
+    const notes = [];
+
+    if (priceLow || priceHigh) {
+      notes.push(`Suggested range: ${priceLow || "—"} to ${priceHigh || "—"}`);
+    }
+
+    if (laoTzu) {
+      notes.push(`Line: ${laoTzu}`);
+    }
+
+    if (notes.length) {
+      const existing = getValue(descriptionInput);
+      descriptionInput.value = [existing, "", ...notes].filter(Boolean).join("\n");
+    }
+
+    setStatus("AI suggestions applied to description field.");
+  }
+
   function clearOutputs() {
     pieceIdOutput.textContent = "—";
     imageOutput.textContent = "—";
@@ -276,6 +380,13 @@
     if (pieceIdPreviewInput) {
       pieceIdPreviewInput.value = "";
     }
+  }
+
+  function clearAiOutputs() {
+    if (aiDescriptionInput) aiDescriptionInput.value = "";
+    if (aiPriceLowInput) aiPriceLowInput.value = "";
+    if (aiPriceHighInput) aiPriceHighInput.value = "";
+    if (aiLaoTzuInput) aiLaoTzuInput.value = "";
   }
 
   function setDefaultYearMonth() {
@@ -316,8 +427,27 @@
     return map[shape] || "archive";
   }
 
+  function shapeLabel(shape) {
+    const labels = {
+      OV: "Oval Bonsai Container",
+      RD: "Round Bonsai Container",
+      RC: "Rectangle Bonsai Container",
+      FREE: "Freeform Bonsai Container",
+      CS: "Cascade Bonsai Container",
+      FJ: "Face Jug",
+      IKE: "Ikebana Vessel",
+      SCULP: "Sculpture",
+    };
+
+    return labels[shape] || "Studio Piece";
+  }
+
   function isValidShapeCode(shape) {
     return ["OV", "RD", "RC", "FREE", "CS", "FJ", "IKE", "SCULP"].includes(shape);
+  }
+
+  function randomItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 
   function getValue(el) {
