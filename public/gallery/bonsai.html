@@ -4,12 +4,93 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | Bonsai</title>
+
   <link rel="stylesheet" href="/css/gallery.css" />
+
+  <style>
+    .bonsai-door-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.6rem;
+      margin-top: 3rem;
+    }
+
+    .bonsai-door {
+      min-height: 260px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #111;
+      position: relative;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .bonsai-door:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+    }
+
+    .bonsai-door a {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.7rem;
+      color: #fff;
+      text-decoration: none;
+      background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.16));
+    }
+
+    .bonsai-door h2 {
+      margin: 0 0 0.4rem;
+      font-weight: 400;
+      font-size: 1.8rem;
+    }
+
+    .bonsai-door p {
+      margin: 0;
+      line-height: 1.55;
+      opacity: 0.9;
+      max-width: 24ch;
+    }
+
+    .oval-door {
+      background:
+        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.38)),
+        url('/images/bonsai/oval.jpg') center/cover;
+    }
+
+    .round-door {
+      background:
+        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.38)),
+        url('/images/bonsai/rounds.jpg') center/cover;
+    }
+
+    .rectangle-door {
+      background:
+        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.38)),
+        url('/images/bonsai/rectangles.jpg') center/cover;
+    }
+
+    .freeform-door {
+      background:
+        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.38)),
+        url('/images/bonsai/freestyle.jpg') center/cover;
+    }
+
+    .cascade-door {
+      background:
+        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.38)),
+        url('/images/bonsai/round_001.jpg') center/cover;
+    }
+  </style>
 </head>
+
 <body>
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="/index.html">ClaycrazE</a>
+
       <nav class="site-nav" aria-label="Primary">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
@@ -22,20 +103,57 @@
   <main class="gallery-page">
     <section class="gallery-intro">
       <p class="eyebrow">Practice</p>
-      <h1>Bonsai Forms</h1>
+
+      <h1>Bonsai</h1>
+
       <p>
-        A selection of bonsai containers from the studio. The gallery view shows the
-        top image of each piece. Open any piece to inspect the full view and underside.
+        Bonsai containers are organized by form. Choose a family below to view
+        available pieces and archived work.
       </p>
     </section>
 
-    <section class="gallery-grid" id="galleryGrid" aria-live="polite"></section>
+    <section class="bonsai-door-grid" aria-label="Bonsai form families">
+
+      <article class="bonsai-door oval-door">
+        <a href="/gallery/ovals.html">
+          <h2>Oval</h2>
+          <p>Soft-edged containers for quiet, balanced compositions.</p>
+        </a>
+      </article>
+
+      <article class="bonsai-door round-door">
+        <a href="/gallery/rounds.html">
+          <h2>Round</h2>
+          <p>Rotational forms for informal trees and open movement.</p>
+        </a>
+      </article>
+
+      <article class="bonsai-door rectangle-door">
+        <a href="/gallery/rectangles.html">
+          <h2>Rectangle</h2>
+          <p>Structured containers with a stronger architectural presence.</p>
+        </a>
+      </article>
+
+      <article class="bonsai-door freeform-door">
+        <a href="/gallery/freeform.html">
+          <h2>Freeform</h2>
+          <p>Irregular and expressive forms shaped outside strict geometry.</p>
+        </a>
+      </article>
+
+      <article class="bonsai-door cascade-door">
+        <a href="/gallery/cascade.html">
+          <h2>Cascade</h2>
+          <p>Deeper containers for downward movement and falling lines.</p>
+        </a>
+      </article>
+
+    </section>
   </main>
 
   <footer class="site-footer">
     <p>&copy; ClaycrazE</p>
   </footer>
-
-  <script src="/js/bonsai.js"></script>
 </body>
 </html>
