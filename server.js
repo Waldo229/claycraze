@@ -75,21 +75,33 @@ function normalizeStatus(status) {
   return raw || "available";
 }
 
+function isValidShapeCode(shape) {
+  return ["OV", "RD", "RC", "FREE", "CS", "FJ", "IKE", "SCULP"].includes(
+    String(shape || "").toUpperCase()
+  );
+}
+
 function parsePieceId(id) {
   const cleanId = cleanText(id).toUpperCase();
-  const match = cleanId.match(/^([A-Z]{2})-(\d{4})-(\d{2,4})$/);
-  if (!match) throw new Error("Piece ID must look like OV-2605-001.");
+  const match = cleanId.match(/^([A-Z]+)-(\d{4})-(\d{2,4})$/);
+  if (!match) throw new Error("Piece ID must look like OV-2605-001 or FREE-2605-001.");
+
+  const shape = match[1];
+
+  if (!isValidShapeCode(shape)) {
+    throw new Error("Invalid shape code.");
+  }
 
   return {
     id: cleanId,
-    shape: match[1],
+    shape,
     date_code: match[2],
     piece_number: parseInt(match[3], 10),
   };
 }
 
 function buildPieceId(shape, yearMonth, number) {
-  return `${shape}-${yearMonth}-${String(number).padStart(3, "0")}`;
+  return `${String(shape || "").toUpperCase()}-${yearMonth}-${String(number).padStart(3, "0")}`;
 }
 
 function imagePathFor(id, kind) {
@@ -238,8 +250,11 @@ app.get("/api/pieces/next-id", (req, res) => {
   const shape = cleanText(req.query.shape).toUpperCase();
   const yearMonth = cleanText(req.query.yearMonth || req.query.year_month);
 
-  if (!/^[A-Z]{2}$/.test(shape)) {
-    return res.status(400).json({ ok: false, error: "Shape must be 2 letters." });
+  if (!isValidShapeCode(shape)) {
+    return res.status(400).json({
+      ok: false,
+      error: "Invalid shape code.",
+    });
   }
 
   if (!/^\d{4}$/.test(yearMonth)) {
@@ -249,7 +264,7 @@ app.get("/api/pieces/next-id", (req, res) => {
   db.get(
     `SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_number
      FROM inventory
-     WHERE shape = ? AND date_code = ?`,
+     WHERE TRIM(UPPER(shape)) = ? AND date_code = ?`,
     [shape, yearMonth],
     (err, row) => {
       if (err) return res.status(500).json({ ok: false, error: err.message });
@@ -489,7 +504,7 @@ app.get("/gallery-data/all", (req, res) => {
 });
 
 app.get("/gallery-data/bonsai", (req, res) => {
-  getPublicPiecesByShapes(["OV", "RD", "RC", "CS", "SL"], res);
+  getPublicPiecesByShapes(["OV", "RD", "RC", "CS", "FREE"], res);
 });
 
 app.get("/gallery-data/ovals", (req, res) => {
@@ -508,8 +523,20 @@ app.get("/gallery-data/cascade", (req, res) => {
   getPublicPiecesByShape("CS", res);
 });
 
-app.get("/gallery-data/slabs", (req, res) => {
-  getPublicPiecesByShape("SL", res);
+app.get("/gallery-data/freeform", (req, res) => {
+  getPublicPiecesByShape("FREE", res);
+});
+
+app.get("/gallery-data/face-jugs", (req, res) => {
+  getPublicPiecesByShape("FJ", res);
+});
+
+app.get("/gallery-data/ikebana", (req, res) => {
+  getPublicPiecesByShape("IKE", res);
+});
+
+app.get("/gallery-data/sculpture", (req, res) => {
+  getPublicPiecesByShape("SCULP", res);
 });
 
 app.listen(PORT, "0.0.0.0", () => {
