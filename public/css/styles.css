@@ -198,6 +198,13 @@ h3 {
   color: var(--text);
 }
 
+.theory-intro h1 {
+  font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.intro-wrap::after {
 .intro-wrap::after {
   content: "";
   display: table;
