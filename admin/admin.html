@@ -18,7 +18,9 @@
       --shadow: 0 18px 45px rgba(48, 34, 20, 0.14);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -256,6 +258,7 @@
     <header>
       <div class="eyebrow">ClaycrazE Practice</div>
       <h1>Inventory Entry</h1>
+
       <div class="subtitle">
         Add a finished piece to the ClaycrazE practice archive. Render handles the form;
         SiteGround preserves the images and public record.
@@ -264,6 +267,7 @@
 
     <div class="layout">
       <form id="adminForm">
+
         <div class="section">
           <h2>Piece Identity</h2>
 
@@ -271,11 +275,14 @@
             <div>
               <label for="shape">Shape</label>
               <select id="shape">
-                <option value="OV">OV — Oval</option>
-                <option value="RC">RC — Rectangle</option>
-                <option value="RD">RD — Round</option>
-                <option value="CS">CS — Cascade</option>
-                <option value="SL">SL — Slab</option>
+                <option value="OV">OV — Oval Bonsai</option>
+                <option value="RD">RD — Round Bonsai</option>
+                <option value="RC">RC — Rectangle Bonsai</option>
+                <option value="FREE">FREE — Freeform Bonsai</option>
+                <option value="CS">CS — Cascade Bonsai</option>
+                <option value="FJ">FJ — Face Jug</option>
+                <option value="IKE">IKE — Ikebana</option>
+                <option value="SCULP">SCULP — Sculpture</option>
               </select>
             </div>
 
@@ -298,11 +305,6 @@
             <div>
               <label for="title">Title</label>
               <input id="title" type="text" placeholder="Small oval bonsai pot" />
-            </div>
-
-            <div>
-              <label for="category">Category</label>
-              <input id="category" type="text" placeholder="ovals" />
             </div>
 
             <div>
@@ -385,6 +387,7 @@
           <button type="reset" id="resetBtn">Reset</button>
           <button type="submit">Save Piece</button>
         </div>
+
       </form>
 
       <div class="output">
