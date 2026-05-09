@@ -99,7 +99,7 @@ function injectGalleryNav(activeKey) {
     ["ovals", "/gallery/ovals", "Ovals"],
     ["rounds", "/gallery/rounds", "Rounds"],
     ["rectangles", "/gallery/rectangles", "Rectangles"],
-    ["freestyle", "/gallery/freestyle", "Freestyle"],
+    ["freeform", "/gallery/freeform", "freeform"],
     ["facejugs", "/gallery/facejugs", "Facejugs"],
     ["ikebana", "/gallery/ikebana", "Ikebana"],
     ["sculpture", "/gallery/sculpture", "Sculpture"]

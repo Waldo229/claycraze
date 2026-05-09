@@ -1,8 +1,8 @@
 const galleryGrid = document.getElementById("galleryGrid");
 
-async function loadFreestyle() {
+async function loadFreeform() {
   try {
-    const response = await fetch("/gallery-data/freestyle");
+    const response = await fetch("/gallery-data/Freeform");
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
@@ -13,7 +13,7 @@ async function loadFreestyle() {
     if (!Array.isArray(pieces) || pieces.length === 0) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
-          No freestyle pieces are currently available for display.
+          No Freeform pieces are currently available for display.
         </div>
       `;
       return;
@@ -23,10 +23,10 @@ async function loadFreestyle() {
   } catch (error) {
     galleryGrid.innerHTML = `
       <div class="error-state">
-        Could not load freestyle gallery data: ${escapeHtml(error.message)}
+        Could not load Freeform gallery data: ${escapeHtml(error.message)}
       </div>
     `;
-    console.error("Freestyle gallery error:", error);
+    console.error("Freeform gallery error:", error);
   }
 }
 
@@ -145,4 +145,4 @@ function escapeAttribute(value) {
     .replace(/>/g, "&gt;");
 }
 
-loadFreestyle();
+loadFreeform();
