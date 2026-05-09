@@ -3,153 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>ClaycrazE</title>
 
   <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
-
-  <link rel="stylesheet" href="/css/styles.css?v=7" />
+  <link rel="stylesheet" href="/css/styles.css?v=9" />
 </head>
 
 <body class="home-page">
 
-  <header class="site-header">
-    <div class="header-shell">
+  <header class="home-header">
+    <h1>ClaycrazE</h1>
+    <p>The Pottery of Jim Alexander</p>
 
-      <div class="site-brand">
-
-        <a class="site-title" href="/">
-          ClaycrazE
-        </a>
-
-        <span class="site-tag">
-          The Pottery and Studio Wisdom of Jim Alexander
-        </span>
-
-      </div>
-
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/" class="active">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-      </nav>
-
-    </div>
+    <nav class="home-nav" aria-label="Main navigation">
+      <a class="active" href="/">Home</a>
+      <a href="/theory.html">Theory</a>
+      <a href="/practice.html">Practice</a>
+    </nav>
   </header>
 
-  <main class="content-shell home-page-shell">
+  <main class="home-main">
 
-    <!-- =========================
-         WELCOME
-    ========================= -->
+    <img
+      src="/images/coldmountainSQ300.jpg"
+      alt="Han Shan and Shih-te of Cold Mountain"
+      class="home-monks"
+    />
 
-    <section class="home-intro welcome-intro">
+    <article class="home-article">
+      <p>
+        It is my hope that this website will be of interest to both potters
+        and to bonsai and ikebana enthusiasts, and that they may discover here
+        something useful in my clay and glaze choices, as well as in the way I
+        have shaped a home studio and working environment.
+      </p>
 
-      <h1>Welcome</h1>
+      <p>
+        While not quite the self-reliant potter described by Andrew Holden in
+        his book of the same name, I have found it necessary to make my own
+        way. Much of my equipment has been homemade or repurposed until I could
+        afford to do better and make upgrades.
+      </p>
 
-      <div class="intro-copy">
+      <p>
+        I use simple techniques; if the ancient Chinese potters didn’t need it,
+        I probably don’t either. I continue the journey, now more than fifty
+        years on, with a light heart and the knowledge that theory and practice
+        are companions in the mischief surrounding creation.
+      </p>
+    </article>
 
-        <p>
-          It is my hope that this website will be of interest to both potters
-          and to bonsai and ikebana enthusiasts, and that they may discover here
-          something useful in my clay and glaze choices, as well as in the way I
-          have shaped a home studio and working environment.
-        </p>
-
-        <p>
-          While not quite the self-reliant potter described by Andrew Holden in
-          his book of the same name, I have found it necessary to make my own
-          way. Much of my equipment has been homemade or repurposed until I could
-          afford to do better and make upgrades.
-        </p>
-
-        <p>
-          I use simple techniques; if the ancient Chinese potters didn’t need it,
-          I probably don’t either. I continue the journey, now more than fifty
-          years on, with a light heart and the knowledge that theory and practice
-          are companions in the mischief surrounding creation.
-        </p>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         THEORY / PRACTICE
-    ========================= -->
-
-    <section class="threshold-grid" aria-label="Theory and Practice">
-
-      <!-- THEORY -->
-
-      <a class="threshold-card theory-card" href="/theory.html">
-
-        <div class="threshold-card-text">
-
-          <h2>Theory</h2>
-
-          <p>
-            Reflection, materials, geology,
-            memory, studio structure,
-            and the thinking behind the work.
-          </p>
-
-        </div>
-
+    <section class="home-doors" aria-label="Theory and Practice">
+      <a class="home-door" href="/theory.html">
+        <h2>Theory</h2>
+        <p>Reflection, materials, geology, memory, studio structure, and the thinking behind the work.</p>
       </a>
 
-      <!-- PRACTICE -->
-
-      <a class="threshold-card practice-card" href="/practice.html">
-
-        <div class="threshold-card-text">
-
-          <h2>Practice</h2>
-
-          <p>
-            Bonsai containers, ikebana vessels,
-            sculpture, firing,
-            and made work.
-          </p>
-
-        </div>
-
+      <a class="home-door" href="/practice.html">
+        <h2>Practice</h2>
+        <p>Bonsai containers, ikebana vessels, sculpture, firing, and made work.</p>
       </a>
-
     </section>
 
   </main>
 
-  <script>
-    const navToggle = document.getElementById("navToggle");
-    const siteNav = document.getElementById("siteNav");
-
-    if (navToggle && siteNav) {
-
-      navToggle.addEventListener("click", () => {
-
-        const isOpen =
-          navToggle.getAttribute("aria-expanded") === "true";
-
-        navToggle.setAttribute(
-          "aria-expanded",
-          String(!isOpen)
-        );
+</body>
+</html>
 
         siteNav.classList.toggle("open");
 
