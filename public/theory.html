@@ -3,159 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>ClaycrazE | Theory</title>
-
-  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
-
-  <link rel="stylesheet" href="/css/styles.css?v=7" />
+  <title>Theory | ClaycrazE</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 
-<body class="theory-page">
-
+<body>
   <header class="site-header">
-    <div class="header-shell">
-
-      <a class="site-brand" href="/">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
-      </a>
-
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html" class="active">Theory</a>
-        <a href="https://claycraze-admin-test.onrender.com/gallery/">Practice</a>
-      </nav>
-
+    <div class="brand">
+      <h1>ClaycrazE</h1>
+      <p>Theory &amp; Practice</p>
     </div>
+
+    <nav class="site-nav">
+      <a href="/index.html">Home</a>
+      <a class="active" href="/theory.html">Theory</a>
+      <a href="/practice.html">Practice</a>
+    </nav>
   </header>
 
-  <main class="content-shell">
-
-    <section class="theory-hero">
-
-      <div class="theory-hero-wrap">
-
-        <img
-          src="/images/han-shan.png"
-          alt="Han Shan"
-          class="theory-guide theory-guide-small"
-        />
-
-        <div class="theory-copy">
-
-          <h1>Theory</h1>
-
-          <p>
-            Theory is the inward side of the work: materials, place,
-            process, firing, observation, memory, and the GENE project.
-          </p>
-
-          <p>
-            These pages gather together the conditions surrounding the
-            making: clay bodies, slips, kilns, studio methods, local
-            geology, timing, and the philosophical questions that emerge
-            through long practice.
-          </p>
-
-          <p>
-            Han Shan stands here as guide toward reflection,
-            orientation, and understanding.
-          </p>
-
-        </div>
-
+  <main class="door-page">
+    <section class="door-hero">
+      <img src="/images/han-shan.png" alt="Han Shan" />
+      <div>
+        <h2>Theory</h2>
+        <p>
+          Han Shan stands here as guide toward reflection, orientation,
+          and understanding.
+        </p>
       </div>
-
     </section>
 
-    <section class="theory-card-grid">
+    <section class="door-list">
 
-      <article class="theory-card">
-        <a href="/studio.html">
-          <img src="/images/studio.jpg" alt="Studio" />
-
+      <a class="door-row" href="/studio.html">
+        <img src="/images/studio_001s.png" alt="Studio" />
+        <div>
           <h2>Studio</h2>
+          <p>The physical and material setting of the work: tools, rhythm, habits, and working environment.</p>
+        </div>
+      </a>
 
-          <p>
-            The physical and material setting of the work:
-            tools, rhythm, habits, and working environment.
-          </p>
-        </a>
-      </article>
+      <a class="door-row" href="/clay-atlas.html">
+        <img src="/images/clay_001s.png" alt="Clay Atlas" />
+        <div>
+          <h2>Clay Atlas</h2>
+          <p>Local clay, geology, field notes, and the material ground beneath the work.</p>
+        </div>
+      </a>
 
-      <article class="theory-card">
-        <a href="/materials.html">
-          <img src="/images/materials_001s.png" alt="Materials" />
+      <a class="door-row" href="/glaze.html">
+        <img src="/images/glaze_001s.png" alt="Glaze" />
+        <div>
+          <h2>Glaze</h2>
+          <p>Surface, firing, color, atmosphere, and the behavior of materials under heat.</p>
+        </div>
+      </a>
 
-          <h2>Materials</h2>
-
-          <p>
-            Clay, glaze, slip, sourcing,
-            and the material language of the studio.
-          </p>
-        </a>
-      </article>
-
-      <article class="theory-card">
-        <a href="/places.html">
-          <img src="/images/jamestown_001s.jpg" alt="Places" />
-
-          <h2>Places</h2>
-
-          <p>
-            Local ground, geology,
-            historical clay bodies, and regional influence.
-          </p>
-        </a>
-      </article>
-
-      <article class="theory-card">
-        <a href="/kiln.html">
-          <img src="/images/kiln_001.png" alt="Kiln" />
-
-          <h2>Kiln</h2>
-
-          <p>
-            Heat, timing, cooling,
-            transformation, and firing systems.
-          </p>
-        </a>
-      </article>
-
-      <article class="theory-card">
-        <a href="/gene.html">
-          <img src="/images/gene_003s.png" alt="GENE Project" />
-
-          <h2>GENE Project</h2>
-
-          <p>
-            Observation, arousal,
-            memory, timing, and studio presence.
-          </p>
-        </a>
-      </article>
+      <a class="door-row" href="/notes.html">
+        <img src="/images/notes_001s.png" alt="Notes" />
+        <div>
+          <h2>Notes</h2>
+          <p>Observations, essays, fragments, and working thoughts from the studio.</p>
+        </div>
+      </a>
 
     </section>
-
   </main>
-
-  <script src="/js/nav.js"></script>
-
 </body>
 </html>

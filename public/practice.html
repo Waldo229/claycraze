@@ -3,160 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>ClaycrazE | Practice</title>
-
-  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
-
-  <link rel="stylesheet" href="/css/styles.css?v=9" />
+  <title>Practice | ClaycrazE</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 
-<body class="practice-page">
-
+<body>
   <header class="site-header">
-    <div class="header-shell">
-
-      <a class="site-brand" href="/">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
-      </a>
-
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
-      </nav>
-
+    <div class="brand">
+      <h1>ClaycrazE</h1>
+      <p>Theory &amp; Practice</p>
     </div>
+
+    <nav class="site-nav">
+      <a href="/index.html">Home</a>
+      <a href="/theory.html">Theory</a>
+      <a class="active" href="/practice.html">Practice</a>
+    </nav>
   </header>
 
-  <main class="content-shell">
-
-    <section class="theory-hero">
-
-      <div class="theory-hero-wrap">
-
-        <img
-          src="/images/shih-te.png"
-          alt="Shih-te"
-          class="theory-guide theory-guide-small"
-        />
-
-        <div class="theory-copy">
-
-          <h1>Practice</h1>
-
-          <p>
-            Practice is the outward side of the work: bonsai containers,
-            ikebana vessels, face jugs, sculpture, and finished forms.
-          </p>
-
-          <p>
-            These pages gather together the made work itself: objects shaped
-            through clay, glaze, firing, revision, accident, and long repetition.
-          </p>
-
-          <p>
-            Shih-te stands here as guide toward making, labor, touch, utility,
-            and the life of the hand.
-          </p>
-
-        </div>
-
+  <main class="door-page">
+    <section class="door-hero">
+      <img src="/images/shih-te.png" alt="Shih-te" />
+      <div>
+        <h2>Practice</h2>
+        <p>
+          Shih-te stands here as guide toward making, use, experiment,
+          and the work of the hands.
+        </p>
       </div>
-
     </section>
 
-    <section class="theory-card-grid">
+    <section class="door-list">
 
-      <article class="theory-card">
-        <a href="https://claycraze-admin-test.onrender.com/gallery/bonsai.html">
-
-          <img
-            src="/images/bonsai_001s.png"
-            alt="Bonsai containers"
-          />
-
+      <a class="door-row" href="/bonsai.html">
+        <img src="/images/bonsai_001s.png" alt="Bonsai" />
+        <div>
           <h2>Bonsai</h2>
+          <p>High-fired bonsai containers for trees, landscape, and display.</p>
+        </div>
+      </a>
 
-          <p>
-            High-fired bonsai containers for trees, landscape, and display.
-          </p>
-
-        </a>
-      </article>
-
-      <article class="theory-card">
-        <a href="https://claycraze-admin-test.onrender.com/gallery/ikebana.html">
-
-          <img
-            src="/images/ikebana_001s.png"
-            alt="Ikebana vessels"
-          />
-
+      <a class="door-row" href="/ikebana.html">
+        <img src="/images/ikebana_001s.png" alt="Ikebana" />
+        <div>
           <h2>Ikebana</h2>
+          <p>Containers for flower arrangement, gesture, and seasonal placement.</p>
+        </div>
+      </a>
 
-          <p>
-            Vessels for floral arrangement, line, balance, and negative space.
-          </p>
-
-        </a>
-      </article>
-
-      <article class="theory-card">
-        <a href="https://claycraze-admin-test.onrender.com/gallery/face-jugs.html">
-
-          <img
-            src="/images/facejug_001s.png"
-            alt="Face jugs"
-          />
-
-          <h2>Face Jugs</h2>
-
-          <p>
-            Grotesques, spirit vessels, humor, expression, and Southern face jug traditions.
-          </p>
-
-        </a>
-      </article>
-
-      <article class="theory-card">
-        <a href="https://claycraze-admin-test.onrender.com/gallery/sculpture.html">
-
-          <img
-            src="/images/sculpture_001s.png"
-            alt="Sculpture"
-          />
-
+      <a class="door-row" href="/sculpture.html">
+        <img src="/images/sculpture_001s.png" alt="Sculpture" />
+        <div>
           <h2>Sculpture</h2>
+          <p>Figurative, vessel-based, and symbolic clay work.</p>
+        </div>
+      </a>
 
-          <p>
-            Figurative and experimental forms outside purely utilitarian pottery.
-          </p>
-
-        </a>
-      </article>
+      <a class="door-row" href="/gene-project.html">
+        <img src="/images/gene_node_s.jpg" alt="GENE Project" />
+        <div>
+          <h2>GENE Project</h2>
+          <p>A studio-based observing system concerned with rhythm, presence, and response.</p>
+        </div>
+      </a>
 
     </section>
-
   </main>
-
-  <script src="/js/nav.js"></script>
-
 </body>
 </html>
