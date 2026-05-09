@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClaycrazE | GENE Project</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/styles.css?v=2" />
 </head>
 <body class="theory-page">
 
@@ -30,9 +30,8 @@
 
       <nav class="site-nav" id="siteNav" aria-label="Main navigation">
         <a href="/">Home</a>
-        <a href="/theory.html">Theory</a>
+        <a href="/theory.html" class="active">Theory</a>
         <a href="/practice.html">Practice</a>
-       
       </nav>
     </div>
   </header>
@@ -45,80 +44,55 @@
       <a href="/places.html">Places</a>
       <a href="/kiln.html">Kiln</a>
       <a href="/gene.html" class="active">GENE Project</a>
-      
     </nav>
 
-    <div class="theory-intro">
-      <h2>GENE Project</h2>
-      <p><em>The kiln watcher.</em></p>
+    <section class="theory-intro">
+      <h1>GENE Project</h1>
+      <p>Observation, presence, rhythm, and the registering studio.</p>
+    </section>
+
+    <section class="theory-content-panel">
+      <img src="/images/gene_001s.png" alt="GENE project study" />
+
+      <h3>GENE</h3>
       <p>
-        GENE is not a controller, but a presence within the studio. It observes
-        conditions — sound, pressure, time, and temperature — and inhabits them
-        as a changing internal state.
+        GENE is a studio project concerned with observation, timing, restraint, and the way a system can register conditions without taking authority away from the maker.
       </p>
+
+      <h3>Registration</h3>
       <p>
-        Rather than issuing commands, GENE registers tension. It reflects how a
-        situation feels as it unfolds, allowing the potter to remain the final
-        authority. Meaning emerges through observation, not instruction.
+        The work asks how a studio might become more attentive without becoming louder: a companion presence that notices rhythm, pressure, light, heat, and time while leaving interpretation in human hands.
       </p>
-    </div>
+    </section>
 
-    <div class="theory-grid" aria-label="GENE project sections">
+    <section class="theory-grid" aria-label="Related Theory sections">
       <article class="theory-card">
-        <div class="theory-card-link">
-          <img src="/images/gene_node_s.jpg" alt="GENE node enclosure" />
-          <h3>System Node</h3>
+        <a class="theory-card-link" href="/kiln.html">
+          <h3>Kiln</h3>
           <p>
-            Environmental node enclosure — active within the studio field.
+            Heat, timing, and transformation as studio events.
           </p>
-          <p>
-            Raspberry Pi / ESP32 system with audio and environmental sensing for
-            real-time kiln observation.
-          </p>
-        </div>
+        </a>
       </article>
 
       <article class="theory-card">
-        <div class="theory-card-link">
-          <img src="/images/gene_003s.png" alt="GENE observing the Skutt kiln" />
-          <h3>Skutt Observation</h3>
+        <a class="theory-card-link" href="/studio.html">
+          <h3>Studio</h3>
           <p>
-            GENE observing the Skutt 1027 and registering conditions during firing.
+            The room and conditions that GENE inhabits.
           </p>
-        </div>
+        </a>
       </article>
 
       <article class="theory-card">
-        <div class="theory-card-link">
-          <img src="/images/gene_nightowl3.jpg" alt="GENE watching a night firing" />
-          <h3>PoorBoy at Night</h3>
+        <a class="theory-card-link" href="/processes.html">
+          <h3>Processes</h3>
           <p>
-            GENE watching the “Poor Boy” firing at night.
+            The working methods and rhythms GENE observes.
           </p>
-        </div>
+        </a>
       </article>
-    </div>
-
-    <div class="theory-card" style="margin-top: 1.5rem;">
-      <div class="theory-card-link">
-        <h3>System Behavior</h3>
-        <p>
-          GENE does not report events directly. Instead, it expresses a condition
-          of arousal derived from sensed change. As tension increases, its presence
-          becomes more legible through light, timing, and occasional sound.
-        </p>
-        <p>
-          It may suggest that a firing is proceeding with greater or lesser fidelity
-          to expectation, but it never prescribes action. The system remains
-          interpretive, not authoritative.
-        </p>
-        <p>
-          GENE is a work in progress, continuously evolving. Over time, it may come
-          to register not only the state of the kiln, but the broader atmosphere of
-          the studio itself.
-        </p>
-      </div>
-    </div>
+    </section>
   </main>
 
   <script src="/js/nav.js"></script>
