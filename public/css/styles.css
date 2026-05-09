@@ -272,8 +272,38 @@ h3 {
 }
 
 /* =========================
-   THEORY PAGE
+   THEORY CONTENT PAGES
 ========================= */
+.theory-content-panel {
+  background: linear-gradient(to bottom, #f0e2bb, #e1cb95);
+  border: 1px solid rgba(45, 27, 18, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 14px 32px rgba(45, 27, 18, 0.12);
+  padding: 1.75rem;
+}
+
+.theory-content-panel img {
+  width: min(320px, 100%);
+  margin: 0 0 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(45, 27, 18, 0.12);
+  box-shadow: 0 10px 24px rgba(45, 27, 18, 0.12);
+}
+
+.theory-content-panel h3 {
+  font-size: 1.45rem;
+  margin: 1.25rem 0 0.45rem;
+}
+
+.theory-content-panel h3:first-of-type {
+  margin-top: 0;
+}
+
+.theory-content-panel p {
+  font-size: 1.05rem;
+  color: var(--text);
+  max-width: 72ch;
+}
 /* =========================
    THEORY SUBNAV
 ========================= */
