@@ -293,3 +293,114 @@ body {
     grid-template-columns: 1fr;
   }
 }
+/* =========================
+   HOME PAGE
+========================= */
+
+body.home-page {
+  margin: 0;
+  background: #d8ad2f;
+  color: #241500;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.home-header {
+  text-align: center;
+  background: #ecd883;
+  padding: 3rem 1rem 2.25rem;
+}
+
+.home-header h1 {
+  margin: 0;
+  font-size: clamp(4.5rem, 10vw, 8rem);
+  font-weight: normal;
+  line-height: 1;
+}
+
+.home-header p {
+  margin: 0.75rem 0 1.5rem;
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+}
+
+.home-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.home-nav a {
+  color: #241500;
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+}
+
+.home-nav a.active,
+.home-nav a:hover {
+  background: rgba(120, 85, 20, 0.16);
+}
+
+.home-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 5rem;
+}
+
+.home-monks {
+  display: block;
+  width: 300px;
+  max-width: 80%;
+  height: auto;
+  margin: 0 auto 3rem;
+  border-radius: 18px;
+}
+
+.home-article {
+  max-width: 850px;
+  margin: 0 auto 4rem;
+  font-size: 1.35rem;
+  line-height: 1.6;
+}
+
+.home-article p {
+  margin: 0 0 1.5rem;
+}
+
+.home-doors {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.home-door {
+  display: block;
+  padding: 2rem;
+  min-height: 220px;
+  color: white;
+  text-decoration: none;
+  border-radius: 24px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.35),
+    rgba(0,0,0,.85)
+  );
+}
+
+.home-door h2 {
+  margin: 0 0 1rem;
+  font-size: 2.5rem;
+  font-weight: normal;
+}
+
+.home-door p {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+  .home-doors {
+    grid-template-columns: 1fr;
+  }
+}
