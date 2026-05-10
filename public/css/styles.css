@@ -221,7 +221,14 @@ a {
 .interior-nav a.active {
   background: rgba(36, 21, 0, 0.10);
 }
+.site-return {
+  opacity: 0.72;
+  margin-right: 1.2rem;
+}
 
+.site-return:hover {
+  opacity: 1;
+}
 .symbolic-hero {
   max-width: 760px;
   margin: 3rem auto 4rem;
