@@ -335,3 +335,56 @@ a {
     font-size: 1.18rem;
   }
 }
+/* ---------- Landing Page Experiment ---------- */
+
+.landing-article {
+  max-width: 850px;
+  margin: 0 auto 3rem;
+  font-size: 1.4rem;
+  line-height: 1.65;
+}
+
+.landing-article p {
+  margin: 0 0 1.5rem;
+}
+
+.landing-image {
+  width: 300px;
+  max-width: 45%;
+  height: auto;
+  float: left;
+  margin: 0.35rem 2rem 1rem 0;
+  border-radius: 18px;
+}
+
+.enter-wrap {
+  clear: both;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.enter-link {
+  display: inline-block;
+  padding: 0.9rem 1.6rem;
+  color: #fffaf0;
+  text-decoration: none;
+  font-size: 1.35rem;
+  border-radius: 999px;
+  background: #241500;
+}
+
+.enter-link:hover {
+  background: #3a2404;
+}
+
+@media (max-width: 700px) {
+  .landing-image {
+    float: none;
+    max-width: 80%;
+    margin: 0 auto 2rem;
+  }
+
+  .landing-article {
+    font-size: 1.22rem;
+  }
+}
