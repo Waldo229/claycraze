@@ -1,5 +1,6 @@
 /* =========================================================
-   ClaycrazE Design System
+   ClaycrazE
+   Core visual system
 ========================================================= */
 
 * {
@@ -19,15 +20,18 @@ body {
 }
 
 img {
-  max-width: 100%;
   display: block;
+  max-width: 100%;
 }
 
 a {
   color: inherit;
 }
 
-/* ---------- Global Header ---------- */
+
+/* =========================================================
+   SITE HEADER — LANDING PAGE
+========================================================= */
 
 .site-header {
   background: #ecd883;
@@ -42,7 +46,6 @@ a {
 
 .site-logo {
   display: block;
-  margin: 0;
   color: #241500;
   text-decoration: none;
   font-size: clamp(4rem, 9vw, 7rem);
@@ -52,11 +55,14 @@ a {
 
 .site-tag {
   display: block;
-  margin: 0.75rem 0 1.5rem;
+  margin-top: 0.75rem;
   font-size: clamp(1.25rem, 2.4vw, 2rem);
 }
 
-/* ---------- Landing Page ---------- */
+
+/* =========================================================
+   LANDING PAGE
+========================================================= */
 
 .threshold-page {
   max-width: 1100px;
@@ -65,8 +71,8 @@ a {
 }
 
 .landing-page {
-  text-align: center;
   max-width: 850px;
+  text-align: center;
 }
 
 .coldmountain-enter {
@@ -96,7 +102,10 @@ a {
   line-height: 1.65;
 }
 
-/* ---------- Welcome Threshold ---------- */
+
+/* =========================================================
+   WELCOME PAGE
+========================================================= */
 
 .welcome-threshold {
   max-width: 1050px;
@@ -125,14 +134,14 @@ a {
 
 .welcome-doors {
   display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 1fr));
-  gap: 2.25rem;
-  align-items: start;
+  grid-template-columns: repeat(2, minmax(240px, 420px));
+  justify-content: center;
+  gap: 4rem;
 }
 
 .welcome-card {
   position: relative;
-  min-height: 420px;
+  min-height: 360px;
   overflow: hidden;
   border-radius: 24px;
   color: #fffaf0;
@@ -158,8 +167,8 @@ a {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.05),
-    rgba(0,0,0,0.68)
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.66)
   );
 }
 
@@ -169,7 +178,7 @@ a {
   right: 0;
   bottom: 0;
   z-index: 2;
-  padding: 2rem;
+  padding: 2.3rem;
 }
 
 .welcome-card h2 {
@@ -180,8 +189,8 @@ a {
 }
 
 .welcome-card p {
-  margin: 0;
   max-width: 18rem;
+  margin: 0;
   font-size: 1.1rem;
   line-height: 1.5;
 }
@@ -191,11 +200,11 @@ a {
   opacity: 0.78;
 }
 
-.practice-door {
-  margin-top: 2rem;
-}
 
-/* ---------- Interior Symbol Pages ---------- */
+/* =========================================================
+   INTERIOR NAV
+   Theory / Practice pages
+========================================================= */
 
 .interior-header {
   padding: 2rem 0 0;
@@ -219,8 +228,9 @@ a {
 }
 
 .interior-nav a.active {
-  background: rgba(36, 21, 0, 0.10);
+  background: rgba(36, 21, 0, 0.1);
 }
+
 .site-return {
   opacity: 0.72;
   margin-right: 1.2rem;
@@ -229,6 +239,12 @@ a {
 .site-return:hover {
   opacity: 1;
 }
+
+
+/* =========================================================
+   SYMBOLIC INTERIOR HERO
+========================================================= */
+
 .symbolic-hero {
   max-width: 760px;
   margin: 3rem auto 4rem;
@@ -236,7 +252,6 @@ a {
 }
 
 .symbolic-face {
-  display: block;
   width: 170px;
   max-width: 42vw;
   margin: 0 auto 1.75rem;
@@ -245,13 +260,17 @@ a {
 }
 
 .symbolic-copy {
-  margin: 0 auto;
   max-width: 680px;
+  margin: 0 auto;
   font-size: 1.45rem;
   line-height: 1.7;
 }
 
-/* ---------- Atmospheric Card Grid ---------- */
+
+/* =========================================================
+   CARD GRID
+   Theory / Practice room cards
+========================================================= */
 
 .archive-grid,
 .threshold-grid {
@@ -290,8 +309,8 @@ a {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.08),
-    rgba(0,0,0,0.68)
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.68)
   );
 }
 
@@ -318,7 +337,10 @@ a {
   opacity: 0.82;
 }
 
-/* ---------- Responsive ---------- */
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media (max-width: 1000px) {
   .archive-grid,
@@ -327,13 +349,10 @@ a {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
   .welcome-doors {
     grid-template-columns: 1fr;
-  }
-
-  .practice-door {
-    margin-top: 0;
+    gap: 2rem;
   }
 
   .welcome-card {
@@ -347,17 +366,31 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .symbolic-copy,
-  .landing-message,
-  .welcome-hero p {
-    font-size: 1.2rem;
+  .threshold-page,
+  .welcome-threshold {
+    padding: 3rem 1rem 4rem;
   }
 
   .site-logo {
     font-size: clamp(3.2rem, 14vw, 5rem);
   }
 
-  .threshold-page {
-    padding: 3rem 1rem 4rem;
+  .landing-message,
+  .welcome-hero p,
+  .symbolic-copy {
+    font-size: 1.2rem;
+  }
+
+  .interior-nav {
+    gap: 0.35rem;
+  }
+
+  .interior-nav a {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .site-return {
+    margin-right: 0.35rem;
   }
 }
