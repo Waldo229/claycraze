@@ -1,354 +1,132 @@
+/* =========================================================
+   ClaycrazE Design System
+   Global typography, layout, cards, and threshold pages
+========================================================= */
+
+/* ---------- Reset ---------- */
+
 * {
   box-sizing: border-box;
 }
 
+html {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
+  min-height: 100%;
   font-family: Georgia, "Times New Roman", serif;
-  background: #d7aa2f;
-  color: #2b1b0d;
+  background: #d8ad2f;
+  color: #241500;
 }
 
-/* Header */
-
-.site-header {
-  background: #ead27f;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.4rem 13vw;
+img {
+  max-width: 100%;
+  display: block;
 }
 
-.brand h1 {
+a {
+  color: inherit;
+}
+
+/* ---------- Global Header / Navigation ---------- */
+
+.site-header,
+.home-header {
+  background: #ecd883;
+  text-align: center;
+  padding: 2.75rem 1rem 2rem;
+}
+
+.site-header-inner,
+.header-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.site-logo,
+.site-title,
+.home-header h1 {
+  display: block;
   margin: 0;
-  font-size: 2.2rem;
+  color: #241500;
+  text-decoration: none;
+  font-size: clamp(4rem, 9vw, 7rem);
+  font-weight: normal;
+  line-height: 1;
+}
+
+.site-tag,
+.home-header p {
+  display: block;
+  margin: 0.75rem 0 1.5rem;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
   font-weight: normal;
 }
 
-.brand p {
-  margin: .45rem 0 0;
-  font-size: 1.05rem;
-}
-
-.site-nav {
+.site-nav,
+.home-nav {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
 }
 
-.site-nav a {
-  color: #2b1b0d;
+.site-nav a,
+.home-nav a {
+  color: #241500;
   text-decoration: none;
-  padding: .75rem 1rem;
+  font-size: 1.1rem;
+  padding: 0.7rem 1.15rem;
   border-radius: 999px;
-  font-size: 1.05rem;
 }
 
 .site-nav a:hover,
-.site-nav a.active {
-  background: rgba(120, 85, 20, .16);
+.site-nav a.active,
+.home-nav a:hover,
+.home-nav a.active {
+  background: rgba(120, 85, 20, 0.16);
 }
 
-/* Shared page layout */
+/* ---------- Global Page Layout ---------- */
 
-.door-page {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
-}
-
-.door-hero {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.door-hero img {
-  width: 150px;
-  height: auto;
-}
-
-.door-hero h2 {
-  margin: 0 0 .4rem;
-  font-size: 2rem;
-  font-weight: normal;
-}
-
-.door-hero p {
-  margin: 0;
-  font-size: 1.1rem;
-  line-height: 1.45;
-}
-
-/* Horizontal blocks */
-
-.door-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.door-row {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1rem;
-  color: inherit;
-  text-decoration: none;
-  background: rgba(255, 255, 255, .18);
-  border: 1px solid rgba(80, 45, 10, .18);
-  border-radius: 18px;
-}
-
-.door-row:hover {
-  background: rgba(255, 255, 255, .28);
-}
-
-.door-row img {
-  width: 145px;
-  height: 105px;
-  object-fit: cover;
-  border-radius: 12px;
-  flex-shrink: 0;
-}
-
-.door-row h2 {
-  margin: 0 0 .35rem;
-  font-size: 1.6rem;
-  font-weight: normal;
-}
-
-.door-row p {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.4;
-}
-
-/* Home page door cards */
-
-.home-page {
+.content-shell,
+.home-main,
+.threshold-page,
+.archive-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
+  padding: 4rem 1.5rem 5rem;
 }
 
-.intro-copy {
-  max-width: 820px;
-  margin: 0 auto 2.5rem;
-  font-size: 1.15rem;
-  line-height: 1.55;
-}
+/* ---------- Threshold Hero ---------- */
 
-.door-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 1fr));
-  gap: 2rem;
-}
-
-.door-card {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-  text-align: center;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, .16);
-  border: 1px solid rgba(80, 45, 10, .18);
-  border-radius: 22px;
-}
-
-.door-card:hover {
-  background: rgba(255, 255, 255, .26);
-}
-
-.door-card img {
-  max-width: 260px;
-  width: 100%;
-  height: auto;
-  margin-bottom: 1rem;
-}
-
-.door-card h2 {
-  margin: .25rem 0 .5rem;
-  font-size: 1.8rem;
-  font-weight: normal;
-}
-
-.door-card p {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.4;
-}
-
-/* Mobile */
-
-@media (max-width: 700px) {
-  .site-header {
-    padding: 1rem;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .door-hero,
-  .door-row {
-    align-items: flex-start;
-  }
-
-  .door-row img {
-    width: 110px;
-    height: 85px;
-  }
-
-  .door-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.archive-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 5rem 2rem 4rem;
-}
-
+.threshold-hero,
 .archive-intro {
   text-align: center;
-  max-width: 760px;
+  max-width: 780px;
   margin: 0 auto 4rem;
 }
 
+.threshold-hero h1,
 .archive-intro h1 {
   margin: 0 0 1rem;
-  font-size: clamp(4rem, 8vw, 6rem);
+  font-size: clamp(4rem, 8vw, 6.5rem);
   font-weight: normal;
+  line-height: 1;
 }
 
+.threshold-hero p,
 .archive-intro p {
   margin: 0;
   font-size: 1.35rem;
   line-height: 1.6;
 }
 
-.archive-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-.archive-card {
-  position: relative;
-  min-height: 260px;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  border-radius: 22px;
-  color: white;
-  text-decoration: none;
-  background: #211600;
-}
-
-.archive-card img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: .45;
-}
-
-.archive-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,.15),
-    rgba(0,0,0,.8)
-  );
-}
-
-.archive-card-text {
-  position: relative;
-  z-index: 1;
-  padding: 2rem;
-}
-
-.archive-card h2 {
-  margin: 0 0 1rem;
-  font-size: 2rem;
-  font-weight: normal;
-}
-
-.archive-card p {
-  margin: 0;
-  font-size: 1.1rem;
-  line-height: 1.45;
-}
-
-@media (max-width: 900px) {
-  .archive-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .archive-grid {
-    grid-template-columns: 1fr;
-  }
-}
-/* =========================
-   HOME PAGE
-========================= */
-
-body.home-page {
-  margin: 0;
-  background: #d8ad2f;
-  color: #241500;
-  font-family: Georgia, "Times New Roman", serif;
-}
-
-.home-header {
-  text-align: center;
-  background: #ecd883;
-  padding: 3rem 1rem 2.25rem;
-}
-
-.home-header h1 {
-  margin: 0;
-  font-size: clamp(4.5rem, 10vw, 8rem);
-  font-weight: normal;
-  line-height: 1;
-}
-
-.home-header p {
-  margin: 0.75rem 0 1.5rem;
-  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
-}
-
-.home-nav {
-  display: flex;
-  justify-content: center;
-  gap: 1.25rem;
-}
-
-.home-nav a {
-  color: #241500;
-  text-decoration: none;
-  font-size: 1.2rem;
-  padding: 0.7rem 1.2rem;
-  border-radius: 999px;
-}
-
-.home-nav a.active,
-.home-nav a:hover {
-  background: rgba(120, 85, 20, 0.16);
-}
-
-.home-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 3.5rem 1.5rem 5rem;
-}
+/* ---------- Home Page ---------- */
 
 .home-monks {
-  display: block;
   width: 300px;
   max-width: 80%;
   height: auto;
@@ -367,40 +145,193 @@ body.home-page {
   margin: 0 0 1.5rem;
 }
 
+/* ---------- Global Card Grid ---------- */
+
+.threshold-grid,
+.archive-grid,
 .home-doors {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
 }
 
+/* Home has two doors, not four */
+.home-doors {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ---------- Global Atmospheric Cards ---------- */
+
+.threshold-card,
+.archive-card,
 .home-door {
-  display: block;
-  padding: 2rem;
-  min-height: 220px;
-  color: white;
-  text-decoration: none;
+  position: relative;
+  min-height: 260px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
   border-radius: 24px;
+  color: #fffaf0;
+  text-decoration: none;
+  background: #211600;
+  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.18);
+}
+
+.threshold-card img,
+.archive-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.48;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.threshold-card::after,
+.archive-card::after,
+.home-door::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,.35),
-    rgba(0,0,0,.85)
+    rgba(0, 0, 0, 0.12),
+    rgba(0, 0, 0, 0.82)
   );
 }
 
-.home-door h2 {
-  margin: 0 0 1rem;
-  font-size: 2.5rem;
-  font-weight: normal;
+.threshold-card-text,
+.archive-card-text,
+.home-door h2,
+.home-door p {
+  position: relative;
+  z-index: 1;
 }
 
+.threshold-card-text,
+.archive-card-text {
+  padding: 2rem;
+}
+
+.home-door {
+  padding: 2rem;
+}
+
+.threshold-card h2,
+.archive-card h2,
+.home-door h2 {
+  margin: 0 0 1rem;
+  font-size: 2.25rem;
+  font-weight: normal;
+  line-height: 1.05;
+}
+
+.threshold-card p,
+.archive-card p,
 .home-door p {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.12rem;
   line-height: 1.45;
 }
 
-@media (max-width: 700px) {
+.threshold-card:hover img,
+.archive-card:hover img {
+  opacity: 0.62;
+  transform: scale(1.03);
+}
+
+.threshold-card:hover,
+.archive-card:hover,
+.home-door:hover {
+  box-shadow: 0 22px 48px rgba(36, 21, 0, 0.25);
+}
+
+/* ---------- Older Door Row Compatibility ---------- */
+
+.door-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.door-list {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.door-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem;
+  color: inherit;
+  text-decoration: none;
+  background: rgba(255, 250, 240, 0.22);
+  border-radius: 18px;
+}
+
+.door-row img {
+  width: 145px;
+  height: 105px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.door-row h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.6rem;
+  font-weight: normal;
+}
+
+.door-row p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 950px) {
+  .threshold-grid,
+  .archive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .home-doors {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .site-logo,
+  .site-title,
+  .home-header h1 {
+    font-size: clamp(3.2rem, 14vw, 5rem);
+  }
+
+  .content-shell,
+  .home-main,
+  .threshold-page,
+  .archive-page {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .threshold-grid,
+  .archive-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .threshold-card,
+  .archive-card,
+  .home-door {
+    min-height: 230px;
+  }
+
+  .home-article,
+  .threshold-hero p,
+  .archive-intro p {
+    font-size: 1.18rem;
   }
 }
