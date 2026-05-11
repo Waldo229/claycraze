@@ -39,7 +39,8 @@ jobs:
               $SG_TARGET/js \
               $SG_TARGET/gallery \
               $SG_TARGET/data \
-              $SG_TARGET/images/curated"
+              $SG_TARGET/images/curated \
+              $SG_TARGET/images/system"
 
           echo "Syncing public HTML pages..."
 
@@ -75,6 +76,13 @@ jobs:
             -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
             public/images/curated/ \
             "$SG_USER@$SG_HOST:$SG_TARGET/images/curated/"
+
+          echo "Syncing system images..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/images/system/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/images/system/"
 
           echo "Syncing gallery metadata..."
 
