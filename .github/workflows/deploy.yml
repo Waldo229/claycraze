@@ -21,7 +21,7 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
-      - name: Deploy public site and gallery artifacts
+      - name: Deploy public site files
         shell: bash
         env:
           SG_HOST: ${{ secrets.SG_HOST }}
@@ -39,9 +39,7 @@ jobs:
               $SG_TARGET/js \
               $SG_TARGET/gallery \
               $SG_TARGET/data \
-              $SG_TARGET/images/curated \
-              $SG_TARGET/images/full \
-              $SG_TARGET/images/thumbs"
+              $SG_TARGET/images/curated"
 
           echo "Syncing public HTML pages..."
 
@@ -78,25 +76,11 @@ jobs:
             public/images/curated/ \
             "$SG_USER@$SG_HOST:$SG_TARGET/images/curated/"
 
-          echo "Syncing full-size approved images..."
-
-          rsync -avz --delete \
-            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
-            public/images/full/ \
-            "$SG_USER@$SG_HOST:$SG_TARGET/images/full/"
-
-          echo "Syncing approved thumbnails..."
-
-          rsync -avz --delete \
-            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
-            public/images/thumbs/ \
-            "$SG_USER@$SG_HOST:$SG_TARGET/images/thumbs/"
-
-          echo "Syncing approved gallery metadata..."
+          echo "Syncing gallery metadata..."
 
           rsync -avz \
             -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
             public/data/pieces.json \
             "$SG_USER@$SG_HOST:$SG_TARGET/data/pieces.json"
 
-          echo "Deploy complete. Public site updated; SG public_html was not wiped."
+          echo "Deploy complete. Public site updated; Render-owned image folders were not touched."
