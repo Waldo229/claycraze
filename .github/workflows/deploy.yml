@@ -1,8 +1,8 @@
-name: Deploy Gallery Artifacts to SiteGround (PROD)
+name: Deploy ClaycrazE Site to SiteGround (PROD)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "cc_admin_render" ]
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
-      - name: Deploy approved gallery artifacts only
+      - name: Deploy public site and gallery artifacts
         shell: bash
         env:
           SG_HOST: ${{ secrets.SG_HOST }}
@@ -30,10 +30,52 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "Preparing SiteGround artifact folders..."
+          echo "Preparing SiteGround public folders..."
 
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "mkdir -p \$HOME/public_html/images/full \$HOME/public_html/images/thumbs \$HOME/public_html/data"
+            "mkdir -p \
+              \$HOME/public_html/css \
+              \$HOME/public_html/js \
+              \$HOME/public_html/gallery \
+              \$HOME/public_html/data \
+              \$HOME/public_html/images/curated \
+              \$HOME/public_html/images/full \
+              \$HOME/public_html/images/thumbs"
+
+          echo "Syncing public HTML pages..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/*.html \
+            "$SG_USER@$SG_HOST:\$HOME/public_html/"
+
+          echo "Syncing CSS..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/css/ \
+            "$SG_USER@$SG_HOST:\$HOME/public_html/css/"
+
+          echo "Syncing JavaScript..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/js/ \
+            "$SG_USER@$SG_HOST:\$HOME/public_html/js/"
+
+          echo "Syncing gallery pages..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/gallery/ \
+            "$SG_USER@$SG_HOST:\$HOME/public_html/gallery/"
+
+          echo "Syncing curated images..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/images/curated/ \
+            "$SG_USER@$SG_HOST:\$HOME/public_html/images/curated/"
 
           echo "Syncing full-size approved images..."
 
@@ -56,4 +98,4 @@ jobs:
             public/data/pieces.json \
             "$SG_USER@$SG_HOST:\$HOME/public_html/data/pieces.json"
 
-          echo "Artifact-only deploy complete. SG public site was not wiped."
+          echo "Deploy complete. Public site updated; SG public_html was not wiped."
