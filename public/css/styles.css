@@ -513,3 +513,36 @@ a {
     padding: 3rem 1rem 4rem;
   }
 }
+.room-feature {
+  width: min(1200px, 88vw);
+  margin: 5rem auto 8rem;
+  display: grid;
+  grid-template-columns: minmax(320px, 520px) 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.room-feature-image {
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  object-fit: cover;
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  filter: brightness(0.82) contrast(1.04) saturate(0.9);
+}
+
+.room-feature .room-copy {
+  max-width: 620px;
+  margin: 0;
+}
+
+.room-feature .room-copy h1 {
+  margin-top: 0;
+}
+
+@media (max-width: 850px) {
+  .room-feature {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
