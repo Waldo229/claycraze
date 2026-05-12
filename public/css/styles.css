@@ -1,6 +1,553 @@
 /* =========================================================
+   ClaycrazE
+   Core visual system
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Georgia, "Times New Roman", serif;
+  background: #d8ad2f;
+  color: #241500;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+
+/* =========================================================
+   SITE HEADER — LANDING PAGE
+========================================================= */
+
+.site-header {
+  background: #ecd883;
+  text-align: center;
+  padding: 2.75rem 1rem 2rem;
+}
+
+.site-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.site-logo {
+  display: block;
+  color: #241500;
+  text-decoration: none;
+  font-size: clamp(4rem, 9vw, 7rem);
+  font-weight: normal;
+  line-height: 1;
+}
+
+.site-tag {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+}
+
+
+/* =========================================================
+   LANDING PAGE
+========================================================= */
+
+.threshold-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.landing-page {
+  max-width: 850px;
+  text-align: center;
+}
+
+.coldmountain-enter {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.landing-image-centered {
+  width: 320px;
+  max-width: 80vw;
+  height: auto;
+  margin: 0 auto 2.5rem;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.coldmountain-enter:hover .landing-image-centered {
+  transform: scale(1.025);
+  box-shadow: 0 24px 52px rgba(36, 21, 0, 0.28);
+}
+
+.landing-message {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1.35rem;
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   WELCOME PAGE
+========================================================= */
+
+.welcome-threshold {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 6rem;
+}
+
+.welcome-hero {
+  max-width: 760px;
+  margin: 0 auto 4rem;
+  text-align: center;
+}
+
+.welcome-hero h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(4rem, 8vw, 5.5rem);
+  font-weight: normal;
+  line-height: 1;
+}
+
+.welcome-hero p {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.7;
+}
+
+.welcome-doors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 420px));
+  justify-content: center;
+  gap: 4rem;
+}
+
+.welcome-card {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 24px;
+  color: #fffaf0;
+  text-decoration: none;
+  background: #211600;
+  box-shadow: 0 22px 52px rgba(36, 21, 0, 0.18);
+}
+
+.welcome-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.68;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.welcome-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.66)
+  );
+}
+
+.welcome-card-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 2.3rem;
+}
+
+.welcome-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 2.65rem;
+  font-weight: normal;
+  line-height: 1;
+}
+
+.welcome-card p {
+  max-width: 18rem;
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.welcome-card:hover img {
+  transform: scale(1.03);
+  opacity: 0.78;
+}
+
+
+/* =========================================================
+   INTERIOR NAV
+   Theory / Practice pages
+========================================================= */
+
+.interior-header {
+  padding: 2rem 0 0;
+  text-align: center;
+}
+
+.interior-nav {
+  display: inline-flex;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 999px;
+  background: rgba(36, 21, 0, 0.06);
+}
+
+.interior-nav a {
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  color: #241500;
+  text-decoration: none;
+  font-size: 1.05rem;
+}
+
+.interior-nav a.active {
+  background: rgba(36, 21, 0, 0.1);
+}
+
+.site-return {
+  opacity: 0.72;
+  margin-right: 1.2rem;
+}
+
+.site-return:hover {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   SYMBOLIC INTERIOR HERO
+========================================================= */
+
+.symbolic-hero {
+  max-width: 760px;
+  margin: 3rem auto 4rem;
+  text-align: center;
+}
+
+.symbolic-face {
+  width: 170px;
+  max-width: 42vw;
+  margin: 0 auto 1.75rem;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(36, 21, 0, 0.14);
+}
+
+.symbolic-copy {
+  max-width: 680px;
+  margin: 0 auto;
+  font-size: 1.45rem;
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   CARD GRID
+   Theory / Practice room cards
+========================================================= */
+
+.archive-grid,
+.threshold-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.archive-card,
+.threshold-card {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+  border-radius: 24px;
+  color: #fffaf0;
+  text-decoration: none;
+  background: #211600;
+  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.18);
+}
+
+.archive-card img,
+.threshold-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.72;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.archive-card::after,
+.threshold-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.68)
+  );
+}
+
+.archive-card-text,
+.threshold-card-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 1.6rem;
+}
+
+.archive-card h2,
+.threshold-card h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+.archive-card:hover img,
+.threshold-card:hover img {
+  transform: scale(1.03);
+  opacity: 0.82;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+  .archive-grid,
+  .threshold-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .welcome-doors {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .welcome-card {
+    min-height: 380px;
+  }
+}
+
+@media (max-width: 700px) {
+  .archive-grid,
+  .threshold-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .threshold-page,
+  .welcome-threshold {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .site-logo {
+    font-size: clamp(3.2rem, 14vw, 5rem);
+  }
+
+  .landing-message,
+  .welcome-hero p,
+  .symbolic-copy {
+    font-size: 1.2rem;
+  }
+
+  .interior-nav {
+    gap: 0.35rem;
+  }
+
+  .interior-nav a {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .site-return {
+    margin-right: 0.35rem;
+  }
+}
+/* =========================================================
+   ROOM PAGES
+   Bonsai / gallery rooms
+========================================================= */
+
+.room-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.room-hero {
+  max-width: 760px;
+  margin: 0 auto 4rem;
+  text-align: center;
+}
+
+.room-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(36, 21, 0, 0.72);
+}
+
+.room-hero h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(4rem, 8vw, 5.5rem);
+  font-weight: normal;
+  line-height: 1;
+}
+
+.room-hero p {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: 1.28rem;
+  line-height: 1.65;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+.room-card {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+  border-radius: 24px;
+  color: #fffaf0;
+  text-decoration: none;
+  background: #211600;
+  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.18);
+}
+
+.room-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.72;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.room-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.68)
+  );
+}
+
+.room-card-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 1.6rem;
+}
+
+.room-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+.room-card p {
+  margin: 0;
+  max-width: 18rem;
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
+
+.room-card:hover img {
+  transform: scale(1.03);
+  opacity: 0.82;
+}
+
+@media (max-width: 950px) {
+  .room-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .room-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-page {
+    padding: 3rem 1rem 4rem;
+  }
+}
+.room-feature {
+  width: min(1200px, 88vw);
+  margin: 5rem auto 8rem;
+  display: grid;
+  grid-template-columns: minmax(320px, 520px) 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.room-feature-image {
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  object-fit: cover;
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  filter: brightness(0.82) contrast(1.04) saturate(0.9);
+}
+
+.room-feature .room-copy {
+  max-width: 620px;
+  margin: 0;
+}
+
+.room-feature .room-copy h1 {
+  margin-top: 0;
+}
+
+@media (max-width: 850px) {
+  .room-feature {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+/* =========================================================
    THEORY ROOM FEATURE PAGES
-   Studio / Materials / Places / GENE / Kilns
 ========================================================= */
 
 .room-feature {
