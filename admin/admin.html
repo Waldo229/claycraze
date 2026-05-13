@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>ClaycrazE Admin</title>
 
   <style>
@@ -153,6 +154,10 @@
       line-height: 1.5;
     }
 
+    textarea.short-note {
+      min-height: 72px;
+    }
+
     input[type="file"] {
       padding: 10px;
       background: #fff;
@@ -257,6 +262,7 @@
   <div class="page">
     <header>
       <div class="eyebrow">ClaycrazE Practice</div>
+
       <h1>Inventory Entry</h1>
 
       <div class="subtitle">
@@ -274,7 +280,7 @@
           <div class="grid">
             <div>
               <label for="shape">Shape</label>
-              <select id="shape">
+              <select id="shape" name="shape">
                 <option value="OV">OV — Oval Bonsai</option>
                 <option value="RD">RD — Round Bonsai</option>
                 <option value="RC">RC — Rectangle Bonsai</option>
@@ -288,12 +294,12 @@
 
             <div>
               <label for="yearMonth">YearMonth</label>
-              <input id="yearMonth" type="text" placeholder="2605" />
+              <input id="yearMonth" name="yearMonth" type="text" placeholder="2605" />
             </div>
 
             <div class="full">
               <label for="pieceIdPreview">Generated Piece ID</label>
-              <input id="pieceIdPreview" type="text" readonly />
+              <input id="pieceIdPreview" name="pieceIdPreview" type="text" readonly />
             </div>
           </div>
         </div>
@@ -304,27 +310,27 @@
           <div class="grid">
             <div>
               <label for="title">Title</label>
-              <input id="title" type="text" placeholder="Small oval bonsai pot" />
+              <input id="title" name="title" type="text" placeholder="Small oval bonsai pot" />
             </div>
 
             <div>
               <label for="clay">Clay</label>
-              <input id="clay" type="text" placeholder="stoneware / local clay / porcelain" />
+              <input id="clay" name="clay" type="text" placeholder="stoneware / local clay / porcelain" />
             </div>
 
             <div>
               <label for="finish">Finish</label>
-              <input id="finish" type="text" placeholder="ash glaze / satin iron / oxide wash" />
+              <input id="finish" name="finish" type="text" placeholder="ash glaze / satin iron / oxide wash" />
             </div>
 
             <div>
               <label for="dimensions">Dimensions</label>
-              <input id="dimensions" type="text" placeholder="8 x 6 x 3 in." />
+              <input id="dimensions" name="dimensions" type="text" placeholder="8 x 6 x 3 in." />
             </div>
 
             <div>
               <label for="status">Status</label>
-              <select id="status">
+              <select id="status" name="status">
                 <option value="available">available</option>
                 <option value="sold">sold</option>
                 <option value="held">held</option>
@@ -335,7 +341,7 @@
 
             <div>
               <label for="hasBottomImage">Has Bottom Image?</label>
-              <select id="hasBottomImage">
+              <select id="hasBottomImage" name="hasBottomImage">
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
@@ -343,7 +349,7 @@
 
             <div>
               <label for="isPublished">Published?</label>
-              <select id="isPublished">
+              <select id="isPublished" name="isPublished">
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
@@ -351,58 +357,110 @@
 
             <div class="full">
               <label for="description">Description</label>
-              <textarea id="description" placeholder="A short field note for the public gallery. Let the image carry most of the meaning."></textarea>
+              <textarea
+                id="description"
+                name="description"
+                placeholder="A short field note for the public gallery. Let the image carry most of the meaning."
+              ></textarea>
             </div>
           </div>
         </div>
-<div class="section">
-  <h2>AI Assist</h2>
 
-  <div class="grid">
-    <div class="full">
-      <label for="aiDescription">Suggested Description</label>
-      <textarea id="aiDescription" placeholder="Wine-label description will appear here."></textarea>
-    </div>
+        <div class="section">
+          <h2>Pricing</h2>
 
-    <div>
-      <label for="aiPriceLow">Suggested Low Price</label>
-      <input id="aiPriceLow" type="text" placeholder="$85" />
-    </div>
+          <div class="grid">
+            <div>
+              <label for="suggestedLowPrice">Suggested Low Price</label>
+              <input
+                id="suggestedLowPrice"
+                name="suggestedLowPrice"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="85"
+              />
+            </div>
 
-    <div>
-      <label for="aiPriceHigh">Suggested High Price</label>
-      <input id="aiPriceHigh" type="text" placeholder="$165" />
-    </div>
+            <div>
+              <label for="suggestedHighPrice">Suggested High Price</label>
+              <input
+                id="suggestedHighPrice"
+                name="suggestedHighPrice"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="165"
+              />
+            </div>
 
-    <div class="full">
-      <label for="aiLaoTzu">Lao Tzu / Cold Mountain Line</label>
-      <textarea id="aiLaoTzu" placeholder="My time here is not long."></textarea>
-    </div>
-  </div>
+            <div class="full">
+              <label for="finalPrice">Final Price</label>
+              <input
+                id="finalPrice"
+                name="finalPrice"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Established selling price"
+              />
+            </div>
+          </div>
 
-  <div class="actions">
-    <button type="button" id="suggestDescriptionBtn">Suggest Description</button>
-    <button type="button" id="suggestPriceBtn">Suggest Price Range</button>
-    <button type="button" id="suggestLaoTzuBtn">Suggest Lao Tzu Line</button>
-    <button type="button" id="applyAiBtn">Apply Suggestions</button>
-  </div>
+          <div class="note">
+            Suggested prices are advisory. Final Price is the established selling price.
+          </div>
+        </div>
 
-  <div class="note">
-    Suggestions are advisory only. The potter remains the final authority.
-  </div>
-</div>
+        <div class="section">
+          <h2>AI Assist</h2>
+
+          <div class="grid">
+            <div class="full">
+              <label for="aiDescription">Suggested Description</label>
+              <textarea
+                id="aiDescription"
+                name="aiDescription"
+                placeholder="Short public description will appear here."
+              ></textarea>
+            </div>
+
+            <div class="full">
+              <label for="patronNote">Note to Patron</label>
+              <textarea
+                id="patronNote"
+                name="patronNote"
+                class="short-note"
+                maxlength="120"
+                placeholder="Better after a second look."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" id="suggestDescriptionBtn">Suggest Description</button>
+            <button type="button" id="suggestPriceBtn">Suggest Price Range</button>
+            <button type="button" id="suggestPatronNoteBtn">Suggest Note to Patron</button>
+            <button type="button" id="applyAiBtn">Apply Suggestions</button>
+          </div>
+
+          <div class="note">
+            Keep the note brief: 5–12 words. A breath, not a book.
+          </div>
+        </div>
+
         <div class="section">
           <h2>Images</h2>
 
           <div class="grid">
             <div>
               <label for="fullTopImage">Top Image</label>
-              <input id="fullTopImage" type="file" accept="image/jpeg" />
+              <input id="fullTopImage" name="fullTopImage" type="file" accept="image/jpeg" />
             </div>
 
             <div>
               <label for="fullBottomImage">Bottom Image</label>
-              <input id="fullBottomImage" type="file" accept="image/jpeg" />
+              <input id="fullBottomImage" name="fullBottomImage" type="file" accept="image/jpeg" />
             </div>
           </div>
 

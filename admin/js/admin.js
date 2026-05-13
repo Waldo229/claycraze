@@ -14,17 +14,19 @@
   const isPublishedInput = document.getElementById("isPublished");
   const descriptionInput = document.getElementById("description");
 
+  const suggestedLowPriceInput = document.getElementById("suggestedLowPrice");
+  const suggestedHighPriceInput = document.getElementById("suggestedHighPrice");
+  const finalPriceInput = document.getElementById("finalPrice");
+
+  const aiDescriptionInput = document.getElementById("aiDescription");
+  const patronNoteInput = document.getElementById("patronNote");
+
   const fullTopImageInput = document.getElementById("fullTopImage");
   const fullBottomImageInput = document.getElementById("fullBottomImage");
 
-  const aiDescriptionInput = document.getElementById("aiDescription");
-  const aiPriceLowInput = document.getElementById("aiPriceLow");
-  const aiPriceHighInput = document.getElementById("aiPriceHigh");
-  const aiLaoTzuInput = document.getElementById("aiLaoTzu");
-
   const suggestDescriptionBtn = document.getElementById("suggestDescriptionBtn");
   const suggestPriceBtn = document.getElementById("suggestPriceBtn");
-  const suggestLaoTzuBtn = document.getElementById("suggestLaoTzuBtn");
+  const suggestPatronNoteBtn = document.getElementById("suggestPatronNoteBtn");
   const applyAiBtn = document.getElementById("applyAiBtn");
 
   const previewBtn = document.getElementById("previewBtn");
@@ -53,7 +55,7 @@
 
     suggestDescriptionBtn.addEventListener("click", suggestDescription);
     suggestPriceBtn.addEventListener("click", suggestPriceRange);
-    suggestLaoTzuBtn.addEventListener("click", suggestLaoTzuLine);
+    suggestPatronNoteBtn.addEventListener("click", suggestPatronNote);
     applyAiBtn.addEventListener("click", applyAiSuggestions);
 
     resetBtn.addEventListener("click", function () {
@@ -63,7 +65,9 @@
         updateTitleFromShape();
         clearOutputs();
         clearAiOutputs();
+
         await refreshGeneratedId();
+
         setStatus("Fill out the form, choose the top image, then preview or save.");
       }, 0);
     });
@@ -104,6 +108,7 @@
 
       pieceIdPreviewInput.value = finalId;
       pieceIdOutput.textContent = finalId;
+
       updateImagePreview(finalId, payload.has_bottom_image);
       updateRecordOutput(payload, finalId);
 
@@ -159,6 +164,7 @@
 
     pieceIdPreviewInput.value = previewId;
     pieceIdOutput.textContent = previewId;
+
     updateImagePreview(previewId, getValue(hasBottomImageInput) === "1");
   }
 
@@ -191,8 +197,18 @@
     const isPublished = getValue(isPublishedInput) === "1";
     const description = getValue(descriptionInput);
 
+    const suggestedLowPrice = numberOrNull(suggestedLowPriceInput);
+    const suggestedHighPrice = numberOrNull(suggestedHighPriceInput);
+    const finalPrice = numberOrNull(finalPriceInput);
+    const patronNote = getValue(patronNoteInput);
+
     if (!title) {
       setStatus("Title is required.");
+      return null;
+    }
+
+    if (finalPrice === null) {
+      setStatus("Final Price is required before saving.");
       return null;
     }
 
@@ -224,6 +240,10 @@
       dimensions,
       status,
       description,
+      suggested_low_price: suggestedLowPrice,
+      suggested_high_price: suggestedHighPrice,
+      final_price: finalPrice,
+      patron_note: patronNote,
       has_bottom_image: hasBottomImage,
       is_published: isPublished,
       thumb_image: thumbImage,
@@ -276,6 +296,10 @@
         dimensions: payload.dimensions,
         status: payload.status,
         description: payload.description,
+        suggested_low_price: payload.suggested_low_price,
+        suggested_high_price: payload.suggested_high_price,
+        final_price: payload.final_price,
+        patron_note: payload.patron_note,
         has_bottom_image: payload.has_bottom_image,
         is_published: payload.is_published,
       },
@@ -290,17 +314,19 @@
     const finish = getValue(finishInput);
 
     const descriptions = [
-      `Quiet ${shapeLabel(shape).toLowerCase()} with softened edges and a restrained ${finish || "studio"} surface. The ${clay || "clay body"} remains visible beneath the firing atmosphere.`,
+      `Quiet ${shapeLabel(shape).toLowerCase()} with softened edges and a restrained ${finish || "studio"} surface.`,
 
-      `Handmade ${shapeLabel(shape).toLowerCase()} preserving traces of throwing, firing, and touch. The surface favors depth and restraint over excess movement.`,
+      `Handmade ${shapeLabel(shape).toLowerCase()} with subtle surface variation and a calm studio presence.`,
 
-      `A calm studio vessel with subtle variation across the surface and softened transitions along the rim and foot.`,
+      `A restrained studio piece shaped for use, close looking, and quiet companionship.`,
 
-      `${shapeLabel(shape)} with a quiet presence and a surface that rewards close looking. Made as a functional object, but carrying the trace of a particular firing and hand.`
+      `${shapeLabel(shape)} with a quiet profile and a surface that rewards a slower look.`,
+
+      `A handmade piece in ${clay || "clay"}, finished with a surface that favors depth over display.`,
     ];
 
     aiDescriptionInput.value = randomItem(descriptions);
-    setStatus("Wine-label description suggestion generated.");
+    setStatus("Short description suggestion generated.");
   }
 
   function suggestPriceRange() {
@@ -319,57 +345,45 @@
 
     const selected = ranges[shape] || [100, 200];
 
-    aiPriceLowInput.value = `$${selected[0]}`;
-    aiPriceHighInput.value = `$${selected[1]}`;
+    suggestedLowPriceInput.value = selected[0];
+    suggestedHighPriceInput.value = selected[1];
 
-    setStatus("Price range suggestion generated. Potter remains final authority.");
+    if (!getValue(finalPriceInput)) {
+      finalPriceInput.value = selected[0];
+    }
+
+    setStatus("Price range suggested. Final Price remains your decision.");
   }
 
-  function suggestLaoTzuLine() {
+  function suggestPatronNote() {
     const lines = [
-      "My time here is not long.",
-      "The river moves east whether the pot is purchased or not.",
-      "Another traveler may arrive before you.",
-      "The wise man acquires vessels before regret.",
-      "Like you, I passed here.",
-      "A quiet vessel survives many loud arguments.",
-      "The kiln cools whether we are ready or not.",
-      "The bowl waits longer than the buyer.",
-      "The pot waits. The buyer hurries.",
-      "Even the empty pot has already begun its journey.",
-      "Do not ask the vessel to wait forever.",
-      "The hand has passed. The clay remains."
+      "Better after a second look.",
+      "Quiet work rewards slower looking.",
+      "A calm companion for an old tree.",
+      "Holds shadow well.",
+      "Small pot, steady presence.",
+      "For a tree with patience.",
+      "Made for quiet attention.",
+      "Soft surface, strong footing.",
+      "A little restraint goes far.",
+      "Let the tree speak first.",
+      "Stillness has its own weight.",
+      "A quiet place for roots.",
+      "The rim knows when to stop.",
+      "Some pots wait well.",
+      "Made to be noticed slowly.",
     ];
 
-    aiLaoTzuInput.value = randomItem(lines);
-    setStatus("Lao Tzu / Cold Mountain line generated.");
+    patronNoteInput.value = randomItem(lines);
+    setStatus("Note to Patron generated.");
   }
 
   function applyAiSuggestions() {
-    if (aiDescriptionInput.value.trim()) {
-      descriptionInput.value = aiDescriptionInput.value.trim();
+    if (getValue(aiDescriptionInput)) {
+      descriptionInput.value = getValue(aiDescriptionInput);
     }
 
-    const priceLow = getValue(aiPriceLowInput);
-    const priceHigh = getValue(aiPriceHighInput);
-    const laoTzu = getValue(aiLaoTzuInput);
-
-    const notes = [];
-
-    if (priceLow || priceHigh) {
-      notes.push(`Suggested range: ${priceLow || "—"} to ${priceHigh || "—"}`);
-    }
-
-    if (laoTzu) {
-      notes.push(`Line: ${laoTzu}`);
-    }
-
-    if (notes.length) {
-      const existing = getValue(descriptionInput);
-      descriptionInput.value = [existing, "", ...notes].filter(Boolean).join("\n");
-    }
-
-    setStatus("AI suggestions applied to description field.");
+    setStatus("AI suggestion applied.");
   }
 
   function clearOutputs() {
@@ -384,9 +398,10 @@
 
   function clearAiOutputs() {
     if (aiDescriptionInput) aiDescriptionInput.value = "";
-    if (aiPriceLowInput) aiPriceLowInput.value = "";
-    if (aiPriceHighInput) aiPriceHighInput.value = "";
-    if (aiLaoTzuInput) aiLaoTzuInput.value = "";
+    if (suggestedLowPriceInput) suggestedLowPriceInput.value = "";
+    if (suggestedHighPriceInput) suggestedHighPriceInput.value = "";
+    if (finalPriceInput) finalPriceInput.value = "";
+    if (patronNoteInput) patronNoteInput.value = "";
   }
 
   function setDefaultYearMonth() {
@@ -454,6 +469,18 @@
     return String(el?.value || "").trim();
   }
 
+  function numberOrNull(el) {
+    const value = getValue(el).replace("$", "");
+
+    if (!value) return null;
+
+    const number = Number(value);
+
+    if (Number.isNaN(number)) return null;
+
+    return number;
+  }
+
   function setStatus(message) {
     statusOutput.textContent = message;
   }
@@ -498,6 +525,7 @@
         canvas.height = height;
 
         const ctx = canvas.getContext("2d");
+
         if (!ctx) {
           reject(new Error("Could not create thumbnail canvas."));
           return;
