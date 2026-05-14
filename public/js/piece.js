@@ -1,62 +1,176 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+const pieceRoot = document.getElementById("pieceRoot") || document.getElementById("pieceDetail");
 
-  <title>ClaycrazE | Piece Detail</title>
+document.addEventListener("DOMContentLoaded", () => {
+  loadPiece();
+});
 
-  <link rel="stylesheet" href="/css/styles.css?v=101" />
-</head>
+async function loadPiece() {
+  if (!pieceRoot) return;
 
-<body class="practice-page">
+  const params = new URLSearchParams(window.location.search);
+  const pieceId = params.get("id");
 
-  <header class="site-header">
-    <div class="header-shell">
+  if (!pieceId) {
+    pieceRoot.innerHTML = `<div class="error-state">No piece ID was provided.</div>`;
+    return;
+  }
 
-      <a class="site-brand" href="/index.html">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
-      </a>
+  try {
+    const response = await fetch("/data/pieces.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Server returned ${response.status}`);
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+    const pieces = await response.json();
+    const piece = pieces.find((item) => item.id === pieceId);
 
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/index.html">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-      </nav>
+    if (!piece) {
+      pieceRoot.innerHTML = `<div class="error-state">Piece not found.</div>`;
+      return;
+    }
 
-    </div>
-  </header>
-
-  <main class="gallery-page">
-
-    <section
-      id="pieceRoot"
-      class="piece-root"
-      aria-live="polite"
-    >
-      <div class="loading">
-        Loading piece...
+    renderPiece(piece);
+    setupControls(piece);
+  } catch (error) {
+    pieceRoot.innerHTML = `
+      <div class="error-state">
+        Could not load piece data: ${escapeHtml(error.message)}
       </div>
-    </section>
+    `;
+  }
+}
 
-  </main>
+function renderPiece(piece) {
+  const id = piece.id;
+  const title = piece.title || "Untitled Piece";
+  const dimensions = piece.dimensions || "—";
+  const price = piece.price || "Available";
+  const description = piece.description || "";
 
-  <script src="/js/nav.js?v=101"></script>
-  <script src="/js/piece.js?v=101"></script>
+  const topImage = `/images/full/${id}_top.jpg`;
+  const bottomImage = `/images/full/${id}_bottom.jpg`;
+  const hasBottom = piece.has_bottom_image === true || piece.has_bottom_image === "true";
 
-</body>
-</html>
+  pieceRoot.innerHTML = `
+    <article class="piece-detail">
+
+      <div class="piece-detail-image-wrap">
+        <img
+          id="pieceMainImage"
+          class="piece-detail-image"
+          src="${topImage}"
+          alt="${escapeAttribute(title)} top view"
+          data-top="${topImage}"
+          data-bottom="${bottomImage}"
+          data-view="top"
+        />
+      </div>
+
+      <div class="piece-detail-body">
+        <p class="piece-detail-kicker">${escapeHtml(id)}</p>
+        <h1>${escapeHtml(title)}</h1>
+
+        <p><strong>Dimensions:</strong> ${escapeHtml(dimensions)}</p>
+        <p><strong>Price:</strong> ${escapeHtml(price)}</p>
+
+        ${description ? `<div class="piece-description">${formatDescription(description)}</div>` : ""}
+
+        <div class="piece-actions">
+          ${
+            hasBottom
+              ? `<button id="toggleImage" class="piece-button" type="button">View underside</button>`
+              : ""
+          }
+
+          <button id="magnifyImage" class="piece-button" type="button">
+            Magnify
+          </button>
+
+          <a class="piece-button" href="/gallery/ovals.html">
+            Back to ovals
+          </a>
+
+          <a class="piece-button" href="/practice.html">
+            Practice gallery
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+    <div id="lightbox" class="image-lightbox" aria-hidden="true">
+      <button id="closeLightbox" class="lightbox-close" type="button">×</button>
+      <img id="lightboxImage" class="lightbox-image" src="" alt="" />
+    </div>
+  `;
+}
+
+function setupControls(piece) {
+  const mainImage = document.getElementById("pieceMainImage");
+  const toggleButton = document.getElementById("toggleImage");
+  const magnifyButton = document.getElementById("magnifyImage");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImage = document.getElementById("lightboxImage");
+  const closeButton = document.getElementById("closeLightbox");
+
+  if (toggleButton && mainImage) {
+    toggleButton.addEventListener("click", () => {
+      const current = mainImage.dataset.view;
+
+      if (current === "top") {
+        mainImage.src = mainImage.dataset.bottom;
+        mainImage.alt = `${piece.title || piece.id} underside`;
+        mainImage.dataset.view = "bottom";
+        toggleButton.textContent = "View top";
+      } else {
+        mainImage.src = mainImage.dataset.top;
+        mainImage.alt = `${piece.title || piece.id} top view`;
+        mainImage.dataset.view = "top";
+        toggleButton.textContent = "View underside";
+      }
+    });
+  }
+
+  function openMagnifier() {
+    lightboxImage.src = mainImage.src;
+    lightboxImage.alt = mainImage.alt;
+    lightbox.classList.add("is-open");
+    lightbox.setAttribute("aria-hidden", "false");
+  }
+
+  function closeMagnifier() {
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    lightboxImage.src = "";
+  }
+
+  mainImage.addEventListener("click", openMagnifier);
+  magnifyButton.addEventListener("click", openMagnifier);
+  closeButton.addEventListener("click", closeMagnifier);
+
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeMagnifier();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMagnifier();
+  });
+}
+
+function formatDescription(text) {
+  return String(text)
+    .split(/\n{2,}/)
+    .map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
