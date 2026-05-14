@@ -45,8 +45,9 @@ async function loadOvals() {
 }
 
 function buildCardHtml(piece) {
-  const title = piece.description || piece.title || "Untitled Piece";
+  const title = piece.title || "Untitled Piece";
   const id = piece.id || "";
+
   const dimensions =
     piece.dimensions ||
     formatDims(piece.width, piece.depth, piece.height);
@@ -54,17 +55,19 @@ function buildCardHtml(piece) {
   const price = formatPrice(piece.price);
 
   const imageHtml = buildImageHtml(
-    `/images/full/${piece.id}_top.jpg`,
+    `/images/thumbs/${piece.id}_top_thumb.jpg`,
     title
   );
 
   return `
     <article class="piece-card">
+
       <div class="piece-image-wrap">
         ${imageHtml}
       </div>
 
       <div class="piece-body">
+
         <h3 class="piece-title">
           ${escapeHtml(title)}
         </h3>
@@ -74,6 +77,7 @@ function buildCardHtml(piece) {
         </p>
 
         <div class="museum-card">
+
           <p class="card-row">
             <span class="card-label">Dimensions:</span>
             ${escapeHtml(dimensions)}
@@ -85,12 +89,18 @@ function buildCardHtml(piece) {
           </p>
 
           <p class="card-row">
-            <a class="more-link" href="/gallery/piece.html?id=${encodeURIComponent(id)}">
+            <a
+              class="more-link"
+              href="/gallery/piece.html?id=${encodeURIComponent(id)}"
+            >
               More
             </a>
           </p>
+
         </div>
+
       </div>
+
     </article>
   `;
 }
@@ -173,7 +183,9 @@ function injectGalleryNav(activeKey) {
 
   nav.innerHTML = items
     .map(([key, href, label]) =>
-      `<a href="${href}"${key === activeKey ? ' class="active"' : ""}>${label}</a>`
+      `<a href="${href}"${key === activeKey ? ' class="active"' : ""}>
+        ${label}
+      </a>`
     )
     .join("");
 
