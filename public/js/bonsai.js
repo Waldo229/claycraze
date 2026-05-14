@@ -11,8 +11,9 @@
 
   try {
     const response = await fetch("/data/pieces.json", { cache: "no-store" });
+
     if (!response.ok) {
-      throw new Error("Could not load pieces.json");
+      throw new Error("Could not load /data/pieces.json");
     }
 
     const pieces = await response.json();
@@ -27,16 +28,17 @@
       return;
     }
 
-    const results = await Promise.all(pieces.map(checkPieceThumbnail));
+    const results = await Promise.all(pieces.map(checkPieceImage));
+
     const visiblePieces = results
-      .filter((result) => result.hasThumb)
+      .filter((result) => result.hasImage)
       .map((result) => result.piece);
 
     if (!visiblePieces.length) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
           <h2>No gallery images found</h2>
-          <p>Published records exist, but no matching thumbnail images were found.</p>
+          <p>Published records exist, but no matching full-size images were found.</p>
         </div>
       `;
       return;
@@ -44,7 +46,7 @@
 
     galleryGrid.innerHTML = visiblePieces
       .map((piece) => {
-        const thumbSrc = `/images/thumbs/${piece.id}_top.jpg`;
+        const imageSrc = `/images/full/${piece.id}_top.jpg`;
         const href = `/gallery/piece.html?id=${encodeURIComponent(piece.id)}`;
 
         return `
@@ -53,11 +55,12 @@
               <div class="gallery-thumb-wrap">
                 <img
                   class="gallery-thumb"
-                  src="${thumbSrc}"
+                  src="${imageSrc}"
                   alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} top view"
                   loading="lazy"
                 />
               </div>
+
               <div class="gallery-card-body">
                 <h2>${escapeHtml(piece.title || "Untitled Piece")}</h2>
                 <p class="gallery-meta">${escapeHtml(piece.id)}</p>
@@ -74,24 +77,26 @@
         <p>Something went wrong while loading the gallery data.</p>
       </div>
     `;
+
     console.error("Gallery load error:", error);
   }
 
-  function checkPieceThumbnail(piece) {
-    const thumbSrc = `/images/thumbs/${piece.id}_top.jpg`;
+  function checkPieceImage(piece) {
+    const imageSrc = `/images/full/${piece.id}_top.jpg`;
 
     return new Promise((resolve) => {
       const img = new Image();
 
       img.onload = function () {
-        resolve({ piece, hasThumb: true });
+        resolve({ piece, hasImage: true });
       };
 
       img.onerror = function () {
-        resolve({ piece, hasThumb: false });
+        console.warn("Missing image:", imageSrc);
+        resolve({ piece, hasImage: false });
       };
 
-      img.src = thumbSrc;
+      img.src = imageSrc;
     });
   }
 
