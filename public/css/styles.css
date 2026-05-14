@@ -577,26 +577,6 @@ a {
   padding: 3rem 1.5rem 5rem;
 }
 
-.category-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-bottom: 3rem;
-}
-
-.category-nav a {
-  padding: 0.65rem 1rem;
-  border-radius: 999px;
-  text-decoration: none;
-  background: rgba(36, 21, 0, 0.08);
-  color: #241500;
-}
-
-.category-nav a.active {
-  background: rgba(36, 21, 0, 0.16);
-}
-
 .gallery-intro {
   max-width: 720px;
   margin: 0 auto 3rem;
@@ -612,58 +592,55 @@ a {
 .gallery-intro p {
   margin: 0;
   font-size: 1.2rem;
-  line-height: 1.6;
 }
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 420px));
+  justify-content: center;
   gap: 2rem;
 }
 
 .piece-card {
   overflow: hidden;
   border-radius: 24px;
-  background: rgba(255, 250, 240, 0.45);
-  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.14);
+  background: #edd687;
+  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.18);
 }
 
 .piece-image-wrap {
   width: 100%;
-  background: rgba(36, 21, 0, 0.06);
+  height: 260px;
+  overflow: hidden;
+  background: rgba(36, 21, 0, 0.08);
 }
 
 .piece-image {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 62%;
   display: block;
 }
 
 .piece-body {
-  padding: 1.5rem;
+  padding: 1.4rem 1.6rem 1.7rem;
 }
 
 .piece-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.4rem;
-  line-height: 1.35;
+  margin: 0 0 0.65rem;
+  font-size: 1.45rem;
   font-weight: normal;
 }
 
 .piece-id {
   margin: 0 0 1rem;
-  opacity: 0.7;
-  font-size: 0.95rem;
+  opacity: 0.75;
   letter-spacing: 0.04em;
 }
 
-.museum-card {
-  font-size: 0.98rem;
-  line-height: 1.5;
-}
-
 .card-row {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.45rem;
 }
 
 .card-label {
@@ -671,7 +648,10 @@ a {
 }
 
 .more-link {
+  display: inline-block;
+  margin-top: 0.5rem;
   text-decoration: none;
+  border-bottom: 1px solid currentColor;
 }
 
 .loading,
