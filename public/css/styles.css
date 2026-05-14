@@ -567,3 +567,117 @@ a {
     padding: 3rem 1rem 4rem;
   }
 }
+/* =========================================================
+   GALLERY PAGES
+========================================================= */
+
+.gallery-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.category-nav a {
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  background: rgba(36, 21, 0, 0.08);
+  color: #241500;
+}
+
+.category-nav a.active {
+  background: rgba(36, 21, 0, 0.16);
+}
+
+.gallery-intro {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+
+.gallery-intro h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: normal;
+}
+
+.gallery-intro p {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.piece-card {
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(255, 250, 240, 0.45);
+  box-shadow: 0 18px 40px rgba(36, 21, 0, 0.14);
+}
+
+.piece-image-wrap {
+  width: 100%;
+  background: rgba(36, 21, 0, 0.06);
+}
+
+.piece-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.piece-body {
+  padding: 1.5rem;
+}
+
+.piece-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.4rem;
+  line-height: 1.35;
+  font-weight: normal;
+}
+
+.piece-id {
+  margin: 0 0 1rem;
+  opacity: 0.7;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.museum-card {
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.card-row {
+  margin: 0 0 0.5rem;
+}
+
+.card-label {
+  font-weight: bold;
+}
+
+.more-link {
+  text-decoration: none;
+}
+
+.loading,
+.empty-state,
+.error-state,
+.no-image {
+  padding: 2rem;
+  text-align: center;
+}
