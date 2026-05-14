@@ -681,3 +681,22 @@ a {
   padding: 2rem;
   text-align: center;
 }
+/* =========================================================
+   GALLERY IMAGE FIX
+========================================================= */
+
+.piece-image-wrap {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 22px 22px 0 0;
+  background: rgba(36, 21, 0, 0.08);
+}
+
+.piece-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
