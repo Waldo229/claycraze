@@ -28,37 +28,58 @@ a {
   color: inherit;
 }
 
-
 /* =========================================================
-   SITE HEADER — LANDING PAGE
+   SITE HEADER
 ========================================================= */
 
 .site-header {
   background: #ecd883;
   text-align: center;
-  padding: 2.75rem 1rem 2rem;
+  padding: 2rem 1rem 1.5rem;
 }
 
-.site-header-inner {
+.site-header-inner,
+.header-shell {
   max-width: 1100px;
   margin: 0 auto;
 }
 
-.site-logo {
+.site-logo,
+.site-brand {
   display: block;
   color: #241500;
   text-decoration: none;
-  font-size: clamp(4rem, 9vw, 7rem);
   font-weight: normal;
   line-height: 1;
 }
 
-.site-tag {
-  display: block;
-  margin-top: 0.75rem;
-  font-size: clamp(1.25rem, 2.4vw, 2rem);
+.site-logo {
+  font-size: clamp(4rem, 9vw, 7rem);
 }
 
+.site-title {
+  display: block;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+}
+
+.site-tag {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: clamp(1.15rem, 2.2vw, 1.75rem);
+}
+
+.site-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+.site-nav a {
+  text-decoration: none;
+}
 
 /* =========================================================
    LANDING PAGE
@@ -101,7 +122,6 @@ a {
   font-size: 1.35rem;
   line-height: 1.65;
 }
-
 
 /* =========================================================
    WELCOME PAGE
@@ -165,11 +185,7 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.04),
-    rgba(0, 0, 0, 0.66)
-  );
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.66));
 }
 
 .welcome-card-text {
@@ -200,10 +216,8 @@ a {
   opacity: 0.78;
 }
 
-
 /* =========================================================
    INTERIOR NAV
-   Theory / Practice pages
 ========================================================= */
 
 .interior-header {
@@ -240,7 +254,6 @@ a {
   opacity: 1;
 }
 
-
 /* =========================================================
    SYMBOLIC INTERIOR HERO
 ========================================================= */
@@ -266,10 +279,8 @@ a {
   line-height: 1.7;
 }
 
-
 /* =========================================================
    CARD GRID
-   Theory / Practice room cards
 ========================================================= */
 
 .archive-grid,
@@ -307,11 +318,7 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.08),
-    rgba(0, 0, 0, 0.68)
-  );
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.68));
 }
 
 .archive-card-text,
@@ -337,63 +344,6 @@ a {
   opacity: 0.82;
 }
 
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 1000px) {
-  .archive-grid,
-  .threshold-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 800px) {
-  .welcome-doors {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .welcome-card {
-    min-height: 380px;
-  }
-}
-
-@media (max-width: 700px) {
-  .archive-grid,
-  .threshold-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .threshold-page,
-  .welcome-threshold {
-    padding: 3rem 1rem 4rem;
-  }
-
-  .site-logo {
-    font-size: clamp(3.2rem, 14vw, 5rem);
-  }
-
-  .landing-message,
-  .welcome-hero p,
-  .symbolic-copy {
-    font-size: 1.2rem;
-  }
-
-  .interior-nav {
-    gap: 0.35rem;
-  }
-
-  .interior-nav a {
-    font-size: 0.95rem;
-    padding: 0.6rem 0.85rem;
-  }
-
-  .site-return {
-    margin-right: 0.35rem;
-  }
-}
 /* =========================================================
    ROOM PAGES
 ========================================================= */
@@ -432,8 +382,6 @@ a {
   line-height: 1.65;
 }
 
-/* Room cards */
-
 .room-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(240px, 1fr));
@@ -465,11 +413,7 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.08),
-    rgba(0, 0, 0, 0.68)
-  );
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.68));
 }
 
 .room-card-text {
@@ -498,8 +442,6 @@ a {
   transform: scale(1.03);
   opacity: 0.82;
 }
-
-/* Theory / Studio feature pages */
 
 .room-feature {
   width: min(1050px, 88vw);
@@ -544,29 +486,6 @@ a {
   margin-bottom: 0;
 }
 
-@media (max-width: 950px) {
-  .room-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 850px) {
-  .room-feature {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-}
-
-@media (max-width: 650px) {
-  .room-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .room-page {
-    padding: 3rem 1rem 4rem;
-  }
-}
 /* =========================================================
    GALLERY PAGES
 ========================================================= */
@@ -575,6 +494,22 @@ a {
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 1.5rem 5rem;
+}
+
+.category-nav,
+.gallery-top-nav,
+.gallery-path-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.category-nav a,
+.gallery-top-nav a,
+.gallery-path-nav a {
+  text-decoration: none;
 }
 
 .gallery-intro {
@@ -610,8 +545,9 @@ a {
 
 .piece-image-wrap {
   width: 100%;
-  height: 260px;
+  height: 320px;
   overflow: hidden;
+  border-radius: 22px 22px 0 0;
   background: rgba(36, 21, 0, 0.08);
 }
 
@@ -619,7 +555,7 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 62%;
+  object-position: center center;
   display: block;
 }
 
@@ -661,37 +597,19 @@ a {
   padding: 2rem;
   text-align: center;
 }
-/* =========================================================
-   GALLERY IMAGE FIX
-========================================================= */
 
-.piece-image-wrap {
-  width: 100%;
-  height: 320px;
-  overflow: hidden;
-  border-radius: 22px 22px 0 0;
-  background: rgba(36, 21, 0, 0.08);
-}
-
-.piece-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
-  display: block;
-}
 /* =========================================================
-   PIECE DETAIL PAGE — CONTROLLED VIEW
+   PIECE DETAIL PAGE
 ========================================================= */
 
 .piece-root {
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
 .piece-detail {
-  max-width: 900px;
-  margin: 3rem auto 5rem;
+  max-width: 920px;
+  margin: 2.5rem auto 5rem;
   padding: 0 1.5rem;
 }
 
@@ -737,6 +655,10 @@ a {
   letter-spacing: 0.08em;
 }
 
+.piece-description p {
+  margin: 0 0 1rem;
+}
+
 .piece-actions {
   display: flex;
   flex-wrap: wrap;
@@ -759,6 +681,14 @@ a {
   cursor: pointer;
 }
 
+.piece-button:hover {
+  background: #fff1bf;
+}
+
+/* =========================================================
+   LIGHTBOX — CALM MAGNIFICATION
+========================================================= */
+
 .image-lightbox {
   position: fixed;
   inset: 0;
@@ -767,8 +697,7 @@ a {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  overflow: auto;
-  background: rgba(20, 12, 0, 0.92);
+  background: rgba(20, 12, 0, 0.9);
 }
 
 .image-lightbox.is-open {
@@ -776,11 +705,15 @@ a {
 }
 
 .lightbox-image {
-  max-width: none;
-  max-height: none;
+  max-width: 92vw;
+  max-height: 88vh;
   width: auto;
   height: auto;
-  transform: scale(1.5);
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  cursor: zoom-out;
+  transform: none;
 }
 
 .lightbox-close {
@@ -791,5 +724,83 @@ a {
   background: transparent;
   color: #fffaf0;
   font-size: 3rem;
+  line-height: 1;
   cursor: pointer;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+  .archive-grid,
+  .threshold-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 950px) {
+  .room-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .room-feature {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .welcome-doors {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .welcome-card {
+    min-height: 380px;
+  }
+}
+
+@media (max-width: 700px) {
+  .archive-grid,
+  .threshold-grid,
+  .room-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .threshold-page,
+  .welcome-threshold,
+  .room-page {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .site-logo {
+    font-size: clamp(3.2rem, 14vw, 5rem);
+  }
+
+  .landing-message,
+  .welcome-hero p,
+  .symbolic-copy {
+    font-size: 1.2rem;
+  }
+
+  .interior-nav {
+    gap: 0.35rem;
+  }
+
+  .interior-nav a {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .site-return {
+    margin-right: 0.35rem;
+  }
+
+  .piece-detail-image-wrap {
+    height: 380px;
+  }
 }
