@@ -4,112 +4,84 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!grid) return;
 
-  const shapeCode =
-    (grid.dataset.shape || "").trim().toUpperCase();
-
   try {
 
     const response = await fetch("/data/pieces.json");
 
-    if (!response.ok) {
-      throw new Error("Unable to load pieces.json");
-    }
+    console.log("FETCH STATUS:", response.status);
 
     const pieces = await response.json();
 
-    const filtered = pieces
-      .filter(piece => {
+    console.log("PIECES:", pieces);
 
-        const shape =
-          String(piece.shape || "")
-            .trim()
-            .toUpperCase();
+    const ovals = pieces.filter(piece => {
 
-        return shape === shapeCode;
+      return String(piece.shape || "")
+        .trim()
+        .toUpperCase() === "OV";
 
-      })
-      .filter(piece => {
+    });
 
-        return (
-          piece.is_published !== false &&
-          piece.status !== "archive"
-        );
+    console.log("OVALS:", ovals);
 
-      })
-      .sort((a, b) => {
-
-        return String(b.piece_number || "")
-          .localeCompare(String(a.piece_number || ""));
-
-      });
-
-    if (!filtered.length) {
+    if (!ovals.length) {
 
       grid.innerHTML = `
         <p class="shape-empty">
-          No published pieces were found.
+          No OV pieces found in JSON.
         </p>
       `;
 
       return;
     }
 
-    grid.innerHTML = filtered.map(piece => {
+    grid.innerHTML = ovals.map(piece => {
 
-      const pieceId =
-        piece.piece_number || "";
+      console.log("PIECE:", piece);
 
       const image =
         piece.thumbnail ||
         piece.thumb_image ||
         piece.top_image ||
-        piece.full_top_image ||
-        "/images/placeholders/placeholder.jpg";
-
-      const dimensions =
-        piece.dimensions ||
-        piece.size ||
-        "";
+        piece.full_top_image;
 
       return `
+
         <a
           class="shape-tile"
-          href="/gallery/piece.html?id=${encodeURIComponent(pieceId)}"
-          aria-label="${pieceId}"
+          href="/gallery/piece.html?id=${piece.piece_number}"
         >
 
           <div class="shape-image-wrap">
+
             <img
               src="${image}"
-              alt="${pieceId}"
-              loading="lazy"
+              alt="${piece.piece_number}"
             />
+
           </div>
 
           <div class="shape-label">
 
             <span class="shape-piece-number">
-              ${pieceId}
-            </span>
-
-            <span class="shape-dimensions">
-              ${dimensions}
+              ${piece.piece_number}
             </span>
 
           </div>
 
         </a>
+
       `;
 
     }).join("");
 
-  } catch (error) {
+  } catch (err) {
 
-    console.error(error);
+    console.error(err);
 
     grid.innerHTML = `
       <p class="shape-empty">
-        Unable to load inventory.
+        JSON load failure.
       </p>
     `;
   }
