@@ -4,104 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Piece View | ClaycrazE</title>
+  <title>Piece | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=102" />
-  <link rel="stylesheet" href="/css/shape-room.css?v=1" />
-
-  <style>
-
-    .piece-page {
-      width: min(1400px, 100%);
-      margin: 0 auto;
-      padding: 3rem 2rem 6rem;
-    }
-
-    .piece-header {
-      max-width: 850px;
-      margin: 0 auto 3rem;
-      text-align: center;
-    }
-
-    .piece-header h1 {
-      margin-bottom: 1rem;
-      font-size: clamp(2.2rem, 5vw, 4.5rem);
-      font-weight: 400;
-    }
-
-    .piece-meta {
-      opacity: 0.82;
-      line-height: 1.8;
-    }
-
-    .piece-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
-      gap: 2rem;
-    }
-
-    .piece-tile {
-      overflow: hidden;
-      border-radius: 26px;
-
-      background: #1c1815;
-
-      box-shadow:
-        0 12px 40px rgba(0,0,0,.24),
-        0 24px 80px rgba(0,0,0,.38);
-    }
-
-    .piece-image-link {
-      display: block;
-      text-decoration: none;
-    }
-
-    .piece-image {
-      width: 100%;
-      display: block;
-      cursor: zoom-in;
-    }
-
-    .piece-caption {
-      padding: 1.5rem;
-    }
-
-    .piece-caption h2 {
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
-      font-weight: 400;
-      letter-spacing: 0.04em;
-    }
-
-    .piece-caption p {
-      line-height: 1.8;
-      opacity: 0.84;
-    }
-
-    .piece-back {
-      display: inline-block;
-      margin-bottom: 2rem;
-      text-decoration: none;
-      opacity: 0.75;
-    }
-
-    .piece-back:hover {
-      opacity: 1;
-    }
-
-    @media (max-width: 700px) {
-
-      .piece-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .piece-page {
-        padding: 2rem 1rem 5rem;
-      }
-
-    }
-
-  </style>
+  <link rel="stylesheet" href="/css/styles.css?v=1006" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1006" />
 </head>
 
 <body class="practice-page">
@@ -126,195 +32,146 @@
 
   <main class="piece-page">
 
-    <a
-      href="javascript:history.back()"
-      class="piece-back"
-    >
-      ← Back
-    </a>
+    <a class="piece-back" href="/gallery/ovals.html">← Back to Ovals</a>
 
     <section id="pieceContent">
-
-      <p class="shape-loading">
-        Loading piece...
-      </p>
-
+      <div class="loading">Loading piece...</div>
     </section>
 
   </main>
 
   <script>
+    document.addEventListener("DOMContentLoaded", loadPiece);
 
     async function loadPiece() {
-
-      const params =
-        new URLSearchParams(window.location.search);
-
+      const container = document.getElementById("pieceContent");
+      const params = new URLSearchParams(window.location.search);
       const id = params.get("id");
 
-      const container =
-        document.getElementById("pieceContent");
-
       if (!id) {
-
-        container.innerHTML = `
-          <p class="shape-empty">
-            No piece selected.
-          </p>
-        `;
-
+        container.innerHTML = `<div class="empty-state">No piece selected.</div>`;
         return;
       }
 
       try {
+        const response = await fetch("/data/pieces.json?v=1006");
 
-        const response =
-          await fetch("/data/pieces.json");
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}`);
+        }
 
-        const pieces =
-          await response.json();
+        const pieces = await response.json();
 
-        const piece =
-          pieces.find(p =>
-            String(p.piece_number) === String(id)
-          );
+        const piece = pieces.find((item) => {
+          const itemId = String(item.id || item.piece_number || "").trim();
+          return itemId === id;
+        });
 
         if (!piece) {
-
-          container.innerHTML = `
-            <p class="shape-empty">
-              Piece not found.
-            </p>
-          `;
-
+          container.innerHTML = `<div class="empty-state">Piece not found.</div>`;
           return;
         }
 
-        const topImage =
-          piece.full_top_image ||
-          piece.top_image ||
-          piece.thumbnail;
-
-        const bottomImage =
-          piece.full_bottom_image ||
-          piece.bottom_image ||
-          topImage;
-
-        const title =
-          piece.piece_number || "Untitled";
-
-        const dimensions =
-          piece.dimensions || "";
-
-        const clay =
-          piece.clay || "";
-
-        const glaze =
-          piece.glaze || "";
-
-        const price =
-          piece.price || "";
-
-        const description =
-          piece.description ||
-          "A quiet object for attentive viewing.";
-
-        container.innerHTML = `
-
-          <section class="piece-header">
-
-            <h1>${title}</h1>
-
-            <div class="piece-meta">
-
-              ${dimensions ? `<div>${dimensions}</div>` : ""}
-
-              ${(clay || glaze)
-                ? `<div>${clay} ${glaze}</div>`
-                : ""}
-
-              ${price
-                ? `<div>$${price}</div>`
-                : ""}
-
-            </div>
-
-          </section>
-
-          <section class="piece-grid">
-
-            <article class="piece-tile">
-
-              <a
-                class="piece-image-link"
-                href="${topImage}"
-                target="_blank"
-              >
-                <img
-                  class="piece-image"
-                  src="${topImage}"
-                  alt="${title} top view"
-                />
-              </a>
-
-              <div class="piece-caption">
-
-                <h2>Top View</h2>
-
-                <p>
-                  ${description}
-                </p>
-
-              </div>
-
-            </article>
-
-            <article class="piece-tile">
-
-              <a
-                class="piece-image-link"
-                href="${bottomImage}"
-                target="_blank"
-              >
-                <img
-                  class="piece-image"
-                  src="${bottomImage}"
-                  alt="${title} bottom view"
-                />
-              </a>
-
-              <div class="piece-caption">
-
-                <h2>Bottom View</h2>
-
-                <p>
-                  “The usefulness of a vessel
-                  comes from its emptiness.”
-                </p>
-
-              </div>
-
-            </article>
-
-          </section>
-
-        `;
+        renderPiece(piece, container);
 
       } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML = `
-          <p class="shape-empty">
-            Unable to load piece.
-          </p>
-        `;
+        console.error("Piece page error:", error);
+        container.innerHTML = `<div class="empty-state">Could not load this piece.</div>`;
       }
-
     }
 
-    loadPiece();
+    function renderPiece(piece, container) {
+      const id = piece.id || piece.piece_number || "";
+      const title = piece.title || "ClaycrazE Vessel";
+      const clay = piece.clay || "";
+      const finish = piece.finish || piece.glaze || "";
+      const dimensions = piece.dimensions || "";
+      const price = piece.price || "";
+      const description = piece.description || "";
 
+      const topImage = normalizeImagePath(piece.top_image || piece.thumbnail || "");
+      const bottomImage = normalizeImagePath(piece.bottom_image || "");
+
+      document.title = `${title} | ClaycrazE`;
+
+      container.innerHTML = `
+        <section class="piece-detail-header">
+          <p class="eyebrow">ClaycrazE / ${escapeHtml(id)}</p>
+          <h1>${escapeHtml(title)}</h1>
+
+          <div class="piece-label">
+            ${dimensions ? `<p>${escapeHtml(dimensions)}</p>` : ""}
+            ${(clay || finish) ? `<p>${escapeHtml(clay)}${clay && finish ? " / " : ""}${escapeHtml(finish)}</p>` : ""}
+            ${price ? `<p>${escapeHtml(price)}</p>` : ""}
+          </div>
+        </section>
+
+        <section class="piece-two-grid">
+
+          <article class="piece-view-tile">
+            <a href="${escapeAttribute(topImage)}" target="_blank" rel="noopener">
+              <img src="${escapeAttribute(topImage)}" alt="${escapeAttribute(title)} top view" />
+            </a>
+            <div class="piece-view-caption">
+              <h2>Top</h2>
+              <p>The vessel shows itself first by what it holds back.</p>
+            </div>
+          </article>
+
+          <article class="piece-view-tile">
+            ${
+              bottomImage
+                ? `
+                  <a href="${escapeAttribute(bottomImage)}" target="_blank" rel="noopener">
+                    <img src="${escapeAttribute(bottomImage)}" alt="${escapeAttribute(title)} bottom view" />
+                  </a>
+                `
+                : `<div class="no-image">No bottom image available</div>`
+            }
+            <div class="piece-view-caption">
+              <h2>Bottom</h2>
+              <p>The foot tells the truth. Lao-Tzu would probably check there first.</p>
+            </div>
+          </article>
+
+        </section>
+
+        <section class="piece-wine-label">
+          <h2>${escapeHtml(title)}</h2>
+          <p>${escapeHtml(id)}</p>
+          ${description ? `<p>${escapeHtml(description).replace(/\n/g, "<br>")}</p>` : ""}
+        </section>
+      `;
+    }
+
+    function normalizeImagePath(path) {
+      if (!path) return "";
+
+      const clean = String(path).trim().replace(/\\/g, "/");
+
+      if (
+        clean.startsWith("/") ||
+        clean.startsWith("http://") ||
+        clean.startsWith("https://")
+      ) {
+        return clean;
+      }
+
+      return `/${clean.replace(/^\.?\/*/, "")}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value);
+    }
   </script>
 
 </body>
