@@ -432,3 +432,143 @@
     gap: 0.2rem;
   }
 }
+/* =========================
+   NEW PIECE DETAIL LAYOUT
+========================= */
+
+.piece-detail-header {
+  max-width: 950px;
+
+  margin: 0 auto 2.5rem;
+
+  padding: 2rem 2rem 2.25rem;
+
+  text-align: center;
+
+  background: rgba(244, 231, 198, 0.84);
+
+  border: 1px solid rgba(122, 77, 28, 0.16);
+  border-radius: 28px;
+
+  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
+}
+
+.piece-detail-header h1 {
+  margin: 0.5rem 0 1rem;
+
+  font-size: clamp(2.6rem, 5vw, 5rem);
+  line-height: 0.95;
+
+  color: #2c1a10;
+}
+
+.piece-label {
+  color: #6a4b2d;
+
+  line-height: 1.6;
+}
+
+.piece-label p {
+  margin: 0.2rem 0;
+}
+
+.piece-two-grid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+
+  gap: 2.5rem;
+
+  align-items: start;
+
+  margin-bottom: 2.5rem;
+}
+
+.piece-view-tile {
+  overflow: hidden;
+
+  background: rgba(244, 231, 198, 0.86);
+
+  border: 1px solid rgba(122, 77, 28, 0.16);
+  border-radius: 28px;
+
+  box-shadow: 0 18px 46px rgba(55, 31, 12, 0.22);
+}
+
+.piece-view-tile a {
+  display: block;
+}
+
+.piece-view-tile img {
+  width: 100%;
+  height: auto;
+
+  display: block;
+
+  background: #d9c79d;
+
+  transition:
+    transform 0.35s ease,
+    opacity 0.35s ease;
+}
+
+.piece-view-tile:hover img {
+  transform: scale(1.02);
+}
+
+.piece-view-caption {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+
+.piece-view-caption h2 {
+  margin: 0 0 0.6rem;
+
+  font-size: 2rem;
+
+  color: #2c1a10;
+}
+
+.piece-view-caption p {
+  margin: 0;
+
+  line-height: 1.6;
+
+  color: #6a4b2d;
+}
+
+.piece-wine-label {
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding: 2rem 2rem 2.5rem;
+
+  background: rgba(244, 231, 198, 0.84);
+
+  border: 1px solid rgba(122, 77, 28, 0.16);
+  border-radius: 28px;
+
+  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
+}
+
+.piece-wine-label h2 {
+  margin: 0 0 0.5rem;
+
+  font-size: 2.4rem;
+
+  color: #2c1a10;
+}
+
+.piece-wine-label p {
+  line-height: 1.75;
+
+  color: #2c1a10;
+}
+
+@media (max-width: 680px) {
+
+  .piece-two-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
