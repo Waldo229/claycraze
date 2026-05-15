@@ -6,38 +6,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadOvals() {
   try {
-    const response = await fetch("/data/pieces.json", {
-      cache: "no-store"
-    });
+    const response = await fetch("/gallery-data/ovals");
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
     }
 
-    const allPieces = await response.json();
+    const pieces = await response.json();
 
-    const pieces = allPieces.filter(
-      (piece) => piece.id && piece.id.startsWith("OV-")
-    );
-
-    if (!pieces.length) {
+    if (!Array.isArray(pieces) || pieces.length === 0) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
-          No pieces are currently available.
+          No oval pieces are currently available for display.
         </div>
       `;
       return;
     }
 
-    galleryGrid.innerHTML = pieces
-      .map(buildCardHtml)
-      .join("");
+    galleryGrid.innerHTML = pieces.map(buildCardHtml).join("");
 
   } catch (error) {
-
     galleryGrid.innerHTML = `
-      <div class="error-state">
-        Could not load pieces.
+      <div class="empty-state">
+        Could not load oval gallery data.
       </div>
     `;
 
@@ -46,38 +37,40 @@ async function loadOvals() {
 }
 
 function buildCardHtml(piece) {
-
-  const title = piece.title || "Bonsai Container";
-
-  const imageSrc = `/images/full/${piece.id}_top.jpg`;
-
-  const href = `/gallery/piece.html?id=${encodeURIComponent(piece.id)}`;
+  const id = piece.id || "";
+  const title = piece.description || "Oval Bonsai Container";
+  const dimensions = formatDims(piece.width, piece.depth, piece.height);
+  const price = formatPrice(piece.price);
+  const imagePath = normalizeImagePath(piece.image_path);
 
   return `
-    <article class="piece-card">
+    <article class="gallery-card">
 
-      <a href="${href}" aria-label="View ${escapeHtml(title)}">
+      <a href="/gallery/piece.html?id=${encodeURIComponent(id)}">
 
-        <div class="piece-image-wrap">
-
-          <img
-            class="piece-image"
-            src="${imageSrc}"
-            alt="${escapeHtml(title)}"
-            loading="lazy"
-          />
-
+        <div class="gallery-thumb-wrap">
+          ${buildImageHtml(imagePath, title)}
         </div>
 
-        <div class="piece-body">
+        <div class="gallery-card-body">
 
-          <h3 class="piece-title">
-            ${escapeHtml(title)}
-          </h3>
+          <h2>${escapeHtml(title)}</h2>
 
-          <span class="more-link">
+          <p class="gallery-meta">
+            ${escapeHtml(id)}
+          </p>
+
+          <p class="gallery-meta">
+            ${escapeHtml(dimensions)}
+          </p>
+
+          <p class="gallery-meta">
+            ${escapeHtml(price)}
+          </p>
+
+          <p class="gallery-meta">
             View details
-          </span>
+          </p>
 
         </div>
 
@@ -87,11 +80,84 @@ function buildCardHtml(piece) {
   `;
 }
 
+function buildImageHtml(imagePath, altText) {
+  if (!imagePath) {
+    return `<div class="no-image">No image available</div>`;
+  }
+
+  return `
+    <img
+      class="gallery-thumb"
+      src="${escapeAttribute(imagePath)}"
+      alt="${escapeAttribute(altText || "ClaycrazE oval bonsai container")}"
+      loading="lazy"
+      onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
+    />
+  `;
+}
+
+function normalizeImagePath(imagePath) {
+  if (!imagePath) return "";
+
+  const trimmed = String(imagePath)
+    .trim()
+    .replace(/\\/g, "/");
+
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/")
+  ) {
+    return trimmed;
+  }
+
+  return `/${trimmed.replace(/^\.?\/*/, "")}`;
+}
+
+function formatDims(width, depth, height) {
+  const w = safeText(width);
+  const d = safeText(depth);
+  const h = safeText(height);
+
+  if (!w && !d && !h) return "";
+
+  return `${w || "?"} × ${d || "?"} × ${h || "?"}`;
+}
+
+function formatPrice(value) {
+  const raw = safeText(value);
+
+  if (!raw) return "";
+
+  const cleaned = raw
+    .replace(/\$/g, "")
+    .replace(/,/g, "");
+
+  const number = Number(cleaned);
+
+  if (Number.isNaN(number)) return raw;
+
+  return `$${number.toFixed(0)}`;
+}
+
+function safeText(value) {
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+}
+
 function escapeHtml(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
