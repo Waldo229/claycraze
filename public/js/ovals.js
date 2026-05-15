@@ -1,34 +1,49 @@
-const galleryGrid = document.getElementById("galleryGrid");
-
 document.addEventListener("DOMContentLoaded", () => {
   loadOvals();
 });
 
 async function loadOvals() {
+  const galleryGrid = document.getElementById("galleryGrid");
+
+  if (!galleryGrid) return;
+
   try {
-    const response = await fetch("/gallery-data/ovals");
+    const response = await fetch("/data/pieces.json?v=1001");
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
     }
 
-    const pieces = await response.json();
+    const data = await response.json();
 
-    if (!Array.isArray(pieces) || pieces.length === 0) {
+    const pieces = Array.isArray(data)
+      ? data
+      : Array.isArray(data.pieces)
+        ? data.pieces
+        : [];
+
+    const ovals = pieces.filter((piece) => {
+      const shape = String(piece.shape || "").trim().toUpperCase();
+      const id = String(piece.piece_number || piece.id || "").trim().toUpperCase();
+
+      return shape === "OV" || id.startsWith("OV");
+    });
+
+    if (!ovals.length) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
-          No oval pieces are currently available for display.
+          No oval pieces were found in the inventory file.
         </div>
       `;
       return;
     }
 
-    galleryGrid.innerHTML = pieces.map(buildCardHtml).join("");
+    galleryGrid.innerHTML = ovals.map(buildCardHtml).join("");
 
   } catch (error) {
     galleryGrid.innerHTML = `
       <div class="empty-state">
-        Could not load oval gallery data.
+        Could not load oval gallery data: ${escapeHtml(error.message)}
       </div>
     `;
 
@@ -37,11 +52,33 @@ async function loadOvals() {
 }
 
 function buildCardHtml(piece) {
-  const id = piece.id || "";
-  const title = piece.description || "Oval Bonsai Container";
-  const dimensions = formatDims(piece.width, piece.depth, piece.height);
-  const price = formatPrice(piece.price);
-  const imagePath = normalizeImagePath(piece.image_path);
+  const id =
+    piece.piece_number ||
+    piece.id ||
+    "";
+
+  const title =
+    piece.title ||
+    piece.description ||
+    "Oval Bonsai Container";
+
+  const dimensions =
+    piece.dimensions ||
+    formatDims(piece.width, piece.depth, piece.height);
+
+  const price =
+    formatPrice(piece.price);
+
+  const imagePath =
+    normalizeImagePath(
+      piece.thumbnail ||
+      piece.thumb_image ||
+      piece.image_path ||
+      piece.top_image ||
+      piece.full_top_image ||
+      piece.full_image ||
+      ""
+    );
 
   return `
     <article class="gallery-card">
@@ -56,17 +93,23 @@ function buildCardHtml(piece) {
 
           <h2>${escapeHtml(title)}</h2>
 
-          <p class="gallery-meta">
-            ${escapeHtml(id)}
-          </p>
+          ${id ? `
+            <p class="gallery-meta">
+              ${escapeHtml(id)}
+            </p>
+          ` : ""}
 
-          <p class="gallery-meta">
-            ${escapeHtml(dimensions)}
-          </p>
+          ${dimensions ? `
+            <p class="gallery-meta">
+              ${escapeHtml(dimensions)}
+            </p>
+          ` : ""}
 
-          <p class="gallery-meta">
-            ${escapeHtml(price)}
-          </p>
+          ${price ? `
+            <p class="gallery-meta">
+              ${escapeHtml(price)}
+            </p>
+          ` : ""}
 
           <p class="gallery-meta">
             View details
