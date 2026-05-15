@@ -1,44 +1,205 @@
-.gallery-page {
-  width: min(1500px, 100%);
-  margin: 0 auto;
-  padding: 3rem 2rem 6rem;
+/* =========================
+   RESET / BASE
+========================= */
+
+* {
+  box-sizing: border-box;
 }
 
-.category-nav {
+:root {
+  --bg: #d8b24a;
+  --bg-deep: #c7992d;
+  --panel: #ecd9aa;
+  --panel-soft: #f4e7c6;
+  --text: #2c1a10;
+  --muted: #6a4b2d;
+  --line: #b68530;
+  --accent: #7a4d1c;
+  --accent-soft: #98662e;
+  --shadow: rgba(55, 31, 12, 0.16);
+  --maxw: 1180px;
+  --radius: 14px;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--text);
+
+  background:
+    linear-gradient(
+      to bottom,
+      #ead08a 0%,
+      var(--bg) 20%,
+      var(--bg-deep) 100%
+    );
+
+  min-height: 100vh;
+}
+
+/* =========================
+   HEADER / FOOTER
+========================= */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  background: rgba(236, 217, 170, 0.92);
+
+  backdrop-filter: blur(8px);
+
+  border-bottom:
+    1px solid rgba(122, 77, 28, 0.18);
+}
+
+.header-inner {
+  max-width: var(--maxw);
+
+  margin: 0 auto;
+
+  padding: 0.95rem 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+}
+
+.brand {
+  color: var(--text);
+
+  text-decoration: none;
+
+  font-size: 1.55rem;
+  font-weight: 700;
+
+  letter-spacing: 0.02em;
+}
+
+.site-nav {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem 1.25rem;
-  margin: 0 auto 3rem;
+
+  gap: 0.75rem;
 }
 
-.category-nav a {
+.site-nav a {
+  color: var(--accent);
+
   text-decoration: none;
-  opacity: 0.75;
+
+  padding: 0.4rem 0.6rem;
+
+  border-radius: 999px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-.category-nav a.active,
-.category-nav a:hover {
-  opacity: 1;
-  text-decoration: underline;
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  background: rgba(122, 77, 28, 0.09);
+
+  color: var(--text);
 }
 
-.gallery-intro {
-  max-width: 850px;
-  margin: 0 auto 3rem;
+.site-footer {
+  max-width: var(--maxw);
+
+  margin: 2rem auto 0;
+
+  padding: 1.25rem 1rem 2.25rem;
+
+  color: var(--muted);
+
   text-align: center;
 }
 
-.gallery-intro h2 {
-  font-size: clamp(2.6rem, 5vw, 4.8rem);
+/* =========================
+   GALLERY PAGE
+========================= */
+
+.gallery-page,
+.piece-page {
+  max-width: 1500px;
+
+  margin: 0 auto;
+
+  padding: 2rem 1.5rem 5rem;
+}
+
+.gallery-intro,
+.piece-layout,
+.empty-state,
+.not-found {
+  background:
+    rgba(244, 231, 198, 0.78);
+
+  border:
+    1px solid rgba(122, 77, 28, 0.16);
+
+  border-radius: 26px;
+
+  box-shadow:
+    0 10px 28px var(--shadow);
+}
+
+.gallery-intro {
+  max-width: 900px;
+
+  margin: 0 auto 3rem;
+
+  padding: 2rem 2rem 2.25rem;
+
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.12em;
+
+  font-size: 0.78rem;
+
+  color: var(--muted);
+}
+
+.gallery-intro h1 {
+  margin: 0 0 1rem;
+
+  font-size:
+    clamp(2.5rem, 6vw, 5rem);
+
+  line-height: 1;
+
   font-weight: 400;
-  margin-bottom: 1rem;
 }
 
 .gallery-intro p {
+  margin: 0 auto;
+
+  max-width: 58ch;
+
   line-height: 1.7;
-  opacity: 0.82;
+
+  color: var(--muted);
+
+  font-size: 1.1rem;
 }
+
+/* =========================
+   GRID
+========================= */
 
 .gallery-grid {
   display: grid;
@@ -53,62 +214,349 @@
   margin-top: 2rem;
 }
 
-.piece-card {
+/* =========================
+   TILE
+========================= */
+
+.gallery-card {
+  background:
+    rgba(244, 231, 198, 0.82);
+
+  border:
+    1px solid rgba(122, 77, 28, 0.16);
+
+  border-radius: 28px;
+
   overflow: hidden;
-  border-radius: 24px;
-  background: #1d1712;
-  color: #f5efe6;
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+
+  box-shadow:
+    0 14px 40px rgba(55, 31, 12, 0.20);
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
 }
 
-.piece-image-wrap {
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
+.gallery-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 22px 52px rgba(55, 31, 12, 0.26);
 }
 
-.piece-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.gallery-card a {
+  color: inherit;
+
+  text-decoration: none;
+
   display: block;
 }
 
-.piece-body {
-  padding: 1.25rem;
+.gallery-thumb-wrap {
+  aspect-ratio: 4 / 3;
+
+  overflow: hidden;
+
+  background: #e9d6a8;
 }
 
-.piece-title {
-  font-size: 1.1rem;
+.gallery-thumb {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 0.5s ease;
+}
+
+.gallery-card:hover .gallery-thumb {
+  transform: scale(1.03);
+}
+
+.gallery-card-body {
+  padding: 1.2rem 1.25rem 1.4rem;
+
+  text-align: center;
+}
+
+.gallery-card h2 {
+  margin: 0 0 0.45rem;
+
+  font-size: 1.45rem;
+
   font-weight: 400;
-  margin-bottom: 0.35rem;
+}
+
+.gallery-meta {
+  margin: 0;
+
+  color: var(--muted);
+
+  line-height: 1.5;
+
+  font-size: 1rem;
+}
+
+/* =========================
+   PIECE PAGE
+========================= */
+
+.back-link-wrap {
+  margin: 0 0 1rem;
+}
+
+.back-link {
+  color: var(--accent);
+
+  text-decoration: none;
+
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.piece-layout {
+  padding: 1.5rem;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(320px, 0.75fr);
+
+  gap: 1.5rem;
+
+  align-items: start;
+}
+
+.viewer-shell {
+  display: grid;
+
+  gap: 0.85rem;
+}
+
+.flip-stage {
+  width: 100%;
+
+  perspective: 1400px;
+}
+
+.flip-card-large {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  background: #e6d2a3;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(122, 77, 28, 0.08);
+}
+
+.flip-inner {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  transition: transform 0.65s ease;
+
+  transform-style: preserve-3d;
+}
+
+.flip-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: contain;
+
+  backface-visibility: hidden;
+
+  background: #ead9b1;
+}
+
+.flip-face.back {
+  transform: rotateY(180deg);
+}
+
+.viewer-controls {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 0.75rem;
+
+  align-items: center;
+}
+
+.flip-btn,
+.secondary-link {
+  appearance: none;
+
+  border:
+    1px solid rgba(122, 77, 28, 0.2);
+
+  background: var(--panel-soft);
+
+  color: var(--text);
+
+  border-radius: 999px;
+
+  padding: 0.72rem 1rem;
+
+  font: inherit;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.flip-btn:hover,
+.secondary-link:hover {
+  background: #f8efd8;
+
+  transform: translateY(-1px);
+}
+
+.viewer-note {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 0.95rem;
+}
+
+.piece-info h1 {
+  margin: 0 0 0.35rem;
+
+  font-size:
+    clamp(1.7rem, 3vw, 2.4rem);
+
+  line-height: 1.08;
 }
 
 .piece-id {
-  opacity: 0.75;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
+
+  color: var(--muted);
+
+  font-size: 0.98rem;
 }
 
-.museum-card {
-  font-size: 0.92rem;
-  line-height: 1.6;
+.piece-description {
+  line-height: 1.7;
+
+  color: var(--text);
+
+  margin: 0 0 1rem;
 }
 
-.card-row {
-  margin: 0.25rem 0;
+.piece-details {
+  display: grid;
+
+  gap: 0.7rem;
+
+  padding: 1rem;
+
+  border:
+    1px solid rgba(122, 77, 28, 0.12);
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 250, 239, 0.5);
 }
 
-.card-label {
-  opacity: 0.7;
+.piece-details div {
+  display: grid;
+
+  grid-template-columns:
+    90px 1fr;
+
+  gap: 0.65rem;
+
+  align-items: start;
 }
 
-.more-link {
-  color: inherit;
+.piece-details dt {
+  font-weight: 700;
 }
 
-.loading,
+.piece-details dd {
+  margin: 0;
+
+  color: var(--muted);
+}
+
 .empty-state,
-.error-state {
+.not-found,
+.loading {
+  padding: 2rem;
+
   text-align: center;
-  padding: 4rem 1rem;
+
   opacity: 0.75;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 860px) {
+
+  .piece-layout {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 680px) {
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .gallery-page,
+  .piece-page {
+    padding-top: 1.1rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .piece-layout {
+    padding: 1rem;
+  }
+
+  .piece-details div {
+    grid-template-columns: 1fr;
+
+    gap: 0.2rem;
+  }
+
 }
