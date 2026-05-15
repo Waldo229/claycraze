@@ -26,7 +26,7 @@ async function loadOvals() {
 
 function buildCardHtml(piece) {
   const title = piece.title || "Bonsai Container";
-  const imageSrc = `/images/thumbs/${piece.id}_top_thumb.jpg`;
+  const imageSrc = `/images/thumbs/${piece.id}_top.jpg`;
   const href = `/gallery/piece.html?id=${encodeURIComponent(piece.id)}`;
 
   return `
