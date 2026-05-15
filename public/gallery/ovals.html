@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>ClaycrazE | Ovals</title>
+  <title>Ovals | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=500" />
+  <link rel="stylesheet" href="/css/styles.css?v=102" />
+  <link rel="stylesheet" href="/css/shape-room.css?v=1" />
 </head>
 
 <body class="practice-page">
@@ -19,50 +20,41 @@
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+      <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
+        <a href="/gallery/bonsai.html">Bonsai</a>
       </nav>
 
     </div>
   </header>
 
-  <main class="gallery-page">
+  <main class="shape-room-page">
 
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/gallery/bonsai.html">Bonsai</a>
-      <a href="/gallery/ovals.html" class="active">Ovals</a>
-      <a href="/gallery/rectangles.html">Rectangles</a>
-      <a href="/gallery/freeform.html">Freeform</a>
-      <a href="/gallery/cascade.html">Cascade</a>
-      <a href="/gallery/rounds.html">Rounds</a>
-      <a href="/gallery/ikebana.html">Ikebana</a>
-      <a href="/gallery/sculpture.html">Sculpture</a>
-      <a href="/gallery/facejugs.html">Face Jugs</a>
-    </nav>
+    <section class="room-hero">
+      <p class="room-kicker">Practice / Bonsai / Ovals</p>
 
-    <section class="gallery-intro">
-      <h2>Ovals</h2>
+      <h1>Ovals</h1>
 
       <p>
-        Elongated bonsai forms with lateral movement and quiet pull.
+        Oval bonsai containers from the ClaycrazE studio inventory.
+        Each vessel opens into a closer view with top and bottom images.
       </p>
     </section>
 
     <section
-      id="galleryGrid"
-      class="gallery-grid"
-      aria-live="polite"
+      id="shapeGrid"
+      class="shape-grid"
+      data-shape="OV"
+      data-title="Ovals"
+      aria-label="Oval bonsai containers"
     >
-      <div class="loading">
-        Loading oval bonsai forms...
-      </div>
+      <p class="shape-loading">Loading ovals...</p>
     </section>
 
   </main>
 
-  <script src="/js/ovals.js?v=500"></script>
-
+  <script src="/js/shape-room.js?v=1"></script>
 </body>
 </html>

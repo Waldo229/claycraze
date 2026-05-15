@@ -1,0 +1,117 @@
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const grid = document.getElementById("shapeGrid");
+
+  if (!grid) return;
+
+  const shapeCode =
+    (grid.dataset.shape || "").trim().toUpperCase();
+
+  try {
+
+    const response = await fetch("/data/pieces.json");
+
+    if (!response.ok) {
+      throw new Error("Unable to load pieces.json");
+    }
+
+    const pieces = await response.json();
+
+    const filtered = pieces
+      .filter(piece => {
+
+        const shape =
+          String(piece.shape || "")
+            .trim()
+            .toUpperCase();
+
+        return shape === shapeCode;
+
+      })
+      .filter(piece => {
+
+        return (
+          piece.is_published !== false &&
+          piece.status !== "archive"
+        );
+
+      })
+      .sort((a, b) => {
+
+        return String(b.piece_number || "")
+          .localeCompare(String(a.piece_number || ""));
+
+      });
+
+    if (!filtered.length) {
+
+      grid.innerHTML = `
+        <p class="shape-empty">
+          No published pieces were found.
+        </p>
+      `;
+
+      return;
+    }
+
+    grid.innerHTML = filtered.map(piece => {
+
+      const pieceId =
+        piece.piece_number || "";
+
+      const image =
+        piece.thumbnail ||
+        piece.thumb_image ||
+        piece.top_image ||
+        piece.full_top_image ||
+        "/images/placeholders/placeholder.jpg";
+
+      const dimensions =
+        piece.dimensions ||
+        piece.size ||
+        "";
+
+      return `
+        <a
+          class="shape-tile"
+          href="/gallery/piece.html?id=${encodeURIComponent(pieceId)}"
+          aria-label="${pieceId}"
+        >
+
+          <div class="shape-image-wrap">
+            <img
+              src="${image}"
+              alt="${pieceId}"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="shape-label">
+
+            <span class="shape-piece-number">
+              ${pieceId}
+            </span>
+
+            <span class="shape-dimensions">
+              ${dimensions}
+            </span>
+
+          </div>
+
+        </a>
+      `;
+
+    }).join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    grid.innerHTML = `
+      <p class="shape-empty">
+        Unable to load inventory.
+      </p>
+    `;
+  }
+
+});

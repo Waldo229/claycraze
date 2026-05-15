@@ -4,9 +4,104 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>ClaycrazE | Piece View</title>
+  <title>Piece View | ClaycrazE</title>
 
   <link rel="stylesheet" href="/css/styles.css?v=102" />
+  <link rel="stylesheet" href="/css/shape-room.css?v=1" />
+
+  <style>
+
+    .piece-page {
+      width: min(1400px, 100%);
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    .piece-header {
+      max-width: 850px;
+      margin: 0 auto 3rem;
+      text-align: center;
+    }
+
+    .piece-header h1 {
+      margin-bottom: 1rem;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      font-weight: 400;
+    }
+
+    .piece-meta {
+      opacity: 0.82;
+      line-height: 1.8;
+    }
+
+    .piece-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 2rem;
+    }
+
+    .piece-tile {
+      overflow: hidden;
+      border-radius: 26px;
+
+      background: #1c1815;
+
+      box-shadow:
+        0 12px 40px rgba(0,0,0,.24),
+        0 24px 80px rgba(0,0,0,.38);
+    }
+
+    .piece-image-link {
+      display: block;
+      text-decoration: none;
+    }
+
+    .piece-image {
+      width: 100%;
+      display: block;
+      cursor: zoom-in;
+    }
+
+    .piece-caption {
+      padding: 1.5rem;
+    }
+
+    .piece-caption h2 {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+
+    .piece-caption p {
+      line-height: 1.8;
+      opacity: 0.84;
+    }
+
+    .piece-back {
+      display: inline-block;
+      margin-bottom: 2rem;
+      text-decoration: none;
+      opacity: 0.75;
+    }
+
+    .piece-back:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 700px) {
+
+      .piece-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .piece-page {
+        padding: 2rem 1rem 5rem;
+      }
+
+    }
+
+  </style>
 </head>
 
 <body class="practice-page">
@@ -19,7 +114,7 @@
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <nav class="site-nav">
+      <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
@@ -29,22 +124,198 @@
     </div>
   </header>
 
-  <main class="gallery-page">
+  <main class="piece-page">
 
-    <section
-      id="pieceRoot"
-      class="piece-root"
-      aria-live="polite"
+    <a
+      href="javascript:history.back()"
+      class="piece-back"
     >
-      <div class="loading">
+      ← Back
+    </a>
+
+    <section id="pieceContent">
+
+      <p class="shape-loading">
         Loading piece...
-      </div>
+      </p>
+
     </section>
 
   </main>
 
-  <script src="/js/nav.js?v=102"></script>
-  <script src="/js/piece.js?v=102"></script>
+  <script>
+
+    async function loadPiece() {
+
+      const params =
+        new URLSearchParams(window.location.search);
+
+      const id = params.get("id");
+
+      const container =
+        document.getElementById("pieceContent");
+
+      if (!id) {
+
+        container.innerHTML = `
+          <p class="shape-empty">
+            No piece selected.
+          </p>
+        `;
+
+        return;
+      }
+
+      try {
+
+        const response =
+          await fetch("/data/pieces.json");
+
+        const pieces =
+          await response.json();
+
+        const piece =
+          pieces.find(p =>
+            String(p.piece_number) === String(id)
+          );
+
+        if (!piece) {
+
+          container.innerHTML = `
+            <p class="shape-empty">
+              Piece not found.
+            </p>
+          `;
+
+          return;
+        }
+
+        const topImage =
+          piece.full_top_image ||
+          piece.top_image ||
+          piece.thumbnail;
+
+        const bottomImage =
+          piece.full_bottom_image ||
+          piece.bottom_image ||
+          topImage;
+
+        const title =
+          piece.piece_number || "Untitled";
+
+        const dimensions =
+          piece.dimensions || "";
+
+        const clay =
+          piece.clay || "";
+
+        const glaze =
+          piece.glaze || "";
+
+        const price =
+          piece.price || "";
+
+        const description =
+          piece.description ||
+          "A quiet object for attentive viewing.";
+
+        container.innerHTML = `
+
+          <section class="piece-header">
+
+            <h1>${title}</h1>
+
+            <div class="piece-meta">
+
+              ${dimensions ? `<div>${dimensions}</div>` : ""}
+
+              ${(clay || glaze)
+                ? `<div>${clay} ${glaze}</div>`
+                : ""}
+
+              ${price
+                ? `<div>$${price}</div>`
+                : ""}
+
+            </div>
+
+          </section>
+
+          <section class="piece-grid">
+
+            <article class="piece-tile">
+
+              <a
+                class="piece-image-link"
+                href="${topImage}"
+                target="_blank"
+              >
+                <img
+                  class="piece-image"
+                  src="${topImage}"
+                  alt="${title} top view"
+                />
+              </a>
+
+              <div class="piece-caption">
+
+                <h2>Top View</h2>
+
+                <p>
+                  ${description}
+                </p>
+
+              </div>
+
+            </article>
+
+            <article class="piece-tile">
+
+              <a
+                class="piece-image-link"
+                href="${bottomImage}"
+                target="_blank"
+              >
+                <img
+                  class="piece-image"
+                  src="${bottomImage}"
+                  alt="${title} bottom view"
+                />
+              </a>
+
+              <div class="piece-caption">
+
+                <h2>Bottom View</h2>
+
+                <p>
+                  “The usefulness of a vessel
+                  comes from its emptiness.”
+                </p>
+
+              </div>
+
+            </article>
+
+          </section>
+
+        `;
+
+      } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+          <p class="shape-empty">
+            Unable to load piece.
+          </p>
+        `;
+      }
+
+    }
+
+    loadPiece();
+
+  </script>
 
 </body>
 </html>
