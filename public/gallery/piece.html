@@ -6,15 +6,14 @@
 
   <title>Piece | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1006" />
-  <link rel="stylesheet" href="/css/gallery.css?v=1006" />
+  <link rel="stylesheet" href="/css/styles.css?v=1009" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1009" />
 </head>
 
 <body class="practice-page">
 
   <header class="site-header">
     <div class="header-shell">
-
       <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
@@ -26,11 +25,10 @@
         <a href="/practice.html">Practice</a>
         <a href="/gallery/bonsai.html">Bonsai</a>
       </nav>
-
     </div>
   </header>
 
-  <main class="piece-page">
+  <main class="piece-page compact-piece-page">
 
     <a class="piece-back" href="/gallery/ovals.html">← Back to Ovals</a>
 
@@ -39,6 +37,11 @@
     </section>
 
   </main>
+
+  <div id="zoomViewer" class="zoom-viewer" aria-hidden="true">
+    <button id="zoomClose" class="zoom-close" type="button">×</button>
+    <img id="zoomImage" src="" alt="" />
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", loadPiece);
@@ -54,18 +57,12 @@
       }
 
       try {
-        const response = await fetch("/data/pieces.json?v=1006");
-
-        if (!response.ok) {
-          throw new Error(`Server returned ${response.status}`);
-        }
-
+        const response = await fetch("/data/pieces.json?v=1009");
         const pieces = await response.json();
 
-        const piece = pieces.find((item) => {
-          const itemId = String(item.id || item.piece_number || "").trim();
-          return itemId === id;
-        });
+        const piece = pieces.find(item =>
+          String(item.id || item.piece_number || "").trim() === id
+        );
 
         if (!piece) {
           container.innerHTML = `<div class="empty-state">Piece not found.</div>`;
@@ -73,9 +70,10 @@
         }
 
         renderPiece(piece, container);
+        setupZoomViewer();
 
       } catch (error) {
-        console.error("Piece page error:", error);
+        console.error(error);
         container.innerHTML = `<div class="empty-state">Could not load this piece.</div>`;
       }
     }
@@ -83,9 +81,9 @@
     function renderPiece(piece, container) {
       const id = piece.id || piece.piece_number || "";
       const title = piece.title || "ClaycrazE Vessel";
+      const dimensions = piece.dimensions || "";
       const clay = piece.clay || "";
       const finish = piece.finish || piece.glaze || "";
-      const dimensions = piece.dimensions || "";
       const price = piece.price || "";
       const description = piece.description || "";
 
@@ -95,39 +93,22 @@
       document.title = `${title} | ClaycrazE`;
 
       container.innerHTML = `
-        <section class="piece-detail-header">
-          <p class="eyebrow">ClaycrazE / ${escapeHtml(id)}</p>
-          <h1>${escapeHtml(title)}</h1>
-
-          <div class="piece-label">
-            ${dimensions ? `<p>${escapeHtml(dimensions)}</p>` : ""}
-            ${(clay || finish) ? `<p>${escapeHtml(clay)}${clay && finish ? " / " : ""}${escapeHtml(finish)}</p>` : ""}
-            ${price ? `<p>${escapeHtml(price)}</p>` : ""}
-          </div>
-        </section>
-
         <section class="piece-two-grid">
 
           <article class="piece-view-tile">
-            <a href="${escapeAttribute(topImage)}" target="_blank" rel="noopener">
+            <button class="zoom-trigger" data-full="${escapeAttribute(topImage)}" type="button">
               <img src="${escapeAttribute(topImage)}" alt="${escapeAttribute(title)} top view" />
-            </a>
+            </button>
             <div class="piece-view-caption">
               <h2>Top</h2>
-              <p>The vessel shows itself first by what it holds back.</p>
+              <p>Click image to inspect surface, edge, glaze, and proportion.</p>
             </div>
           </article>
 
           <article class="piece-view-tile">
-            ${
-              bottomImage
-                ? `
-                  <a href="${escapeAttribute(bottomImage)}" target="_blank" rel="noopener">
-                    <img src="${escapeAttribute(bottomImage)}" alt="${escapeAttribute(title)} bottom view" />
-                  </a>
-                `
-                : `<div class="no-image">No bottom image available</div>`
-            }
+            <button class="zoom-trigger" data-full="${escapeAttribute(bottomImage)}" type="button">
+              <img src="${escapeAttribute(bottomImage)}" alt="${escapeAttribute(title)} bottom view" />
+            </button>
             <div class="piece-view-caption">
               <h2>Bottom</h2>
               <p>The foot tells the truth. Lao-Tzu would probably check there first.</p>
@@ -137,26 +118,89 @@
         </section>
 
         <section class="piece-wine-label">
-          <h2>${escapeHtml(title)}</h2>
-          <p>${escapeHtml(id)}</p>
-          ${description ? `<p>${escapeHtml(description).replace(/\n/g, "<br>")}</p>` : ""}
+          <p class="eyebrow">ClaycrazE / ${escapeHtml(id)}</p>
+          <h1>${escapeHtml(title)}</h1>
+
+          <div class="piece-facts">
+            ${dimensions ? `<p><strong>Dimensions:</strong> ${escapeHtml(dimensions)}</p>` : ""}
+            ${(clay || finish) ? `<p><strong>Clay / Finish:</strong> ${escapeHtml(clay)}${clay && finish ? " / " : ""}${escapeHtml(finish)}</p>` : ""}
+            ${price ? `<p><strong>Status:</strong> ${escapeHtml(price)}</p>` : ""}
+          </div>
+
+          ${description ? `<div class="piece-description">${escapeHtml(description).replace(/\n/g, "<br>")}</div>` : ""}
         </section>
       `;
     }
 
-    function normalizeImagePath(path) {
-      if (!path) return "";
+    function setupZoomViewer() {
+      const viewer = document.getElementById("zoomViewer");
+      const img = document.getElementById("zoomImage");
+      const close = document.getElementById("zoomClose");
 
-      const clean = String(path).trim().replace(/\\/g, "/");
+      let scale = 1;
+      let x = 0;
+      let y = 0;
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
 
-      if (
-        clean.startsWith("/") ||
-        clean.startsWith("http://") ||
-        clean.startsWith("https://")
-      ) {
-        return clean;
+      function applyTransform() {
+        img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
       }
 
+      document.querySelectorAll(".zoom-trigger").forEach(button => {
+        button.addEventListener("click", () => {
+          img.src = button.dataset.full;
+          viewer.classList.add("open");
+          viewer.setAttribute("aria-hidden", "false");
+          scale = 1;
+          x = 0;
+          y = 0;
+          applyTransform();
+        });
+      });
+
+      close.addEventListener("click", closeViewer);
+
+      viewer.addEventListener("click", event => {
+        if (event.target === viewer) closeViewer();
+      });
+
+      viewer.addEventListener("wheel", event => {
+        event.preventDefault();
+        scale += event.deltaY < 0 ? 0.15 : -0.15;
+        scale = Math.min(Math.max(scale, 1), 6);
+        applyTransform();
+      });
+
+      img.addEventListener("mousedown", event => {
+        dragging = true;
+        startX = event.clientX - x;
+        startY = event.clientY - y;
+      });
+
+      window.addEventListener("mousemove", event => {
+        if (!dragging) return;
+        x = event.clientX - startX;
+        y = event.clientY - startY;
+        applyTransform();
+      });
+
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+      });
+
+      function closeViewer() {
+        viewer.classList.remove("open");
+        viewer.setAttribute("aria-hidden", "true");
+        img.src = "";
+      }
+    }
+
+    function normalizeImagePath(path) {
+      if (!path) return "";
+      const clean = String(path).trim().replace(/\\/g, "/");
+      if (clean.startsWith("/") || clean.startsWith("http://") || clean.startsWith("https://")) return clean;
       return `/${clean.replace(/^\.?\/*/, "")}`;
     }
 
