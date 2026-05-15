@@ -8,184 +8,98 @@ async function loadOvals() {
   if (!galleryGrid) return;
 
   try {
-    const response = await fetch("/data/pieces.json?v=1001");
+    const response = await fetch("/data/pieces.json?v=1003");
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
     }
 
-    const data = await response.json();
-
-    const pieces = Array.isArray(data)
-      ? data
-      : Array.isArray(data.pieces)
-        ? data.pieces
-        : [];
+    const pieces = await response.json();
 
     const ovals = pieces.filter((piece) => {
+      const id = String(piece.id || piece.piece_number || "").trim().toUpperCase();
       const shape = String(piece.shape || "").trim().toUpperCase();
-      const id = String(piece.piece_number || piece.id || "").trim().toUpperCase();
+      const published = piece.is_published !== false;
 
-      return shape === "OV" || id.startsWith("OV");
+      return published && (shape === "OV" || id.startsWith("OV-"));
     });
 
     if (!ovals.length) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
-          No oval pieces were found in the inventory file.
+          No oval pieces are currently available.
         </div>
       `;
       return;
     }
 
-    galleryGrid.innerHTML = ovals.map(buildCardHtml).join("");
+    galleryGrid.innerHTML = ovals.map(buildOvalTile).join("");
 
   } catch (error) {
+    console.error("Oval gallery error:", error);
+
     galleryGrid.innerHTML = `
       <div class="empty-state">
-        Could not load oval gallery data: ${escapeHtml(error.message)}
+        Could not load oval gallery data.
       </div>
     `;
-
-    console.error("Oval gallery error:", error);
   }
 }
 
-function buildCardHtml(piece) {
-  const id =
-    piece.piece_number ||
-    piece.id ||
-    "";
-
-  const title =
-    piece.title ||
-    piece.description ||
-    "Oval Bonsai Container";
-
-  const dimensions =
-    piece.dimensions ||
-    formatDims(piece.width, piece.depth, piece.height);
-
-  const price =
-    formatPrice(piece.price);
-
-  const imagePath =
-    normalizeImagePath(
-      piece.thumbnail ||
-      piece.thumb_image ||
-      piece.image_path ||
-      piece.top_image ||
-      piece.full_top_image ||
-      piece.full_image ||
-      ""
-    );
+function buildOvalTile(piece) {
+  const id = piece.id || piece.piece_number || "";
+  const title = piece.title || "Oval Bonsai Container";
+  const dimensions = piece.dimensions || "";
+  const price = piece.price || "";
+  const image = normalizeImagePath(
+    piece.thumbnail ||
+    piece.top_image ||
+    piece.image_path ||
+    piece.full_top_image ||
+    ""
+  );
 
   return `
     <article class="gallery-card">
-
-      href="/gallery/piece.html?id=OV-2605-001"
+      <a class="gallery-card-link" href="/gallery/piece.html?id=${encodeURIComponent(id)}">
 
         <div class="gallery-thumb-wrap">
-          ${buildImageHtml(imagePath, title)}
+          ${
+            image
+              ? `<img class="gallery-thumb" src="${escapeAttribute(image)}" alt="${escapeAttribute(title)}" loading="lazy">`
+              : `<div class="no-image">No image available</div>`
+          }
         </div>
 
         <div class="gallery-card-body">
-
           <h2>${escapeHtml(title)}</h2>
 
-          ${id ? `
-            <p class="gallery-meta">
-              ${escapeHtml(id)}
-            </p>
-          ` : ""}
+          ${id ? `<p class="gallery-meta">${escapeHtml(id)}</p>` : ""}
+          ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
+          ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
 
-          ${dimensions ? `
-            <p class="gallery-meta">
-              ${escapeHtml(dimensions)}
-            </p>
-          ` : ""}
-
-          ${price ? `
-            <p class="gallery-meta">
-              ${escapeHtml(price)}
-            </p>
-          ` : ""}
-
-          <p class="gallery-meta">
-            View details
-          </p>
-
+          <p class="gallery-more">View details</p>
         </div>
 
       </a>
-
     </article>
   `;
 }
 
-function buildImageHtml(imagePath, altText) {
-  if (!imagePath) {
-    return `<div class="no-image">No image available</div>`;
-  }
+function normalizeImagePath(path) {
+  if (!path) return "";
 
-  return `
-    <img
-      class="gallery-thumb"
-      src="${escapeAttribute(imagePath)}"
-      alt="${escapeAttribute(altText || "ClaycrazE oval bonsai container")}"
-      loading="lazy"
-      onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
-    />
-  `;
-}
-
-function normalizeImagePath(imagePath) {
-  if (!imagePath) return "";
-
-  const trimmed = String(imagePath)
-    .trim()
-    .replace(/\\/g, "/");
+  const clean = String(path).trim().replace(/\\/g, "/");
 
   if (
-    trimmed.startsWith("http://") ||
-    trimmed.startsWith("https://") ||
-    trimmed.startsWith("/")
+    clean.startsWith("/") ||
+    clean.startsWith("http://") ||
+    clean.startsWith("https://")
   ) {
-    return trimmed;
+    return clean;
   }
 
-  return `/${trimmed.replace(/^\.?\/*/, "")}`;
-}
-
-function formatDims(width, depth, height) {
-  const w = safeText(width);
-  const d = safeText(depth);
-  const h = safeText(height);
-
-  if (!w && !d && !h) return "";
-
-  return `${w || "?"} × ${d || "?"} × ${h || "?"}`;
-}
-
-function formatPrice(value) {
-  const raw = safeText(value);
-
-  if (!raw) return "";
-
-  const cleaned = raw
-    .replace(/\$/g, "")
-    .replace(/,/g, "");
-
-  const number = Number(cleaned);
-
-  if (Number.isNaN(number)) return raw;
-
-  return `$${number.toFixed(0)}`;
-}
-
-function safeText(value) {
-  if (value === null || value === undefined) return "";
-  return String(value).trim();
+  return `/${clean.replace(/^\.?\/*/, "")}`;
 }
 
 function escapeHtml(value) {
@@ -198,9 +112,5 @@ function escapeHtml(value) {
 }
 
 function escapeAttribute(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return escapeHtml(value);
 }
