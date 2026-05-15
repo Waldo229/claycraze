@@ -42,8 +42,15 @@
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 2.25rem;
+
+  grid-template-columns:
+    repeat(auto-fill, minmax(360px, 420px));
+
+  justify-content: center;
+
+  gap: 2rem;
+
+  margin-top: 2rem;
 }
 
 .piece-card {
