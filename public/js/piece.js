@@ -1,12 +1,11 @@
-const pieceRoot = document.getElementById("pieceRoot");
+VSconst pieceRoot = document.getElementById("pieceRoot");
 
 document.addEventListener("DOMContentLoaded", loadPiece);
 
 async function loadPiece() {
   if (!pieceRoot) return;
 
-  const params = new URLSearchParams(window.location.search);
-  const pieceId = params.get("id");
+  const pieceId = new URLSearchParams(window.location.search).get("id");
 
   if (!pieceId) {
     pieceRoot.innerHTML = `<div class="error-state">No piece selected.</div>`;
@@ -26,6 +25,7 @@ async function loadPiece() {
     }
 
     renderPiece(piece);
+    setupZoomViewer();
   } catch (error) {
     pieceRoot.innerHTML = `<div class="error-state">Could not load piece.</div>`;
     console.error("Piece load error:", error);
@@ -47,20 +47,28 @@ function renderPiece(piece) {
   pieceRoot.innerHTML = `
     <article class="piece-detail">
 
-      <div class="piece-image-pair">
-        <a href="${topImage}" target="_blank" rel="noopener">
-          <img class="piece-detail-image" src="${topImage}" alt="${escapeHtml(title)} top view">
-        </a>
+      <div class="piece-image-grid">
+
+        <figure class="piece-view-card">
+          <button class="zoom-trigger" type="button" data-src="${escapeAttribute(topImage)}" data-alt="${escapeAttribute(title)} top view">
+            <img src="${escapeAttribute(topImage)}" alt="${escapeAttribute(title)} top view">
+          </button>
+          <figcaption>Top view</figcaption>
+        </figure>
 
         ${
           hasBottom
             ? `
-              <a href="${bottomImage}" target="_blank" rel="noopener">
-                <img class="piece-detail-image" src="${bottomImage}" alt="${escapeHtml(title)} underside">
-              </a>
+              <figure class="piece-view-card">
+                <button class="zoom-trigger" type="button" data-src="${escapeAttribute(bottomImage)}" data-alt="${escapeAttribute(title)} underside">
+                  <img src="${escapeAttribute(bottomImage)}" alt="${escapeAttribute(title)} underside">
+                </button>
+                <figcaption>Underside</figcaption>
+              </figure>
             `
             : ""
         }
+
       </div>
 
       <div class="piece-detail-body">
@@ -75,7 +83,48 @@ function renderPiece(piece) {
       </div>
 
     </article>
+
+    <div id="zoomOverlay" class="zoom-overlay" aria-hidden="true">
+      <button id="zoomClose" class="zoom-close" type="button" aria-label="Close magnified image">×</button>
+      <div class="zoom-scroll">
+        <img id="zoomImage" class="zoom-image" src="" alt="">
+      </div>
+    </div>
   `;
+}
+
+function setupZoomViewer() {
+  const overlay = document.getElementById("zoomOverlay");
+  const zoomImage = document.getElementById("zoomImage");
+  const closeButton = document.getElementById("zoomClose");
+
+  document.querySelectorAll(".zoom-trigger").forEach((button) => {
+    button.addEventListener("click", () => {
+      zoomImage.src = button.dataset.src;
+      zoomImage.alt = button.dataset.alt || "Magnified piece image";
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("zoom-open");
+    });
+  });
+
+  closeButton.addEventListener("click", closeZoom);
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeZoom();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeZoom();
+  });
+
+  function closeZoom() {
+    overlay.classList.remove("is-open");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("zoom-open");
+    zoomImage.src = "";
+    zoomImage.alt = "";
+  }
 }
 
 function formatDescription(text) {
@@ -94,4 +143,8 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
 }
