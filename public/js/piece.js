@@ -1,4 +1,4 @@
-VSconst pieceRoot = document.getElementById("pieceRoot");
+const pieceRoot = document.getElementById("pieceRoot");
 
 document.addEventListener("DOMContentLoaded", loadPiece);
 
