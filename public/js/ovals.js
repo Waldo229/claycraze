@@ -83,7 +83,7 @@ function buildCardHtml(piece) {
   return `
     <article class="gallery-card">
 
-      <a href="/gallery/piece.html?id=${encodeURIComponent(id)}">
+      href="/gallery/piece.html?id=OV-2605-001"
 
         <div class="gallery-thumb-wrap">
           ${buildImageHtml(imagePath, title)}

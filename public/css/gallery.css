@@ -173,7 +173,8 @@ body {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  background: #d9c79d;
 }
 
 .gallery-card-body {
