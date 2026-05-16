@@ -1,6 +1,5 @@
 /* =========================
    GALLERY SYSTEM
-   ClaycrazE / public_html/css/gallery.css
 ========================= */
 
 .gallery-page {
@@ -10,82 +9,44 @@
 }
 
 /* =========================
-   INTRO CARD
+   OVALS / SHAPE PAGE
 ========================= */
 
 .gallery-intro {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto 2.5rem;
-  padding: 2rem 2rem 2.25rem;
-
+  padding: 2.2rem 2rem 2rem;
   text-align: center;
 
-  background: rgba(244, 231, 198, 0.82);
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 26px;
-
+  background: rgba(244, 231, 198, 0.84);
+  border: 1px solid rgba(122, 77, 28, 0.14);
+  border-radius: 30px;
   box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
 }
 
-.eyebrow {
-  margin: 0 0 0.5rem;
-
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.78rem;
-
-  color: #6a4b2d;
-}
-
-.gallery-intro h1 {
-  margin: 0 0 1rem;
-
-  font-size: clamp(2.8rem, 6vw, 5rem);
-  line-height: 0.95;
-  font-weight: 700;
-
+.minimalist-intro h1 {
+  margin: 0;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
   color: #2c1a10;
 }
-
-.gallery-intro p {
-  max-width: 62ch;
-  margin: 0 auto;
-
-  font-size: 1.12rem;
-  line-height: 1.7;
-
-  color: #6a4b2d;
-}
-
-/* =========================
-   GRID
-========================= */
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(520px, 620px));
   justify-content: center;
   gap: 2.5rem;
-
   margin-top: 2rem;
 }
 
-/* =========================
-   TILE
-========================= */
-
 .gallery-card {
   overflow: hidden;
-
   background: rgba(244, 231, 198, 0.86);
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 28px;
-
+  border: 1px solid rgba(122, 77, 28, 0.14);
+  border-radius: 30px;
   box-shadow: 0 18px 46px rgba(55, 31, 12, 0.22);
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .gallery-card:hover {
@@ -95,35 +56,22 @@
 
 .gallery-card-link {
   display: block;
-  height: 100%;
-
   color: inherit;
   text-decoration: none;
 }
 
 .gallery-thumb-wrap {
   aspect-ratio: 16 / 10;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   overflow: hidden;
-
   background: #d9c79d;
 }
 
 .gallery-thumb {
   width: 100%;
   height: 100%;
-
   display: block;
-
   object-fit: cover;
   object-position: center;
-
-  background: #d9c79d;
-
   transition: transform 0.45s ease;
 }
 
@@ -132,37 +80,220 @@
 }
 
 .gallery-card-body {
-  padding: 1.25rem 1.35rem 1.5rem;
-
+  padding: 1.15rem 1.4rem 1.35rem;
   text-align: center;
 }
 
 .gallery-card h2 {
-  margin: 0 0 0.45rem;
-
-  font-size: 1.35rem;
-  line-height: 1.2;
-  font-weight: 700;
-
+  margin: 0 0 0.35rem;
+  font-size: 1.45rem;
+  line-height: 1.15;
   color: #2c1a10;
 }
 
 .gallery-meta {
   margin: 0.2rem 0;
-
-  font-size: 1rem;
-  line-height: 1.45;
-
   color: #6a4b2d;
+  line-height: 1.45;
 }
 
 .gallery-more {
-  margin: 0.85rem 0 0;
+  display: none;
+}
 
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
+/* =========================
+   PIECE PAGE
+========================= */
 
+.piece-page {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 6rem;
+}
+
+.compact-piece-page {
+  padding-top: 2rem;
+}
+
+.piece-local-nav {
+  margin-bottom: 1.5rem;
+}
+
+.piece-local-nav a,
+.piece-back {
   color: #7a4d1c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.piece-local-nav a:hover,
+.piece-back:hover {
+  text-decoration: underline;
+}
+
+.piece-two-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.piece-view-tile {
+  overflow: hidden;
+  background: rgba(244, 231, 198, 0.86);
+  border: 1px solid rgba(122, 77, 28, 0.14);
+  border-radius: 30px;
+  box-shadow: 0 18px 46px rgba(55, 31, 12, 0.22);
+}
+
+.piece-view-tile a {
+  display: block;
+}
+
+.piece-view-tile img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.piece-view-tile:hover img {
+  transform: scale(1.02);
+}
+
+.piece-view-caption {
+  padding: 1.25rem 1.5rem 1.45rem;
+}
+
+.piece-view-caption h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: #2c1a10;
+}
+
+.piece-view-caption p {
+  display: none;
+}
+
+.piece-wine-label {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2rem 2.5rem;
+  background: rgba(244, 231, 198, 0.84);
+  border: 1px solid rgba(122, 77, 28, 0.14);
+  border-radius: 30px;
+  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
+}
+
+.piece-wine-label h1 {
+  margin: 0.35rem 0 1rem;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1;
+  color: #2c1a10;
+}
+
+.piece-facts {
+  margin-bottom: 1.5rem;
+}
+
+.piece-facts p {
+  margin: 0.25rem 0;
+  color: #6a4b2d;
+}
+
+.piece-description {
+  line-height: 1.8;
+  color: #2c1a10;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #6a4b2d;
+  font-size: 0.82rem;
+}
+
+/* =========================
+   VIEWER PAGE
+========================= */
+
+.viewer-body {
+  margin: 0;
+  overflow: hidden;
+  background: #140e08;
+}
+
+.viewer-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 0.75rem 1rem;
+
+  background: rgba(20, 14, 8, 0.88);
+  color: #f4e7c6;
+}
+
+.viewer-topbar a {
+  color: #f4e7c6;
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+.viewer-topbar a:hover {
+  text-decoration: underline;
+}
+
+.viewer-title {
+  opacity: 0.9;
+}
+
+.viewer-stage {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  cursor: grab;
+}
+
+.viewer-stage.dragging {
+  cursor: grabbing;
+}
+
+#viewerImage {
+  max-width: 92vw;
+  max-height: 86vh;
+  transform-origin: center center;
+  user-select: none;
+  -webkit-user-drag: none;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.55);
+}
+
+.viewer-help {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 20;
+
+  padding: 0.65rem 0.85rem;
+  border-radius: 999px;
+
+  background: rgba(20, 14, 8, 0.72);
+  color: #f4e7c6;
+
+  font-size: 0.9rem;
 }
 
 /* =========================
@@ -174,225 +305,15 @@
 .error-state,
 .no-image {
   padding: 2rem;
-
   text-align: center;
-
   color: #2c1a10;
 }
 
 .empty-state,
 .error-state {
   grid-column: 1 / -1;
-
-  background: rgba(244, 231, 198, 0.82);
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 24px;
-
-  box-shadow: 0 14px 38px rgba(55, 31, 12, 0.16);
-}
-
-.no-image {
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #d9c79d;
-}
-
-/* =========================
-   PIECE PAGE SUPPORT
-========================= */
-
-.piece-page {
-  width: min(1400px, 100%);
-  margin: 0 auto;
-  padding: 3rem 2rem 6rem;
-}
-
-.back-link-wrap {
-  margin: 0 0 1rem;
-}
-
-.back-link,
-.piece-back {
-  color: #7a4d1c;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.back-link:hover,
-.piece-back:hover {
-  text-decoration: underline;
-}
-
-.piece-layout {
-  padding: 1.5rem;
-
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.75fr);
-  gap: 1.5rem;
-  align-items: start;
-
-  background: rgba(244, 231, 198, 0.82);
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 26px;
-
-  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
-}
-
-.viewer-shell {
-  display: grid;
-  gap: 0.85rem;
-}
-
-.flip-stage {
-  width: 100%;
-  perspective: 1400px;
-}
-
-.flip-card-large {
-  position: relative;
-
-  width: 100%;
-  aspect-ratio: 1 / 1;
-
-  overflow: hidden;
-
-  border-radius: 20px;
-  background: #d9c79d;
-}
-
-.flip-inner {
-  position: relative;
-
-  width: 100%;
-  height: 100%;
-
-  transition: transform 0.65s ease;
-  transform-style: preserve-3d;
-}
-
-.flip-inner.flipped {
-  transform: rotateY(180deg);
-}
-
-.flip-face {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: contain;
-  object-position: center;
-
-  background: #d9c79d;
-
-  backface-visibility: hidden;
-}
-
-.flip-face.back {
-  transform: rotateY(180deg);
-}
-
-.viewer-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.flip-btn,
-.secondary-link {
-  appearance: none;
-
-  border: 1px solid rgba(122, 77, 28, 0.2);
-  background: #f4e7c6;
-  color: #2c1a10;
-
-  border-radius: 999px;
-
-  padding: 0.72rem 1rem;
-
-  font: inherit;
-  text-decoration: none;
-
-  cursor: pointer;
-
-  transition:
-    background 0.18s ease,
-    transform 0.18s ease;
-}
-
-.flip-btn:hover,
-.secondary-link:hover {
-  background: #f8efd8;
-  transform: translateY(-1px);
-}
-
-.viewer-note {
-  margin: 0;
-
-  color: #6a4b2d;
-  font-size: 0.95rem;
-}
-
-.piece-info h1 {
-  margin: 0 0 0.35rem;
-
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  line-height: 1.08;
-
-  color: #2c1a10;
-}
-
-.piece-id {
-  margin: 0 0 1rem;
-
-  color: #6a4b2d;
-  font-size: 0.98rem;
-}
-
-.piece-description {
-  margin: 0 0 1rem;
-
-  line-height: 1.7;
-
-  color: #2c1a10;
-}
-
-.piece-details {
-  display: grid;
-  gap: 0.7rem;
-
-  padding: 1rem;
-
-  border: 1px solid rgba(122, 77, 28, 0.12);
-  border-radius: 14px;
-
-  background: rgba(255, 250, 239, 0.5);
-}
-
-.piece-details div {
-  display: grid;
-  grid-template-columns: 90px 1fr;
-  gap: 0.65rem;
-  align-items: start;
-}
-
-.piece-details dt {
-  font-weight: 700;
-}
-
-.piece-details dd {
-  margin: 0;
-
-  color: #6a4b2d;
+  background: rgba(244, 231, 198, 0.84);
+  border-radius: 28px;
 }
 
 /* =========================
@@ -404,8 +325,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .piece-layout {
+  .piece-two-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .viewer-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #viewerImage {
+    max-width: 96vw;
+    max-height: 80vh;
   }
 }
 
@@ -415,160 +348,15 @@
     padding: 1.25rem 1rem 5rem;
   }
 
-  .gallery-intro {
-    padding: 1.5rem 1.25rem 1.75rem;
-  }
-
   .gallery-grid {
     gap: 1.5rem;
   }
 
-  .piece-layout {
-    padding: 1rem;
+  .gallery-intro {
+    padding: 1.5rem 1.25rem;
   }
 
-  .piece-details div {
-    grid-template-columns: 1fr;
-    gap: 0.2rem;
+  .minimalist-intro h1 {
+    font-size: clamp(3.2rem, 18vw, 5rem);
   }
-}
-/* =========================
-   NEW PIECE DETAIL LAYOUT
-========================= */
-
-.piece-detail-header {
-  max-width: 950px;
-
-  margin: 0 auto 2.5rem;
-
-  padding: 2rem 2rem 2.25rem;
-
-  text-align: center;
-
-  background: rgba(244, 231, 198, 0.84);
-
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 28px;
-
-  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
-}
-
-.piece-detail-header h1 {
-  margin: 0.5rem 0 1rem;
-
-  font-size: clamp(2.6rem, 5vw, 5rem);
-  line-height: 0.95;
-
-  color: #2c1a10;
-}
-
-.piece-label {
-  color: #6a4b2d;
-
-  line-height: 1.6;
-}
-
-.piece-label p {
-  margin: 0.2rem 0;
-}
-
-.piece-two-grid {
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
-
-  gap: 2.5rem;
-
-  align-items: start;
-
-  margin-bottom: 2.5rem;
-}
-
-.piece-view-tile {
-  overflow: hidden;
-
-  background: rgba(244, 231, 198, 0.86);
-
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 28px;
-
-  box-shadow: 0 18px 46px rgba(55, 31, 12, 0.22);
-}
-
-.piece-view-tile a {
-  display: block;
-}
-
-.piece-view-tile img {
-  width: 100%;
-  height: auto;
-
-  display: block;
-
-  background: #d9c79d;
-
-  transition:
-    transform 0.35s ease,
-    opacity 0.35s ease;
-}
-
-.piece-view-tile:hover img {
-  transform: scale(1.02);
-}
-
-.piece-view-caption {
-  padding: 1.4rem 1.5rem 1.6rem;
-}
-
-.piece-view-caption h2 {
-  margin: 0 0 0.6rem;
-
-  font-size: 2rem;
-
-  color: #2c1a10;
-}
-
-.piece-view-caption p {
-  margin: 0;
-
-  line-height: 1.6;
-
-  color: #6a4b2d;
-}
-
-.piece-wine-label {
-  max-width: 1100px;
-
-  margin: 0 auto;
-
-  padding: 2rem 2rem 2.5rem;
-
-  background: rgba(244, 231, 198, 0.84);
-
-  border: 1px solid rgba(122, 77, 28, 0.16);
-  border-radius: 28px;
-
-  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
-}
-
-.piece-wine-label h2 {
-  margin: 0 0 0.5rem;
-
-  font-size: 2.4rem;
-
-  color: #2c1a10;
-}
-
-.piece-wine-label p {
-  line-height: 1.75;
-
-  color: #2c1a10;
-}
-
-@media (max-width: 680px) {
-
-  .piece-two-grid {
-    grid-template-columns: 1fr;
-  }
-
 }
