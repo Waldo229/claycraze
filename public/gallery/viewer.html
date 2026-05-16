@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Image Viewer | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=1010" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1010" />
+
+  <style>
+    body.viewer-body {
+      margin: 0;
+      overflow: hidden;
+      background: #140e08;
+    }
+
+    .viewer-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+
+      padding: 0.75rem 1rem;
+
+      background: rgba(20, 14, 8, 0.88);
+      color: #f4e7c6;
+    }
+
+    .viewer-topbar a {
+      color: #f4e7c6;
+      text-decoration: none;
+      margin-right: 1rem;
+    }
+
+    .viewer-topbar a:hover {
+      text-decoration: underline;
+    }
+
+    .viewer-title {
+      font-family: Georgia, "Times New Roman", serif;
+      opacity: 0.9;
+      text-align: right;
+    }
+
+    .viewer-stage {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .viewer-stage.dragging {
+      cursor: grabbing;
+    }
+
+    #viewerImage {
+      max-width: 92vw;
+      max-height: 86vh;
+
+      transform-origin: center center;
+      user-select: none;
+      -webkit-user-drag: none;
+
+      box-shadow: 0 20px 80px rgba(0,0,0,0.55);
+    }
+
+    .viewer-help {
+      position: fixed;
+      left: 1rem;
+      bottom: 1rem;
+      z-index: 20;
+
+      padding: 0.65rem 0.85rem;
+
+      border-radius: 999px;
+
+      background: rgba(20, 14, 8, 0.72);
+      color: #f4e7c6;
+
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    @media (max-width: 700px) {
+      .viewer-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .viewer-title {
+        text-align: left;
+      }
+
+      #viewerImage {
+        max-width: 96vw;
+        max-height: 80vh;
+      }
+    }
+  </style>
+</head>
+
+<body class="viewer-body">
+
+  <nav class="viewer-topbar" aria-label="Viewer navigation">
+    <div>
+      <a id="backToPiece" href="/gallery/piece.html">← Back to Piece</a>
+      <a href="/gallery/ovals.html">← Back to Ovals</a>
+    </div>
+
+    <div id="viewerTitle" class="viewer-title">
+      ClaycrazE Viewer
+    </div>
+  </nav>
+
+  <main id="viewerStage" class="viewer-stage">
+    <img id="viewerImage" src="" alt="" />
+  </main>
+
+  <div class="viewer-help">
+    Scroll to zoom · drag to pan · double-click to reset
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", loadViewer);
+
+    async function loadViewer() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const view = params.get("view") || "top";
+
+      const image = document.getElementById("viewerImage");
+      const title = document.getElementById("viewerTitle");
+      const backToPiece = document.getElementById("backToPiece");
+
+      if (!id) {
+        title.textContent = "No piece selected";
+        return;
+      }
+
+      backToPiece.href = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+
+      try {
+        const response = await fetch("/data/pieces.json?v=1010");
+        const pieces = await response.json();
+
+        const piece = pieces.find(item =>
+          String(item.id || item.piece_number || "").trim() === id
+        );
+
+        if (!piece) {
+          title.textContent = "Piece not found";
+          return;
+        }
+
+        const pieceTitle = piece.title || "ClaycrazE Vessel";
+
+        const imagePath =
+          view === "bottom"
+            ? normalizeImagePath(piece.bottom_image || "")
+            : normalizeImagePath(piece.top_image || piece.thumbnail || "");
+
+        image.src = imagePath;
+        image.alt = `${pieceTitle} ${view} view`;
+
+        title.textContent = `${pieceTitle} / ${view}`;
+
+        setupPanZoom();
+
+      } catch (error) {
+        console.error("Viewer error:", error);
+        title.textContent = "Could not load image";
+      }
+    }
+
+    function setupPanZoom() {
+      const stage = document.getElementById("viewerStage");
+      const image = document.getElementById("viewerImage");
+
+      let scale = 1;
+      let x = 0;
+      let y = 0;
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      function applyTransform() {
+        image.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      }
+
+      stage.addEventListener("wheel", event => {
+        event.preventDefault();
+
+        const direction = event.deltaY < 0 ? 1 : -1;
+        scale += direction * 0.15;
+        scale = Math.min(Math.max(scale, 1), 8);
+
+        applyTransform();
+      }, { passive: false });
+
+      image.addEventListener("mousedown", event => {
+        dragging = true;
+        stage.classList.add("dragging");
+
+        startX = event.clientX - x;
+        startY = event.clientY - y;
+      });
+
+      window.addEventListener("mousemove", event => {
+        if (!dragging) return;
+
+        x = event.clientX - startX;
+        y = event.clientY - startY;
+
+        applyTransform();
+      });
+
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+        stage.classList.remove("dragging");
+      });
+
+      stage.addEventListener("dblclick", () => {
+        scale = 1;
+        x = 0;
+        y = 0;
+        applyTransform();
+      });
+
+      applyTransform();
+    }
+
+    function normalizeImagePath(path) {
+      if (!path) return "";
+      const clean = String(path).trim().replace(/\\/g, "/");
+      if (clean.startsWith("/") || clean.startsWith("http://") || clean.startsWith("https://")) return clean;
+      return `/${clean.replace(/^\.?\/*/, "")}`;
+    }
+  </script>
+
+</body>
+</html>
