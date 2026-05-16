@@ -131,93 +131,6 @@
   text-decoration: underline;
 }
 
-.piece-two-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
-  gap: 2.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.piece-view-tile {
-  overflow: hidden;
-  background: rgba(244, 231, 198, 0.86);
-  border: 1px solid rgba(122, 77, 28, 0.14);
-  border-radius: 30px;
-  box-shadow: 0 18px 46px rgba(55, 31, 12, 0.22);
-}
-
-.piece-view-tile a {
-  display: block;
-}
-
-.piece-view-tile img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: transform 0.35s ease;
-}
-
-.piece-view-tile:hover img {
-  transform: scale(1.02);
-}
-
-.piece-view-caption {
-  padding: 1.25rem 1.5rem 1.45rem;
-}
-
-.piece-view-caption h2 {
-  margin: 0;
-  font-size: 2rem;
-  color: #2c1a10;
-}
-
-.piece-view-caption p {
-  display: none;
-}
-
-.piece-wine-label {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 2rem 2.5rem;
-  background: rgba(244, 231, 198, 0.84);
-  border: 1px solid rgba(122, 77, 28, 0.14);
-  border-radius: 30px;
-  box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
-}
-
-.piece-wine-label h1 {
-  margin: 0.35rem 0 1rem;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 1;
-  color: #2c1a10;
-}
-
-.piece-facts {
-  margin-bottom: 1.5rem;
-}
-
-.piece-facts p {
-  margin: 0.25rem 0;
-  color: #6a4b2d;
-}
-
-.piece-description {
-  line-height: 1.8;
-  color: #2c1a10;
-}
-
-.eyebrow {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: #6a4b2d;
-  font-size: 0.82rem;
-}
-
-/* =========================
-   COMPACT PIECE DASHBOARD
-========================= */
-
 .piece-dashboard {
   display: grid;
   grid-template-columns: minmax(320px, 0.95fr) minmax(340px, 0.8fr);
@@ -291,20 +204,27 @@
   color: #2c1a10;
 }
 
+.piece-facts {
+  margin-bottom: 1.5rem;
+}
+
 .compact-facts {
   margin-bottom: 1.25rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(122, 77, 28, 0.18);
 }
 
+.piece-facts p,
 .compact-facts p {
   margin: 0.25rem 0;
   color: #6a4b2d;
 }
 
+.piece-description,
 .compact-description {
   font-size: 1rem;
   line-height: 1.65;
+  color: #2c1a10;
 }
 
 .lao-line {
@@ -314,6 +234,14 @@
   color: #6a4b2d;
   font-style: italic;
   line-height: 1.55;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #6a4b2d;
+  font-size: 0.82rem;
 }
 
 /* =========================
@@ -342,6 +270,8 @@
 
   background: rgba(20, 14, 8, 0.88);
   color: #f4e7c6;
+
+  overflow: hidden;
 }
 
 .viewer-topbar a {
@@ -356,6 +286,13 @@
 
 .viewer-title {
   opacity: 0.9;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  max-width: 45vw;
+  text-align: right;
 }
 
 .viewer-stage {
@@ -442,16 +379,17 @@
   .gallery-grid {
     grid-template-columns: minmax(0, 1fr);
   }
-
-  .piece-two-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 700px) {
   .viewer-topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .viewer-title {
+    max-width: 100%;
+    text-align: left;
   }
 
   #viewerImage {
