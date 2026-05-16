@@ -6,8 +6,8 @@
 
   <title>Piece | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1010" />
-  <link rel="stylesheet" href="/css/gallery.css?v=1010" />
+  <link rel="stylesheet" href="/css/styles.css?v=1012" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1012" />
 </head>
 
 <body class="practice-page">
@@ -54,7 +54,7 @@
       }
 
       try {
-        const response = await fetch("/data/pieces.json?v=1010");
+        const response = await fetch("/data/pieces.json?v=1012");
 
         if (!response.ok) {
           throw new Error(`Server returned ${response.status}`);
@@ -93,46 +93,62 @@
 
       document.title = `${title} | ClaycrazE`;
 
+      const shortDescription = makeShortDescription(description);
+
       container.innerHTML = `
-        <section class="piece-two-grid">
+        <section class="piece-dashboard">
 
-          <article class="piece-view-tile">
-            <a href="/gallery/viewer.html?id=${encodeURIComponent(id)}&view=top">
-              <img src="${escapeAttribute(topImage)}" alt="${escapeAttribute(title)} top view" />
-            </a>
+          <div class="piece-image-column">
 
-            <div class="piece-view-caption">
-              <h2>Top</h2>
-              <p>Open full viewer to inspect surface, edge, glaze, and proportion.</p>
-            </div>
-          </article>
+            <article class="piece-mini-tile">
+              <a href="/gallery/viewer.html?id=${encodeURIComponent(id)}&view=top">
+                <img src="${escapeAttribute(topImage)}" alt="${escapeAttribute(title)} top view" />
+              </a>
+              <div class="piece-mini-caption">Top</div>
+            </article>
 
-          <article class="piece-view-tile">
-            <a href="/gallery/viewer.html?id=${encodeURIComponent(id)}&view=bottom">
-              <img src="${escapeAttribute(bottomImage)}" alt="${escapeAttribute(title)} bottom view" />
-            </a>
+            <article class="piece-mini-tile">
+              <a href="/gallery/viewer.html?id=${encodeURIComponent(id)}&view=bottom">
+                <img src="${escapeAttribute(bottomImage)}" alt="${escapeAttribute(title)} bottom view" />
+              </a>
+              <div class="piece-mini-caption">Bottom</div>
+            </article>
 
-            <div class="piece-view-caption">
-              <h2>Bottom</h2>
-              <p>The foot tells the truth. Lao-Tzu would probably check there first.</p>
-            </div>
-          </article>
-
-        </section>
-
-        <section class="piece-wine-label">
-          <p class="eyebrow">ClaycrazE / ${escapeHtml(id)}</p>
-          <h1>${escapeHtml(title)}</h1>
-
-          <div class="piece-facts">
-            ${dimensions ? `<p><strong>Dimensions:</strong> ${escapeHtml(dimensions)}</p>` : ""}
-            ${(clay || finish) ? `<p><strong>Clay / Finish:</strong> ${escapeHtml(clay)}${clay && finish ? " / " : ""}${escapeHtml(finish)}</p>` : ""}
-            ${price ? `<p><strong>Status:</strong> ${escapeHtml(price)}</p>` : ""}
           </div>
 
-          ${description ? `<div class="piece-description">${escapeHtml(description).replace(/\n/g, "<br>")}</div>` : ""}
+          <aside class="piece-label-card">
+            <p class="eyebrow">ClaycrazE / ${escapeHtml(id)}</p>
+
+            <h1>${escapeHtml(title)}</h1>
+
+            <div class="piece-facts compact-facts">
+              ${dimensions ? `<p><strong>Dimensions:</strong> ${escapeHtml(dimensions)}</p>` : ""}
+              ${(clay || finish) ? `<p><strong>Clay / Finish:</strong> ${escapeHtml(clay)}${clay && finish ? " / " : ""}${escapeHtml(finish)}</p>` : ""}
+              ${price ? `<p><strong>Status:</strong> ${escapeHtml(price)}</p>` : ""}
+            </div>
+
+            <div class="piece-description compact-description">
+              ${escapeHtml(shortDescription).replace(/\n/g, "<br>")}
+            </div>
+
+            <p class="lao-line">
+              The foot tells the truth. Lao-Tzu would probably check there first.
+            </p>
+          </aside>
+
         </section>
       `;
+    }
+
+    function makeShortDescription(text) {
+      if (!text) return "A quiet vessel for attentive viewing.";
+
+      const parts = String(text)
+        .split(/\n\s*\n/)
+        .map(part => part.trim())
+        .filter(Boolean);
+
+      return parts.slice(0, 3).join("\n\n");
     }
 
     function normalizeImagePath(path) {
