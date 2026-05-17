@@ -6,8 +6,8 @@
 
   <title>Piece | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1013" />
-  <link rel="stylesheet" href="/css/gallery.css?v=1013" />
+  <link rel="stylesheet" href="/css/styles.css?v=1014" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1014" />
 </head>
 
 <body class="practice-page">
@@ -58,7 +58,7 @@
       }
 
       try {
-        const response = await fetch("/data/pieces.json?v=1013");
+        const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
 
         if (!response.ok) {
           throw new Error(`Server returned ${response.status}`);
