@@ -17,7 +17,14 @@ const FULL_DIR = path.join(PUBLIC_IMAGES_DIR, "full");
 const THUMBS_DIR = path.join(PUBLIC_IMAGES_DIR, "thumbs");
 const DB_PATH = path.join(ROOT, "claycraze_inventory.db");
 
-for (const dir of [PUBLIC_DIR, ADMIN_DIR, DATA_DIR, PUBLIC_IMAGES_DIR, FULL_DIR, THUMBS_DIR]) {
+for (const dir of [
+  PUBLIC_DIR,
+  ADMIN_DIR,
+  DATA_DIR,
+  PUBLIC_IMAGES_DIR,
+  FULL_DIR,
+  THUMBS_DIR,
+]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -70,8 +77,12 @@ function cleanText(value) {
 
 function normalizeStatus(status) {
   const raw = cleanText(status).toLowerCase();
+
   if (raw === "hold") return "held";
   if (raw === "not listed") return "archive";
+  if (raw === "hidden") return "archive";
+  if (raw === "unpublished") return "archive";
+
   return raw || "available";
 }
 
@@ -84,7 +95,10 @@ function isValidShapeCode(shape) {
 function parsePieceId(id) {
   const cleanId = cleanText(id).toUpperCase();
   const match = cleanId.match(/^([A-Z]+)-(\d{4})-(\d{2,4})$/);
-  if (!match) throw new Error("Piece ID must look like OV-2605-001 or FREE-2605-001.");
+
+  if (!match) {
+    throw new Error("Piece ID must look like OV-2605-001 or FREE-2605-001.");
+  }
 
   const shape = match[1];
 
@@ -113,8 +127,13 @@ function imagePathFor(id, kind) {
 
 function saveDataUrlImage(dataUrl, filepath) {
   if (!dataUrl) return false;
+
   const match = String(dataUrl).match(/^data:image\/jpe?g;base64,(.+)$/i);
-  if (!match) throw new Error("Images must be JPEG files.");
+
+  if (!match) {
+    throw new Error("Images must be JPEG files.");
+  }
+
   fs.writeFileSync(filepath, Buffer.from(match[1], "base64"));
   return true;
 }
@@ -127,6 +146,7 @@ function runCommand(command, args) {
         error.stderr = stderr;
         return reject(error);
       }
+
       resolve({ stdout, stderr });
     });
   });
@@ -157,9 +177,12 @@ async function deployToSiteGround(filesToDeploy) {
   const remote = `${SG_USER}@${SG_HOST}`;
 
   const sshArgs = [
-    "-p", SG_PORT,
-    "-i", keyPath,
-    "-o", "StrictHostKeyChecking=no",
+    "-p",
+    SG_PORT,
+    "-i",
+    keyPath,
+    "-o",
+    "StrictHostKeyChecking=no",
   ];
 
   await runCommand("ssh", [
@@ -172,9 +195,12 @@ async function deployToSiteGround(filesToDeploy) {
     if (!fs.existsSync(item.localPath)) continue;
 
     await runCommand("scp", [
-      "-P", SG_PORT,
-      "-i", keyPath,
-      "-o", "StrictHostKeyChecking=no",
+      "-P",
+      SG_PORT,
+      "-i",
+      keyPath,
+      "-o",
+      "StrictHostKeyChecking=no",
       item.localPath,
       `${remote}:${item.remotePath}`,
     ]);
@@ -222,6 +248,7 @@ function exportPiecesJson(callback) {
 
     const outPath = path.join(DATA_DIR, "pieces.json");
     fs.writeFileSync(outPath, JSON.stringify(rows, null, 2), "utf8");
+
     callback(null, rows.length, outPath);
   });
 }
@@ -258,18 +285,25 @@ app.get("/api/pieces/next-id", (req, res) => {
   }
 
   if (!/^\d{4}$/.test(yearMonth)) {
-    return res.status(400).json({ ok: false, error: "Year/month must be 4 digits." });
+    return res.status(400).json({
+      ok: false,
+      error: "Year/month must be 4 digits.",
+    });
   }
 
   db.get(
-    `SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_number
-     FROM inventory
-     WHERE TRIM(UPPER(shape)) = ? AND date_code = ?`,
+    `
+      SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_number
+      FROM inventory
+      WHERE TRIM(UPPER(shape)) = ?
+        AND date_code = ?
+    `,
     [shape, yearMonth],
     (err, row) => {
       if (err) return res.status(500).json({ ok: false, error: err.message });
 
       const nextNumber = row?.next_number || 1;
+
       res.json({
         ok: true,
         next_number: nextNumber,
@@ -287,10 +321,14 @@ app.post("/api/pieces", (req, res) => {
       title = "",
       category = "",
       clay = "",
+      clay_body = "",
       finish = "",
+      glaze = "",
       dimensions = "",
+      price = "",
       status = "available",
       description = "",
+      notes = "",
       has_bottom_image = true,
       is_published = true,
       thumb_image,
@@ -301,10 +339,21 @@ app.post("/api/pieces", (req, res) => {
     const finalId = cleanText(id || preview_id).toUpperCase();
     const parsed = parsePieceId(finalId);
 
-    if (!title) return res.status(400).json({ ok: false, error: "Title is required." });
-    if (!category) return res.status(400).json({ ok: false, error: "Category is required." });
-    if (!thumb_image) return res.status(400).json({ ok: false, error: "Thumbnail image is required." });
-    if (!full_top_image) return res.status(400).json({ ok: false, error: "Full top image is required." });
+    if (!title) {
+      return res.status(400).json({ ok: false, error: "Title is required." });
+    }
+
+    if (!category) {
+      return res.status(400).json({ ok: false, error: "Category is required." });
+    }
+
+    if (!thumb_image) {
+      return res.status(400).json({ ok: false, error: "Thumbnail image is required." });
+    }
+
+    if (!full_top_image) {
+      return res.status(400).json({ ok: false, error: "Full top image is required." });
+    }
 
     const thumbPath = path.join(THUMBS_DIR, `${parsed.id}_top_thumb.jpg`);
     const topPath = path.join(FULL_DIR, `${parsed.id}_top.jpg`);
@@ -313,9 +362,10 @@ app.post("/api/pieces", (req, res) => {
     saveDataUrlImage(thumb_image, thumbPath);
     saveDataUrlImage(full_top_image, topPath);
 
-    const bottomSaved = has_bottom_image && full_bottom_image
-      ? saveDataUrlImage(full_bottom_image, bottomPath)
-      : false;
+    const bottomSaved =
+      has_bottom_image && full_bottom_image
+        ? saveDataUrlImage(full_bottom_image, bottomPath)
+        : false;
 
     const finalStatus = is_published ? normalizeStatus(status) : "archive";
 
@@ -337,9 +387,10 @@ app.post("/api/pieces", (req, res) => {
         image_path_3,
         image_path_4,
         status,
+        price,
         updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `;
 
     const values = [
@@ -348,17 +399,18 @@ app.post("/api/pieces", (req, res) => {
       parsed.piece_number,
       parsed.date_code,
       cleanText(title),
-      cleanText(category),
+      cleanText(category).toLowerCase(),
       cleanText(description),
-      cleanText(clay),
-      cleanText(finish),
-      "",
+      cleanText(clay_body || clay),
+      cleanText(glaze || finish),
+      cleanText(notes),
       cleanText(dimensions),
       imagePathFor(parsed.id, "thumb"),
       imagePathFor(parsed.id, "top"),
       bottomSaved ? imagePathFor(parsed.id, "bottom") : "",
       "",
       finalStatus,
+      cleanText(price),
     ];
 
     db.run(sql, values, function (err) {
@@ -433,17 +485,29 @@ app.post("/api/pieces", (req, res) => {
 });
 
 app.get("/pieces", (req, res) => {
-  db.all(`SELECT * FROM inventory ORDER BY piece_number DESC`, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+  db.all(
+    `
+      SELECT *
+      FROM inventory
+      ORDER BY shape ASC, piece_number DESC
+    `,
+    [],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(rows);
+    }
+  );
 });
 
 app.get("/piece-data/:id", (req, res) => {
   const pieceId = cleanText(req.params.id).toUpperCase();
 
   db.get(
-    `SELECT ${PUBLIC_FIELDS} FROM inventory WHERE id = ?`,
+    `
+      SELECT ${PUBLIC_FIELDS}
+      FROM inventory
+      WHERE id = ?
+    `,
     [pieceId],
     (err, row) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -537,6 +601,54 @@ app.get("/gallery-data/ikebana", (req, res) => {
 
 app.get("/gallery-data/sculpture", (req, res) => {
   getPublicPiecesByShape("SCULP", res);
+});
+
+/*
+  Diagnostic routes.
+  These are useful because if /gallery-data/ovals is blank,
+  we need to know whether the database is empty or the public filter is hiding records.
+*/
+
+app.get("/debug/inventory-count", (req, res) => {
+  db.get(
+    `
+      SELECT COUNT(*) AS count
+      FROM inventory
+    `,
+    [],
+    (err, row) => {
+      if (err) return res.status(500).json({ ok: false, error: err.message });
+
+      res.json({
+        ok: true,
+        count: row?.count || 0,
+        db_path: DB_PATH,
+      });
+    }
+  );
+});
+
+app.get("/debug/shapes", (req, res) => {
+  db.all(
+    `
+      SELECT
+        TRIM(UPPER(shape)) AS shape,
+        TRIM(LOWER(status)) AS status,
+        COUNT(*) AS count
+      FROM inventory
+      GROUP BY TRIM(UPPER(shape)), TRIM(LOWER(status))
+      ORDER BY shape ASC, status ASC
+    `,
+    [],
+    (err, rows) => {
+      if (err) return res.status(500).json({ ok: false, error: err.message });
+
+      res.json({
+        ok: true,
+        rows,
+      });
+    }
+  );
 });
 
 app.listen(PORT, "0.0.0.0", () => {
