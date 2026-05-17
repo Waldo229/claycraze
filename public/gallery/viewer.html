@@ -6,8 +6,8 @@
 
   <title>Image Viewer | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1010" />
-  <link rel="stylesheet" href="/css/gallery.css?v=1010" />
+  <link rel="stylesheet" href="/css/styles.css?v=1011" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1011" />
 
   <style>
     body.viewer-body {
@@ -22,14 +22,11 @@
       left: 0;
       right: 0;
       z-index: 20;
-
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-
       padding: 0.75rem 1rem;
-
       background: rgba(20, 14, 8, 0.88);
       color: #f4e7c6;
     }
@@ -53,11 +50,9 @@
     .viewer-stage {
       position: fixed;
       inset: 0;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       overflow: hidden;
       cursor: grab;
     }
@@ -69,11 +64,9 @@
     #viewerImage {
       max-width: 92vw;
       max-height: 86vh;
-
       transform-origin: center center;
       user-select: none;
       -webkit-user-drag: none;
-
       box-shadow: 0 20px 80px rgba(0,0,0,0.55);
     }
 
@@ -82,14 +75,10 @@
       left: 1rem;
       bottom: 1rem;
       z-index: 20;
-
       padding: 0.65rem 0.85rem;
-
       border-radius: 999px;
-
       background: rgba(20, 14, 8, 0.72);
       color: #f4e7c6;
-
       font-size: 0.9rem;
       opacity: 0.85;
     }
@@ -153,7 +142,7 @@
       backToPiece.href = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
       try {
-        const response = await fetch("/data/pieces.json?v=1010");
+        const response = await fetch("/data/pieces.json?v=1011");
         const pieces = await response.json();
 
         const piece = pieces.find(item =>
@@ -169,8 +158,13 @@
 
         const imagePath =
           view === "bottom"
-            ? normalizeImagePath(piece.bottom_image || "")
-            : normalizeImagePath(piece.top_image || piece.thumbnail || "");
+            ? normalizeImagePath(piece.image_path_3 || "")
+            : normalizeImagePath(piece.image_path_2 || piece.image_path || "");
+
+        if (!imagePath) {
+          title.textContent = `No ${view} image found`;
+          return;
+        }
 
         image.src = imagePath;
         image.alt = `${pieceTitle} ${view} view`;
@@ -245,7 +239,15 @@
     function normalizeImagePath(path) {
       if (!path) return "";
       const clean = String(path).trim().replace(/\\/g, "/");
-      if (clean.startsWith("/") || clean.startsWith("http://") || clean.startsWith("https://")) return clean;
+
+      if (
+        clean.startsWith("/") ||
+        clean.startsWith("http://") ||
+        clean.startsWith("https://")
+      ) {
+        return clean;
+      }
+
       return `/${clean.replace(/^\.?\/*/, "")}`;
     }
   </script>
