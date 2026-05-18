@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ClaycrazE Curatorial Studio</title>
+
+  <link rel="stylesheet" href="/css/curate.css?v=4001" />
+</head>
+
+<body>
+
+  <main class="curate-shell">
+
+    <section class="curate-header">
+      <p class="kicker">ClaycrazE / GENE Workbench</p>
+      <h1>Curatorial Studio</h1>
+      <p>
+        Intake records the object. Curation shapes how it enters the world.
+      </p>
+    </section>
+
+    <section class="curate-card">
+
+      <div class="piece-select-row">
+        <label for="pieceSelect">Select Piece</label>
+        <select id="pieceSelect">
+          <option value="">Loading pieces...</option>
+        </select>
+      </div>
+
+      <div id="piecePreview" class="piece-preview empty">
+        Select a piece to begin.
+      </div>
+
+    </section>
+
+    <form id="curateForm" class="curate-grid">
+
+      <section class="curate-card">
+        <h2>Public Gallery</h2>
+
+        <label>
+          Title
+          <input type="text" id="title" />
+        </label>
+
+        <label>
+          Color
+          <input type="text" id="color" />
+        </label>
+
+        <label>
+          Public Description
+          <textarea id="description" rows="6"></textarea>
+        </label>
+
+        <label>
+          Price
+          <input type="text" id="price" placeholder="150" />
+        </label>
+
+        <label>
+          Status
+          <select id="status">
+            <option value="available">Available</option>
+            <option value="held">Held</option>
+            <option value="acquired">Acquired</option>
+            <option value="archive">Archive</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="curate-card">
+        <h2>GENE Assist Signals</h2>
+
+        <label>
+          Surface Character
+          <input
+            type="text"
+            id="surfaceCharacter"
+            placeholder="soft olive-gray, iron edge, weathered satin"
+          />
+        </label>
+
+        <label>
+          Mood
+          <input
+            type="text"
+            id="mood"
+            placeholder="quiet, restrained, old, companionable"
+          />
+        </label>
+
+        <label>
+          Suggested Use
+          <input
+            type="text"
+            id="suggestedUse"
+            placeholder="literati pine, small deciduous tree, accent planting"
+          />
+        </label>
+
+        <label>
+          Notable Feature
+          <input
+            type="text"
+            id="notableFeature"
+            placeholder="rim movement, basin proportion, quiet clay edge"
+          />
+        </label>
+
+        <label>
+          Private Studio Notes
+          <textarea
+            id="privateNotes"
+            rows="5"
+            placeholder="Anything useful for GENE, pricing, description, or future memory."
+          ></textarea>
+        </label>
+      </section>
+
+      <section class="curate-card wide-card">
+        <h2>GENE Drafting Bench</h2>
+
+        <div class="assist-buttons">
+          <button type="button" id="generateDescription">
+            Generate Description
+          </button>
+
+          <button type="button" id="suggestPrice">
+            Suggest Price Range
+          </button>
+
+          <button type="button" id="generateWineLabel">
+            Wine Label
+          </button>
+
+          <button type="button" id="generateLaoTzu">
+            Lao-tzu Line
+          </button>
+        </div>
+
+        <label>
+          GENE Draft Output
+          <textarea id="geneOutput" rows="8"></textarea>
+        </label>
+      </section>
+
+      <section class="curate-actions wide-card">
+        <button type="submit" id="saveButton">
+          Save Curatorial Changes
+        </button>
+
+        <div id="statusBox" class="status-box"></div>
+      </section>
+
+    </form>
+
+  </main>
+
+  <script src="/admin/js/curate.js?v=4001"></script>
+
+</body>
+</html>
