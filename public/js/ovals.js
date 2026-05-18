@@ -4,11 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadOvals() {
   const galleryGrid = document.getElementById("galleryGrid");
-
   if (!galleryGrid) return;
 
   try {
-    const response = await fetch("/data/pieces.json?v=1003");
+    const response = await fetch("/data/pieces.json?v=1011", {
+      cache: "no-store"
+    });
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
@@ -17,11 +18,17 @@ async function loadOvals() {
     const pieces = await response.json();
 
     const ovals = pieces.filter((piece) => {
-      const id = String(piece.id || piece.piece_number || "").trim().toUpperCase();
+      const id = String(piece.id || "").trim().toUpperCase();
       const shape = String(piece.shape || "").trim().toUpperCase();
+      const status = String(piece.status || "").trim().toLowerCase();
       const published = piece.is_published !== false;
 
-      return published && (shape === "OV" || id.startsWith("OV-"));
+      return (
+        published &&
+        status !== "archive" &&
+        status !== "sold" &&
+        (shape === "OV" || id.startsWith("OV-"))
+      );
     });
 
     if (!ovals.length) {
@@ -47,14 +54,16 @@ async function loadOvals() {
 }
 
 function buildOvalTile(piece) {
-  const id = piece.id || piece.piece_number || "";
+  const id = String(piece.id || "").trim();
   const title = piece.title || "Oval Bonsai Container";
   const dimensions = piece.dimensions || "";
-  const price = piece.price || "";
+  const price = piece.price ? `$${piece.price}` : "";
+
   const image = normalizeImagePath(
+    piece.image_path ||
     piece.thumbnail ||
     piece.top_image ||
-    piece.image_path ||
+    piece.image_path_2 ||
     piece.full_top_image ||
     ""
   );
@@ -66,7 +75,7 @@ function buildOvalTile(piece) {
         <div class="gallery-thumb-wrap">
           ${
             image
-              ? `<img class="gallery-thumb" src="${escapeAttribute(image)}" alt="${escapeAttribute(title)}" loading="lazy">`
+              ? `<img class="gallery-thumb" src="${escapeAttribute(image)}?v=1011" alt="${escapeAttribute(title)}" loading="lazy">`
               : `<div class="no-image">No image available</div>`
           }
         </div>

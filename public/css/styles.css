@@ -390,3 +390,38 @@ a {
     padding: 2rem 1rem 4rem;
   }
 }
+.practice-page,
+.gallery-page,
+.room-page {
+  background: transparent;
+  color: var(--text);
+}
+
+.gallery-intro,
+.room-hero {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.gallery-intro h1,
+.gallery-intro h2,
+.room-hero h1 {
+  color: #f4e8cc;
+}
+
+.piece-card,
+.gallery-card,
+.room-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.piece-body {
+  background: transparent;
+}
+
+.piece-image-wrap {
+  background: rgba(255, 248, 232, 0.04);
+}
