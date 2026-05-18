@@ -87,7 +87,7 @@ db.serialize(() => {
       "",
       "",
       "",
-      `/images/thumbs/${p.id}_top_thumb.jpg`,
+      `/images/full/${p.id}_top.jpg`,
       `/images/full/${p.id}_top.jpg`,
       `/images/full/${p.id}_bottom.jpg`,
       "",
