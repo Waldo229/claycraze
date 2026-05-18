@@ -425,3 +425,72 @@ a {
 .piece-image-wrap {
   background: rgba(255, 248, 232, 0.04);
 }
+/* Interior atmosphere refinement */
+
+.gallery-page,
+.practice-page,
+.room-page,
+.piece-detail {
+  background:
+    radial-gradient(circle at top left, rgba(236, 214, 149, 0.10), transparent 34rem),
+    #18110b;
+}
+
+.gallery-intro,
+.room-hero,
+.piece-detail-body {
+  background: rgba(255, 248, 232, 0.045);
+  border: 1px solid rgba(242, 230, 201, 0.08);
+  backdrop-filter: blur(4px);
+}
+
+.gallery-intro {
+  padding: 2rem;
+  border-radius: 28px;
+}
+
+.gallery-intro h2,
+.room-hero h1,
+.piece-detail-body h1 {
+  letter-spacing: -0.02em;
+}
+
+.piece-card {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.piece-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(242, 230, 201, 0.18);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.38);
+}
+
+.piece-image {
+  transition: transform 400ms ease;
+}
+
+.piece-card:hover .piece-image {
+  transform: scale(1.03);
+}
+
+.piece-title {
+  font-size: 1.45rem;
+  color: #f4e8cc;
+}
+
+.more-link {
+  margin-top: 0.4rem;
+  color: rgba(242, 230, 201, 0.58);
+}
+
+.piece-detail-body {
+  color: rgba(244, 232, 204, 0.82);
+}
+
+.piece-description {
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
