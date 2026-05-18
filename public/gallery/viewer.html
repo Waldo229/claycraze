@@ -6,142 +6,19 @@
 
   <title>Image Viewer | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1011" />
-  <link rel="stylesheet" href="/css/gallery.css?v=1011" />
-<style>
-  body.viewer-body {
-    margin: 0;
-    overflow: hidden;
-    background:
-      radial-gradient(circle at top left,
-      rgba(236, 214, 149, 0.08),
-      transparent 34rem),
-      #120b06;
-    color: #eadfc8;
-    font-family: Georgia, "Times New Roman", serif;
-  }
+  <link rel="stylesheet" href="/css/styles.css?v=1012" />
+  <link rel="stylesheet" href="/css/gallery.css?v=1012" />
 
-  .viewer-topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 1rem 1.4rem;
-
-    background: rgba(12, 8, 5, 0.78);
-    backdrop-filter: blur(10px);
-
-    border-bottom: 1px solid rgba(242, 230, 201, 0.08);
-  }
-
-  .viewer-nav {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-
-  .viewer-topbar a {
-    color: rgba(244, 231, 198, 0.78);
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 160ms ease;
-  }
-
-  .viewer-topbar a:hover {
-    color: #fff3d6;
-  }
-
-  .viewer-title {
-    font-size: 1rem;
-    letter-spacing: 0.04em;
-    color: rgba(244, 231, 198, 0.84);
-  }
-
-  .viewer-stage {
-    position: fixed;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-    cursor: grab;
-  }
-
-  .viewer-stage.dragging {
-    cursor: grabbing;
-  }
-
-  #viewerImage {
-    max-width: 88vw;
-    max-height: 82vh;
-
-    border-radius: 8px;
-
-    transform-origin: center center;
-
-    user-select: none;
-    -webkit-user-drag: none;
-
-    box-shadow:
-      0 30px 90px rgba(0,0,0,0.52),
-      0 0 0 1px rgba(242,230,201,0.04);
-  }
-
-  .viewer-help {
-    position: fixed;
-    left: 50%;
-    bottom: 1.2rem;
-    transform: translateX(-50%);
-
-    z-index: 20;
-
-    padding: 0.55rem 0.9rem;
-
-    border-radius: 999px;
-
-    background: rgba(18, 11, 6, 0.72);
-
-    border: 1px solid rgba(242,230,201,0.06);
-
-    color: rgba(244, 231, 198, 0.62);
-
-    font-size: 0.82rem;
-    letter-spacing: 0.02em;
-
-    backdrop-filter: blur(6px);
-  }
-
-  @media (max-width: 700px) {
-
-    .viewer-topbar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
+  <style>
+    body.viewer-body {
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(236, 214, 149, 0.08), transparent 34rem),
+        #120b06;
+      color: #eadfc8;
+      font-family: Georgia, "Times New Roman", serif;
     }
-
-    .viewer-nav {
-      flex-wrap: wrap;
-    }
-
-    #viewerImage {
-      max-width: 94vw;
-      max-height: 78vh;
-    }
-
-    .viewer-help {
-      font-size: 0.72rem;
-      bottom: 0.8rem;
-    }
-  }
-</style>
 
     .viewer-topbar {
       position: fixed;
@@ -153,24 +30,33 @@
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      padding: 0.75rem 1rem;
-      background: rgba(20, 14, 8, 0.88);
-      color: #f4e7c6;
+      padding: 1rem 1.4rem;
+      background: rgba(12, 8, 5, 0.78);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(242, 230, 201, 0.08);
+    }
+
+    .viewer-nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .viewer-topbar a {
-      color: #f4e7c6;
+      color: rgba(244, 231, 198, 0.78);
       text-decoration: none;
-      margin-right: 1rem;
+      font-size: 0.95rem;
     }
 
     .viewer-topbar a:hover {
-      text-decoration: underline;
+      color: #fff3d6;
     }
 
     .viewer-title {
-      font-family: Georgia, "Times New Roman", serif;
-      opacity: 0.9;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      color: rgba(244, 231, 198, 0.84);
       text-align: right;
     }
 
@@ -189,31 +75,38 @@
     }
 
     #viewerImage {
-      max-width: 92vw;
-      max-height: 86vh;
+      max-width: 88vw;
+      max-height: 82vh;
+      border-radius: 8px;
       transform-origin: center center;
       user-select: none;
       -webkit-user-drag: none;
-      box-shadow: 0 20px 80px rgba(0,0,0,0.55);
+      box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.52),
+        0 0 0 1px rgba(242, 230, 201, 0.04);
     }
 
     .viewer-help {
       position: fixed;
-      left: 1rem;
-      bottom: 1rem;
+      left: 50%;
+      bottom: 1.2rem;
+      transform: translateX(-50%);
       z-index: 20;
-      padding: 0.65rem 0.85rem;
+      padding: 0.55rem 0.9rem;
       border-radius: 999px;
-      background: rgba(20, 14, 8, 0.72);
-      color: #f4e7c6;
-      font-size: 0.9rem;
-      opacity: 0.85;
+      background: rgba(18, 11, 6, 0.72);
+      border: 1px solid rgba(242, 230, 201, 0.06);
+      color: rgba(244, 231, 198, 0.62);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(6px);
     }
 
     @media (max-width: 700px) {
       .viewer-topbar {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
       }
 
       .viewer-title {
@@ -221,8 +114,13 @@
       }
 
       #viewerImage {
-        max-width: 96vw;
-        max-height: 80vh;
+        max-width: 94vw;
+        max-height: 78vh;
+      }
+
+      .viewer-help {
+        font-size: 0.72rem;
+        bottom: 0.8rem;
       }
     }
   </style>
@@ -231,7 +129,7 @@
 <body class="viewer-body">
 
   <nav class="viewer-topbar" aria-label="Viewer navigation">
-    <div>
+    <div class="viewer-nav">
       <a id="backToPiece" href="/gallery/piece.html">← Back to Piece</a>
       <a href="/gallery/ovals.html">← Back to Ovals</a>
     </div>
@@ -269,11 +167,14 @@
       backToPiece.href = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
       try {
-        const response = await fetch("/data/pieces.json?v=1011");
+        const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
+        if (!response.ok) throw new Error("Could not fetch pieces.json");
+
         const pieces = await response.json();
 
         const piece = pieces.find(item =>
-          String(item.id || item.piece_number || "").trim() === id
+          String(item.id || "").trim() === id ||
+          String(item.piece_number || "").trim() === id
         );
 
         if (!piece) {
@@ -281,12 +182,17 @@
           return;
         }
 
-        const pieceTitle = piece.title || "ClaycrazE Vessel";
+        const pieceTitle = piece.title || piece.id || "ClaycrazE Vessel";
 
-        const imagePath =
-          view === "bottom"
-            ? normalizeImagePath(piece.image_path_3 || "")
-            : normalizeImagePath(piece.image_path_2 || piece.image_path || "");
+        let imagePath = "";
+
+        if (view === "bottom") {
+          imagePath = normalizeImagePath(piece.image_path_3 || "");
+        } else if (view === "detail") {
+          imagePath = normalizeImagePath(piece.image_path_4 || "");
+        } else {
+          imagePath = normalizeImagePath(piece.image_path_2 || piece.image_path || "");
+        }
 
         if (!imagePath) {
           title.textContent = `No ${view} image found`;
@@ -295,7 +201,6 @@
 
         image.src = imagePath;
         image.alt = `${pieceTitle} ${view} view`;
-
         title.textContent = `${pieceTitle} / ${view}`;
 
         setupPanZoom();
@@ -365,6 +270,7 @@
 
     function normalizeImagePath(path) {
       if (!path) return "";
+
       const clean = String(path).trim().replace(/\\/g, "/");
 
       if (
