@@ -650,7 +650,39 @@ app.get("/debug/shapes", (req, res) => {
     }
   );
 });
+app.get("/debug/inventory-count", (req, res) => {
+  db.all(
+    `
+      SELECT
+        COUNT(*) AS total,
+        SUM(CASE WHEN TRIM(LOWER(status)) IN (${publicStatusPlaceholders()}) THEN 1 ELSE 0 END) AS public_total
+      FROM inventory
+    `,
+    PUBLIC_STATUSES,
+    (err, rows) => {
+      if (err) return res.status(500).json({ ok: false, error: err.message });
 
+      db.all(
+        `
+          SELECT id, shape, piece_number, status, image_path, image_path_2, image_path_3
+          FROM inventory
+          ORDER BY shape ASC, piece_number ASC
+        `,
+        [],
+        (err2, pieces) => {
+          if (err2) return res.status(500).json({ ok: false, error: err2.message });
+
+          res.json({
+            ok: true,
+            db_path: DB_PATH,
+            counts: rows[0],
+            pieces
+          });
+        }
+      );
+    }
+  );
+});
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
