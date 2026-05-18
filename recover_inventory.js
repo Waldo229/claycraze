@@ -24,56 +24,91 @@ function parseId(id) {
 }
 
 db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS inventory (
+      id TEXT PRIMARY KEY,
+      shape TEXT,
+      piece_number INTEGER,
+      date_code TEXT,
+      title TEXT,
+      category TEXT,
+      description TEXT,
+      clay_body TEXT,
+      glaze TEXT,
+      notes TEXT,
+      dimensions TEXT,
+      image_path TEXT,
+      image_path_2 TEXT,
+      image_path_3 TEXT,
+      image_path_4 TEXT,
+      status TEXT DEFAULT 'available',
+      price TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  const insertSql = `
+    INSERT OR IGNORE INTO inventory (
+      id,
+      shape,
+      piece_number,
+      date_code,
+      title,
+      category,
+      description,
+      clay_body,
+      glaze,
+      notes,
+      dimensions,
+      image_path,
+      image_path_2,
+      image_path_3,
+      image_path_4,
+      status,
+      price,
+      updated_at
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `;
+
   for (const id of pieces) {
     const p = parseId(id);
 
-    db.run(
-      `
-      INSERT OR IGNORE INTO inventory (
-        id,
-        shape,
-        piece_number,
-        date_code,
-        title,
-        category,
-        description,
-        clay_body,
-        glaze,
-        notes,
-        dimensions,
-        image_path,
-        image_path_2,
-        image_path_3,
-        image_path_4,
-        status,
-        price,
-        updated_at
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-      `,
-      [
-        p.id,
-        p.shape,
-        p.piece_number,
-        p.date_code,
-        "Oval Bonsai Container",
-        "bonsai",
-        "",
-        "Stoneware - Cone 10",
-        "",
-        "",
-        "",
-        `/images/thumbs/${p.id}_top_thumb.jpg`,
-        `/images/full/${p.id}_top.jpg`,
-        `/images/full/${p.id}_bottom.jpg`,
-        "",
-        "available",
-        "",
-      ]
-    );
+    db.run(insertSql, [
+      p.id,
+      p.shape,
+      p.piece_number,
+      p.date_code,
+      "Oval Bonsai Container",
+      "bonsai",
+      "",
+      "Stoneware - Cone 10",
+      "",
+      "",
+      "",
+      `/images/thumbs/${p.id}_top_thumb.jpg`,
+      `/images/full/${p.id}_top.jpg`,
+      `/images/full/${p.id}_bottom.jpg`,
+      "",
+      "available",
+      "",
+    ]);
   }
+
+  db.all(
+    "SELECT id, shape, piece_number, status FROM inventory ORDER BY id",
+    [],
+    (err, rows) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      console.log("Recovery complete.");
+      console.log(rows);
+    }
+  );
 });
 
-db.close(() => {
-  console.log("Recovery complete.");
-});
+db.close();
