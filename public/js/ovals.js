@@ -1,11 +1,10 @@
 /* =========================================================
    ClaycrazE — Ovals Gallery
    Full drop-in replacement for /js/ovals.js
+   Version 1013
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadOvals();
-});
+document.addEventListener("DOMContentLoaded", loadOvals);
 
 async function loadOvals() {
   const galleryGrid = document.getElementById("galleryGrid");
@@ -18,7 +17,7 @@ async function loadOvals() {
   galleryGrid.innerHTML = `<div class="loading">Loading ovals...</div>`;
 
   try {
-    const response = await fetch("/data/pieces.json?v=1012", {
+    const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
 
@@ -33,7 +32,7 @@ async function loadOvals() {
     }
 
     const ovals = pieces
-      .filter(isPublicOval)
+      .filter(isOval)
       .sort(sortNewestFirst);
 
     if (!ovals.length) {
@@ -58,25 +57,14 @@ async function loadOvals() {
   }
 }
 
-function isPublicOval(piece) {
+function isOval(piece) {
   const id = clean(piece.id).toUpperCase();
   const shape = clean(piece.shape).toUpperCase();
-  const status = clean(piece.status).toLowerCase();
 
-  const isOval =
+  return (
     shape === "OV" ||
-    id.startsWith("OV-");
-
-  const isPublished =
-    piece.is_published !== false;
-
-  const isVisibleStatus =
-    status === "" ||
-    status === "available" ||
-    status === "for sale" ||
-    status === "show";
-
-  return isOval && isPublished && isVisibleStatus;
+    id.startsWith("OV-")
+  );
 }
 
 function sortNewestFirst(a, b) {
@@ -93,13 +81,13 @@ function sortNewestFirst(a, b) {
 function buildOvalCard(piece) {
   const id = clean(piece.id);
   const title = clean(piece.title) || "Oval Bonsai Container";
+  const description = clean(piece.description);
   const dimensions = clean(piece.dimensions);
   const clayBody = clean(piece.clay_body);
   const glaze = clean(piece.glaze);
   const price = formatPrice(piece.price);
 
   const image = chooseImage(piece);
-
   const detailUrl = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
   return `
@@ -128,6 +116,7 @@ function buildOvalCard(piece) {
         <div class="gallery-card-body">
           <h2>${escapeHtml(title)}</h2>
 
+          ${description ? `<p class="gallery-description">${escapeHtml(description)}</p>` : ""}
           ${id ? `<p class="gallery-meta">${escapeHtml(id)}</p>` : ""}
           ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
           ${clayBody ? `<p class="gallery-meta">${escapeHtml(clayBody)}</p>` : ""}
@@ -143,16 +132,6 @@ function buildOvalCard(piece) {
 }
 
 function chooseImage(piece) {
-  /*
-    Preferred order:
-    1. image_path      = thumb image from JSON
-    2. thumbnail       = older/thumb naming fallback
-    3. top_image       = older top naming fallback
-    4. image_path_2    = full top image
-    5. full_top_image  = older full naming fallback
-    6. image_path_3    = bottom image fallback
-  */
-
   const candidates = [
     piece.image_path,
     piece.thumbnail,
@@ -194,7 +173,7 @@ function addCacheBust(path) {
   if (!path) return "";
 
   const separator = path.includes("?") ? "&" : "?";
-  return `${path}${separator}v=1012`;
+  return `${path}${separator}v=${Date.now()}`;
 }
 
 function formatPrice(value) {
