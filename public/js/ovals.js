@@ -1,35 +1,40 @@
+/* =========================================================
+   ClaycrazE — Ovals Gallery
+   Full drop-in replacement for /js/ovals.js
+   ========================================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
   loadOvals();
 });
 
 async function loadOvals() {
   const galleryGrid = document.getElementById("galleryGrid");
-  if (!galleryGrid) return;
+
+  if (!galleryGrid) {
+    console.warn("Ovals gallery: #galleryGrid not found.");
+    return;
+  }
+
+  galleryGrid.innerHTML = `<div class="loading">Loading ovals...</div>`;
 
   try {
-    const response = await fetch("/data/pieces.json?v=1011", {
+    const response = await fetch("/data/pieces.json?v=1012", {
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(`Server returned ${response.status}`);
+      throw new Error(`Could not load pieces.json. Server returned ${response.status}`);
     }
 
     const pieces = await response.json();
 
-    const ovals = pieces.filter((piece) => {
-      const id = String(piece.id || "").trim().toUpperCase();
-      const shape = String(piece.shape || "").trim().toUpperCase();
-      const status = String(piece.status || "").trim().toLowerCase();
-      const published = piece.is_published !== false;
+    if (!Array.isArray(pieces)) {
+      throw new Error("pieces.json did not return an array.");
+    }
 
-      return (
-        published &&
-        status !== "archive" &&
-        status !== "sold" &&
-        (shape === "OV" || id.startsWith("OV-"))
-      );
-    });
+    const ovals = pieces
+      .filter(isPublicOval)
+      .sort(sortNewestFirst);
 
     if (!ovals.length) {
       galleryGrid.innerHTML = `
@@ -40,7 +45,7 @@ async function loadOvals() {
       return;
     }
 
-    galleryGrid.innerHTML = ovals.map(buildOvalTile).join("");
+    galleryGrid.innerHTML = ovals.map(buildOvalCard).join("");
 
   } catch (error) {
     console.error("Oval gallery error:", error);
@@ -53,30 +58,70 @@ async function loadOvals() {
   }
 }
 
-function buildOvalTile(piece) {
-  const id = String(piece.id || "").trim();
-  const title = piece.title || "Oval Bonsai Container";
-  const dimensions = piece.dimensions || "";
-  const price = piece.price ? `$${piece.price}` : "";
+function isPublicOval(piece) {
+  const id = clean(piece.id).toUpperCase();
+  const shape = clean(piece.shape).toUpperCase();
+  const status = clean(piece.status).toLowerCase();
 
-  const image = normalizeImagePath(
-    piece.image_path ||
-    piece.thumbnail ||
-    piece.top_image ||
-    piece.image_path_2 ||
-    piece.full_top_image ||
-    ""
-  );
+  const isOval =
+    shape === "OV" ||
+    id.startsWith("OV-");
+
+  const isPublished =
+    piece.is_published !== false;
+
+  const isVisibleStatus =
+    status === "" ||
+    status === "available" ||
+    status === "for sale" ||
+    status === "show";
+
+  return isOval && isPublished && isVisibleStatus;
+}
+
+function sortNewestFirst(a, b) {
+  const aNum = Number(a.piece_number || 0);
+  const bNum = Number(b.piece_number || 0);
+
+  if (aNum !== bNum) {
+    return bNum - aNum;
+  }
+
+  return clean(b.id).localeCompare(clean(a.id));
+}
+
+function buildOvalCard(piece) {
+  const id = clean(piece.id);
+  const title = clean(piece.title) || "Oval Bonsai Container";
+  const dimensions = clean(piece.dimensions);
+  const clayBody = clean(piece.clay_body);
+  const glaze = clean(piece.glaze);
+  const price = formatPrice(piece.price);
+
+  const image = chooseImage(piece);
+
+  const detailUrl = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
   return `
-    <article class="gallery-card">
-      <a class="gallery-card-link" href="/gallery/piece.html?id=${encodeURIComponent(id)}">
+    <article class="gallery-card" data-piece-id="${escapeAttribute(id)}">
+      <a class="gallery-card-link" href="${escapeAttribute(detailUrl)}">
 
         <div class="gallery-thumb-wrap">
           ${
             image
-              ? `<img class="gallery-thumb" src="${escapeAttribute(image)}?v=1011" alt="${escapeAttribute(title)}" loading="lazy">`
-              : `<div class="no-image">No image available</div>`
+              ? `
+                <img
+                  class="gallery-thumb"
+                  src="${escapeAttribute(addCacheBust(image))}"
+                  alt="${escapeAttribute(title)}"
+                  loading="lazy"
+                >
+              `
+              : `
+                <div class="no-image">
+                  No image available
+                </div>
+              `
           }
         </div>
 
@@ -85,6 +130,8 @@ function buildOvalTile(piece) {
 
           ${id ? `<p class="gallery-meta">${escapeHtml(id)}</p>` : ""}
           ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
+          ${clayBody ? `<p class="gallery-meta">${escapeHtml(clayBody)}</p>` : ""}
+          ${glaze ? `<p class="gallery-meta">${escapeHtml(glaze)}</p>` : ""}
           ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
 
           <p class="gallery-more">View details</p>
@@ -95,24 +142,85 @@ function buildOvalTile(piece) {
   `;
 }
 
+function chooseImage(piece) {
+  /*
+    Preferred order:
+    1. image_path      = thumb image from JSON
+    2. thumbnail       = older/thumb naming fallback
+    3. top_image       = older top naming fallback
+    4. image_path_2    = full top image
+    5. full_top_image  = older full naming fallback
+    6. image_path_3    = bottom image fallback
+  */
+
+  const candidates = [
+    piece.image_path,
+    piece.thumbnail,
+    piece.top_image,
+    piece.image_path_2,
+    piece.full_top_image,
+    piece.image_path_3
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeImagePath(candidate);
+    if (normalized) return normalized;
+  }
+
+  return "";
+}
+
 function normalizeImagePath(path) {
   if (!path) return "";
 
-  const clean = String(path).trim().replace(/\\/g, "/");
+  const cleanPath = String(path)
+    .trim()
+    .replace(/\\/g, "/");
+
+  if (!cleanPath) return "";
 
   if (
-    clean.startsWith("/") ||
-    clean.startsWith("http://") ||
-    clean.startsWith("https://")
+    cleanPath.startsWith("http://") ||
+    cleanPath.startsWith("https://") ||
+    cleanPath.startsWith("/")
   ) {
-    return clean;
+    return cleanPath;
   }
 
-  return `/${clean.replace(/^\.?\/*/, "")}`;
+  return `/${cleanPath.replace(/^\.?\/*/, "")}`;
+}
+
+function addCacheBust(path) {
+  if (!path) return "";
+
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}v=1012`;
+}
+
+function formatPrice(value) {
+  const raw = clean(value);
+
+  if (!raw) return "";
+
+  if (raw.startsWith("$")) {
+    return raw;
+  }
+
+  const number = Number(raw);
+
+  if (Number.isFinite(number) && number > 0) {
+    return `$${number}`;
+  }
+
+  return raw;
+}
+
+function clean(value) {
+  return String(value ?? "").trim();
 }
 
 function escapeHtml(value) {
-  return String(value)
+  return clean(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
