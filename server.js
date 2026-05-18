@@ -610,20 +610,58 @@ app.get("/gallery-data/sculpture", (req, res) => {
 */
 
 app.get("/debug/inventory-count", (req, res) => {
-  db.get(
+  db.all(
     `
-      SELECT COUNT(*) AS count
+      SELECT
+        COUNT(*) AS total,
+        SUM(
+          CASE
+            WHEN TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+            THEN 1
+            ELSE 0
+          END
+        ) AS public_total
       FROM inventory
     `,
-    [],
-    (err, row) => {
-      if (err) return res.status(500).json({ ok: false, error: err.message });
+    PUBLIC_STATUSES,
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          error: err.message,
+        });
+      }
 
-      res.json({
-        ok: true,
-        count: row?.count || 0,
-        db_path: DB_PATH,
-      });
+      db.all(
+        `
+          SELECT
+            id,
+            shape,
+            piece_number,
+            status,
+            image_path,
+            image_path_2,
+            image_path_3
+          FROM inventory
+          ORDER BY shape ASC, piece_number ASC
+        `,
+        [],
+        (err2, pieces) => {
+          if (err2) {
+            return res.status(500).json({
+              ok: false,
+              error: err2.message,
+            });
+          }
+
+          res.json({
+            ok: true,
+            db_path: DB_PATH,
+            counts: rows[0],
+            pieces,
+          });
+        }
+      );
     }
   );
 });
@@ -641,7 +679,12 @@ app.get("/debug/shapes", (req, res) => {
     `,
     [],
     (err, rows) => {
-      if (err) return res.status(500).json({ ok: false, error: err.message });
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          error: err.message,
+        });
+      }
 
       res.json({
         ok: true,
@@ -650,38 +693,22 @@ app.get("/debug/shapes", (req, res) => {
     }
   );
 });
-app.get("/debug/inventory-count", (req, res) => {
-  db.all(
-    `
-      SELECT
-        COUNT(*) AS total,
-        SUM(CASE WHEN TRIM(LOWER(status)) IN (${publicStatusPlaceholders()}) THEN 1 ELSE 0 END) AS public_total
-      FROM inventory
-    `,
-    PUBLIC_STATUSES,
-    (err, rows) => {
-      if (err) return res.status(500).json({ ok: false, error: err.message });
 
-      db.all(
-        `
-          SELECT id, shape, piece_number, status, image_path, image_path_2, image_path_3
-          FROM inventory
-          ORDER BY shape ASC, piece_number ASC
-        `,
-        [],
-        (err2, pieces) => {
-          if (err2) return res.status(500).json({ ok: false, error: err2.message });
-
-          res.json({
-            ok: true,
-            db_path: DB_PATH,
-            counts: rows[0],
-            pieces
-          });
-        }
-      );
+app.get("/debug/export-json", (req, res) => {
+  exportPiecesJson((err, count, outPath) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        error: err.message,
+      });
     }
-  );
+
+    res.json({
+      ok: true,
+      exported: count,
+      outPath,
+    });
+  });
 });
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
