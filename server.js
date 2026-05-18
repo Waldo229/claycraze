@@ -79,6 +79,9 @@ function normalizeStatus(status) {
   const raw = cleanText(status).toLowerCase();
 
   if (raw === "hold") return "held";
+  if (raw === "placed") return "acquired";
+  if (raw === "sold") return "acquired";
+  if (raw === "gifted") return "acquired";
   if (raw === "not listed") return "archive";
   if (raw === "hidden") return "archive";
   if (raw === "unpublished") return "archive";
@@ -87,9 +90,19 @@ function normalizeStatus(status) {
 }
 
 function isValidShapeCode(shape) {
-  return ["OV", "RD", "RC", "FREE", "CS", "FJ", "IKE", "SCULP"].includes(
+  return ["OV", "RD", "RC", "FREE", "CS", "FJ", "IKE", "SCULP", "FF", "IK", "SC"].includes(
     String(shape || "").toUpperCase()
   );
+}
+
+function normalizeShapeCode(shape) {
+  const raw = String(shape || "").toUpperCase();
+
+  if (raw === "FF") return "FREE";
+  if (raw === "IK") return "IKE";
+  if (raw === "SC") return "SCULP";
+
+  return raw;
 }
 
 function parsePieceId(id) {
@@ -100,7 +113,7 @@ function parsePieceId(id) {
     throw new Error("Piece ID must look like OV-2605-001 or FREE-2605-001.");
   }
 
-  const shape = match[1];
+  const shape = normalizeShapeCode(match[1]);
 
   if (!isValidShapeCode(shape)) {
     throw new Error("Invalid shape code.");
@@ -115,7 +128,8 @@ function parsePieceId(id) {
 }
 
 function buildPieceId(shape, yearMonth, number) {
-  return `${String(shape || "").toUpperCase()}-${yearMonth}-${String(number).padStart(3, "0")}`;
+  const finalShape = normalizeShapeCode(shape);
+  return `${finalShape}-${yearMonth}-${String(number).padStart(3, "0")}`;
 }
 
 function imagePathFor(id, kind) {
@@ -229,7 +243,11 @@ const PUBLIC_FIELDS = `
   price
 `;
 
-const PUBLIC_STATUSES = ["available", "sold", "held", "gifted"];
+const PUBLIC_STATUSES = [
+  "available",
+  "held",
+  "acquired"
+];
 
 function publicStatusPlaceholders() {
   return PUBLIC_STATUSES.map(() => "?").join(", ");
@@ -274,7 +292,7 @@ app.get("/deploy-health", (req, res) => {
 });
 
 app.get("/api/pieces/next-id", (req, res) => {
-  const shape = cleanText(req.query.shape).toUpperCase();
+  const shape = normalizeShapeCode(cleanText(req.query.shape).toUpperCase());
   const yearMonth = cleanText(req.query.yearMonth || req.query.year_month);
 
   if (!isValidShapeCode(shape)) {
@@ -318,12 +336,86 @@ app.post("/api/pieces", (req, res) => {
     const {
       id,
       preview_id,
+      shape = "",
       title = "",
       category = "",
       clay = "",
       clay_body = "",
       finish = "",
       glaze = "",
+      color = "",
+      dimensions = "",
+      price = "",
+      status = "available",
+      description = "",
+      notes = "",
+      has_bottom_image = true,
+      is_published = true,
+      thumb_image,
+      full_top_image,
+      full_bottom_image,
+    } = req.body;
+
+    let finalId = cleanText(id || preview_id).toUpperCase();
+
+    if (!finalId) {
+      const finalShape = normalizeShapeCode(cleanText(shape).toUpperCase());
+      const now = new Date();
+      const yearMonth = `${String(now.getFullYear()).slice(2)}${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+      if (!isValidShapeCode(finalShape)) {
+        return res.status(400).json({
+          ok: false,
+          error: "Shape is required."
+        });
+      }
+
+      db.get(
+        `
+          SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_number
+          FROM inventory
+          WHERE TRIM(UPPER(shape)) = ?
+            AND date_code = ?
+        `,
+        [finalShape, yearMonth],
+        (nextErr, row) => {
+          if (nextErr) {
+            return res.status(500).json({
+              ok: false,
+              error: nextErr.message
+            });
+          }
+
+          const nextNumber = row?.next_number || 1;
+          const generatedId = buildPieceId(finalShape, yearMonth, nextNumber);
+
+          req.body.id = generatedId;
+          return createPieceWithFinalId(req, res);
+        }
+      );
+
+      return;
+    }
+
+    return createPieceWithFinalId(req, res);
+
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
+  }
+});
+
+function createPieceWithFinalId(req, res) {
+  try {
+    const {
+      id,
+      preview_id,
+      title = "",
+      category = "",
+      clay = "",
+      clay_body = "",
+      finish = "",
+      glaze = "",
+      color = "",
       dimensions = "",
       price = "",
       status = "available",
@@ -339,13 +431,8 @@ app.post("/api/pieces", (req, res) => {
     const finalId = cleanText(id || preview_id).toUpperCase();
     const parsed = parsePieceId(finalId);
 
-    if (!title) {
-      return res.status(400).json({ ok: false, error: "Title is required." });
-    }
-
-    if (!category) {
-      return res.status(400).json({ ok: false, error: "Category is required." });
-    }
+    const finalTitle = cleanText(title) || defaultTitleForShape(parsed.shape);
+    const finalCategory = cleanText(category).toLowerCase() || defaultCategoryForShape(parsed.shape);
 
     if (!thumb_image) {
       return res.status(400).json({ ok: false, error: "Thumbnail image is required." });
@@ -398,11 +485,11 @@ app.post("/api/pieces", (req, res) => {
       parsed.shape,
       parsed.piece_number,
       parsed.date_code,
-      cleanText(title),
-      cleanText(category).toLowerCase(),
+      finalTitle,
+      finalCategory,
       cleanText(description),
       cleanText(clay_body || clay),
-      cleanText(glaze || finish),
+      cleanText(glaze || color || finish),
       cleanText(notes),
       cleanText(dimensions),
       imagePathFor(parsed.id, "thumb"),
@@ -459,6 +546,7 @@ app.post("/api/pieces", (req, res) => {
 
           res.json({
             ok: true,
+            id: parsed.id,
             piece_id: parsed.id,
             exported_count: exportedCount,
             deployed_to_siteground: true,
@@ -481,6 +569,144 @@ app.post("/api/pieces", (req, res) => {
     });
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message });
+  }
+}
+
+function defaultTitleForShape(shape) {
+  const labels = {
+    OV: "Oval Bonsai Container",
+    RD: "Round Bonsai Container",
+    RC: "Rectangular Bonsai Container",
+    CS: "Cascade Bonsai Container",
+    FREE: "Freeform Bonsai Container",
+    FJ: "Face Jug",
+    IKE: "Ikebana Container",
+    SCULP: "Sculpture"
+  };
+
+  return labels[shape] || "ClaycrazE Piece";
+}
+
+function defaultCategoryForShape(shape) {
+  if (shape === "IKE") return "ikebana";
+  if (shape === "SCULP") return "sculpture";
+  return "bonsai";
+}
+
+app.post("/api/save-curation", (req, res) => {
+  try {
+    const {
+      id,
+      title = "",
+      description = "",
+      glaze = "",
+      color = "",
+      price = "",
+      status = "available",
+    } = req.body || {};
+
+    const cleanId = cleanText(id).toUpperCase();
+
+    if (!cleanId) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing piece ID.",
+      });
+    }
+
+    const finalStatus = normalizeStatus(status);
+
+    const allowedStatuses = [
+      "available",
+      "held",
+      "acquired",
+      "archive",
+    ];
+
+    if (!allowedStatuses.includes(finalStatus)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Invalid status.",
+      });
+    }
+
+    db.run(
+      `
+        UPDATE inventory
+        SET
+          title = ?,
+          description = ?,
+          glaze = ?,
+          price = ?,
+          status = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `,
+      [
+        cleanText(title),
+        cleanText(description),
+        cleanText(glaze || color),
+        cleanText(price),
+        finalStatus,
+        cleanId,
+      ],
+      function (err) {
+        if (err) {
+          return res.status(500).json({
+            ok: false,
+            error: err.message,
+          });
+        }
+
+        if (this.changes === 0) {
+          return res.status(404).json({
+            ok: false,
+            error: "Piece not found.",
+          });
+        }
+
+        exportPiecesJson(async (exportErr, exportedCount, piecesJsonPath) => {
+          if (exportErr) {
+            return res.status(500).json({
+              ok: false,
+              error: exportErr.message,
+            });
+          }
+
+          try {
+            const sgRoot = process.env.SG_PUBLIC_HTML || "~/public_html";
+
+            await deployToSiteGround([
+              {
+                localPath: piecesJsonPath,
+                remotePath: `${sgRoot}/data/pieces.json`,
+              },
+            ]);
+
+            return res.json({
+              ok: true,
+              piece_id: cleanId,
+              exported_count: exportedCount,
+              deployed_to_siteground: true,
+            });
+          } catch (deployErr) {
+            console.error("Curation deploy failed:", deployErr.message);
+
+            return res.status(500).json({
+              ok: false,
+              local_save_completed: true,
+              deployed_to_siteground: false,
+              error: `Local save succeeded, but SG deploy failed: ${deployErr.message}`,
+            });
+          }
+        });
+      }
+    );
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
   }
 });
 
@@ -603,12 +829,6 @@ app.get("/gallery-data/sculpture", (req, res) => {
   getPublicPiecesByShape("SCULP", res);
 });
 
-/*
-  Diagnostic routes.
-  These are useful because if /gallery-data/ovals is blank,
-  we need to know whether the database is empty or the public filter is hiding records.
-*/
-
 app.get("/debug/inventory-count", (req, res) => {
   db.all(
     `
@@ -710,6 +930,7 @@ app.get("/debug/export-json", (req, res) => {
     });
   });
 });
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
