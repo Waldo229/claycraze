@@ -4,21 +4,21 @@ let allPieces = [];
 let currentPiece = null;
 
 async function initializeCurator() {
-
   try {
-
     const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
 
+    if (!response.ok) {
+      throw new Error(`Could not load pieces.json: ${response.status}`);
+    }
+
     allPieces = await response.json();
 
     populatePieceSelect(allPieces);
-
     bindEvents();
 
   } catch (error) {
-
     console.error(error);
 
     const statusBox = document.getElementById("statusBox");
@@ -31,7 +31,6 @@ async function initializeCurator() {
 }
 
 function bindEvents() {
-
   const pieceSelect = document.getElementById("pieceSelect");
 
   pieceSelect.addEventListener("change", event => {
@@ -55,7 +54,6 @@ function bindEvents() {
 }
 
 function populatePieceSelect(pieces) {
-
   const select = document.getElementById("pieceSelect");
 
   const sorted = [...pieces].sort((a, b) =>
@@ -67,7 +65,6 @@ function populatePieceSelect(pieces) {
   `;
 
   sorted.forEach(piece => {
-
     const option = document.createElement("option");
 
     option.value = piece.id;
@@ -78,7 +75,6 @@ function populatePieceSelect(pieces) {
 }
 
 function loadPiece(id) {
-
   currentPiece = allPieces.find(piece => piece.id === id);
 
   if (!currentPiece) return;
@@ -95,6 +91,9 @@ function loadPiece(id) {
   document.getElementById("price").value =
     currentPiece.price || "";
 
+  document.getElementById("dimensions").value =
+    currentPiece.dimensions || "";
+
   document.getElementById("status").value =
     currentPiece.status || "available";
 
@@ -102,7 +101,6 @@ function loadPiece(id) {
 }
 
 function updatePreview(piece) {
-
   const preview = document.getElementById("piecePreview");
 
   const image =
@@ -111,7 +109,6 @@ function updatePreview(piece) {
     "";
 
   if (!image) {
-
     preview.classList.add("empty");
 
     preview.innerHTML = `
@@ -132,18 +129,22 @@ function updatePreview(piece) {
 }
 
 function generateDescription() {
-
   const title = getValue("title");
   const color = getValue("color");
+  const dimensions = getValue("dimensions");
   const surface = getValue("surfaceCharacter");
   const mood = getValue("mood");
   const use = getValue("suggestedUse");
   const feature = getValue("notableFeature");
 
+  const dimensionLine = dimensions
+    ? `Measuring approximately ${dimensions}, `
+    : "";
+
   const output = `
 ${title}
 
-A ${mood || "quiet"} bonsai container with ${surface || "restrained surface movement"}.
+${dimensionLine}this ${mood || "quiet"} bonsai container carries ${surface || "restrained surface movement"}.
 
 Its ${feature || "proportions and atmosphere"} make it especially suitable for ${use || "calm compositions"}.
 
@@ -154,14 +155,13 @@ The surface carries a ${color || "soft"} character that rewards close looking an
 }
 
 function suggestPrice() {
-
-  const dimensions = currentPiece?.dimensions || "";
-  const mood = getValue("mood");
+  const dimensions = getValue("dimensions") || currentPiece?.dimensions || "";
+  const mood = getValue("mood").toLowerCase();
 
   let suggestion = "Suggested range: $125–175";
 
   if (dimensions.includes("13")) {
-    suggestion = "Suggested range: $150–225";
+    suggestion = "Suggested range: $145–175\nRecommended tag: $150";
   }
 
   if (mood.includes("exceptional")) {
@@ -172,8 +172,6 @@ function suggestPrice() {
 }
 
 function generateWineLabel() {
-
-  const mood = getValue("mood");
   const feature = getValue("notableFeature");
 
   const output = `
@@ -188,19 +186,12 @@ Best appreciated over time.
 }
 
 function generateLaoTzu() {
-
   const lines = [
-
     "The pot that waits longest often leaves first.",
-
     "A shallow basin may still hold a deep tree.",
-
     "The customer who hesitates is already halfway home with it.",
-
     "To glaze aggressively is to distrust the clay.",
-
     "The tree chooses the container more often than the owner does."
-
   ];
 
   const selected =
@@ -210,7 +201,6 @@ function generateLaoTzu() {
 }
 
 async function saveCuratorialChanges(event) {
-
   event.preventDefault();
 
   if (!currentPiece) {
@@ -230,11 +220,13 @@ async function saveCuratorialChanges(event) {
   currentPiece.price =
     getValue("price");
 
+  currentPiece.dimensions =
+    getValue("dimensions");
+
   currentPiece.status =
     getValue("status");
 
   try {
-
     const response = await fetch("/api/save-curation", {
       method: "POST",
       headers: {
@@ -252,7 +244,6 @@ async function saveCuratorialChanges(event) {
     showStatus("Curatorial changes saved.", "success");
 
   } catch (error) {
-
     console.error(error);
 
     showStatus(error.message || "Save failed.", "error");
@@ -260,7 +251,8 @@ async function saveCuratorialChanges(event) {
 }
 
 function getValue(id) {
-  return document.getElementById(id).value.trim();
+  const element = document.getElementById(id);
+  return element ? element.value.trim() : "";
 }
 
 function setOutput(text) {
@@ -268,7 +260,6 @@ function setOutput(text) {
 }
 
 function showStatus(message, type) {
-
   const statusBox = document.getElementById("statusBox");
 
   statusBox.textContent = message;
@@ -276,7 +267,6 @@ function showStatus(message, type) {
 }
 
 function escapeHtml(value) {
-
   return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
