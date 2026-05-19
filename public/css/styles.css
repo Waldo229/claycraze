@@ -718,3 +718,29 @@ a {
 
   margin-top: 2rem;
 }
+/* ========================================
+   ARCHIVE CARD TEXT POSITION FIX
+======================================== */
+
+.archive-card {
+  position: relative;
+  display: block;
+}
+
+.archive-card img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.archive-card::after {
+  z-index: 1;
+}
+
+.archive-card-text {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 2;
+}
