@@ -94,6 +94,12 @@ function loadPiece(id) {
   document.getElementById("dimensions").value =
     currentPiece.dimensions || "";
 
+  document.getElementById("objectIdentifier").value =
+    currentPiece.object_identifier ||
+    currentPiece.objectIdentifier ||
+    currentPiece.camera_id ||
+    "";
+
   document.getElementById("status").value =
     currentPiece.status || "available";
 
@@ -222,6 +228,9 @@ async function saveCuratorialChanges(event) {
 
   currentPiece.dimensions =
     getValue("dimensions");
+
+  currentPiece.object_identifier =
+    getValue("objectIdentifier");
 
   currentPiece.status =
     getValue("status");
