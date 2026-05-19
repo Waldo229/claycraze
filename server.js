@@ -271,193 +271,31 @@ function exportPiecesJson(callback) {
   });
 }
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "index.html"));
-});
+/* =========================================================
+   IMPORT PUBLIC SG JSON INTO SQLITE
+========================================================= */
 
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(ADMIN_DIR, "admin.html"));
-});
+app.get("/admin/import-public-json", async (req, res) => {
+  const url = "https://claycraze.com/data/pieces.json";
 
-app.get("/deploy-health", (req, res) => {
-  res.json({
-    ok: Boolean(process.env.SG_HOST && process.env.SG_USER && process.env.SG_CI_KEY),
-    SG_HOST: Boolean(process.env.SG_HOST),
-    SG_USER: Boolean(process.env.SG_USER),
-    SG_PORT: Boolean(process.env.SG_PORT),
-    SG_CI_KEY: Boolean(process.env.SG_CI_KEY),
-    SG_PUBLIC_HTML: Boolean(process.env.SG_PUBLIC_HTML),
-    target: process.env.SG_PUBLIC_HTML || "~/public_html",
-  });
-});
+  try {
+    const response = await fetch(url);
 
-app.get("/api/pieces/next-id", (req, res) => {
-  const shape = normalizeShapeCode(cleanText(req.query.shape).toUpperCase());
-  const yearMonth = cleanText(req.query.yearMonth || req.query.year_month);
+    if (!response.ok) {
+      throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
+    }
 
-  if (!isValidShapeCode(shape)) {
-    return res.status(400).json({
-      ok: false,
-      error: "Invalid shape code.",
-    });
-  }
+    const pieces = await response.json();
 
-  if (!/^\d{4}$/.test(yearMonth)) {
-    return res.status(400).json({
-      ok: false,
-      error: "Year/month must be 4 digits.",
-    });
-  }
-
-  db.get(
-    `
-      SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_number
-      FROM inventory
-      WHERE TRIM(UPPER(shape)) = ?
-        AND date_code = ?
-    `,
-    [shape, yearMonth],
-    (err, row) => {
-      if (err) return res.status(500).json({ ok: false, error: err.message });
-
-      const nextNumber = row?.next_number || 1;
-
-      res.json({
-        ok: true,
-        next_number: nextNumber,
-        preview_id: buildPieceId(shape, yearMonth, nextNumber),
+    if (!Array.isArray(pieces)) {
+      return res.status(400).json({
+        ok: false,
+        error: "SG pieces.json did not return an array",
       });
     }
-  );
-});
 
-app.post("/api/pieces", (req, res) => {
-  try {
-    const {
-      id,
-      preview_id,
-      shape = "",
-      title = "",
-      category = "",
-      clay = "",
-      clay_body = "",
-      finish = "",
-      glaze = "",
-      color = "",
-      dimensions = "",
-      price = "",
-      status = "available",
-      description = "",
-      notes = "",
-      has_bottom_image = true,
-      is_published = true,
-      thumb_image,
-      full_top_image,
-      full_bottom_image,
-    } = req.body;
-
-    let finalId = cleanText(id || preview_id).toUpperCase();
-
-    if (!finalId) {
-      const finalShape = normalizeShapeCode(cleanText(shape).toUpperCase());
-      const now = new Date();
-      const yearMonth = `${String(now.getFullYear()).slice(2)}${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-      if (!isValidShapeCode(finalShape)) {
-        return res.status(400).json({
-          ok: false,
-          error: "Shape is required."
-        });
-      }
-
-      db.get(
-        `
-          SELECT COALESCE(MAX(piece_number), 0) + 1 AS next_number
-          FROM inventory
-          WHERE TRIM(UPPER(shape)) = ?
-            AND date_code = ?
-        `,
-        [finalShape, yearMonth],
-        (nextErr, row) => {
-          if (nextErr) {
-            return res.status(500).json({
-              ok: false,
-              error: nextErr.message
-            });
-          }
-
-          const nextNumber = row?.next_number || 1;
-          const generatedId = buildPieceId(finalShape, yearMonth, nextNumber);
-
-          req.body.id = generatedId;
-          return createPieceWithFinalId(req, res);
-        }
-      );
-
-      return;
-    }
-
-    return createPieceWithFinalId(req, res);
-
-  } catch (err) {
-    res.status(400).json({ ok: false, error: err.message });
-  }
-});
-
-function createPieceWithFinalId(req, res) {
-  try {
-    const {
-      id,
-      preview_id,
-      title = "",
-      category = "",
-      clay = "",
-      clay_body = "",
-      finish = "",
-      glaze = "",
-      color = "",
-      dimensions = "",
-      price = "",
-      status = "available",
-      description = "",
-      notes = "",
-      has_bottom_image = true,
-      is_published = true,
-      thumb_image,
-      full_top_image,
-      full_bottom_image,
-    } = req.body;
-
-    const finalId = cleanText(id || preview_id).toUpperCase();
-    const parsed = parsePieceId(finalId);
-
-    const finalTitle = cleanText(title) || defaultTitleForShape(parsed.shape);
-    const finalCategory = cleanText(category).toLowerCase() || defaultCategoryForShape(parsed.shape);
-
-    if (!thumb_image) {
-      return res.status(400).json({ ok: false, error: "Thumbnail image is required." });
-    }
-
-    if (!full_top_image) {
-      return res.status(400).json({ ok: false, error: "Full top image is required." });
-    }
-
-    const thumbPath = path.join(THUMBS_DIR, `${parsed.id}_top_thumb.jpg`);
-    const topPath = path.join(FULL_DIR, `${parsed.id}_top.jpg`);
-    const bottomPath = path.join(FULL_DIR, `${parsed.id}_bottom.jpg`);
-
-    saveDataUrlImage(thumb_image, thumbPath);
-    saveDataUrlImage(full_top_image, topPath);
-
-    const bottomSaved =
-      has_bottom_image && full_bottom_image
-        ? saveDataUrlImage(full_bottom_image, bottomPath)
-        : false;
-
-    const finalStatus = is_published ? normalizeStatus(status) : "archive";
-
-    const sql = `
-      INSERT INTO inventory (
+    const stmt = db.prepare(`
+      INSERT OR REPLACE INTO inventory (
         id,
         shape,
         piece_number,
@@ -474,461 +312,53 @@ function createPieceWithFinalId(req, res) {
         image_path_3,
         image_path_4,
         status,
-        price,
-        updated_at
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-    `;
+        price
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
 
-    const values = [
-      parsed.id,
-      parsed.shape,
-      parsed.piece_number,
-      parsed.date_code,
-      finalTitle,
-      finalCategory,
-      cleanText(description),
-      cleanText(clay_body || clay),
-      cleanText(glaze || color || finish),
-      cleanText(notes),
-      cleanText(dimensions),
-      imagePathFor(parsed.id, "thumb"),
-      imagePathFor(parsed.id, "top"),
-      bottomSaved ? imagePathFor(parsed.id, "bottom") : "",
-      "",
-      finalStatus,
-      cleanText(price),
-    ];
+    let inserted = 0;
 
-    db.run(sql, values, function (err) {
-      if (err) {
-        if (err.message.includes("UNIQUE")) {
-          return res.status(400).json({
-            ok: false,
-            error: `Piece ${parsed.id} already exists.`,
-          });
-        }
+    for (const p of pieces) {
+      stmt.run(
+        p.id || "",
+        p.shape || "",
+        p.piece_number || null,
+        p.date_code || "",
+        p.title || "",
+        p.category || "",
+        p.description || "",
+        p.clay_body || "",
+        p.glaze || "",
+        p.notes || "",
+        p.dimensions || "",
+        p.image_path || "",
+        p.image_path_2 || "",
+        p.image_path_3 || "",
+        p.image_path_4 || "",
+        p.status || "available",
+        p.price || ""
+      );
 
-        return res.status(500).json({ ok: false, error: err.message });
-      }
+      inserted++;
+    }
 
-      exportPiecesJson(async (exportErr, exportedCount, piecesJsonPath) => {
-        if (exportErr) {
-          return res.status(500).json({ ok: false, error: exportErr.message });
-        }
+    stmt.finalize();
 
-        const sgRoot = process.env.SG_PUBLIC_HTML || "~/public_html";
-
-        const filesToDeploy = [
-          {
-            localPath: topPath,
-            remotePath: `${sgRoot}/images/full/${parsed.id}_top.jpg`,
-          },
-          {
-            localPath: thumbPath,
-            remotePath: `${sgRoot}/images/thumbs/${parsed.id}_top_thumb.jpg`,
-          },
-          {
-            localPath: piecesJsonPath,
-            remotePath: `${sgRoot}/data/pieces.json`,
-          },
-        ];
-
-        if (bottomSaved) {
-          filesToDeploy.push({
-            localPath: bottomPath,
-            remotePath: `${sgRoot}/images/full/${parsed.id}_bottom.jpg`,
-          });
-        }
-
-        try {
-          await deployToSiteGround(filesToDeploy);
-
-          res.json({
-            ok: true,
-            id: parsed.id,
-            piece_id: parsed.id,
-            exported_count: exportedCount,
-            deployed_to_siteground: true,
-          });
-        } catch (deployErr) {
-          console.error("SiteGround deploy failed:", deployErr.message);
-          console.error("STDERR:", deployErr.stderr || "");
-
-          res.status(500).json({
-            ok: false,
-            piece_id: parsed.id,
-            exported_count: exportedCount,
-            local_save_completed: true,
-            deployed_to_siteground: false,
-            error: `Local save succeeded, but SG deploy failed: ${deployErr.message}`,
-            stderr: deployErr.stderr || "",
-          });
-        }
-      });
+    res.json({
+      ok: true,
+      source: url,
+      imported: inserted,
+      message: "Render SQLite database repopulated from SiteGround pieces.json",
     });
+
   } catch (err) {
-    res.status(400).json({ ok: false, error: err.message });
-  }
-}
+    console.error("IMPORT PUBLIC JSON ERROR:", err);
 
-function defaultTitleForShape(shape) {
-  const labels = {
-    OV: "Oval Bonsai Container",
-    RD: "Round Bonsai Container",
-    RC: "Rectangular Bonsai Container",
-    CS: "Cascade Bonsai Container",
-    FREE: "Freeform Bonsai Container",
-    FJ: "Face Jug",
-    IKE: "Ikebana Container",
-    SCULP: "Sculpture"
-  };
-
-  return labels[shape] || "ClaycrazE Piece";
-}
-
-function defaultCategoryForShape(shape) {
-  if (shape === "IKE") return "ikebana";
-  if (shape === "SCULP") return "sculpture";
-  return "bonsai";
-}
-
-app.post("/api/save-curation", (req, res) => {
-  try {
-    const {
-      id,
-      title = "",
-      description = "",
-      glaze = "",
-      color = "",
-      price = "",
-      status = "available",
-    } = req.body || {};
-
-    const cleanId = cleanText(id).toUpperCase();
-
-    if (!cleanId) {
-      return res.status(400).json({
-        ok: false,
-        error: "Missing piece ID.",
-      });
-    }
-
-    const finalStatus = normalizeStatus(status);
-
-    const allowedStatuses = [
-      "available",
-      "held",
-      "acquired",
-      "archive",
-    ];
-
-    if (!allowedStatuses.includes(finalStatus)) {
-      return res.status(400).json({
-        ok: false,
-        error: "Invalid status.",
-      });
-    }
-
-    db.run(
-      `
-        UPDATE inventory
-        SET
-          title = ?,
-          description = ?,
-          glaze = ?,
-          price = ?,
-          status = ?,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `,
-      [
-        cleanText(title),
-        cleanText(description),
-        cleanText(glaze || color),
-        cleanText(price),
-        finalStatus,
-        cleanId,
-      ],
-      function (err) {
-        if (err) {
-          return res.status(500).json({
-            ok: false,
-            error: err.message,
-          });
-        }
-
-        if (this.changes === 0) {
-          return res.status(404).json({
-            ok: false,
-            error: "Piece not found.",
-          });
-        }
-
-        exportPiecesJson(async (exportErr, exportedCount, piecesJsonPath) => {
-          if (exportErr) {
-            return res.status(500).json({
-              ok: false,
-              error: exportErr.message,
-            });
-          }
-
-          try {
-            const sgRoot = process.env.SG_PUBLIC_HTML || "~/public_html";
-
-            await deployToSiteGround([
-              {
-                localPath: piecesJsonPath,
-                remotePath: `${sgRoot}/data/pieces.json`,
-              },
-            ]);
-
-            return res.json({
-              ok: true,
-              piece_id: cleanId,
-              exported_count: exportedCount,
-              deployed_to_siteground: true,
-            });
-          } catch (deployErr) {
-            console.error("Curation deploy failed:", deployErr.message);
-
-            return res.status(500).json({
-              ok: false,
-              local_save_completed: true,
-              deployed_to_siteground: false,
-              error: `Local save succeeded, but SG deploy failed: ${deployErr.message}`,
-            });
-          }
-        });
-      }
-    );
-  } catch (err) {
-    return res.status(500).json({
+    res.status(500).json({
       ok: false,
       error: err.message,
     });
   }
-});
-
-app.get("/pieces", (req, res) => {
-  db.all(
-    `
-      SELECT *
-      FROM inventory
-      ORDER BY shape ASC, piece_number DESC
-    `,
-    [],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
-});
-
-app.get("/piece-data/:id", (req, res) => {
-  const pieceId = cleanText(req.params.id).toUpperCase();
-
-  db.get(
-    `
-      SELECT ${PUBLIC_FIELDS}
-      FROM inventory
-      WHERE id = ?
-    `,
-    [pieceId],
-    (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (!row) return res.status(404).json({ error: "Piece not found." });
-      res.json(row);
-    }
-  );
-});
-
-function getPublicPiecesByShape(shapeCode, res) {
-  db.all(
-    `
-      SELECT ${PUBLIC_FIELDS}
-      FROM inventory
-      WHERE TRIM(UPPER(shape)) = ?
-        AND TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
-      ORDER BY piece_number DESC
-    `,
-    [shapeCode, ...PUBLIC_STATUSES],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
-}
-
-function getPublicPiecesByShapes(shapeCodes, res) {
-  db.all(
-    `
-      SELECT ${PUBLIC_FIELDS}
-      FROM inventory
-      WHERE TRIM(UPPER(shape)) IN (${shapeCodes.map(() => "?").join(", ")})
-        AND TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
-      ORDER BY shape ASC, piece_number DESC
-    `,
-    [...shapeCodes, ...PUBLIC_STATUSES],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
-}
-
-app.get("/gallery-data/all", (req, res) => {
-  db.all(
-    `
-      SELECT ${PUBLIC_FIELDS}
-      FROM inventory
-      WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
-      ORDER BY shape ASC, piece_number DESC
-    `,
-    PUBLIC_STATUSES,
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
-});
-
-app.get("/gallery-data/bonsai", (req, res) => {
-  getPublicPiecesByShapes(["OV", "RD", "RC", "CS", "FREE"], res);
-});
-
-app.get("/gallery-data/ovals", (req, res) => {
-  getPublicPiecesByShape("OV", res);
-});
-
-app.get("/gallery-data/rounds", (req, res) => {
-  getPublicPiecesByShape("RD", res);
-});
-
-app.get("/gallery-data/rectangles", (req, res) => {
-  getPublicPiecesByShape("RC", res);
-});
-
-app.get("/gallery-data/cascade", (req, res) => {
-  getPublicPiecesByShape("CS", res);
-});
-
-app.get("/gallery-data/freeform", (req, res) => {
-  getPublicPiecesByShape("FREE", res);
-});
-
-app.get("/gallery-data/face-jugs", (req, res) => {
-  getPublicPiecesByShape("FJ", res);
-});
-
-app.get("/gallery-data/ikebana", (req, res) => {
-  getPublicPiecesByShape("IKE", res);
-});
-
-app.get("/gallery-data/sculpture", (req, res) => {
-  getPublicPiecesByShape("SCULP", res);
-});
-
-app.get("/debug/inventory-count", (req, res) => {
-  db.all(
-    `
-      SELECT
-        COUNT(*) AS total,
-        SUM(
-          CASE
-            WHEN TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
-            THEN 1
-            ELSE 0
-          END
-        ) AS public_total
-      FROM inventory
-    `,
-    PUBLIC_STATUSES,
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({
-          ok: false,
-          error: err.message,
-        });
-      }
-
-      db.all(
-        `
-          SELECT
-            id,
-            shape,
-            piece_number,
-            status,
-            image_path,
-            image_path_2,
-            image_path_3
-          FROM inventory
-          ORDER BY shape ASC, piece_number ASC
-        `,
-        [],
-        (err2, pieces) => {
-          if (err2) {
-            return res.status(500).json({
-              ok: false,
-              error: err2.message,
-            });
-          }
-
-          res.json({
-            ok: true,
-            db_path: DB_PATH,
-            counts: rows[0],
-            pieces,
-          });
-        }
-      );
-    }
-  );
-});
-
-app.get("/debug/shapes", (req, res) => {
-  db.all(
-    `
-      SELECT
-        TRIM(UPPER(shape)) AS shape,
-        TRIM(LOWER(status)) AS status,
-        COUNT(*) AS count
-      FROM inventory
-      GROUP BY TRIM(UPPER(shape)), TRIM(LOWER(status))
-      ORDER BY shape ASC, status ASC
-    `,
-    [],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({
-          ok: false,
-          error: err.message,
-        });
-      }
-
-      res.json({
-        ok: true,
-        rows,
-      });
-    }
-  );
-});
-
-app.get("/debug/export-json", (req, res) => {
-  exportPiecesJson((err, count, outPath) => {
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        error: err.message,
-      });
-    }
-
-    res.json({
-      ok: true,
-      exported: count,
-      outPath,
-    });
-  });
 });
 
 app.listen(PORT, "0.0.0.0", () => {
