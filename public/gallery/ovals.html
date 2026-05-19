@@ -6,8 +6,8 @@
 
   <title>Ovals | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1011" />
-  <link rel="stylesheet" href="/css/gallery.css?v=1011" />
+  <link rel="stylesheet" href="/css/styles.css?v=3004" />
+  <link rel="stylesheet" href="/css/gallery.css?v=3004" />
 </head>
 
 <body class="practice-page">
@@ -24,29 +24,45 @@
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-        <a href="/gallery/bonsai.html">Bonsai</a>
+        <a class="active" href="/gallery/bonsai.html">Bonsai</a>
       </nav>
 
     </div>
   </header>
 
-  <main class="gallery-page">
+  <main class="gallery-page unified-gallery-page">
 
-    <section class="gallery-intro minimalist-intro">
+    <section class="gallery-hero">
+      <p class="gallery-kicker">Practice / Bonsai / Ovals</p>
+
       <h1>Ovals</h1>
+
+      <p>
+        Soft-edged bonsai containers for quiet,
+        balanced compositions and calm visual movement.
+      </p>
     </section>
+
+    <nav class="category-nav" aria-label="Bonsai galleries">
+      <a href="/gallery/ovals.html" class="active">Ovals</a>
+      <a href="/gallery/rounds.html">Rounds</a>
+      <a href="/gallery/rectangles.html">Rectangles</a>
+      <a href="/gallery/freeform.html">Freeform</a>
+      <a href="/gallery/cascade.html">Cascade</a>
+    </nav>
 
     <section
       id="galleryGrid"
       class="gallery-grid"
       aria-label="Oval bonsai containers"
+      aria-live="polite"
     >
       <div class="loading">Loading ovals...</div>
     </section>
 
   </main>
 
-  <script src="/js/ovals.js?v=1013"></script>
+  <script src="/js/ovals.js?v=1014"></script>
 
 </body>
 </html>
