@@ -267,6 +267,15 @@ function exportPiecesJson(callback) {
   });
 }
 
+function exportPiecesJsonPromise() {
+  return new Promise((resolve, reject) => {
+    exportPiecesJson((err, count, outPath) => {
+      if (err) return reject(err);
+      resolve({ count, outPath });
+    });
+  });
+}
+
 function getPublicPiecesByShape(shapeCode, res) {
   const sql = `
     SELECT ${PUBLIC_FIELDS}
@@ -285,6 +294,80 @@ function getPublicPiecesByShape(shapeCode, res) {
     }
 
     res.json(rows || []);
+  });
+}
+
+function upsertPiece(piece) {
+  return new Promise((resolve, reject) => {
+    const parsed = parsePieceId(piece.id);
+
+    const finalPiece = {
+      id: parsed.id,
+      shape: normalizeShapeCode(piece.shape || parsed.shape),
+      piece_number: piece.piece_number || parsed.piece_number,
+      date_code: piece.date_code || parsed.date_code,
+      title: cleanText(piece.title),
+      category: cleanText(piece.category),
+      description: cleanText(piece.description),
+      clay_body: cleanText(piece.clay_body),
+      glaze: cleanText(piece.glaze),
+      notes: cleanText(piece.notes),
+      dimensions: cleanText(piece.dimensions),
+      image_path: cleanText(piece.image_path),
+      image_path_2: cleanText(piece.image_path_2),
+      image_path_3: cleanText(piece.image_path_3),
+      image_path_4: cleanText(piece.image_path_4),
+      status: normalizeStatus(piece.status),
+      price: cleanText(piece.price),
+    };
+
+    db.run(
+      `
+      INSERT OR REPLACE INTO inventory (
+        id,
+        shape,
+        piece_number,
+        date_code,
+        title,
+        category,
+        description,
+        clay_body,
+        glaze,
+        notes,
+        dimensions,
+        image_path,
+        image_path_2,
+        image_path_3,
+        image_path_4,
+        status,
+        price,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `,
+      [
+        finalPiece.id,
+        finalPiece.shape,
+        finalPiece.piece_number,
+        finalPiece.date_code,
+        finalPiece.title,
+        finalPiece.category,
+        finalPiece.description,
+        finalPiece.clay_body,
+        finalPiece.glaze,
+        finalPiece.notes,
+        finalPiece.dimensions,
+        finalPiece.image_path,
+        finalPiece.image_path_2,
+        finalPiece.image_path_3,
+        finalPiece.image_path_4,
+        finalPiece.status,
+        finalPiece.price,
+      ],
+      function (err) {
+        if (err) return reject(err);
+        resolve(finalPiece);
+      }
+    );
   });
 }
 
@@ -377,12 +460,84 @@ app.get("/gallery-data/freeform", (req, res) => {
   getPublicPiecesByShape("FREE", res);
 });
 
+app.get("/gallery-data/Freeform", (req, res) => {
+  getPublicPiecesByShape("FREE", res);
+});
+
 app.get("/gallery-data/cascade", (req, res) => {
   getPublicPiecesByShape("CS", res);
 });
 
 app.get("/gallery-data/forest", (req, res) => {
   getPublicPiecesByShape("FJ", res);
+});
+
+app.get("/gallery-data/facejugs", (req, res) => {
+  getPublicPiecesByShape("FJ", res);
+});
+
+app.get("/gallery-data/ikebana", (req, res) => {
+  getPublicPiecesByShape("IKE", res);
+});
+
+app.get("/gallery-data/sculpture", (req, res) => {
+  getPublicPiecesByShape("SCULP", res);
+});
+
+/* =========================================================
+   ADMIN / CURATION ROUTES
+========================================================= */
+
+app.post("/api/save-curation", async (req, res) => {
+  try {
+    const piece = req.body.piece || req.body;
+    const pieces = Array.isArray(req.body.pieces) ? req.body.pieces : null;
+
+    let savedPieces = [];
+
+    if (pieces) {
+      for (const p of pieces) {
+        savedPieces.push(await upsertPiece(p));
+      }
+    } else {
+      savedPieces.push(await upsertPiece(piece));
+    }
+
+    const exported = await exportPiecesJsonPromise();
+
+    let deployedToSiteGround = false;
+    let deployWarning = "";
+
+    try {
+      await deployToSiteGround([
+        {
+          localPath: exported.outPath,
+          remotePath: `${process.env.SG_PUBLIC_HTML || "~/public_html"}/data/pieces.json`,
+        },
+      ]);
+
+      deployedToSiteGround = true;
+    } catch (deployErr) {
+      deployWarning = deployErr.message || "Saved locally on Render, but SiteGround deploy failed.";
+      console.error("SITEGROUND DEPLOY WARNING:", deployErr);
+    }
+
+    res.json({
+      ok: true,
+      saved_count: savedPieces.length,
+      exported_count: exported.count,
+      deployed_to_siteground: deployedToSiteGround,
+      warning: deployWarning,
+      pieces: savedPieces,
+    });
+  } catch (err) {
+    console.error("SAVE CURATION ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message || "Could not save curatorial changes.",
+    });
+  }
 });
 
 /* =========================================================
@@ -464,11 +619,21 @@ app.get("/admin/import-public-json", async (req, res) => {
         });
       }
 
-      res.json({
-        ok: true,
-        source: url,
-        imported: inserted,
-        message: "Render SQLite database repopulated from SiteGround pieces.json",
+      exportPiecesJson((exportErr, count) => {
+        if (exportErr) {
+          return res.status(500).json({
+            ok: false,
+            error: exportErr.message,
+          });
+        }
+
+        res.json({
+          ok: true,
+          source: url,
+          imported: inserted,
+          exported_count: count,
+          message: "Render SQLite database repopulated from SiteGround pieces.json",
+        });
       });
     });
   } catch (err) {
@@ -484,5 +649,6 @@ app.get("/admin/import-public-json", async (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
+  console.log(`Curate: http://localhost:${PORT}/admin/curate.html`);
   console.log(`Deploy health: http://localhost:${PORT}/deploy-health`);
 });
