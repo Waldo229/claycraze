@@ -243,11 +243,7 @@ const PUBLIC_FIELDS = `
   price
 `;
 
-const PUBLIC_STATUSES = [
-  "available",
-  "held",
-  "acquired"
-];
+const PUBLIC_STATUSES = ["available", "held", "acquired"];
 
 function publicStatusPlaceholders() {
   return PUBLIC_STATUSES.map(() => "?").join(", ");
@@ -270,6 +266,124 @@ function exportPiecesJson(callback) {
     callback(null, rows.length, outPath);
   });
 }
+
+function getPublicPiecesByShape(shapeCode, res) {
+  const sql = `
+    SELECT ${PUBLIC_FIELDS}
+    FROM inventory
+    WHERE TRIM(UPPER(shape)) = ?
+      AND TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+    ORDER BY piece_number DESC
+  `;
+
+  db.all(sql, [shapeCode, ...PUBLIC_STATUSES], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        error: err.message,
+      });
+    }
+
+    res.json(rows || []);
+  });
+}
+
+/* =========================================================
+   HEALTH / DEBUG ROUTES
+========================================================= */
+
+app.get("/deploy-health", (req, res) => {
+  res.json({
+    ok: true,
+    app: "ClaycrazE admin",
+    db_path: DB_PATH,
+    time: new Date().toISOString(),
+  });
+});
+
+app.get("/debug/inventory-count", (req, res) => {
+  db.get(`SELECT COUNT(*) AS total FROM inventory`, [], (err, totalRow) => {
+    if (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+
+    db.get(
+      `
+      SELECT COUNT(*) AS public_total
+      FROM inventory
+      WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+      `,
+      PUBLIC_STATUSES,
+      (err2, publicRow) => {
+        if (err2) {
+          return res.status(500).json({ ok: false, error: err2.message });
+        }
+
+        res.json({
+          ok: true,
+          db_path: DB_PATH,
+          counts: {
+            total: totalRow ? totalRow.total : 0,
+            public_total: publicRow ? publicRow.public_total : 0,
+          },
+        });
+      }
+    );
+  });
+});
+
+app.get("/debug/shapes", (req, res) => {
+  db.all(
+    `
+    SELECT
+      shape,
+      TRIM(LOWER(status)) AS status,
+      COUNT(*) AS count
+    FROM inventory
+    GROUP BY shape, TRIM(LOWER(status))
+    ORDER BY shape ASC, status ASC
+    `,
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ ok: false, error: err.message });
+      }
+
+      res.json({
+        ok: true,
+        shapes: rows || [],
+      });
+    }
+  );
+});
+
+/* =========================================================
+   GALLERY DATA ROUTES
+========================================================= */
+
+app.get("/gallery-data/ovals", (req, res) => {
+  getPublicPiecesByShape("OV", res);
+});
+
+app.get("/gallery-data/rounds", (req, res) => {
+  getPublicPiecesByShape("RD", res);
+});
+
+app.get("/gallery-data/rectangles", (req, res) => {
+  getPublicPiecesByShape("RC", res);
+});
+
+app.get("/gallery-data/freeform", (req, res) => {
+  getPublicPiecesByShape("FREE", res);
+});
+
+app.get("/gallery-data/cascade", (req, res) => {
+  getPublicPiecesByShape("CS", res);
+});
+
+app.get("/gallery-data/forest", (req, res) => {
+  getPublicPiecesByShape("FJ", res);
+});
 
 /* =========================================================
    IMPORT PUBLIC SG JSON INTO SQLITE
@@ -321,7 +435,7 @@ app.get("/admin/import-public-json", async (req, res) => {
     for (const p of pieces) {
       stmt.run(
         p.id || "",
-        p.shape || "",
+        normalizeShapeCode(p.shape || ""),
         p.piece_number || null,
         p.date_code || "",
         p.title || "",
@@ -335,22 +449,28 @@ app.get("/admin/import-public-json", async (req, res) => {
         p.image_path_2 || "",
         p.image_path_3 || "",
         p.image_path_4 || "",
-        p.status || "available",
+        normalizeStatus(p.status || "available"),
         p.price || ""
       );
 
       inserted++;
     }
 
-    stmt.finalize();
+    stmt.finalize((err) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          error: err.message,
+        });
+      }
 
-    res.json({
-      ok: true,
-      source: url,
-      imported: inserted,
-      message: "Render SQLite database repopulated from SiteGround pieces.json",
+      res.json({
+        ok: true,
+        source: url,
+        imported: inserted,
+        message: "Render SQLite database repopulated from SiteGround pieces.json",
+      });
     });
-
   } catch (err) {
     console.error("IMPORT PUBLIC JSON ERROR:", err);
 
