@@ -494,3 +494,217 @@ a {
   font-size: 1.08rem;
   line-height: 1.8;
 }
+/* =========================================================
+   THRESHOLD SYSTEM
+========================================================= */
+
+.threshold-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.threshold-hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+  gap: 4rem;
+  align-items: center;
+
+  margin-bottom: 4rem;
+}
+
+.threshold-symbol {
+  display: flex;
+  justify-content: center;
+}
+
+.threshold-face {
+  width: 100%;
+  max-width: 320px;
+
+  border-radius: 28px;
+
+  opacity: 0.94;
+
+  box-shadow:
+    0 24px 70px rgba(0,0,0,0.42);
+}
+
+.threshold-copy {
+  max-width: 760px;
+}
+
+.threshold-kicker {
+  margin: 0 0 1rem;
+
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: var(--gold);
+}
+
+.threshold-copy h1 {
+  margin: 0;
+
+  font-size: clamp(2.6rem, 5vw, 5rem);
+  line-height: 0.98;
+  font-weight: 400;
+
+  color: #f4e8cc;
+}
+
+.threshold-copy p {
+  margin-top: 1.5rem;
+
+  font-size: 1.12rem;
+  line-height: 1.9;
+
+  color: rgba(244,232,204,0.76);
+}
+
+/* =========================================================
+   THEORY GRID
+========================================================= */
+
+.theory-grid {
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+
+  gap: 2rem;
+}
+
+.archive-card {
+  position: relative;
+
+  overflow: hidden;
+
+  min-height: 360px;
+
+  border-radius: 28px;
+
+  background: rgba(255,248,232,0.05);
+
+  border: 1px solid rgba(242,230,201,0.08);
+
+  text-decoration: none;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+
+  box-shadow:
+    0 18px 48px rgba(0,0,0,0.28);
+}
+
+.archive-card:hover {
+  transform: translateY(-4px);
+
+  border-color: rgba(242,230,201,0.18);
+
+  box-shadow:
+    0 26px 60px rgba(0,0,0,0.42);
+}
+
+.archive-card img {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  opacity: 0.82;
+
+  transition:
+    transform 500ms ease,
+    opacity 220ms ease;
+}
+
+.archive-card:hover img {
+  transform: scale(1.03);
+  opacity: 0.92;
+}
+
+.archive-card::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(14,10,6,0.92) 6%,
+      rgba(14,10,6,0.18) 55%,
+      rgba(14,10,6,0.06) 100%
+    );
+}
+
+.archive-card-text {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
+
+  z-index: 2;
+}
+
+.archive-card-text p {
+  margin: 0 0 0.45rem;
+
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  color: rgba(242,230,201,0.56);
+}
+
+.archive-card-text h2 {
+  margin: 0;
+
+  font-size: 2rem;
+  font-weight: 400;
+
+  color: #f4e8cc;
+}
+
+/* =========================================================
+   THEORY ATMOSPHERE
+========================================================= */
+
+.theory-page {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(236,214,149,0.10),
+      transparent 34rem
+    ),
+    #18110b;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 860px) {
+
+  .threshold-hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .threshold-symbol {
+    justify-content: flex-start;
+  }
+
+  .threshold-face {
+    max-width: 240px;
+  }
+
+  .archive-card {
+    min-height: 300px;
+  }
+}
