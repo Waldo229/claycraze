@@ -134,10 +134,29 @@ function updatePreview(piece) {
   `;
 }
 
+function normalizeDimensions(value) {
+
+  if (!value) return "";
+
+  let cleaned = value
+    .replace(/"/g, "")
+    .replace(/\s*[xX×]\s*/g, " × ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned.toLowerCase().includes("in")) {
+    cleaned += " in.";
+  }
+
+  return cleaned;
+}
+
 function generateDescription() {
   const title = getValue("title");
   const color = getValue("color");
-  const dimensions = getValue("dimensions");
+  const dimensions =
+    normalizeDimensions(getValue("dimensions"));
+
   const surface = getValue("surfaceCharacter");
   const mood = getValue("mood");
   const use = getValue("suggestedUse");
@@ -161,17 +180,33 @@ The surface carries a ${color || "soft"} character that rewards close looking an
 }
 
 function suggestPrice() {
-  const dimensions = getValue("dimensions") || currentPiece?.dimensions || "";
-  const mood = getValue("mood").toLowerCase();
 
-  let suggestion = "Suggested range: $125–175";
+  const dimensions =
+    normalizeDimensions(
+      getValue("dimensions") ||
+      currentPiece?.dimensions ||
+      ""
+    );
+
+  const mood =
+    getValue("mood").toLowerCase();
+
+  let suggestion =
+    "Suggested range: $125–175";
 
   if (dimensions.includes("13")) {
-    suggestion = "Suggested range: $145–175\nRecommended tag: $150";
+    suggestion =
+      "Suggested range: $145–175\nRecommended tag: $150";
+  }
+
+  if (dimensions.includes("9 × 7")) {
+    suggestion =
+      "Suggested range: $145–185\nRecommended tag: $165";
   }
 
   if (mood.includes("exceptional")) {
-    suggestion += "\nPossible premium placement piece.";
+    suggestion +=
+      "\nPossible premium placement piece.";
   }
 
   setOutput(suggestion);
@@ -227,7 +262,9 @@ async function saveCuratorialChanges(event) {
     getValue("price");
 
   currentPiece.dimensions =
-    getValue("dimensions");
+    normalizeDimensions(
+      getValue("dimensions")
+    );
 
   currentPiece.object_identifier =
     getValue("objectIdentifier");
