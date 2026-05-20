@@ -75,13 +75,15 @@ function loadPiece(id) {
   setValue("color", currentPiece.glaze || currentPiece.color || "");
   setValue("description", currentPiece.description || "");
   setValue("price", currentPiece.price || "");
-  setValue("dimensions", currentPiece.dimensions || "");
+  setStructuredDimensions(currentPiece.dimensions || "");
+
   setValue("objectIdentifier",
     currentPiece.object_identifier ||
     currentPiece.objectIdentifier ||
     currentPiece.camera_id ||
     ""
   );
+
   setValue("status", currentPiece.status || "available");
 
   updatePreview(currentPiece);
@@ -94,7 +96,7 @@ function clearForm() {
   setValue("color", "");
   setValue("description", "");
   setValue("price", "");
-  setValue("dimensions", "");
+  setStructuredDimensions("");
   setValue("objectIdentifier", "");
   setValue("status", "available");
   setOutput("");
@@ -128,20 +130,41 @@ function updatePreview(piece) {
   `;
 }
 
-function normalizeDimensions(value) {
-  if (!value) return "";
-
-  let cleaned = value
+function parseDimensions(value) {
+  const clean = String(value || "")
+    .replace(/in\.?/gi, "")
     .replace(/"/g, "")
-    .replace(/\s*[xX×]\s*/g, " × ")
-    .replace(/\s+/g, " ")
     .trim();
 
-  if (!cleaned.toLowerCase().includes("in")) {
-    cleaned += " in.";
-  }
+  const parts = clean
+    .split(/[xX×]/)
+    .map(part => part.trim())
+    .filter(Boolean);
 
-  return cleaned;
+  return {
+    height: parts[0] || "",
+    width: parts[1] || "",
+    depth: parts[2] || ""
+  };
+}
+
+function setStructuredDimensions(value) {
+  const parsed = parseDimensions(value);
+
+  setValue("dimHeight", parsed.height);
+  setValue("dimWidth", parsed.width);
+  setValue("dimDepth", parsed.depth);
+  setValue("dimensions", value || "");
+}
+
+function getStructuredDimensions() {
+  const h = getValue("dimHeight");
+  const w = getValue("dimWidth");
+  const d = getValue("dimDepth");
+
+  if (!h && !w && !d) return "";
+
+  return `${h} × ${w} × ${d} in.`;
 }
 
 function buildSavePayload() {
@@ -160,7 +183,7 @@ function buildSavePayload() {
     glaze: getValue("color"),
     notes: currentPiece.notes || "",
 
-    dimensions: normalizeDimensions(getValue("dimensions")),
+    dimensions: getStructuredDimensions(),
     object_identifier: getValue("objectIdentifier"),
 
     image_path: currentPiece.image_path || "",
@@ -176,7 +199,7 @@ function buildSavePayload() {
 function generateDescription() {
   const title = getValue("title");
   const color = getValue("color");
-  const dimensions = normalizeDimensions(getValue("dimensions"));
+  const dimensions = getStructuredDimensions();
   const surface = getValue("surfaceCharacter");
   const mood = getValue("mood");
   const use = getValue("suggestedUse");
@@ -200,11 +223,10 @@ The surface carries a ${color || "soft"} character that rewards close looking an
 }
 
 function suggestPrice() {
-  const dimensions = normalizeDimensions(
-    getValue("dimensions") ||
+  const dimensions =
+    getStructuredDimensions() ||
     currentPiece?.dimensions ||
-    ""
-  );
+    "";
 
   const mood = getValue("mood").toLowerCase();
 

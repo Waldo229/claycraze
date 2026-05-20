@@ -6,7 +6,7 @@
 
   <title>ClaycrazE Curatorial Studio</title>
 
-  <link rel="stylesheet" href="/css/curate.css?v=4005" />
+  <link rel="stylesheet" href="/css/curate.css?v=4006" />
 </head>
 
 <body>
@@ -61,10 +61,45 @@
           <input type="text" id="price" placeholder="150" />
         </label>
 
-        <label>
-          Dimensions
-          <input type="text" id="dimensions" placeholder="13x9x2" />
-        </label>
+        <fieldset class="dimension-fieldset">
+          <legend>
+            Dimensions <span class="field-hint">H × W × D</span>
+          </legend>
+
+          <div class="dimension-row">
+            <input
+              type="number"
+              id="dimHeight"
+              placeholder="H"
+              step="0.25"
+              min="0"
+            />
+
+            <span>×</span>
+
+            <input
+              type="number"
+              id="dimWidth"
+              placeholder="W"
+              step="0.25"
+              min="0"
+            />
+
+            <span>×</span>
+
+            <input
+              type="number"
+              id="dimDepth"
+              placeholder="D"
+              step="0.25"
+              min="0"
+            />
+
+            <span>in.</span>
+          </div>
+
+          <input type="hidden" id="dimensions" />
+        </fieldset>
 
         <label>
           Object Identifier
@@ -174,7 +209,7 @@
 
   </main>
 
-  <script src="/admin/js/curate.js?v=4005"></script>
+  <script src="/admin/js/curate.js?v=4006"></script>
 
 </body>
 </html>
