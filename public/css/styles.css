@@ -217,6 +217,16 @@ a {
   background: var(--panel);
   border: 1px solid var(--line);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.piece-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(242, 230, 201, 0.18);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.38);
 }
 
 .piece-card a {
@@ -227,7 +237,7 @@ a {
   width: 100%;
   height: 320px;
   overflow: hidden;
-  background: rgba(255, 248, 232, 0.05);
+  background: rgba(255, 248, 232, 0.04);
 }
 
 .piece-image {
@@ -235,23 +245,30 @@ a {
   height: 100%;
   object-fit: cover;
   object-position: center center;
+  transition: transform 400ms ease;
+}
+
+.piece-card:hover .piece-image {
+  transform: scale(1.03);
 }
 
 .piece-body {
   padding: 1.4rem 1.6rem 1.7rem;
   text-align: center;
+  background: transparent;
 }
 
 .piece-title {
   margin: 0 0 0.5rem;
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   font-weight: 400;
   color: #f4e8cc;
 }
 
 .more-link {
   display: inline-block;
-  color: var(--muted);
+  margin-top: 0.4rem;
+  color: rgba(242, 230, 201, 0.58);
 }
 
 /* Piece detail */
@@ -289,11 +306,12 @@ a {
   margin: 2rem auto 0;
   padding: 1.5rem;
   border-radius: 24px;
-  background: var(--panel);
-  border: 1px solid var(--line);
+  background: rgba(255, 248, 232, 0.045);
+  border: 1px solid rgba(242, 230, 201, 0.08);
+  backdrop-filter: blur(4px);
   font-size: 1.08rem;
   line-height: 1.6;
-  color: var(--muted);
+  color: rgba(244, 232, 204, 0.82);
 }
 
 .piece-detail-body h1 {
@@ -301,6 +319,7 @@ a {
   font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 400;
   color: #f4e8cc;
+  letter-spacing: -0.02em;
 }
 
 .piece-detail-kicker {
@@ -308,6 +327,11 @@ a {
   opacity: 0.75;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.piece-description {
+  font-size: 1.08rem;
+  line-height: 1.8;
 }
 
 .piece-description p {
@@ -361,7 +385,231 @@ a {
   color: var(--muted);
 }
 
+/* Shared page atmosphere */
+
+.practice-page,
+.gallery-page,
+.room-page {
+  background: transparent;
+  color: var(--text);
+}
+
+.gallery-page,
+.practice-page,
+.room-page,
+.piece-detail {
+  background:
+    radial-gradient(circle at top left, rgba(236, 214, 149, 0.10), transparent 34rem),
+    #18110b;
+}
+
+.gallery-intro,
+.room-hero {
+  background: rgba(255, 248, 232, 0.045);
+  border: 1px solid rgba(242, 230, 201, 0.08);
+  color: var(--text);
+  backdrop-filter: blur(4px);
+}
+
+.gallery-intro {
+  padding: 2rem;
+  border-radius: 28px;
+}
+
+.gallery-intro h1,
+.gallery-intro h2,
+.room-hero h1 {
+  color: #f4e8cc;
+  letter-spacing: -0.02em;
+}
+
+.piece-card,
+.gallery-card,
+.room-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+/* Threshold system */
+
+.threshold-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.threshold-hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+  gap: 4rem;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.threshold-symbol {
+  display: flex;
+  justify-content: center;
+}
+
+.threshold-face {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 28px;
+  opacity: 0.94;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.threshold-copy {
+  max-width: 760px;
+}
+
+.threshold-kicker {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.threshold-copy h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 5vw, 5rem);
+  line-height: 0.98;
+  font-weight: 400;
+  color: #f4e8cc;
+}
+
+.threshold-copy p {
+  margin-top: 1.5rem;
+  font-size: 1.12rem;
+  line-height: 1.9;
+  color: rgba(244, 232, 204, 0.76);
+}
+
+/* Theory / Practice archive grids */
+
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.theory-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+.archive-card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 360px;
+  aspect-ratio: 4 / 5;
+  border-radius: 28px;
+  background: rgba(255, 248, 232, 0.05);
+  border: 1px solid rgba(242, 230, 201, 0.08);
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.archive-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(242, 230, 201, 0.18);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.42);
+}
+
+.archive-card img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  padding: 1.2rem;
+  box-sizing: border-box;
+  opacity: 0.92;
+  transition:
+    transform 500ms ease,
+    opacity 220ms ease;
+}
+
+.archive-card:hover img {
+  transform: scale(1.02);
+  opacity: 1;
+}
+
+.archive-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      to top,
+      rgba(14, 10, 6, 0.88) 6%,
+      rgba(14, 10, 6, 0.18) 55%,
+      rgba(14, 10, 6, 0.04) 100%
+    );
+}
+
+.archive-card-text {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 2;
+}
+
+.archive-card-text p {
+  margin: 0 0 0.45rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(242, 230, 201, 0.56);
+}
+
+.archive-card-text h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #f4e8cc;
+}
+
+/* Theory atmosphere */
+
+.theory-page {
+  background:
+    radial-gradient(circle at top left, rgba(236, 214, 149, 0.10), transparent 34rem),
+    #18110b;
+}
+
 /* Mobile */
+
+@media (max-width: 860px) {
+  .threshold-hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .threshold-symbol {
+    justify-content: flex-start;
+  }
+
+  .threshold-face {
+    max-width: 240px;
+  }
+
+  .archive-card {
+    min-height: 300px;
+  }
+}
 
 @media (max-width: 760px) {
   .header-shell {
@@ -389,358 +637,4 @@ a {
   .gallery-page {
     padding: 2rem 1rem 4rem;
   }
-}
-.practice-page,
-.gallery-page,
-.room-page {
-  background: transparent;
-  color: var(--text);
-}
-
-.gallery-intro,
-.room-hero {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-
-.gallery-intro h1,
-.gallery-intro h2,
-.room-hero h1 {
-  color: #f4e8cc;
-}
-
-.piece-card,
-.gallery-card,
-.room-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-
-.piece-body {
-  background: transparent;
-}
-
-.piece-image-wrap {
-  background: rgba(255, 248, 232, 0.04);
-}
-/* Interior atmosphere refinement */
-
-.gallery-page,
-.practice-page,
-.room-page,
-.piece-detail {
-  background:
-    radial-gradient(circle at top left, rgba(236, 214, 149, 0.10), transparent 34rem),
-    #18110b;
-}
-
-.gallery-intro,
-.room-hero,
-.piece-detail-body {
-  background: rgba(255, 248, 232, 0.045);
-  border: 1px solid rgba(242, 230, 201, 0.08);
-  backdrop-filter: blur(4px);
-}
-
-.gallery-intro {
-  padding: 2rem;
-  border-radius: 28px;
-}
-
-.gallery-intro h2,
-.room-hero h1,
-.piece-detail-body h1 {
-  letter-spacing: -0.02em;
-}
-
-.piece-card {
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-}
-
-.piece-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(242, 230, 201, 0.18);
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.38);
-}
-
-.piece-image {
-  transition: transform 400ms ease;
-}
-
-.piece-card:hover .piece-image {
-  transform: scale(1.03);
-}
-
-.piece-title {
-  font-size: 1.45rem;
-  color: #f4e8cc;
-}
-
-.more-link {
-  margin-top: 0.4rem;
-  color: rgba(242, 230, 201, 0.58);
-}
-
-.piece-detail-body {
-  color: rgba(244, 232, 204, 0.82);
-}
-
-.piece-description {
-  font-size: 1.08rem;
-  line-height: 1.8;
-}
-/* =========================================================
-   THRESHOLD SYSTEM
-========================================================= */
-
-.threshold-page {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem 5rem;
-}
-
-.threshold-hero {
-  display: grid;
-  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
-  gap: 4rem;
-  align-items: center;
-
-  margin-bottom: 4rem;
-}
-
-.threshold-symbol {
-  display: flex;
-  justify-content: center;
-}
-
-.threshold-face {
-  width: 100%;
-  max-width: 320px;
-
-  border-radius: 28px;
-
-  opacity: 0.94;
-
-  box-shadow:
-    0 24px 70px rgba(0,0,0,0.42);
-}
-
-.threshold-copy {
-  max-width: 760px;
-}
-
-.threshold-kicker {
-  margin: 0 0 1rem;
-
-  font-size: 0.8rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-
-  color: var(--gold);
-}
-
-.threshold-copy h1 {
-  margin: 0;
-
-  font-size: clamp(2.6rem, 5vw, 5rem);
-  line-height: 0.98;
-  font-weight: 400;
-
-  color: #f4e8cc;
-}
-
-.threshold-copy p {
-  margin-top: 1.5rem;
-
-  font-size: 1.12rem;
-  line-height: 1.9;
-
-  color: rgba(244,232,204,0.76);
-}
-
-/* =========================================================
-   THEORY GRID
-========================================================= */
-
-.theory-grid {
-  grid-template-columns:
-    repeat(auto-fit, minmax(240px, 1fr));
-
-  gap: 2rem;
-}
-
-.archive-card {
-  position: relative;
-
-  overflow: hidden;
-
-  min-height: 360px;
-
-  border-radius: 28px;
-
-  background: rgba(255,248,232,0.05);
-
-  border: 1px solid rgba(242,230,201,0.08);
-
-  text-decoration: none;
-
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-
-  box-shadow:
-    0 18px 48px rgba(0,0,0,0.28);
-}
-
-.archive-card:hover {
-  transform: translateY(-4px);
-
-  border-color: rgba(242,230,201,0.18);
-
-  box-shadow:
-    0 26px 60px rgba(0,0,0,0.42);
-}
-
-.archive-card img {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-
-  opacity: 0.82;
-
-  transition:
-    transform 500ms ease,
-    opacity 220ms ease;
-}
-
-.archive-card:hover img {
-  transform: scale(1.03);
-  opacity: 0.92;
-}
-
-.archive-card::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(14,10,6,0.92) 6%,
-      rgba(14,10,6,0.18) 55%,
-      rgba(14,10,6,0.06) 100%
-    );
-}
-
-.archive-card-text {
-  position: absolute;
-  left: 1.5rem;
-  right: 1.5rem;
-  bottom: 1.5rem;
-
-  z-index: 2;
-}
-
-.archive-card-text p {
-  margin: 0 0 0.45rem;
-
-  font-size: 0.76rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-
-  color: rgba(242,230,201,0.56);
-}
-
-.archive-card-text h2 {
-  margin: 0;
-
-  font-size: 2rem;
-  font-weight: 400;
-
-  color: #f4e8cc;
-}
-
-/* =========================================================
-   THEORY ATMOSPHERE
-========================================================= */
-
-.theory-page {
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(236,214,149,0.10),
-      transparent 34rem
-    ),
-    #18110b;
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 860px) {
-
-  .threshold-hero {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .threshold-symbol {
-    justify-content: flex-start;
-  }
-
-  .threshold-face {
-    max-width: 240px;
-  }
-
-  .archive-card {
-    min-height: 300px;
-  }
-}
-.archive-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(260px, 1fr));
-
-  gap: 2rem;
-
-  margin-top: 2rem;
-}
-/* ========================================
-   ARCHIVE CARD TEXT POSITION FIX
-======================================== */
-
-.archive-card {
-  position: relative;
-  display: block;
-}
-
-.archive-card img {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.archive-card::after {
-  z-index: 1;
-}
-
-.archive-card-text {
-  position: absolute;
-  left: 1.5rem;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  z-index: 2;
 }
