@@ -3,9 +3,9 @@
 ========================= */
 
 .gallery-page {
-  width: min(1500px, 100%);
+  width: min(1300px, 100%);
   margin: 0 auto;
-  padding: 2rem 1.5rem 6rem;
+  padding: 1.75rem 1.5rem 5rem;
 }
 
 /* =========================
@@ -13,20 +13,20 @@
 ========================= */
 
 .gallery-intro {
-  max-width: 1100px;
-  margin: 0 auto 2.5rem;
-  padding: 2.2rem 2rem 2rem;
+  max-width: 960px;
+  margin: 0 auto 2rem;
+  padding: 1.8rem 1.6rem 1.7rem;
   text-align: center;
 
   background: rgba(244, 231, 198, 0.84);
   border: 1px solid rgba(122, 77, 28, 0.14);
-  border-radius: 30px;
+  border-radius: 28px;
   box-shadow: 0 18px 48px rgba(55, 31, 12, 0.18);
 }
 
 .minimalist-intro h1 {
   margin: 0;
-  font-size: clamp(4rem, 8vw, 7rem);
+  font-size: clamp(3.2rem, 7vw, 5.6rem);
   line-height: 0.9;
   letter-spacing: -0.04em;
   color: #2c1a10;
@@ -34,24 +34,31 @@
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(520px, 620px));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 340px));
   justify-content: center;
-  gap: 2.5rem;
-  margin-top: 2rem;
+  align-items: start;
+  gap: 1.6rem;
+  margin-top: 1.5rem;
 }
 
 .gallery-card {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+
+  min-height: 0;
+
   background: rgba(244, 231, 198, 0.86);
   border: 1px solid rgba(122, 77, 28, 0.14);
-  border-radius: 30px;
-  box-shadow: 0 18px 46px rgba(55, 31, 12, 0.22);
+  border-radius: 26px;
+  box-shadow: 0 14px 34px rgba(55, 31, 12, 0.18);
+
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .gallery-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 26px 64px rgba(55, 31, 12, 0.28);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 46px rgba(55, 31, 12, 0.24);
 }
 
 .gallery-card-link {
@@ -61,40 +68,46 @@
 }
 
 .gallery-thumb-wrap {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #d9c79d;
+  background: #1a120c;
 }
 
-.gallery-thumb {
+.gallery-thumb,
+.gallery-card img {
   width: 100%;
   height: 100%;
   display: block;
+
   object-fit: cover;
   object-position: center;
+
+  background: #1a120c;
   transition: transform 0.45s ease;
 }
 
-.gallery-card:hover .gallery-thumb {
+.gallery-card:hover .gallery-thumb,
+.gallery-card:hover img {
   transform: scale(1.025);
 }
 
 .gallery-card-body {
-  padding: 1.15rem 1.4rem 1.35rem;
+  padding: 0.85rem 1rem 1rem;
   text-align: center;
 }
 
 .gallery-card h2 {
-  margin: 0 0 0.35rem;
-  font-size: 1.45rem;
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
   line-height: 1.15;
   color: #2c1a10;
 }
 
 .gallery-meta {
-  margin: 0.2rem 0;
+  margin: 0.15rem 0;
   color: #6a4b2d;
-  line-height: 1.45;
+  line-height: 1.35;
+  font-size: 0.95rem;
 }
 
 .gallery-more {
@@ -377,7 +390,7 @@
 
 @media (max-width: 860px) {
   .gallery-grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   }
 }
 
@@ -405,7 +418,7 @@
   }
 
   .gallery-grid {
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
   .gallery-intro {
@@ -413,7 +426,7 @@
   }
 
   .minimalist-intro h1 {
-    font-size: clamp(3.2rem, 18vw, 5rem);
+    font-size: clamp(3rem, 16vw, 4.6rem);
   }
 
   .piece-dashboard {
@@ -435,35 +448,4 @@
   .piece-label-card h1 {
     font-size: clamp(2.1rem, 13vw, 3.4rem);
   }
-}
-/* ========================================
-   GALLERY CARD FALLBACK FIX
-======================================== */
-
-.gallery-card {
-  display: flex;
-  flex-direction: column;
-
-  overflow: hidden;
-
-  border-radius: 30px;
-
-  background: rgba(244, 231, 198, 0.86);
-
-  border: 1px solid rgba(122, 77, 28, 0.14);
-
-  box-shadow:
-    0 18px 46px rgba(55, 31, 12, 0.22);
-}
-
-.gallery-card img {
-  width: 100%;
-  height: 420px;
-
-  display: block;
-
-  object-fit: cover;
-  object-position: center;
-
-  background: #1a120c;
 }
