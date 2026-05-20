@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
 
-  <link rel="stylesheet" href="/css/styles.css?v=3006" />
+  <link rel="stylesheet" href="/css/styles.css?v=3008" />
 </head>
 
 <body class="home-page">
@@ -35,7 +35,11 @@
 
     <section class="home-hero">
 
-      <a href="/practice.html" class="home-monk-link" aria-label="Enter ClaycrazE gallery">
+      <a
+        href="/practice.html"
+        class="home-monk-link"
+        aria-label="Enter ClaycrazE gallery"
+      >
         <img
           src="/images/system/coldmountainSQ300.jpg"
           alt="Han Shan and Shih-te of Cold Mountain"
@@ -55,25 +59,28 @@
           theory and practice.
         </p>
 
-        <div class="hero-actions">
-
-          <a class="hero-button primary" href="/practice.html">
-            <span class="hero-button-main">Gallery</span>
-            <span class="hero-button-sub">Practice</span>
-          </a>
-
-          <a class="hero-button secondary" href="/theory.html">
-            <span class="hero-button-main">Studio</span>
-            <span class="hero-button-sub">Theory</span>
-          </a>
-
-        </div>
-
       </div>
 
     </section>
 
+    <section class="site-search" aria-label="Search ClaycrazE pieces">
+      <label for="siteSearchInput">Search the archive</label>
+
+      <input
+        type="search"
+        id="siteSearchInput"
+        placeholder="oval, cream, 9 × 7, available, 150..."
+        autocomplete="off"
+      />
+
+      <div id="siteSearchResults" class="site-search-results">
+        Type to search available pieces.
+      </div>
+    </section>
+
   </main>
+
+  <script src="/js/search.js?v=1"></script>
 
 </body>
 </html>

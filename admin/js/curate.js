@@ -20,22 +20,15 @@ async function initializeCurator() {
 
   } catch (error) {
     console.error(error);
-
-    const statusBox = document.getElementById("statusBox");
-
-    if (statusBox) {
-      statusBox.textContent = "Could not load pieces.";
-      statusBox.className = "status-box error";
-    }
+    showStatus("Could not load pieces.", "error");
   }
 }
 
 function bindEvents() {
-  const pieceSelect = document.getElementById("pieceSelect");
-
-  pieceSelect.addEventListener("change", event => {
-    loadPiece(event.target.value);
-  });
+  document.getElementById("pieceSelect")
+    .addEventListener("change", event => {
+      loadPiece(event.target.value);
+    });
 
   document.getElementById("generateDescription")
     .addEventListener("click", generateDescription);
@@ -60,16 +53,12 @@ function populatePieceSelect(pieces) {
     String(b.id || "").localeCompare(String(a.id || ""))
   );
 
-  select.innerHTML = `
-    <option value="">Select piece</option>
-  `;
+  select.innerHTML = `<option value="">Select piece</option>`;
 
   sorted.forEach(piece => {
     const option = document.createElement("option");
-
     option.value = piece.id;
     option.textContent = `${piece.id} — ${piece.title || "Untitled"}`;
-
     select.appendChild(option);
   });
 }
@@ -77,33 +66,42 @@ function populatePieceSelect(pieces) {
 function loadPiece(id) {
   currentPiece = allPieces.find(piece => piece.id === id);
 
-  if (!currentPiece) return;
+  if (!currentPiece) {
+    clearForm();
+    return;
+  }
 
-  document.getElementById("title").value =
-    currentPiece.title || "";
-
-  document.getElementById("color").value =
-    currentPiece.glaze || currentPiece.color || "";
-
-  document.getElementById("description").value =
-    currentPiece.description || "";
-
-  document.getElementById("price").value =
-    currentPiece.price || "";
-
-  document.getElementById("dimensions").value =
-    currentPiece.dimensions || "";
-
-  document.getElementById("objectIdentifier").value =
+  setValue("title", currentPiece.title || "");
+  setValue("color", currentPiece.glaze || currentPiece.color || "");
+  setValue("description", currentPiece.description || "");
+  setValue("price", currentPiece.price || "");
+  setValue("dimensions", currentPiece.dimensions || "");
+  setValue("objectIdentifier",
     currentPiece.object_identifier ||
     currentPiece.objectIdentifier ||
     currentPiece.camera_id ||
-    "";
-
-  document.getElementById("status").value =
-    currentPiece.status || "available";
+    ""
+  );
+  setValue("status", currentPiece.status || "available");
 
   updatePreview(currentPiece);
+}
+
+function clearForm() {
+  currentPiece = null;
+
+  setValue("title", "");
+  setValue("color", "");
+  setValue("description", "");
+  setValue("price", "");
+  setValue("dimensions", "");
+  setValue("objectIdentifier", "");
+  setValue("status", "available");
+  setOutput("");
+
+  const preview = document.getElementById("piecePreview");
+  preview.classList.add("empty");
+  preview.textContent = "Select a piece to begin.";
 }
 
 function updatePreview(piece) {
@@ -116,11 +114,7 @@ function updatePreview(piece) {
 
   if (!image) {
     preview.classList.add("empty");
-
-    preview.innerHTML = `
-      No preview image available.
-    `;
-
+    preview.innerHTML = `No preview image available.`;
     return;
   }
 
@@ -135,7 +129,6 @@ function updatePreview(piece) {
 }
 
 function normalizeDimensions(value) {
-
   if (!value) return "";
 
   let cleaned = value
@@ -151,12 +144,39 @@ function normalizeDimensions(value) {
   return cleaned;
 }
 
+function buildSavePayload() {
+  if (!currentPiece) return null;
+
+  return {
+    id: currentPiece.id,
+    shape: currentPiece.shape,
+    piece_number: currentPiece.piece_number,
+    date_code: currentPiece.date_code,
+
+    title: getValue("title"),
+    category: currentPiece.category || "bonsai",
+    description: getValue("description"),
+    clay_body: currentPiece.clay_body || "Stoneware - Cone 10",
+    glaze: getValue("color"),
+    notes: currentPiece.notes || "",
+
+    dimensions: normalizeDimensions(getValue("dimensions")),
+    object_identifier: getValue("objectIdentifier"),
+
+    image_path: currentPiece.image_path || "",
+    image_path_2: currentPiece.image_path_2 || "",
+    image_path_3: currentPiece.image_path_3 || "",
+    image_path_4: currentPiece.image_path_4 || "",
+
+    status: getValue("status"),
+    price: getValue("price")
+  };
+}
+
 function generateDescription() {
   const title = getValue("title");
   const color = getValue("color");
-  const dimensions =
-    normalizeDimensions(getValue("dimensions"));
-
+  const dimensions = normalizeDimensions(getValue("dimensions"));
   const surface = getValue("surfaceCharacter");
   const mood = getValue("mood");
   const use = getValue("suggestedUse");
@@ -180,33 +200,26 @@ The surface carries a ${color || "soft"} character that rewards close looking an
 }
 
 function suggestPrice() {
+  const dimensions = normalizeDimensions(
+    getValue("dimensions") ||
+    currentPiece?.dimensions ||
+    ""
+  );
 
-  const dimensions =
-    normalizeDimensions(
-      getValue("dimensions") ||
-      currentPiece?.dimensions ||
-      ""
-    );
+  const mood = getValue("mood").toLowerCase();
 
-  const mood =
-    getValue("mood").toLowerCase();
-
-  let suggestion =
-    "Suggested range: $125–175";
+  let suggestion = "Suggested range: $125–175";
 
   if (dimensions.includes("13")) {
-    suggestion =
-      "Suggested range: $145–175\nRecommended tag: $150";
+    suggestion = "Suggested range: $145–175\nRecommended tag: $150";
   }
 
   if (dimensions.includes("9 × 7")) {
-    suggestion =
-      "Suggested range: $145–185\nRecommended tag: $165";
+    suggestion = "Suggested range: $145–185\nRecommended tag: $165";
   }
 
   if (mood.includes("exceptional")) {
-    suggestion +=
-      "\nPossible premium placement piece.";
+    suggestion += "\nPossible premium placement piece.";
   }
 
   setOutput(suggestion);
@@ -235,50 +248,28 @@ function generateLaoTzu() {
     "The tree chooses the container more often than the owner does."
   ];
 
-  const selected =
-    lines[Math.floor(Math.random() * lines.length)];
-
-  setOutput(selected);
+  setOutput(lines[Math.floor(Math.random() * lines.length)]);
 }
 
 async function saveCuratorialChanges(event) {
   event.preventDefault();
 
-  if (!currentPiece) {
+  const payload = buildSavePayload();
+
+  if (!payload) {
     showStatus("Select a piece first.", "error");
     return;
   }
 
-  currentPiece.title =
-    getValue("title");
-
-  currentPiece.glaze =
-    getValue("color");
-
-  currentPiece.description =
-    getValue("description");
-
-  currentPiece.price =
-    getValue("price");
-
-  currentPiece.dimensions =
-    normalizeDimensions(
-      getValue("dimensions")
-    );
-
-  currentPiece.object_identifier =
-    getValue("objectIdentifier");
-
-  currentPiece.status =
-    getValue("status");
-
   try {
+    showStatus("Saving curatorial changes...", "working");
+
     const response = await fetch("/api/save-curation", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(currentPiece)
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
@@ -287,11 +278,26 @@ async function saveCuratorialChanges(event) {
       throw new Error(result.error || "Could not save.");
     }
 
-    showStatus("Curatorial changes saved.", "success");
+    currentPiece = {
+      ...currentPiece,
+      ...payload
+    };
+
+    const index = allPieces.findIndex(piece => piece.id === currentPiece.id);
+    if (index >= 0) {
+      allPieces[index] = currentPiece;
+    }
+
+    let message = "Curatorial changes saved.";
+
+    if (result.deployed_to_siteground === false) {
+      message += " Saved on Render, but SiteGround deploy may need checking.";
+    }
+
+    showStatus(message, "success");
 
   } catch (error) {
     console.error(error);
-
     showStatus(error.message || "Save failed.", "error");
   }
 }
@@ -301,12 +307,19 @@ function getValue(id) {
   return element ? element.value.trim() : "";
 }
 
+function setValue(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.value = value;
+}
+
 function setOutput(text) {
   document.getElementById("geneOutput").value = text;
 }
 
 function showStatus(message, type) {
   const statusBox = document.getElementById("statusBox");
+
+  if (!statusBox) return;
 
   statusBox.textContent = message;
   statusBox.className = `status-box ${type}`;
