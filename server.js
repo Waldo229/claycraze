@@ -1,8 +1,3 @@
-# Full `server.js` Drop-In
-
-Replace your current `server.js` with the following version.
-
-```js
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const fs = require("fs");
@@ -130,6 +125,18 @@ function parsePieceId(id) {
     date_code: match[2],
     piece_number: parseInt(match[3], 10),
   };
+}
+
+function buildPieceId(shape, yearMonth, number) {
+  const finalShape = normalizeShapeCode(shape);
+  return `${finalShape}-${yearMonth}-${String(number).padStart(3, "0")}`;
+}
+
+function imagePathFor(id, kind) {
+  if (kind === "thumb") return `/images/thumbs/${id}_top_thumb.jpg`;
+  if (kind === "top") return `/images/full/${id}_top.jpg`;
+  if (kind === "bottom") return `/images/full/${id}_bottom.jpg`;
+  return "";
 }
 
 function saveDataUrlImage(dataUrl, filepath) {
@@ -364,89 +371,154 @@ function upsertPiece(piece) {
   });
 }
 
+/* =========================================================
+   HEALTH / DEBUG ROUTES
+========================================================= */
+
+app.get("/deploy-health", (req, res) => {
+  res.json({
+    ok: true,
+    app: "ClaycrazE admin",
+    db_path: DB_PATH,
+    time: new Date().toISOString(),
+  });
+});
+
+app.get("/debug/inventory-count", (req, res) => {
+  db.get(`SELECT COUNT(*) AS total FROM inventory`, [], (err, totalRow) => {
+    if (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+
+    db.get(
+      `
+      SELECT COUNT(*) AS public_total
+      FROM inventory
+      WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+      `,
+      PUBLIC_STATUSES,
+      (err2, publicRow) => {
+        if (err2) {
+          return res.status(500).json({ ok: false, error: err2.message });
+        }
+
+        res.json({
+          ok: true,
+          db_path: DB_PATH,
+          counts: {
+            total: totalRow ? totalRow.total : 0,
+            public_total: publicRow ? publicRow.public_total : 0,
+          },
+        });
+      }
+    );
+  });
+});
+
+app.get("/debug/shapes", (req, res) => {
+  db.all(
+    `
+    SELECT
+      shape,
+      TRIM(LOWER(status)) AS status,
+      COUNT(*) AS count
+    FROM inventory
+    GROUP BY shape, TRIM(LOWER(status))
+    ORDER BY shape ASC, status ASC
+    `,
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ ok: false, error: err.message });
+      }
+
+      res.json({
+        ok: true,
+        shapes: rows || [],
+      });
+    }
+  );
+});
+
+/* =========================================================
+   GALLERY DATA ROUTES
+========================================================= */
+
+app.get("/gallery-data/ovals", (req, res) => {
+  getPublicPiecesByShape("OV", res);
+});
+
+app.get("/gallery-data/rounds", (req, res) => {
+  getPublicPiecesByShape("RD", res);
+});
+
+app.get("/gallery-data/rectangles", (req, res) => {
+  getPublicPiecesByShape("RC", res);
+});
+
+app.get("/gallery-data/freeform", (req, res) => {
+  getPublicPiecesByShape("FREE", res);
+});
+
+app.get("/gallery-data/Freeform", (req, res) => {
+  getPublicPiecesByShape("FREE", res);
+});
+
+app.get("/gallery-data/cascade", (req, res) => {
+  getPublicPiecesByShape("CS", res);
+});
+
+app.get("/gallery-data/forest", (req, res) => {
+  getPublicPiecesByShape("FJ", res);
+});
+
+app.get("/gallery-data/facejugs", (req, res) => {
+  getPublicPiecesByShape("FJ", res);
+});
+
+app.get("/gallery-data/ikebana", (req, res) => {
+  getPublicPiecesByShape("IKE", res);
+});
+
+app.get("/gallery-data/sculpture", (req, res) => {
+  getPublicPiecesByShape("SCULP", res);
+});
+
+/* =========================================================
+   ADMIN / CURATION ROUTES
+========================================================= */
+
 app.post("/api/save-curation", async (req, res) => {
   try {
     const piece = req.body.piece || req.body;
     const pieces = Array.isArray(req.body.pieces) ? req.body.pieces : null;
 
     let savedPieces = [];
-    let filesToDeploy = [];
 
     if (pieces) {
       for (const p of pieces) {
         savedPieces.push(await upsertPiece(p));
       }
     } else {
-      const parsed = parsePieceId(piece.id);
-      const id = parsed.id;
-
-      const topFullPath = path.join(FULL_DIR, `${id}_top.jpg`);
-      const bottomFullPath = path.join(FULL_DIR, `${id}_bottom.jpg`);
-      const topThumbPath = path.join(THUMBS_DIR, `${id}_top_thumb.jpg`);
-
-      if (piece.top_image_data) {
-        saveDataUrlImage(piece.top_image_data, topFullPath);
-
-        fs.copyFileSync(topFullPath, topThumbPath);
-
-        piece.image_path = `/images/thumbs/${id}_top_thumb.jpg`;
-        piece.image_path_2 = `/images/full/${id}_top.jpg`;
-
-        filesToDeploy.push(
-          {
-            localPath: topFullPath,
-            remotePath:
-              `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-              `/images/full/${id}_top.jpg`,
-          },
-          {
-            localPath: topThumbPath,
-            remotePath:
-              `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-              `/images/thumbs/${id}_top_thumb.jpg`,
-          }
-        );
-      }
-
-      if (piece.bottom_image_data) {
-        saveDataUrlImage(piece.bottom_image_data, bottomFullPath);
-
-        piece.image_path_3 = `/images/full/${id}_bottom.jpg`;
-
-        filesToDeploy.push({
-          localPath: bottomFullPath,
-          remotePath:
-            `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-            `/images/full/${id}_bottom.jpg`,
-        });
-      }
-
-      delete piece.top_image_data;
-      delete piece.bottom_image_data;
-
       savedPieces.push(await upsertPiece(piece));
     }
 
     const exported = await exportPiecesJsonPromise();
 
-    filesToDeploy.push({
-      localPath: exported.outPath,
-      remotePath:
-        `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-        `/data/pieces.json`,
-    });
-
     let deployedToSiteGround = false;
     let deployWarning = "";
 
     try {
-      await deployToSiteGround(filesToDeploy);
+      await deployToSiteGround([
+        {
+          localPath: exported.outPath,
+          remotePath: `${process.env.SG_PUBLIC_HTML || "~/public_html"}/data/pieces.json`,
+        },
+      ]);
+
       deployedToSiteGround = true;
     } catch (deployErr) {
-      deployWarning =
-        deployErr.message ||
-        "Saved locally on Render, but SiteGround deploy failed.";
-
+      deployWarning = deployErr.message || "Saved locally on Render, but SiteGround deploy failed.";
       console.error("SITEGROUND DEPLOY WARNING:", deployErr);
     }
 
@@ -458,7 +530,6 @@ app.post("/api/save-curation", async (req, res) => {
       warning: deployWarning,
       pieces: savedPieces,
     });
-
   } catch (err) {
     console.error("SAVE CURATION ERROR:", err);
 
@@ -469,7 +540,115 @@ app.post("/api/save-curation", async (req, res) => {
   }
 });
 
+/* =========================================================
+   IMPORT PUBLIC SG JSON INTO SQLITE
+========================================================= */
+
+app.get("/admin/import-public-json", async (req, res) => {
+  const url = "https://claycraze.com/data/pieces.json";
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
+    }
+
+    const pieces = await response.json();
+
+    if (!Array.isArray(pieces)) {
+      return res.status(400).json({
+        ok: false,
+        error: "SG pieces.json did not return an array",
+      });
+    }
+
+    const stmt = db.prepare(`
+      INSERT OR REPLACE INTO inventory (
+        id,
+        shape,
+        piece_number,
+        date_code,
+        title,
+        category,
+        description,
+        clay_body,
+        glaze,
+        notes,
+        dimensions,
+        image_path,
+        image_path_2,
+        image_path_3,
+        image_path_4,
+        status,
+        price
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    let inserted = 0;
+
+    for (const p of pieces) {
+      stmt.run(
+        p.id || "",
+        normalizeShapeCode(p.shape || ""),
+        p.piece_number || null,
+        p.date_code || "",
+        p.title || "",
+        p.category || "",
+        p.description || "",
+        p.clay_body || "",
+        p.glaze || "",
+        p.notes || "",
+        p.dimensions || "",
+        p.image_path || "",
+        p.image_path_2 || "",
+        p.image_path_3 || "",
+        p.image_path_4 || "",
+        normalizeStatus(p.status || "available"),
+        p.price || ""
+      );
+
+      inserted++;
+    }
+
+    stmt.finalize((err) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          error: err.message,
+        });
+      }
+
+      exportPiecesJson((exportErr, count) => {
+        if (exportErr) {
+          return res.status(500).json({
+            ok: false,
+            error: exportErr.message,
+          });
+        }
+
+        res.json({
+          ok: true,
+          source: url,
+          imported: inserted,
+          exported_count: count,
+          message: "Render SQLite database repopulated from SiteGround pieces.json",
+        });
+      });
+    });
+  } catch (err) {
+    console.error("IMPORT PUBLIC JSON ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
+  console.log(`Admin: http://localhost:${PORT}/admin`);
+  console.log(`Curate: http://localhost:${PORT}/admin/curate.html`);
+  console.log(`Deploy health: http://localhost:${PORT}/deploy-health`);
 });
-```
