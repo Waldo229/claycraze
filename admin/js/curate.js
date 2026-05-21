@@ -84,7 +84,11 @@ function loadPiece(id) {
     ""
   );
 
+  setValue("privateNotes", currentPiece.notes || "");
   setValue("status", currentPiece.status || "available");
+
+  clearFileInput("topImageFile");
+  clearFileInput("bottomImageFile");
 
   updatePreview(currentPiece);
 }
@@ -98,8 +102,12 @@ function clearForm() {
   setValue("price", "");
   setStructuredDimensions("");
   setValue("objectIdentifier", "");
+  setValue("privateNotes", "");
   setValue("status", "available");
   setOutput("");
+
+  clearFileInput("topImageFile");
+  clearFileInput("bottomImageFile");
 
   const preview = document.getElementById("piecePreview");
   preview.classList.add("empty");
@@ -167,8 +175,11 @@ function getStructuredDimensions() {
   return `${h} × ${w} × ${d} in.`;
 }
 
-function buildSavePayload() {
+async function buildSavePayload() {
   if (!currentPiece) return null;
+
+  const topImageData = await readFileAsDataUrl("topImageFile");
+  const bottomImageData = await readFileAsDataUrl("bottomImageFile");
 
   return {
     id: currentPiece.id,
@@ -181,7 +192,7 @@ function buildSavePayload() {
     description: getValue("description"),
     clay_body: currentPiece.clay_body || "Stoneware - Cone 10",
     glaze: getValue("color"),
-    notes: currentPiece.notes || "",
+    notes: getValue("privateNotes"),
 
     dimensions: getStructuredDimensions(),
     object_identifier: getValue("objectIdentifier"),
@@ -190,6 +201,9 @@ function buildSavePayload() {
     image_path_2: currentPiece.image_path_2 || "",
     image_path_3: currentPiece.image_path_3 || "",
     image_path_4: currentPiece.image_path_4 || "",
+
+    top_image_data: topImageData,
+    bottom_image_data: bottomImageData,
 
     status: getValue("status"),
     price: getValue("price")
@@ -276,7 +290,7 @@ function generateLaoTzu() {
 async function saveCuratorialChanges(event) {
   event.preventDefault();
 
-  const payload = buildSavePayload();
+  const payload = await buildSavePayload();
 
   if (!payload) {
     showStatus("Select a piece first.", "error");
@@ -300,15 +314,23 @@ async function saveCuratorialChanges(event) {
       throw new Error(result.error || "Could not save.");
     }
 
+    const savedPiece = result.pieces && result.pieces[0]
+      ? result.pieces[0]
+      : payload;
+
     currentPiece = {
       ...currentPiece,
-      ...payload
+      ...savedPiece
     };
 
     const index = allPieces.findIndex(piece => piece.id === currentPiece.id);
     if (index >= 0) {
       allPieces[index] = currentPiece;
     }
+
+    clearFileInput("topImageFile");
+    clearFileInput("bottomImageFile");
+    updatePreview(currentPiece);
 
     let message = "Curatorial changes saved.";
 
@@ -322,6 +344,34 @@ async function saveCuratorialChanges(event) {
     console.error(error);
     showStatus(error.message || "Save failed.", "error");
   }
+}
+
+function readFileAsDataUrl(inputId) {
+  const input = document.getElementById(inputId);
+
+  if (!input || !input.files || !input.files[0]) {
+    return Promise.resolve("");
+  }
+
+  const file = input.files[0];
+
+  if (!file.type.match(/^image\/jpeg$/)) {
+    return Promise.reject(new Error("Please use JPEG images for upload."));
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Could not read image file."));
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function clearFileInput(id) {
+  const input = document.getElementById(id);
+  if (input) input.value = "";
 }
 
 function getValue(id) {

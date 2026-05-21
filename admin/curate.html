@@ -6,7 +6,7 @@
 
   <title>ClaycrazE Curatorial Studio</title>
 
-  <link rel="stylesheet" href="/css/curate.css?v=4008" />
+  <link rel="stylesheet" href="/css/curate.css?v=4010" />
 </head>
 
 <body>
@@ -67,39 +67,26 @@
           </legend>
 
           <div class="dimension-row">
-            <input
-              type="number"
-              id="dimHeight"
-              placeholder="L"
-              step="0.25"
-              min="0"
-            />
-
+            <input type="number" id="dimHeight" placeholder="L" step="0.25" min="0" />
             <span>×</span>
-
-            <input
-              type="number"
-              id="dimWidth"
-              placeholder="W"
-              step="0.25"
-              min="0"
-            />
-
+            <input type="number" id="dimWidth" placeholder="W" step="0.25" min="0" />
             <span>×</span>
-
-            <input
-              type="number"
-              id="dimDepth"
-              placeholder="H"
-              step="0.25"
-              min="0"
-            />
-
+            <input type="number" id="dimDepth" placeholder="H" step="0.25" min="0" />
             <span>in.</span>
           </div>
 
           <input type="hidden" id="dimensions" />
         </fieldset>
+
+        <label>
+          Top Image
+          <input type="file" id="topImageFile" accept="image/jpeg" />
+        </label>
+
+        <label>
+          Bottom Image
+          <input type="file" id="bottomImageFile" accept="image/jpeg" />
+        </label>
 
         <label>
           Object Identifier
@@ -119,45 +106,6 @@
             <option value="archive">Archive</option>
           </select>
         </label>
-
-        <label>
-          Top Image
-          <select id="image_path_2">
-            <option value="">Select top image</option>
-            <option value="/images/full/OV-2605-001_top.jpg">
-              OV-2605-001_top.jpg
-            </option>
-            <option value="/images/full/OV-2605-002_top.jpg">
-              OV-2605-002_top.jpg
-            </option>
-            <option value="/images/full/OV-2605-003_top.jpg">
-              OV-2605-003_top.jpg
-            </option>
-            <option value="/images/full/OV-2605-004_top.jpg">
-              OV-2605-004_top.jpg
-            </option>
-          </select>
-        </label>
-
-        <label>
-          Bottom Image
-          <select id="image_path_3">
-            <option value="">Select bottom image</option>
-            <option value="/images/full/OV-2605-001_bottom.jpg">
-              OV-2605-001_bottom.jpg
-            </option>
-            <option value="/images/full/OV-2605-002_bottom.jpg">
-              OV-2605-002_bottom.jpg
-            </option>
-            <option value="/images/full/OV-2605-003_bottom.jpg">
-              OV-2605-003_bottom.jpg
-            </option>
-            <option value="/images/full/OV-2605-004_bottom.jpg">
-              OV-2605-004_bottom.jpg
-            </option>
-          </select>
-        </label>
-
       </section>
 
       <section class="curate-card">
@@ -213,21 +161,10 @@
         <h2>GENE Drafting Bench</h2>
 
         <div class="assist-buttons">
-          <button type="button" id="generateDescription">
-            Generate Description
-          </button>
-
-          <button type="button" id="suggestPrice">
-            Suggest Price Range
-          </button>
-
-          <button type="button" id="generateWineLabel">
-            Wine Label
-          </button>
-
-          <button type="button" id="generateLaoTzu">
-            Lao-tzu Line
-          </button>
+          <button type="button" id="generateDescription">Generate Description</button>
+          <button type="button" id="suggestPrice">Suggest Price Range</button>
+          <button type="button" id="generateWineLabel">Wine Label</button>
+          <button type="button" id="generateLaoTzu">Lao-tzu Line</button>
         </div>
 
         <label>
@@ -248,7 +185,7 @@
 
   </main>
 
-  <script src="/admin/js/curate.js?v=4008"></script>
+  <script src="/admin/js/curate.js?v=4010"></script>
 
 </body>
 </html>
