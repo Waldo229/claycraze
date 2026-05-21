@@ -91,17 +91,8 @@ function normalizeStatus(status) {
 
 function isValidShapeCode(shape) {
   return [
-    "OV",
-    "RD",
-    "RC",
-    "FREE",
-    "CS",
-    "FJ",
-    "IKE",
-    "SCULP",
-    "FF",
-    "IK",
-    "SC",
+    "OV", "RD", "RC", "FREE", "CS",
+    "FJ", "IKE", "SCULP", "FF", "IK", "SC"
   ].includes(String(shape || "").toUpperCase());
 }
 
@@ -135,18 +126,6 @@ function parsePieceId(id) {
     date_code: match[2],
     piece_number: parseInt(match[3], 10),
   };
-}
-
-function buildPieceId(shape, yearMonth, number) {
-  const finalShape = normalizeShapeCode(shape);
-  return `${finalShape}-${yearMonth}-${String(number).padStart(3, "0")}`;
-}
-
-function imagePathFor(id, kind) {
-  if (kind === "thumb") return `/images/thumbs/${id}_top_thumb.jpg`;
-  if (kind === "top") return `/images/full/${id}_top.jpg`;
-  if (kind === "bottom") return `/images/full/${id}_bottom.jpg`;
-  return "";
 }
 
 function saveDataUrlImage(dataUrl, filepath) {
@@ -385,54 +364,6 @@ function upsertPiece(piece) {
   });
 }
 
-async function fetchPublicPiecesJson() {
-  const urls = [
-    "https://claycraze.com/data/pieces.json",
-    "https://www.claycraze.com/data/pieces.json",
-  ];
-
-  const errors = [];
-
-  for (const url of urls) {
-    try {
-      const response = await fetch(`${url}?v=${Date.now()}`, {
-        redirect: "follow",
-        headers: {
-          Accept: "application/json,text/plain,*/*",
-          "User-Agent": "ClaycrazE-Render-Importer/1.0",
-        },
-      });
-
-      const text = await response.text();
-
-      if (!response.ok) {
-        errors.push(`${url}: ${response.status} ${response.statusText}`);
-        continue;
-      }
-
-      const trimmed = text.trim();
-
-      if (trimmed.startsWith("<")) {
-        errors.push(`${url}: returned HTML instead of JSON`);
-        continue;
-      }
-
-      const pieces = JSON.parse(trimmed);
-
-      if (!Array.isArray(pieces)) {
-        errors.push(`${url}: JSON was not an array`);
-        continue;
-      }
-
-      return { url, pieces };
-    } catch (err) {
-      errors.push(`${url}: ${err.message}`);
-    }
-  }
-
-  throw new Error(`Could not import pieces.json. ${errors.join(" | ")}`);
-}
-
 /* =========================================================
    HEALTH / DEBUG ROUTES
 ========================================================= */
@@ -655,13 +586,29 @@ app.post("/api/save-curation", async (req, res) => {
 });
 
 /* =========================================================
-   IMPORT PUBLIC SG JSON INTO SQLITE
+   IMPORT LOCAL PUBLIC JSON INTO SQLITE
 ========================================================= */
 
 app.get("/admin/import-public-json", async (req, res) => {
   try {
-    const importedSource = await fetchPublicPiecesJson();
-    const pieces = importedSource.pieces;
+    const localPath = path.join(DATA_DIR, "pieces.json");
+
+    if (!fs.existsSync(localPath)) {
+      return res.status(404).json({
+        ok: false,
+        error: `Local pieces.json not found at ${localPath}`,
+      });
+    }
+
+    const raw = fs.readFileSync(localPath, "utf8");
+    const pieces = JSON.parse(raw);
+
+    if (!Array.isArray(pieces)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Local pieces.json did not contain an array",
+      });
+    }
 
     const stmt = db.prepare(`
       INSERT OR REPLACE INTO inventory (
@@ -729,15 +676,16 @@ app.get("/admin/import-public-json", async (req, res) => {
 
         res.json({
           ok: true,
-          source: importedSource.url,
+          source: localPath,
           imported: inserted,
           exported_count: count,
-          message: "Render SQLite database repopulated from SiteGround pieces.json",
+          message:
+            "Render SQLite database repopulated from local public/data/pieces.json",
         });
       });
     });
   } catch (err) {
-    console.error("IMPORT PUBLIC JSON ERROR:", err);
+    console.error("IMPORT LOCAL JSON ERROR:", err);
 
     res.status(500).json({
       ok: false,
