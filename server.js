@@ -90,9 +90,19 @@ function normalizeStatus(status) {
 }
 
 function isValidShapeCode(shape) {
-  return ["OV", "RD", "RC", "FREE", "CS", "FJ", "IKE", "SCULP", "FF", "IK", "SC"].includes(
-    String(shape || "").toUpperCase()
-  );
+  return [
+    "OV",
+    "RD",
+    "RC",
+    "FREE",
+    "CS",
+    "FJ",
+    "IKE",
+    "SCULP",
+    "FF",
+    "IK",
+    "SC",
+  ].includes(String(shape || "").toUpperCase());
 }
 
 function normalizeShapeCode(shape) {
@@ -180,13 +190,17 @@ function getSgConfig() {
 
 function writeSshKey(keyText) {
   const keyPath = path.join(os.tmpdir(), "sg_ci_key");
-  fs.writeFileSync(keyPath, String(keyText).replace(/\r/g, ""), { mode: 0o600 });
+  fs.writeFileSync(keyPath, String(keyText).replace(/\r/g, ""), {
+    mode: 0o600,
+  });
   fs.chmodSync(keyPath, 0o600);
   return keyPath;
 }
 
 async function deployToSiteGround(filesToDeploy) {
-  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } = getSgConfig();
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } =
+    getSgConfig();
+
   const keyPath = writeSshKey(SG_CI_KEY);
   const remote = `${SG_USER}@${SG_HOST}`;
 
@@ -371,6 +385,54 @@ function upsertPiece(piece) {
   });
 }
 
+async function fetchPublicPiecesJson() {
+  const urls = [
+    "https://claycraze.com/data/pieces.json",
+    "https://www.claycraze.com/data/pieces.json",
+  ];
+
+  const errors = [];
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(`${url}?v=${Date.now()}`, {
+        redirect: "follow",
+        headers: {
+          Accept: "application/json,text/plain,*/*",
+          "User-Agent": "ClaycrazE-Render-Importer/1.0",
+        },
+      });
+
+      const text = await response.text();
+
+      if (!response.ok) {
+        errors.push(`${url}: ${response.status} ${response.statusText}`);
+        continue;
+      }
+
+      const trimmed = text.trim();
+
+      if (trimmed.startsWith("<")) {
+        errors.push(`${url}: returned HTML instead of JSON`);
+        continue;
+      }
+
+      const pieces = JSON.parse(trimmed);
+
+      if (!Array.isArray(pieces)) {
+        errors.push(`${url}: JSON was not an array`);
+        continue;
+      }
+
+      return { url, pieces };
+    } catch (err) {
+      errors.push(`${url}: ${err.message}`);
+    }
+  }
+
+  throw new Error(`Could not import pieces.json. ${errors.join(" | ")}`);
+}
+
 /* =========================================================
    HEALTH / DEBUG ROUTES
 ========================================================= */
@@ -494,31 +556,83 @@ app.post("/api/save-curation", async (req, res) => {
     const pieces = Array.isArray(req.body.pieces) ? req.body.pieces : null;
 
     let savedPieces = [];
+    let filesToDeploy = [];
 
     if (pieces) {
       for (const p of pieces) {
         savedPieces.push(await upsertPiece(p));
       }
     } else {
+      const parsed = parsePieceId(piece.id);
+      const id = parsed.id;
+
+      const topFullPath = path.join(FULL_DIR, `${id}_top.jpg`);
+      const bottomFullPath = path.join(FULL_DIR, `${id}_bottom.jpg`);
+      const topThumbPath = path.join(THUMBS_DIR, `${id}_top_thumb.jpg`);
+
+      if (piece.top_image_data) {
+        saveDataUrlImage(piece.top_image_data, topFullPath);
+
+        fs.copyFileSync(topFullPath, topThumbPath);
+
+        piece.image_path = `/images/thumbs/${id}_top_thumb.jpg`;
+        piece.image_path_2 = `/images/full/${id}_top.jpg`;
+
+        filesToDeploy.push(
+          {
+            localPath: topFullPath,
+            remotePath:
+              `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
+              `/images/full/${id}_top.jpg`,
+          },
+          {
+            localPath: topThumbPath,
+            remotePath:
+              `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
+              `/images/thumbs/${id}_top_thumb.jpg`,
+          }
+        );
+      }
+
+      if (piece.bottom_image_data) {
+        saveDataUrlImage(piece.bottom_image_data, bottomFullPath);
+
+        piece.image_path_3 = `/images/full/${id}_bottom.jpg`;
+
+        filesToDeploy.push({
+          localPath: bottomFullPath,
+          remotePath:
+            `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
+            `/images/full/${id}_bottom.jpg`,
+        });
+      }
+
+      delete piece.top_image_data;
+      delete piece.bottom_image_data;
+
       savedPieces.push(await upsertPiece(piece));
     }
 
     const exported = await exportPiecesJsonPromise();
 
+    filesToDeploy.push({
+      localPath: exported.outPath,
+      remotePath:
+        `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
+        `/data/pieces.json`,
+    });
+
     let deployedToSiteGround = false;
     let deployWarning = "";
 
     try {
-      await deployToSiteGround([
-        {
-          localPath: exported.outPath,
-          remotePath: `${process.env.SG_PUBLIC_HTML || "~/public_html"}/data/pieces.json`,
-        },
-      ]);
-
+      await deployToSiteGround(filesToDeploy);
       deployedToSiteGround = true;
     } catch (deployErr) {
-      deployWarning = deployErr.message || "Saved locally on Render, but SiteGround deploy failed.";
+      deployWarning =
+        deployErr.message ||
+        "Saved locally on Render, but SiteGround deploy failed.";
+
       console.error("SITEGROUND DEPLOY WARNING:", deployErr);
     }
 
@@ -545,23 +659,9 @@ app.post("/api/save-curation", async (req, res) => {
 ========================================================= */
 
 app.get("/admin/import-public-json", async (req, res) => {
-  const url = "https://claycraze.com/data/pieces.json";
-
   try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
-    }
-
-    const pieces = await response.json();
-
-    if (!Array.isArray(pieces)) {
-      return res.status(400).json({
-        ok: false,
-        error: "SG pieces.json did not return an array",
-      });
-    }
+    const importedSource = await fetchPublicPiecesJson();
+    const pieces = importedSource.pieces;
 
     const stmt = db.prepare(`
       INSERT OR REPLACE INTO inventory (
@@ -629,7 +729,7 @@ app.get("/admin/import-public-json", async (req, res) => {
 
         res.json({
           ok: true,
-          source: url,
+          source: importedSource.url,
           imported: inserted,
           exported_count: count,
           message: "Render SQLite database repopulated from SiteGround pieces.json",
