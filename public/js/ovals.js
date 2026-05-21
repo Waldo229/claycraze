@@ -1,7 +1,8 @@
 /* =========================================================
    ClaycrazE — Ovals Gallery
    Full drop-in replacement for /js/ovals.js
-   Version 1013
+   Minimalist gallery cards: title, availability, price only
+   Version 1015
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", loadOvals);
@@ -81,10 +82,7 @@ function sortNewestFirst(a, b) {
 function buildOvalCard(piece) {
   const id = clean(piece.id);
   const title = clean(piece.title) || "Oval Bonsai Container";
-  const description = clean(piece.description);
-  const dimensions = clean(piece.dimensions);
-  const clayBody = clean(piece.clay_body);
-  const glaze = clean(piece.glaze);
+  const status = formatStatus(piece.status);
   const price = formatPrice(piece.price);
 
   const image = chooseImage(piece);
@@ -116,11 +114,7 @@ function buildOvalCard(piece) {
         <div class="gallery-card-body">
           <h2>${escapeHtml(title)}</h2>
 
-          ${description ? `<p class="gallery-description">${escapeHtml(description)}</p>` : ""}
-          ${id ? `<p class="gallery-meta">${escapeHtml(id)}</p>` : ""}
-          ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
-          ${clayBody ? `<p class="gallery-meta">${escapeHtml(clayBody)}</p>` : ""}
-          ${glaze ? `<p class="gallery-meta">${escapeHtml(glaze)}</p>` : ""}
+          ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
           ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
 
           <p class="gallery-more">View details</p>
@@ -174,6 +168,19 @@ function addCacheBust(path) {
 
   const separator = path.includes("?") ? "&" : "?";
   return `${path}${separator}v=${Date.now()}`;
+}
+
+function formatStatus(value) {
+  const raw = clean(value).toLowerCase();
+
+  if (!raw) return "";
+
+  if (raw === "available") return "Available";
+  if (raw === "sold") return "Sold";
+  if (raw === "reserved") return "Reserved";
+  if (raw === "archive") return "Archive";
+
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
 function formatPrice(value) {
