@@ -42,6 +42,9 @@ function bindEvents() {
   document.getElementById("generateLaoTzu")
     .addEventListener("click", generateLaoTzu);
 
+  document.getElementById("topImageFile")
+    .addEventListener("change", previewSelectedTopImage);
+
   document.getElementById("curateForm")
     .addEventListener("submit", saveCuratorialChanges);
 }
@@ -136,6 +139,41 @@ function updatePreview(piece) {
       alt="${escapeHtml(piece.title || piece.id)}"
     />
   `;
+}
+
+function previewSelectedTopImage() {
+  const input = document.getElementById("topImageFile");
+  const preview = document.getElementById("piecePreview");
+
+  if (!input || !preview || !input.files || !input.files[0]) {
+    if (currentPiece) updatePreview(currentPiece);
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (!file.type.match(/^image\/jpeg$/)) {
+    showStatus("Preview expects a JPEG image.", "error");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    preview.classList.remove("empty");
+    preview.innerHTML = `
+      <img
+        src="${reader.result}"
+        alt="Selected top image preview"
+      />
+    `;
+  };
+
+  reader.onerror = () => {
+    showStatus("Could not preview selected image.", "error");
+  };
+
+  reader.readAsDataURL(file);
 }
 
 function parseDimensions(value) {
