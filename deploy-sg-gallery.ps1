@@ -18,15 +18,15 @@ Write-Host "ClaycrazE SG Deploy - version $VERSION"
 # Upload files to SiteGround
 scp -P $SG_PORT -i $SSH_KEY `
   ".\public\js\ovals.js" `
-  "$SG_USER@$SG_HOST:/home/customer/www/claycraze.com/public_html/js/"
+  "${SG_USER}@${SG_HOST}:/home/customer/www/claycraze.com/public_html/js/"
 
 scp -P $SG_PORT -i $SSH_KEY `
   ".\public\gallery\ovals.html" `
-  "$SG_USER@$SG_HOST:/home/customer/www/claycraze.com/public_html/gallery/"
+  "${SG_USER}@${SG_HOST}:/home/customer/www/claycraze.com/public_html/gallery/"
 
 scp -P $SG_PORT -i $SSH_KEY `
   ".\public\data\pieces.json" `
-  "$SG_USER@$SG_HOST:/home/customer/www/claycraze.com/public_html/data/"
+  "${SG_USER}@${SG_HOST}:/home/customer/www/claycraze.com/public_html/data/"
 
 Write-Host ""
 Write-Host "Deploy complete."
