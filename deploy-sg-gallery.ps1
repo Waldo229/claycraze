@@ -1,7 +1,7 @@
 # ClaycrazE SG Gallery Deploy
 # Run from project root
 
-$SG_USER = "virgi"
+$SG_USER = "u1966-olev38ziybsd"
 $SG_HOST = "ssh.claycraze.com"
 $SG_PORT = "18765"
 $SSH_KEY = "C:\Users\virgi\.ssh\id_ed25519"
