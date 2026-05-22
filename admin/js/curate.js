@@ -94,6 +94,7 @@ function loadPiece(id) {
   clearFileInput("bottomImageFile");
 
   updatePreview(currentPiece);
+  showStatus(`Editing existing piece: ${currentPiece.id}`, "working");
 }
 
 function clearForm() {
@@ -115,6 +116,8 @@ function clearForm() {
   const preview = document.getElementById("piecePreview");
   preview.classList.add("empty");
   preview.textContent = "Select a piece to begin.";
+
+  showStatus("No piece selected.", "working");
 }
 
 function updatePreview(piece) {
@@ -167,6 +170,10 @@ function previewSelectedTopImage() {
         alt="Selected top image preview"
       />
     `;
+
+    if (currentPiece) {
+      showStatus(`Previewing replacement top image for ${currentPiece.id}. Not saved yet.`, "working");
+    }
   };
 
   reader.onerror = () => {
@@ -336,7 +343,7 @@ async function saveCuratorialChanges(event) {
   }
 
   try {
-    showStatus("Saving curatorial changes...", "working");
+    showStatus(`Saving curatorial changes for ${payload.id}...`, "working");
 
     const response = await fetch("/api/save-curation", {
       method: "POST",
@@ -370,7 +377,7 @@ async function saveCuratorialChanges(event) {
     clearFileInput("bottomImageFile");
     updatePreview(currentPiece);
 
-    let message = "Curatorial changes saved.";
+    let message = `Curatorial changes saved for ${currentPiece.id}.`;
 
     if (result.deployed_to_siteground === false) {
       message += " Saved on Render, but SiteGround deploy may need checking.";
