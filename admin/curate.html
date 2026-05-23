@@ -6,7 +6,7 @@
 
   <title>ClaycrazE Curatorial Studio</title>
 
-  <link rel="stylesheet" href="/css/curate.css?v=4011" />
+  <link rel="stylesheet" href="/css/curate.css?v=4020" />
 </head>
 
 <body>
@@ -17,38 +17,69 @@
       <p class="kicker">ClaycrazE / GENE Workbench</p>
       <h1>Curatorial Studio</h1>
       <p>
-        Intake records the object. Curation shapes how it enters the world.
+        One object, one record. Create it, refine it, and send it into the world.
       </p>
     </section>
 
     <section class="curate-card">
 
+      <h2>Mode</h2>
+
+      <div class="assist-buttons">
+        <button type="button" id="createModeButton">Create New Piece</button>
+        <button type="button" id="editModeButton">Edit Existing Piece</button>
+      </div>
+
       <div class="piece-select-row">
-        <label for="pieceSelect">Select Piece</label>
+        <label for="pieceSelect">Existing Piece</label>
         <select id="pieceSelect">
           <option value="">Loading pieces...</option>
         </select>
       </div>
 
+      <div class="piece-select-row">
+        <label for="shape">Shape</label>
+        <select id="shape">
+          <option value="">Select shape</option>
+          <option value="OV">Oval</option>
+          <option value="RD">Round</option>
+          <option value="RC">Rectangle</option>
+          <option value="CS">Cascade</option>
+          <option value="FREE">Freeform</option>
+          <option value="IKE">Ikebana</option>
+          <option value="SCULP">Sculpture</option>
+        </select>
+      </div>
+
+      <div class="piece-select-row">
+        <label for="pieceId">Piece ID</label>
+        <input
+          type="text"
+          id="pieceId"
+          placeholder="Generated or selected ID"
+          readonly
+        />
+      </div>
+
       <div id="piecePreview" class="piece-preview empty">
-        Select a piece to begin.
+        Select a piece or create a new one.
       </div>
 
       <div class="image-replace-panel">
-        <h2>Image Replacement</h2>
+        <h2>Images</h2>
 
         <label>
-          Replace Top Image
+          Top Image
           <input type="file" id="topImageFile" accept="image/jpeg" />
         </label>
 
         <label>
-          Replace Bottom Image
+          Bottom Image
           <input type="file" id="bottomImageFile" accept="image/jpeg" />
         </label>
 
         <p class="field-hint">
-          Selecting a top image updates the preview immediately. Nothing is saved until you click Save Curatorial Changes.
+          In create mode, a top image is required. In edit mode, image uploads replace existing images only after saving.
         </p>
       </div>
 
@@ -57,26 +88,16 @@
     <form id="curateForm" class="curate-grid">
 
       <section class="curate-card">
-        <h2>Public Gallery</h2>
+        <h2>Public Record</h2>
 
         <label>
-          Title
-          <input type="text" id="title" />
-        </label>
-
-        <label>
-          Color
-          <input type="text" id="color" />
+          Glaze / Surface
+          <input type="text" id="color" placeholder="satin tan / iron blush / sea-green" />
         </label>
 
         <label>
           Public Description
-          <textarea id="description" rows="6"></textarea>
-        </label>
-
-        <label>
-          Price
-          <input type="text" id="price" placeholder="150" />
+          <textarea id="description" rows="8"></textarea>
         </label>
 
         <fieldset class="dimension-fieldset">
@@ -97,12 +118,8 @@
         </fieldset>
 
         <label>
-          Object Identifier
-          <input
-            type="text"
-            id="objectIdentifier"
-            placeholder="Camera/session identifier"
-          />
+          Price
+          <input type="text" id="price" placeholder="150" />
         </label>
 
         <label>
@@ -113,6 +130,15 @@
             <option value="acquired">Acquired</option>
             <option value="archive">Archive</option>
           </select>
+        </label>
+
+        <label>
+          Object Identifier
+          <input
+            type="text"
+            id="objectIdentifier"
+            placeholder="Camera/session identifier"
+          />
         </label>
       </section>
 
@@ -151,7 +177,7 @@
           <input
             type="text"
             id="notableFeature"
-            placeholder="rim movement, basin proportion, quiet clay edge"
+            placeholder="rim movement, dragon mark, rope-paddled edge"
           />
         </label>
 
@@ -183,7 +209,7 @@
 
       <section class="curate-actions wide-card">
         <button type="submit" id="saveButton">
-          Save Curatorial Changes
+          Save Record
         </button>
 
         <div id="statusBox" class="status-box"></div>
@@ -193,7 +219,7 @@
 
   </main>
 
-  <script src="/admin/js/curate.js?v=4011"></script>
+  <script src="/admin/js/curate.js?v=4020"></script>
 
 </body>
 </html>
