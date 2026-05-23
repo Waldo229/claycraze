@@ -6,7 +6,7 @@
 
   <title>ClaycrazE Curatorial Studio</title>
 
-  <link rel="stylesheet" href="/css/curate.css?v=4010" />
+  <link rel="stylesheet" href="/css/curate.css?v=4011" />
 </head>
 
 <body>
@@ -32,6 +32,24 @@
 
       <div id="piecePreview" class="piece-preview empty">
         Select a piece to begin.
+      </div>
+
+      <div class="image-replace-panel">
+        <h2>Image Replacement</h2>
+
+        <label>
+          Replace Top Image
+          <input type="file" id="topImageFile" accept="image/jpeg" />
+        </label>
+
+        <label>
+          Replace Bottom Image
+          <input type="file" id="bottomImageFile" accept="image/jpeg" />
+        </label>
+
+        <p class="field-hint">
+          Selecting a top image updates the preview immediately. Nothing is saved until you click Save Curatorial Changes.
+        </p>
       </div>
 
     </section>
@@ -77,16 +95,6 @@
 
           <input type="hidden" id="dimensions" />
         </fieldset>
-
-        <label>
-          Top Image
-          <input type="file" id="topImageFile" accept="image/jpeg" />
-        </label>
-
-        <label>
-          Bottom Image
-          <input type="file" id="bottomImageFile" accept="image/jpeg" />
-        </label>
 
         <label>
           Object Identifier
@@ -185,7 +193,7 @@
 
   </main>
 
-  <script src="/admin/js/curate.js?v=4010"></script>
+  <script src="/admin/js/curate.js?v=4011"></script>
 
 </body>
 </html>
