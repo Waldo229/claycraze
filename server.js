@@ -243,6 +243,51 @@ function publicStatusPlaceholders() {
 }
 
 /* =========================================================
+   REGISTRATION HELPERS
+   These compare local public JSON against Render SQLite.
+========================================================= */
+
+function getLocalPiecesJsonCount() {
+  const outPath = path.join(DATA_DIR, "pieces.json");
+
+  if (!fs.existsSync(outPath)) {
+    return 0;
+  }
+
+  try {
+    const existing = JSON.parse(fs.readFileSync(outPath, "utf8"));
+
+    return Array.isArray(existing)
+      ? existing.length
+      : 0;
+
+  } catch (err) {
+    console.warn("Could not read local pieces.json count:", err.message);
+    return 0;
+  }
+}
+
+function getPublicDbCount() {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `
+      SELECT COUNT(*) AS count
+      FROM inventory
+      WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+      `,
+      PUBLIC_STATUSES,
+      (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(row ? row.count : 0);
+      }
+    );
+  });
+}
+
+/* =========================================================
    SAFE PUBLIC JSON EXPORT
    Prevents accidental shrinking of pieces.json.
 ========================================================= */
@@ -465,6 +510,29 @@ app.get("/debug/shapes", (req, res) => {
   );
 });
 
+app.get("/debug/registration", async (req, res) => {
+  try {
+    const jsonCount = getLocalPiecesJsonCount();
+    const dbCount = await getPublicDbCount();
+
+    res.json({
+      ok: true,
+      registered: dbCount >= jsonCount,
+      local_pieces_json_count: jsonCount,
+      render_public_db_count: dbCount,
+      message:
+        dbCount >= jsonCount
+          ? "Render DB is registered with local pieces.json."
+          : "Render DB has fewer public records than local pieces.json. Run /admin/import-public-json before saving.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
+});
+
 /* =========================================================
    GALLERY DATA ROUTES
 ========================================================= */
@@ -515,6 +583,21 @@ app.get("/gallery-data/sculpture", (req, res) => {
 
 app.post("/api/save-curation", async (req, res) => {
   try {
+    // =========================================================
+    // REGISTRATION LOCK
+    // Prevent saving if Render DB and local pieces.json drift apart.
+    // This stops an edit from being applied against a damaged/shrunken DB.
+    // =========================================================
+
+    const jsonCount = getLocalPiecesJsonCount();
+    const dbCount = await getPublicDbCount();
+
+    if (jsonCount > 0 && dbCount < jsonCount) {
+      throw new Error(
+        `REGISTRATION LOCK: Save blocked. Render DB has ${dbCount} public records, but pieces.json has ${jsonCount}. Run /admin/import-public-json before saving.`
+      );
+    }
+
     const piece = req.body.piece || req.body;
     const pieces = Array.isArray(req.body.pieces) ? req.body.pieces : null;
 
