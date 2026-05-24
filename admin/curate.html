@@ -6,7 +6,7 @@
 
   <title>ClaycrazE Curatorial Studio</title>
 
-  <link rel="stylesheet" href="/css/curate.css?v=4020" />
+  <link rel="stylesheet" href="/css/curate.css?v=4021" />
 </head>
 
 <body>
@@ -15,7 +15,9 @@
 
     <section class="curate-header">
       <p class="kicker">ClaycrazE / GENE Workbench</p>
+
       <h1>Curatorial Studio</h1>
+
       <p>
         One object, one record. Create it, refine it, and send it into the world.
       </p>
@@ -26,12 +28,18 @@
       <h2>Mode</h2>
 
       <div class="assist-buttons">
-        <button type="button" id="createModeButton">Create New Piece</button>
-        <button type="button" id="editModeButton">Edit Existing Piece</button>
+        <button type="button" id="createModeButton">
+          Create New Piece
+        </button>
+
+        <button type="button" id="editModeButton">
+          Edit Existing Piece
+        </button>
       </div>
 
       <div class="piece-select-row">
         <label for="pieceSelect">Existing Piece</label>
+
         <select id="pieceSelect">
           <option value="">Loading pieces...</option>
         </select>
@@ -39,6 +47,7 @@
 
       <div class="piece-select-row">
         <label for="shape">Shape</label>
+
         <select id="shape">
           <option value="">Select shape</option>
           <option value="OV">Oval</option>
@@ -53,6 +62,7 @@
 
       <div class="piece-select-row">
         <label for="pieceId">Piece ID</label>
+
         <input
           type="text"
           id="pieceId"
@@ -61,26 +71,53 @@
         />
       </div>
 
-      <div id="piecePreview" class="piece-preview empty">
+      <div class="curate-actions top-actions">
+
+        <button
+          type="submit"
+          form="curateForm"
+          id="topSaveButton"
+        >
+          Save Piece
+        </button>
+
+        <div id="topStatusBox" class="status-inline">
+          Ready.
+        </div>
+
+      </div>
+
+      <div id="piecePreview" class="piece-preview compact empty">
         Select a piece or create a new one.
       </div>
 
       <div class="image-replace-panel">
+
         <h2>Images</h2>
 
         <label>
           Top Image
-          <input type="file" id="topImageFile" accept="image/jpeg" />
+          <input
+            type="file"
+            id="topImageFile"
+            accept="image/jpeg"
+          />
         </label>
 
         <label>
           Bottom Image
-          <input type="file" id="bottomImageFile" accept="image/jpeg" />
+          <input
+            type="file"
+            id="bottomImageFile"
+            accept="image/jpeg"
+          />
         </label>
 
         <p class="field-hint">
-          In create mode, a top image is required. In edit mode, image uploads replace existing images only after saving.
+          In create mode, a top image is required.
+          In edit mode, selected images are applied when you click Save Piece.
         </p>
+
       </div>
 
     </section>
@@ -88,42 +125,83 @@
     <form id="curateForm" class="curate-grid">
 
       <section class="curate-card">
+
         <h2>Public Record</h2>
 
         <label>
           Glaze / Surface
-          <input type="text" id="color" placeholder="satin tan / iron blush / sea-green" />
+
+          <input
+            type="text"
+            id="color"
+            placeholder="satin tan / iron blush / sea-green"
+          />
         </label>
 
         <label>
           Public Description
+
           <textarea id="description" rows="8"></textarea>
         </label>
 
         <fieldset class="dimension-fieldset">
+
           <legend>
-            Dimensions <span class="field-hint">L × W × H</span>
+            Dimensions
+            <span class="field-hint">L × W × H</span>
           </legend>
 
           <div class="dimension-row">
-            <input type="number" id="dimHeight" placeholder="L" step="0.25" min="0" />
+
+            <input
+              type="number"
+              id="dimHeight"
+              placeholder="L"
+              step="0.25"
+              min="0"
+            />
+
             <span>×</span>
-            <input type="number" id="dimWidth" placeholder="W" step="0.25" min="0" />
+
+            <input
+              type="number"
+              id="dimWidth"
+              placeholder="W"
+              step="0.25"
+              min="0"
+            />
+
             <span>×</span>
-            <input type="number" id="dimDepth" placeholder="H" step="0.25" min="0" />
+
+            <input
+              type="number"
+              id="dimDepth"
+              placeholder="H"
+              step="0.25"
+              min="0"
+            />
+
             <span>in.</span>
+
           </div>
 
           <input type="hidden" id="dimensions" />
+
         </fieldset>
 
         <label>
           Price
-          <input type="text" id="price" placeholder="150" />
+
+          <input
+            type="text"
+            id="price"
+            placeholder="150"
+          />
         </label>
 
         <label>
           Status
+
           <select id="status">
             <option value="available">Available</option>
             <option value="held">Held</option>
@@ -134,19 +212,23 @@
 
         <label>
           Object Identifier
+
           <input
             type="text"
             id="objectIdentifier"
             placeholder="Camera/session identifier"
           />
         </label>
+
       </section>
 
       <section class="curate-card">
+
         <h2>GENE Assist Signals</h2>
 
         <label>
           Surface Character
+
           <input
             type="text"
             id="surfaceCharacter"
@@ -156,6 +238,7 @@
 
         <label>
           Mood
+
           <input
             type="text"
             id="mood"
@@ -165,6 +248,7 @@
 
         <label>
           Suggested Use
+
           <input
             type="text"
             id="suggestedUse"
@@ -174,6 +258,7 @@
 
         <label>
           Notable Feature
+
           <input
             type="text"
             id="notableFeature"
@@ -183,43 +268,61 @@
 
         <label>
           Private Studio Notes
+
           <textarea
             id="privateNotes"
             rows="5"
             placeholder="Anything useful for GENE, pricing, description, or future memory."
           ></textarea>
         </label>
+
       </section>
 
       <section class="curate-card wide-card">
+
         <h2>GENE Drafting Bench</h2>
 
         <div class="assist-buttons">
-          <button type="button" id="generateDescription">Generate Description</button>
-          <button type="button" id="suggestPrice">Suggest Price Range</button>
-          <button type="button" id="generateWineLabel">Wine Label</button>
-          <button type="button" id="generateLaoTzu">Lao-tzu Line</button>
+          <button type="button" id="generateDescription">
+            Generate Description
+          </button>
+
+          <button type="button" id="suggestPrice">
+            Suggest Price Range
+          </button>
+
+          <button type="button" id="generateWineLabel">
+            Wine Label
+          </button>
+
+          <button type="button" id="generateLaoTzu">
+            Lao-tzu Line
+          </button>
         </div>
 
         <label>
           GENE Draft Output
+
           <textarea id="geneOutput" rows="8"></textarea>
         </label>
+
       </section>
 
       <section class="curate-actions wide-card">
+
         <button type="submit" id="saveButton">
-          Save Record
+          Save Piece
         </button>
 
         <div id="statusBox" class="status-box"></div>
+
       </section>
 
     </form>
 
   </main>
 
-  <script src="/admin/js/curate.js?v=4020"></script>
+  <script src="/admin/js/curate.js?v=4021"></script>
 
 </body>
 </html>
