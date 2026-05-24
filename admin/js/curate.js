@@ -1,29 +1,47 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
+const APP_VERSION = "260524-final";
+
+const SHAPE_MAP = {
+  OV:    { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
+  SQ:    { label: "Square", category: "bonsai", title: "Square Bonsai Container" },
+  RECT:  { label: "Rectangle", category: "bonsai", title: "Rectangular Bonsai Container" },
+  RND:   { label: "Round", category: "bonsai", title: "Round Bonsai Container" },
+  ROUND: { label: "Round", category: "bonsai", title: "Round Bonsai Container" },
+  IKE:   { label: "Ikebana", category: "ikebana", title: "Ikebana Container" },
+  FREE:  { label: "Freeform", category: "vessel", title: "Freeform Ceramic Piece" },
+  SCULP: { label: "Sculpture", category: "sculpture", title: "Ceramic Sculpture" }
+};
+
 let allPieces = [];
 let currentPiece = null;
-let formMode = "edit"; // "edit" or "create"
+let formMode = "edit";
 
 async function initializeCurator() {
   try {
-    const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error(`Could not load pieces.json: ${response.status}`);
-    }
-
-    allPieces = await response.json();
+    allPieces = await loadPiecesFresh();
 
     populatePieceSelect(allPieces);
     bindEvents();
     setEditMode();
 
+    console.log(`ClaycrazE curator loaded: ${APP_VERSION}`);
   } catch (error) {
     console.error(error);
     showStatus("Could not load pieces.", "error");
   }
+}
+
+async function loadPiecesFresh() {
+  const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not load pieces.json: ${response.status}`);
+  }
+
+  return await response.json();
 }
 
 function bindEvents() {
@@ -250,11 +268,7 @@ function parsePieceIdParts(id) {
   const match = cleanId.match(/^([A-Z]+)-(\d{4})-(\d{2,4})$/);
 
   if (!match) {
-    return {
-      shape: "",
-      dateCode: "",
-      number: 0
-    };
+    return { shape: "", dateCode: "", number: 0 };
   }
 
   return {
@@ -270,17 +284,25 @@ function normalizeShapeCode(shape) {
   if (raw === "FF") return "FREE";
   if (raw === "IK") return "IKE";
   if (raw === "SC") return "SCULP";
+  if (raw === "ROUND") return "RND";
 
   return raw;
 }
 
+function getShapeConfig(shape) {
+  return SHAPE_MAP[normalizeShapeCode(shape)] || {
+    label: normalizeShapeCode(shape) || "Ceramic",
+    category: "vessel",
+    title: `${normalizeShapeCode(shape) || "Ceramic"} Ceramic Piece`
+  };
+}
+
 function defaultCategory(shape) {
-  const cleanShape = normalizeShapeCode(shape);
+  return getShapeConfig(shape).category;
+}
 
-  if (cleanShape === "IKE") return "ikebana";
-  if (cleanShape === "SCULP") return "sculpture";
-
-  return "bonsai";
+function defaultTitle(shape) {
+  return getShapeConfig(shape).title;
 }
 
 function updatePreview(piece) {
@@ -397,7 +419,7 @@ async function buildSavePayload() {
     id = ensureGeneratedId();
 
     if (allPieces.some(piece => piece.id === id)) {
-      throw new Error(`${id} already exists. Switch to edit mode or refresh before creating another piece.`);
+      throw new Error(`${id} already exists. Refresh the page before creating another piece.`);
     }
 
     const topInput = document.getElementById("topImageFile");
@@ -420,15 +442,18 @@ async function buildSavePayload() {
     : parsePieceIdParts(currentPiece.id);
 
   const basePiece = formMode === "edit" ? currentPiece : {};
+  const finalShape = formMode === "create"
+    ? shape
+    : normalizeShapeCode(basePiece.shape || parsed.shape);
 
   return {
     id: formMode === "create" ? id : currentPiece.id,
-    shape: formMode === "create" ? shape : normalizeShapeCode(basePiece.shape || parsed.shape),
+    shape: finalShape,
     piece_number: formMode === "create" ? parsed.number : (basePiece.piece_number || parsed.number),
     date_code: formMode === "create" ? parsed.dateCode : (basePiece.date_code || parsed.dateCode),
 
-    title: basePiece.title || `${shape || basePiece.shape || parsed.shape} Ceramic Piece`,
-    category: basePiece.category || defaultCategory(shape || basePiece.shape || parsed.shape),
+    title: basePiece.title || defaultTitle(finalShape),
+    category: basePiece.category || defaultCategory(finalShape),
     description: getValue("description"),
     clay_body: basePiece.clay_body || "Stoneware - Cone 10",
     glaze: getValue("color"),
@@ -539,11 +564,12 @@ async function saveRecord(event) {
 
     showStatus(actionLabel, "working");
 
-    const response = await fetch("/api/save-curation", {
+    const response = await fetch(`/api/save-curation?v=${Date.now()}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
+      cache: "no-store",
       body: JSON.stringify(payload)
     });
 
@@ -559,45 +585,9 @@ async function saveRecord(event) {
       (result.pieces && result.pieces[0]) ||
       payload;
 
-    if (formMode === "create") {
-      allPieces.push(savedPiece);
-      populatePieceSelect(allPieces);
+    await refreshAfterSave(savedPiece.id);
 
-      formMode = "edit";
-      currentPiece = savedPiece;
-
-      document.getElementById("pieceSelect").disabled = false;
-      document.getElementById("shape").disabled = true;
-      document.getElementById("pieceSelect").value = savedPiece.id;
-
-      loadPiece(savedPiece.id);
-
-    } else {
-      const index = allPieces.findIndex(piece => piece.id === savedPiece.id);
-      if (index >= 0) {
-        allPieces[index] = {
-          ...allPieces[index],
-          ...savedPiece
-        };
-      }
-
-      currentPiece = {
-        ...(currentPiece || {}),
-        ...savedPiece
-      };
-
-      setValue("pieceId", currentPiece.id || "");
-      setValue("shape", currentPiece.shape || "");
-
-      clearFileInput("topImageFile");
-      clearFileInput("bottomImageFile");
-      updatePreview(currentPiece);
-    }
-
-    const saveButton = document.getElementById("saveButton");
-    if (saveButton) saveButton.textContent = "Save Curatorial Changes";
-
-    let message = `Saved ${savedPiece.id}.`;
+    let message = `Saved ${savedPiece.id}. Form refreshed.`;
 
     if (result.deployed_to_siteground === false) {
       message += " Saved on Render, but SiteGround deploy may need checking.";
@@ -609,6 +599,22 @@ async function saveRecord(event) {
     console.error(error);
     showStatus(error.message || "Save failed.", "error");
   }
+}
+
+async function refreshAfterSave(savedId) {
+  allPieces = await loadPiecesFresh();
+  populatePieceSelect(allPieces);
+
+  formMode = "edit";
+
+  document.getElementById("pieceSelect").disabled = false;
+  document.getElementById("shape").disabled = true;
+
+  const saveButton = document.getElementById("saveButton");
+  if (saveButton) saveButton.textContent = "Save Curatorial Changes";
+
+  document.getElementById("pieceSelect").value = savedId;
+  loadPiece(savedId);
 }
 
 function readFileAsDataUrl(inputId) {
