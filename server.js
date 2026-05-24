@@ -91,8 +91,17 @@ function normalizeStatus(status) {
 
 function isValidShapeCode(shape) {
   return [
-    "OV", "RD", "RC", "FREE", "CS",
-    "FJ", "IKE", "SCULP", "FF", "IK", "SC"
+    "OV",
+    "RD",
+    "RC",
+    "FREE",
+    "CS",
+    "FJ",
+    "IKE",
+    "SCULP",
+    "FF",
+    "IK",
+    "SC",
   ].includes(String(shape || "").toUpperCase());
 }
 
@@ -155,10 +164,27 @@ function runCommand(command, args) {
   });
 }
 
+/*
+  SiteGround config.
+
+  Required Render environment variables:
+  SG_HOST
+  SG_USER
+  SG_CI_KEY
+
+  Optional:
+  SG_PORT
+  SG_PUBLIC_HTML
+
+  Important:
+  SG_PUBLIC_HTML should usually be:
+  /home/customer/www/claycraze.com/public_html
+*/
 function getSgConfig() {
   const { SG_HOST, SG_USER, SG_CI_KEY } = process.env;
   const SG_PORT = process.env.SG_PORT || "22";
-  const SG_PUBLIC_HTML = process.env.SG_PUBLIC_HTML || "~/public_html";
+  const SG_PUBLIC_HTML =
+    process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
   if (!SG_HOST || !SG_USER || !SG_CI_KEY) {
     throw new Error("Missing SG_HOST, SG_USER, or SG_CI_KEY.");
@@ -169,10 +195,13 @@ function getSgConfig() {
 
 function writeSshKey(keyText) {
   const keyPath = path.join(os.tmpdir(), "sg_ci_key");
+
   fs.writeFileSync(keyPath, String(keyText).replace(/\r/g, ""), {
     mode: 0o600,
   });
+
   fs.chmodSync(keyPath, 0o600);
+
   return keyPath;
 }
 
@@ -199,6 +228,7 @@ async function deployToSiteGround(filesToDeploy) {
   ]);
 
   for (const item of filesToDeploy) {
+    if (!item || !item.localPath || !item.remotePath) continue;
     if (!fs.existsSync(item.localPath)) continue;
 
     await runCommand("scp", [
@@ -244,7 +274,6 @@ function publicStatusPlaceholders() {
 
 /* =========================================================
    REGISTRATION HELPERS
-   These compare local public JSON against Render SQLite.
 ========================================================= */
 
 function getLocalPiecesJsonCount() {
@@ -257,10 +286,7 @@ function getLocalPiecesJsonCount() {
   try {
     const existing = JSON.parse(fs.readFileSync(outPath, "utf8"));
 
-    return Array.isArray(existing)
-      ? existing.length
-      : 0;
-
+    return Array.isArray(existing) ? existing.length : 0;
   } catch (err) {
     console.warn("Could not read local pieces.json count:", err.message);
     return 0;
@@ -289,7 +315,6 @@ function getPublicDbCount() {
 
 /* =========================================================
    SAFE PUBLIC JSON EXPORT
-   Prevents accidental shrinking of pieces.json.
 ========================================================= */
 
 function exportPiecesJson(callback, options = {}) {
@@ -454,6 +479,18 @@ app.get("/deploy-health", (req, res) => {
   });
 });
 
+app.get("/debug/siteground-env", (req, res) => {
+  res.json({
+    ok: true,
+    SG_HOST_present: Boolean(process.env.SG_HOST),
+    SG_USER_present: Boolean(process.env.SG_USER),
+    SG_CI_KEY_present: Boolean(process.env.SG_CI_KEY),
+    SG_PORT: process.env.SG_PORT || "22",
+    SG_PUBLIC_HTML:
+      process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html",
+  });
+});
+
 app.get("/debug/inventory-count", (req, res) => {
   db.get(`SELECT COUNT(*) AS total FROM inventory`, [], (err, totalRow) => {
     if (err) {
@@ -553,10 +590,6 @@ app.get("/gallery-data/freeform", (req, res) => {
   getPublicPiecesByShape("FREE", res);
 });
 
-app.get("/gallery-data/Freeform", (req, res) => {
-  getPublicPiecesByShape("FREE", res);
-});
-
 app.get("/gallery-data/cascade", (req, res) => {
   getPublicPiecesByShape("CS", res);
 });
@@ -583,12 +616,6 @@ app.get("/gallery-data/sculpture", (req, res) => {
 
 app.post("/api/save-curation", async (req, res) => {
   try {
-    // =========================================================
-    // REGISTRATION LOCK
-    // Prevent saving if Render DB and local pieces.json drift apart.
-    // This stops an edit from being applied against a damaged/shrunken DB.
-    // =========================================================
-
     const jsonCount = getLocalPiecesJsonCount();
     const dbCount = await getPublicDbCount();
 
@@ -603,6 +630,9 @@ app.post("/api/save-curation", async (req, res) => {
 
     let savedPieces = [];
     let filesToDeploy = [];
+
+    const sgPublicHtml =
+      process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
     if (pieces) {
       for (const p of pieces) {
@@ -627,15 +657,11 @@ app.post("/api/save-curation", async (req, res) => {
         filesToDeploy.push(
           {
             localPath: topFullPath,
-            remotePath:
-              `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-              `/images/full/${id}_top.jpg`,
+            remotePath: `${sgPublicHtml}/images/full/${id}_top.jpg`,
           },
           {
             localPath: topThumbPath,
-            remotePath:
-              `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-              `/images/thumbs/${id}_top_thumb.jpg`,
+            remotePath: `${sgPublicHtml}/images/thumbs/${id}_top_thumb.jpg`,
           }
         );
       }
@@ -647,9 +673,7 @@ app.post("/api/save-curation", async (req, res) => {
 
         filesToDeploy.push({
           localPath: bottomFullPath,
-          remotePath:
-            `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-            `/images/full/${id}_bottom.jpg`,
+          remotePath: `${sgPublicHtml}/images/full/${id}_bottom.jpg`,
         });
       }
 
@@ -663,9 +687,7 @@ app.post("/api/save-curation", async (req, res) => {
 
     filesToDeploy.push({
       localPath: exported.outPath,
-      remotePath:
-        `${process.env.SG_PUBLIC_HTML || "~/public_html"}` +
-        `/data/pieces.json`,
+      remotePath: `${sgPublicHtml}/data/pieces.json`,
     });
 
     let deployedToSiteGround = false;
@@ -702,6 +724,7 @@ app.post("/api/save-curation", async (req, res) => {
 
 /* =========================================================
    IMPORT LOCAL PUBLIC JSON INTO SQLITE
+   Render local public/data/pieces.json -> Render SQLite
 ========================================================= */
 
 app.get("/admin/import-public-json", async (req, res) => {
@@ -805,6 +828,64 @@ app.get("/admin/import-public-json", async (req, res) => {
     res.status(500).json({
       ok: false,
       error: err.message,
+    });
+  }
+});
+
+/* =========================================================
+   REGISTER RENDER PUBLIC JSON WITH SITEGROUND
+   Render public/data/pieces.json -> SG /data/pieces.json
+
+   Use this when Render DB/local JSON is correct but SG has stale data.
+========================================================= */
+
+app.get("/admin/register-siteground", async (req, res) => {
+  try {
+    const sgPublicHtml =
+      process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
+
+    const localPiecesPath = path.join(DATA_DIR, "pieces.json");
+
+    if (!fs.existsSync(localPiecesPath)) {
+      return res.status(404).json({
+        ok: false,
+        error: `Local pieces.json not found at ${localPiecesPath}`,
+      });
+    }
+
+    const raw = fs.readFileSync(localPiecesPath, "utf8");
+    const pieces = JSON.parse(raw);
+
+    if (!Array.isArray(pieces)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Local pieces.json did not contain an array",
+      });
+    }
+
+    await deployToSiteGround([
+      {
+        localPath: localPiecesPath,
+        remotePath: `${sgPublicHtml}/data/pieces.json`,
+      },
+    ]);
+
+    res.json({
+      ok: true,
+      registered_with_siteground: true,
+      local_source: localPiecesPath,
+      remote_target: `${sgPublicHtml}/data/pieces.json`,
+      count: pieces.length,
+      message: "SiteGround public data/pieces.json refreshed from Render.",
+    });
+  } catch (err) {
+    console.error("REGISTER SITEGROUND ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+      stdout: err.stdout || "",
+      stderr: err.stderr || "",
     });
   }
 });
