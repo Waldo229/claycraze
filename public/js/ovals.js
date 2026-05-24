@@ -1,8 +1,8 @@
 /* =========================================================
    ClaycrazE — Ovals Gallery
    Full drop-in replacement for /js/ovals.js
-   Minimalist gallery cards: title, availability, price only
-   Version 1015
+   Minimalist gallery cards: dimensions, price, availability
+   Version 1016
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", loadOvals);
@@ -18,12 +18,15 @@ async function loadOvals() {
   galleryGrid.innerHTML = `<div class="loading">Loading ovals...</div>`;
 
   try {
+
     const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(`Could not load pieces.json. Server returned ${response.status}`);
+      throw new Error(
+        `Could not load pieces.json. Server returned ${response.status}`
+      );
     }
 
     const pieces = await response.json();
@@ -37,17 +40,22 @@ async function loadOvals() {
       .sort(sortNewestFirst);
 
     if (!ovals.length) {
+
       galleryGrid.innerHTML = `
         <div class="empty-state">
           No oval pieces are currently available.
         </div>
       `;
+
       return;
     }
 
-    galleryGrid.innerHTML = ovals.map(buildOvalCard).join("");
+    galleryGrid.innerHTML = ovals
+      .map(buildOvalCard)
+      .join("");
 
   } catch (error) {
+
     console.error("Oval gallery error:", error);
 
     galleryGrid.innerHTML = `
@@ -59,6 +67,7 @@ async function loadOvals() {
 }
 
 function isOval(piece) {
+
   const id = clean(piece.id).toUpperCase();
   const shape = clean(piece.shape).toUpperCase();
 
@@ -69,6 +78,7 @@ function isOval(piece) {
 }
 
 function sortNewestFirst(a, b) {
+
   const aNum = Number(a.piece_number || 0);
   const bNum = Number(b.piece_number || 0);
 
@@ -80,26 +90,38 @@ function sortNewestFirst(a, b) {
 }
 
 function buildOvalCard(piece) {
+
   const id = clean(piece.id);
-  const title = clean(piece.title) || "Oval Bonsai Container";
+
+  const dimensions = clean(piece.dimensions);
   const status = formatStatus(piece.status);
   const price = formatPrice(piece.price);
 
   const image = chooseImage(piece);
-  const detailUrl = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+
+  const detailUrl =
+    `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
   return `
-    <article class="gallery-card" data-piece-id="${escapeAttribute(id)}">
-      <a class="gallery-card-link" href="${escapeAttribute(detailUrl)}">
+    <article
+      class="gallery-card"
+      data-piece-id="${escapeAttribute(id)}"
+    >
+
+      <a
+        class="gallery-card-link"
+        href="${escapeAttribute(detailUrl)}"
+      >
 
         <div class="gallery-thumb-wrap">
+
           ${
             image
               ? `
                 <img
                   class="gallery-thumb"
                   src="${escapeAttribute(addCacheBust(image))}"
-                  alt="${escapeAttribute(title)}"
+                  alt="${escapeAttribute(id)}"
                   loading="lazy"
                 >
               `
@@ -109,23 +131,39 @@ function buildOvalCard(piece) {
                 </div>
               `
           }
+
         </div>
 
         <div class="gallery-card-body">
-          <h2>${escapeHtml(title)}</h2>
 
-          ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
-          ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
+          ${
+            dimensions
+              ? `<h2>${escapeHtml(dimensions)}</h2>`
+              : ""
+          }
 
-          <p class="gallery-more">View details</p>
+          ${
+            price
+              ? `<p class="gallery-meta">${escapeHtml(price)}</p>`
+              : ""
+          }
+
+          ${
+            status
+              ? `<p class="gallery-meta">${escapeHtml(status)}</p>`
+              : ""
+          }
+
         </div>
 
       </a>
+
     </article>
   `;
 }
 
 function chooseImage(piece) {
+
   const candidates = [
     piece.image_path,
     piece.thumbnail,
@@ -136,14 +174,20 @@ function chooseImage(piece) {
   ];
 
   for (const candidate of candidates) {
-    const normalized = normalizeImagePath(candidate);
-    if (normalized) return normalized;
+
+    const normalized =
+      normalizeImagePath(candidate);
+
+    if (normalized) {
+      return normalized;
+    }
   }
 
   return "";
 }
 
 function normalizeImagePath(path) {
+
   if (!path) return "";
 
   const cleanPath = String(path)
@@ -164,13 +208,17 @@ function normalizeImagePath(path) {
 }
 
 function addCacheBust(path) {
+
   if (!path) return "";
 
-  const separator = path.includes("?") ? "&" : "?";
+  const separator =
+    path.includes("?") ? "&" : "?";
+
   return `${path}${separator}v=${Date.now()}`;
 }
 
 function formatStatus(value) {
+
   const raw = clean(value).toLowerCase();
 
   if (!raw) return "";
@@ -184,6 +232,7 @@ function formatStatus(value) {
 }
 
 function formatPrice(value) {
+
   const raw = clean(value);
 
   if (!raw) return "";
@@ -194,7 +243,10 @@ function formatPrice(value) {
 
   const number = Number(raw);
 
-  if (Number.isFinite(number) && number > 0) {
+  if (
+    Number.isFinite(number) &&
+    number > 0
+  ) {
     return `$${number}`;
   }
 
@@ -206,6 +258,7 @@ function clean(value) {
 }
 
 function escapeHtml(value) {
+
   return clean(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
