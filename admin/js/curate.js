@@ -40,9 +40,12 @@ function bindEvents() {
 
   document.getElementById("shape")
     .addEventListener("change", () => {
-      if (formMode === "create") {
-        updateGeneratedId();
-      }
+      if (formMode === "create") updateGeneratedId();
+    });
+
+  document.getElementById("shape")
+    .addEventListener("input", () => {
+      if (formMode === "create") updateGeneratedId();
     });
 
   document.getElementById("generateDescription")
@@ -78,6 +81,8 @@ function setCreateMode() {
 
   setValue("status", "available");
   setValue("pieceId", "");
+
+  updateGeneratedId();
 
   const preview = document.getElementById("piecePreview");
   preview.classList.add("empty");
@@ -190,7 +195,7 @@ function updateGeneratedId() {
 
   if (!shape) {
     setValue("pieceId", "");
-    return;
+    return "";
   }
 
   const dateCode = getCurrentDateCode();
@@ -198,7 +203,21 @@ function updateGeneratedId() {
   const id = `${shape}-${dateCode}-${String(nextNumber).padStart(3, "0")}`;
 
   setValue("pieceId", id);
-  showStatus(`New piece ID prepared: ${id}`, "working");
+  return id;
+}
+
+function ensureGeneratedId() {
+  let id = getValue("pieceId");
+
+  if (id) return id;
+
+  id = updateGeneratedId();
+
+  if (!id) {
+    throw new Error("Could not generate piece ID. Choose a shape first.");
+  }
+
+  return id;
 }
 
 function getNextPieceNumber(shape, dateCode) {
@@ -367,20 +386,18 @@ function getStructuredDimensions() {
 }
 
 async function buildSavePayload() {
-  const id = getValue("pieceId");
   const shape = normalizeShapeCode(getValue("shape"));
+  let id = getValue("pieceId");
 
   if (formMode === "create") {
     if (!shape) {
       throw new Error("Choose a shape before creating a new piece.");
     }
 
-    if (!id) {
-      throw new Error("Could not generate piece ID.");
-    }
+    id = ensureGeneratedId();
 
     if (allPieces.some(piece => piece.id === id)) {
-      throw new Error(`${id} already exists. Switch to edit mode or choose a new sequence.`);
+      throw new Error(`${id} already exists. Switch to edit mode or refresh before creating another piece.`);
     }
 
     const topInput = document.getElementById("topImageFile");
@@ -410,7 +427,7 @@ async function buildSavePayload() {
     piece_number: formMode === "create" ? parsed.number : (basePiece.piece_number || parsed.number),
     date_code: formMode === "create" ? parsed.dateCode : (basePiece.date_code || parsed.dateCode),
 
-    title: basePiece.title || "",
+    title: basePiece.title || `${shape || basePiece.shape || parsed.shape} Ceramic Piece`,
     category: basePiece.category || defaultCategory(shape || basePiece.shape || parsed.shape),
     description: getValue("description"),
     clay_body: basePiece.clay_body || "Stoneware - Cone 10",
@@ -428,7 +445,7 @@ async function buildSavePayload() {
     top_image_data: topImageData,
     bottom_image_data: bottomImageData,
 
-    status: getValue("status"),
+    status: getValue("status") || "available",
     price: getValue("price")
   };
 }
@@ -536,18 +553,21 @@ async function saveRecord(event) {
       throw new Error(result.error || "Could not save.");
     }
 
-    const savedPiece = result.pieces && result.pieces[0]
-      ? result.pieces[0]
-      : payload;
+    const savedPiece =
+      result.piece ||
+      result.savedPiece ||
+      (result.pieces && result.pieces[0]) ||
+      payload;
 
     if (formMode === "create") {
       allPieces.push(savedPiece);
       populatePieceSelect(allPieces);
 
+      formMode = "edit";
       currentPiece = savedPiece;
 
-      setEditMode();
-
+      document.getElementById("pieceSelect").disabled = false;
+      document.getElementById("shape").disabled = true;
       document.getElementById("pieceSelect").value = savedPiece.id;
 
       loadPiece(savedPiece.id);
