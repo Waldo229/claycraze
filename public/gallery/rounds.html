@@ -2,17 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Rounds</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Rounds | ClaycrazE</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/styles.css?v=3004"
+  />
+
+  <link
+    rel="stylesheet"
+    href="/css/gallery.css?v=3004"
+  />
 </head>
+
 <body class="practice-page">
 
   <header class="site-header">
+
     <div class="header-shell">
+
       <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">
+          Theory &amp; Practice
+        </span>
       </a>
 
       <button
@@ -28,39 +46,89 @@
         <span></span>
       </button>
 
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
+      <nav
+        class="site-nav"
+        id="siteNav"
+        aria-label="Main navigation"
+      >
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-        
       </nav>
+
     </div>
+
   </header>
 
-  <main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/gallery/bonsai.html">Bonsai</a>
-      <a href="/gallery/ovals.html">Ovals</a>
-      <a href="/gallery/rectangles.html">Rectangles</a>
-      <a href="/gallery/freeform.html">Freeform</a>
-      <a href="/gallery/cascade.html">Cascade</a>
-      <a href="/gallery/rounds.html" class="active">Rounds</a>
-      <a href="/gallery/ikebana.html">Ikebana</a>
-      <a href="/gallery/sculpture.html">Sculpture</a>
-      <a href="/gallery/facejugs.html">Face Jugs</a>
+  <main class="gallery-page unified-gallery-page">
+
+    <section class="gallery-hero">
+
+      <p class="gallery-kicker">
+        Practice / Bonsai / Rounds
+      </p>
+
+      <h1>Rounds</h1>
+
+      <p>
+        Centered forms with gathered presence
+        and circular composure.
+      </p>
+
+    </section>
+
+    <nav
+      class="category-nav"
+      aria-label="Bonsai galleries"
+    >
+
+      <a href="/gallery/ovals.html">
+        Ovals
+      </a>
+
+      <a
+        href="/gallery/rounds.html"
+        class="active"
+      >
+        Rounds
+      </a>
+
+      <a href="/gallery/rectangles.html">
+        Rectangles
+      </a>
+
+      <a href="/gallery/freeform.html">
+        Freeform
+      </a>
+
+      <a href="/gallery/cascade.html">
+        Cascade
+      </a>
+
     </nav>
 
-    <section class="gallery-intro">
-      <h2>Rounds</h2>
-      <p>Centered forms with gathered presence and circular composure.</p>
+    <section
+      id="galleryGrid"
+      class="gallery-grid"
+      aria-label="Round bonsai containers"
+      aria-live="polite"
+    >
+
+      <div class="loading">
+        Loading round bonsai forms...
+      </div>
+
     </section>
 
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading round bonsai forms...</div>
-    </section>
   </main>
 
   <script src="/js/nav.js"></script>
-  <script src="/js/rounds.js?v=6"></script>
+
+  <script>
+    window.CLAYCRAZE_GALLERY_SHAPE = "RD";
+  </script>
+
+  <script src="/js/shape-gallery.js?v=1017"></script>
+
 </body>
 </html>

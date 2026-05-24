@@ -13,6 +13,7 @@
 <body class="practice-page">
 
   <header class="site-header">
+
     <div class="header-shell">
 
       <a class="site-brand" href="/index.html">
@@ -27,12 +28,16 @@
       </nav>
 
     </div>
+
   </header>
 
   <main class="gallery-page unified-gallery-page">
 
     <section class="gallery-hero">
-      <p class="gallery-kicker">Practice / Bonsai / Ovals</p>
+
+      <p class="gallery-kicker">
+        Practice / Bonsai / Ovals
+      </p>
 
       <h1>Ovals</h1>
 
@@ -40,14 +45,32 @@
         Soft-edged bonsai containers for quiet,
         balanced compositions and calm visual movement.
       </p>
+
     </section>
 
-    <nav class="category-nav" aria-label="Bonsai galleries">
-      <a href="/gallery/ovals.html" class="active">Ovals</a>
-      <a href="/gallery/rounds.html">Rounds</a>
-      <a href="/gallery/rectangles.html">Rectangles</a>
-      <a href="/gallery/freeform.html">Freeform</a>
-      <a href="/gallery/cascade.html">Cascade</a>
+    <nav
+      class="category-nav"
+      aria-label="Bonsai galleries"
+    >
+      <a href="/gallery/ovals.html" class="active">
+        Ovals
+      </a>
+
+      <a href="/gallery/rounds.html">
+        Rounds
+      </a>
+
+      <a href="/gallery/rectangles.html">
+        Rectangles
+      </a>
+
+      <a href="/gallery/freeform.html">
+        Freeform
+      </a>
+
+      <a href="/gallery/cascade.html">
+        Cascade
+      </a>
     </nav>
 
     <section
@@ -56,12 +79,18 @@
       aria-label="Oval bonsai containers"
       aria-live="polite"
     >
-      <div class="loading">Loading ovals...</div>
+      <div class="loading">
+        Loading ovals...
+      </div>
     </section>
 
   </main>
 
-  <script src="/js/ovals.js?v=202605220141"></script>
+  <script>
+    window.CLAYCRAZE_GALLERY_SHAPE = "OV";
+  </script>
+
+  <script src="/js/shape-gallery.js?v=1017"></script>
 
 </body>
 </html>
