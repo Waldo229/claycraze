@@ -543,10 +543,15 @@ async function saveRecord(event) {
     if (formMode === "create") {
       allPieces.push(savedPiece);
       populatePieceSelect(allPieces);
+
+      currentPiece = savedPiece;
+
+      setEditMode();
+
       document.getElementById("pieceSelect").value = savedPiece.id;
-      formMode = "edit";
-      document.getElementById("pieceSelect").disabled = false;
-      document.getElementById("shape").disabled = true;
+
+      loadPiece(savedPiece.id);
+
     } else {
       const index = allPieces.findIndex(piece => piece.id === savedPiece.id);
       if (index >= 0) {
@@ -555,24 +560,24 @@ async function saveRecord(event) {
           ...savedPiece
         };
       }
+
+      currentPiece = {
+        ...(currentPiece || {}),
+        ...savedPiece
+      };
+
+      setValue("pieceId", currentPiece.id || "");
+      setValue("shape", currentPiece.shape || "");
+
+      clearFileInput("topImageFile");
+      clearFileInput("bottomImageFile");
+      updatePreview(currentPiece);
     }
-
-    currentPiece = {
-      ...(currentPiece || {}),
-      ...savedPiece
-    };
-
-    setValue("pieceId", currentPiece.id || "");
-    setValue("shape", currentPiece.shape || "");
-
-    clearFileInput("topImageFile");
-    clearFileInput("bottomImageFile");
-    updatePreview(currentPiece);
 
     const saveButton = document.getElementById("saveButton");
     if (saveButton) saveButton.textContent = "Save Curatorial Changes";
 
-    let message = `Saved ${currentPiece.id}.`;
+    let message = `Saved ${savedPiece.id}.`;
 
     if (result.deployed_to_siteground === false) {
       message += " Saved on Render, but SiteGround deploy may need checking.";
