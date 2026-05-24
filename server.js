@@ -242,7 +242,28 @@ function publicStatusPlaceholders() {
   return PUBLIC_STATUSES.map(() => "?").join(", ");
 }
 
-function exportPiecesJson(callback) {
+/* =========================================================
+   SAFE PUBLIC JSON EXPORT
+   Prevents accidental shrinking of pieces.json.
+========================================================= */
+
+function exportPiecesJson(callback, options = {}) {
+  const allowShrink = options.allowShrink === true;
+  const outPath = path.join(DATA_DIR, "pieces.json");
+
+  let previousCount = 0;
+
+  if (fs.existsSync(outPath)) {
+    try {
+      const existing = JSON.parse(fs.readFileSync(outPath, "utf8"));
+      if (Array.isArray(existing)) {
+        previousCount = existing.length;
+      }
+    } catch (err) {
+      console.warn("Could not read existing pieces.json:", err.message);
+    }
+  }
+
   const sql = `
     SELECT ${PUBLIC_FIELDS}
     FROM inventory
@@ -253,19 +274,30 @@ function exportPiecesJson(callback) {
   db.all(sql, PUBLIC_STATUSES, (err, rows) => {
     if (err) return callback(err);
 
-    const outPath = path.join(DATA_DIR, "pieces.json");
+    const newCount = Array.isArray(rows) ? rows.length : 0;
+
+    if (!allowShrink && previousCount > 0 && newCount < previousCount) {
+      return callback(
+        new Error(
+          `SAFETY LOCK: Export blocked. pieces.json would shrink from ${previousCount} records to ${newCount}. Use explicit reset/delete workflow to allow shrink.`
+        )
+      );
+    }
+
     fs.writeFileSync(outPath, JSON.stringify(rows, null, 2), "utf8");
 
-    callback(null, rows.length, outPath);
+    console.log(`pieces.json exported successfully (${newCount} records)`);
+
+    callback(null, newCount, outPath);
   });
 }
 
-function exportPiecesJsonPromise() {
+function exportPiecesJsonPromise(options = {}) {
   return new Promise((resolve, reject) => {
     exportPiecesJson((err, count, outPath) => {
       if (err) return reject(err);
       resolve({ count, outPath });
-    });
+    }, options);
   });
 }
 
