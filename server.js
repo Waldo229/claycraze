@@ -677,7 +677,118 @@ app.get("/debug/registration", async (req, res) => {
     });
   }
 });
+/* =========================================================
+   NEXT PIECE ID ROUTES
+   Single source of truth for ID generation
+========================================================= */
 
+function getNextPieceNumber(shape, dateCode) {
+  return new Promise((resolve, reject) => {
+    const normalizedShape = normalizeShapeCode(shape);
+
+    db.get(
+      `
+      SELECT MAX(piece_number) AS max_num
+      FROM inventory
+      WHERE TRIM(UPPER(shape)) = ?
+      AND TRIM(date_code) = ?
+      `,
+      [normalizedShape, dateCode],
+      (err, row) => {
+        if (err) return reject(err);
+
+        const nextNumber = ((row && row.max_num) || 0) + 1;
+
+        resolve(nextNumber);
+      }
+    );
+  });
+}
+
+function buildPieceId(shape, dateCode, pieceNumber) {
+  const normalizedShape = normalizeShapeCode(shape);
+
+  return `${normalizedShape}-${dateCode}-${String(pieceNumber).padStart(3, "0")}`;
+}
+
+/* ---------------------------------------------------------
+   Main next-ID route
+--------------------------------------------------------- */
+
+app.get("/api/next-piece-id", async (req, res) => {
+  try {
+    const shape = normalizeShapeCode(req.query.shape || "");
+    const dateCode = cleanText(req.query.date_code || "");
+
+    if (!shape || !dateCode) {
+      return res.status(400).json({
+        ok: false,
+        error: "shape and date_code are required",
+      });
+    }
+
+    const nextNumber = await getNextPieceNumber(shape, dateCode);
+
+    const nextId = buildPieceId(shape, dateCode, nextNumber);
+
+    res.json({
+      ok: true,
+      shape,
+      date_code: dateCode,
+      piece_number: nextNumber,
+      id: nextId,
+    });
+  } catch (err) {
+    console.error("NEXT PIECE ID ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
+});
+
+/* ---------------------------------------------------------
+   Compatibility aliases for older curate forms
+--------------------------------------------------------- */
+
+app.get("/api/generate-piece-id", async (req, res) => {
+  try {
+    const shape = normalizeShapeCode(req.query.shape || "");
+    const dateCode = cleanText(req.query.date_code || "");
+
+    const nextNumber = await getNextPieceNumber(shape, dateCode);
+
+    res.json({
+      ok: true,
+      id: buildPieceId(shape, dateCode, nextNumber),
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
+});
+
+app.get("/api/next-piece-number", async (req, res) => {
+  try {
+    const shape = normalizeShapeCode(req.query.shape || "");
+    const dateCode = cleanText(req.query.date_code || "");
+
+    const nextNumber = await getNextPieceNumber(shape, dateCode);
+
+    res.json({
+      ok: true,
+      piece_number: nextNumber,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
+});
 /* =========================================================
    GALLERY DATA ROUTES
 ========================================================= */
