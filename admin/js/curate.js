@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
-const APP_VERSION = "260525-server-id";
+const APP_VERSION = "260525-all-pieces";
 
 const SHAPE_MAP = {
   OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
@@ -23,15 +23,21 @@ let formMode = "edit";
 
 async function initializeCurator() {
   try {
+
     allPieces = await loadPiecesFresh();
 
     populatePieceSelect(allPieces);
+
     bindEvents();
+
     setEditMode();
 
     console.log(`ClaycrazE curator loaded: ${APP_VERSION}`);
+
   } catch (error) {
+
     console.error(error);
+
     showStatus("Could not load pieces.", "error");
   }
 }
@@ -41,20 +47,35 @@ async function initializeCurator() {
 ========================================================= */
 
 async function loadPiecesFresh() {
+
   const response = await fetch(
-    `/gallery-data/ovals?v=${Date.now()}`,
+    `/debug/inventory-count?v=${Date.now()}`,
     {
       cache: "no-store"
     }
   );
 
   if (!response.ok) {
+
     throw new Error(
-      `Could not load gallery data: ${response.status}`
+      `Could not load inventory data: ${response.status}`
     );
   }
 
-  return await response.json();
+  const result = await response.json();
+
+  if (
+    !result.ok ||
+    !result.counts ||
+    !Array.isArray(result.counts.pieces)
+  ) {
+
+    throw new Error(
+      "Inventory data did not include pieces array."
+    );
+  }
+
+  return result.counts.pieces;
 }
 
 /* =========================================================
@@ -88,21 +109,6 @@ function bindEvents() {
       }
     });
 
-  document.getElementById("generateDescription")
-    .addEventListener("click", generateDescription);
-
-  document.getElementById("suggestPrice")
-    .addEventListener("click", suggestPrice);
-
-  document.getElementById("generateWineLabel")
-    .addEventListener("click", generateWineLabel);
-
-  document.getElementById("generateLaoTzu")
-    .addEventListener("click", generateLaoTzu);
-
-  document.getElementById("topImageFile")
-    .addEventListener("change", previewSelectedTopImage);
-
   document.getElementById("curateForm")
     .addEventListener("submit", saveRecord);
 }
@@ -114,9 +120,11 @@ function bindEvents() {
 async function setCreateMode() {
 
   formMode = "create";
+
   currentPiece = null;
 
   document.getElementById("pieceSelect").value = "";
+
   document.getElementById("pieceSelect").disabled = true;
 
   document.getElementById("shape").disabled = false;
@@ -127,11 +135,13 @@ async function setCreateMode() {
   clearFileInput("bottomImageFile");
 
   setValue("status", "available");
+
   setValue("pieceId", "");
 
   await updateGeneratedId();
 
-  const preview = document.getElementById("piecePreview");
+  const preview =
+    document.getElementById("piecePreview");
 
   preview.classList.add("empty");
 
@@ -156,6 +166,7 @@ function setEditMode() {
   formMode = "edit";
 
   document.getElementById("pieceSelect").disabled = false;
+
   document.getElementById("shape").disabled = true;
 
   clearForm();
@@ -211,7 +222,9 @@ function loadPiece(id) {
     allPieces.find(piece => piece.id === id);
 
   if (!currentPiece) {
+
     clearForm();
+
     return;
   }
 
@@ -249,10 +262,6 @@ function loadPiece(id) {
     currentPiece.price || ""
   );
 
-  setStructuredDimensions(
-    currentPiece.dimensions || ""
-  );
-
   setValue(
     "objectIdentifier",
     currentPiece.object_identifier ||
@@ -281,3 +290,220 @@ function loadPiece(id) {
     "working"
   );
 }
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function clearForm() {
+
+  currentPiece = null;
+
+  setValue("pieceId", "");
+  setValue("shape", "");
+  setValue("color", "");
+  setValue("description", "");
+  setValue("price", "");
+  setValue("objectIdentifier", "");
+  setValue("privateNotes", "");
+  setValue("status", "available");
+
+  clearFileInput("topImageFile");
+  clearFileInput("bottomImageFile");
+
+  const preview =
+    document.getElementById("piecePreview");
+
+  preview.classList.add("empty");
+
+  preview.textContent =
+    "Select a piece or create a new one.";
+}
+
+function clearWorkFields() {
+
+  setValue("color", "");
+  setValue("description", "");
+  setValue("price", "");
+  setValue("objectIdentifier", "");
+  setValue("privateNotes", "");
+}
+
+function setValue(id, value) {
+
+  const element =
+    document.getElementById(id);
+
+  if (element) {
+    element.value = value || "";
+  }
+}
+
+function clearFileInput(id) {
+
+  const input =
+    document.getElementById(id);
+
+  if (input) {
+    input.value = "";
+  }
+}
+
+function showStatus(message, type = "working") {
+
+  const box =
+    document.getElementById("statusBox");
+
+  const topBox =
+    document.getElementById("topStatusBox");
+
+  if (box) {
+    box.textContent = message;
+    box.className = `status-box ${type}`;
+  }
+
+  if (topBox) {
+    topBox.textContent = message;
+    topBox.className = `status-inline ${type}`;
+  }
+}
+
+function updatePreview(piece) {
+
+  const preview =
+    document.getElementById("piecePreview");
+
+  preview.classList.remove("empty");
+
+  preview.innerHTML = `
+    <strong>${piece.id || ""}</strong><br>
+    ${piece.title || ""}<br>
+    ${piece.dimensions || ""}
+  `;
+}
+
+function parsePieceIdParts(id) {
+
+  const cleanId =
+    String(id || "").trim().toUpperCase();
+
+  const match =
+    cleanId.match(/^([A-Z]+)-(\d{4})-(\d{2,4})$/);
+
+  if (!match) {
+
+    return {
+      shape: "",
+      dateCode: "",
+      number: 0
+    };
+  }
+
+  return {
+    shape: normalizeShapeCode(match[1]),
+    dateCode: match[2],
+    number: Number(match[3] || 0)
+  };
+}
+
+function normalizeShapeCode(shape) {
+
+  const raw =
+    String(shape || "").trim().toUpperCase();
+
+  if (raw === "FF") return "FREE";
+  if (raw === "IK") return "IKE";
+  if (raw === "SC") return "SCULP";
+  if (raw === "ROUND") return "RD";
+  if (raw === "RND") return "RD";
+  if (raw === "RECT") return "RC";
+
+  return raw;
+}
+
+function getCurrentDateCode() {
+
+  const now = new Date();
+
+  const yy =
+    String(now.getFullYear()).slice(-2);
+
+  const mm =
+    String(now.getMonth() + 1)
+      .padStart(2, "0");
+
+  return `${yy}${mm}`;
+}
+
+async function updateGeneratedId() {
+
+  const shape =
+    normalizeShapeCode(
+      document.getElementById("shape").value
+    );
+
+  if (!shape) {
+
+    setValue("pieceId", "");
+
+    return "";
+  }
+
+  const dateCode =
+    getCurrentDateCode();
+
+  try {
+
+    const response = await fetch(
+      `/api/next-piece-id?shape=${encodeURIComponent(shape)}&date_code=${encodeURIComponent(dateCode)}&v=${Date.now()}`,
+      {
+        cache: "no-store"
+      }
+    );
+
+    const result =
+      await response.json();
+
+    if (!response.ok || !result.ok) {
+
+      throw new Error(
+        result.error ||
+        "Could not generate piece ID."
+      );
+    }
+
+    setValue("pieceId", result.id);
+
+    return result.id;
+
+  } catch (error) {
+
+    console.error(error);
+
+    showStatus(
+      "Could not generate piece ID.",
+      "error"
+    );
+
+    return "";
+  }
+}
+
+/* =========================================================
+   PLACEHOLDERS
+========================================================= */
+
+function saveRecord(event) {
+  event.preventDefault();
+  showStatus("Save system active.", "working");
+}
+
+function previewSelectedTopImage() {}
+
+function generateDescription() {}
+
+function suggestPrice() {}
+
+function generateWineLabel() {}
+
+function generateLaoTzu() {}
