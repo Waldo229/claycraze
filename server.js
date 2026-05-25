@@ -824,7 +824,28 @@ app.get("/gallery-data/ikebana", (req, res) => {
 app.get("/gallery-data/sculpture", (req, res) => {
   getPublicPiecesByShape("SCULP", res);
 });
+app.get("/gallery-data/all", (req, res) => {
+  db.all(
+    `
+    SELECT *
+    FROM pieces
+    WHERE public = 1
+    ORDER BY id DESC
+    `,
+    [],
+    (err, rows) => {
+      if (err) {
+        console.error("Could not load all gallery pieces:", err);
+        return res.status(500).json({
+          ok: false,
+          error: "Could not load all gallery pieces."
+        });
+      }
 
+      res.json(rows || []);
+    }
+  );
+});
 /* =========================================================
    ADMIN / CURATION ROUTES
 ========================================================= */

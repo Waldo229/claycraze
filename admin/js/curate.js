@@ -49,7 +49,7 @@ async function initializeCurator() {
 async function loadPiecesFresh() {
 
   const response = await fetch(
-    `/debug/inventory-count?v=${Date.now()}`,
+    `/gallery-data/all?v=${Date.now()}`,
     {
       cache: "no-store"
     }
@@ -58,26 +58,12 @@ async function loadPiecesFresh() {
   if (!response.ok) {
 
     throw new Error(
-      `Could not load inventory data: ${response.status}`
+      `Could not load all gallery data: ${response.status}`
     );
   }
 
-  const result = await response.json();
-
-  if (
-    !result.ok ||
-    !result.counts ||
-    !Array.isArray(result.counts.pieces)
-  ) {
-
-    throw new Error(
-      "Inventory data did not include pieces array."
-    );
-  }
-
-  return result.counts.pieces;
+  return await response.json();
 }
-
 /* =========================================================
    EVENTS
 ========================================================= */
