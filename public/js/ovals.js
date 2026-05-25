@@ -1,8 +1,8 @@
 /* =========================================================
    ClaycrazE — Ovals Gallery
    Full drop-in replacement for /js/ovals.js
-   Minimalist gallery cards: dimensions, price, availability
-   Version 1016
+   Cards show: dimensions, price, status
+   Version 1018
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", loadOvals);
@@ -10,23 +10,17 @@ document.addEventListener("DOMContentLoaded", loadOvals);
 async function loadOvals() {
   const galleryGrid = document.getElementById("galleryGrid");
 
-  if (!galleryGrid) {
-    console.warn("Ovals gallery: #galleryGrid not found.");
-    return;
-  }
+  if (!galleryGrid) return;
 
   galleryGrid.innerHTML = `<div class="loading">Loading ovals...</div>`;
 
   try {
-
     const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Could not load pieces.json. Server returned ${response.status}`
-      );
+      throw new Error(`Could not load pieces.json: ${response.status}`);
     }
 
     const pieces = await response.json();
@@ -40,22 +34,17 @@ async function loadOvals() {
       .sort(sortNewestFirst);
 
     if (!ovals.length) {
-
       galleryGrid.innerHTML = `
         <div class="empty-state">
           No oval pieces are currently available.
         </div>
       `;
-
       return;
     }
 
-    galleryGrid.innerHTML = ovals
-      .map(buildOvalCard)
-      .join("");
+    galleryGrid.innerHTML = ovals.map(buildOvalCard).join("");
 
   } catch (error) {
-
     console.error("Oval gallery error:", error);
 
     galleryGrid.innerHTML = `
@@ -67,54 +56,49 @@ async function loadOvals() {
 }
 
 function isOval(piece) {
-
   const id = clean(piece.id).toUpperCase();
-  const shape = clean(piece.shape).toUpperCase();
+  const shape = normalizeShape(clean(piece.shape));
 
-  return (
-    shape === "OV" ||
-    id.startsWith("OV-")
-  );
+  return shape === "OV" || id.startsWith("OV-");
+}
+
+function normalizeShape(value) {
+  const raw = clean(value).toUpperCase();
+
+  if (raw === "OVAL") return "OV";
+  if (raw === "OVALS") return "OV";
+
+  return raw;
 }
 
 function sortNewestFirst(a, b) {
+  const aNum = Number(a.piece_number || parsePieceNumber(a.id) || 0);
+  const bNum = Number(b.piece_number || parsePieceNumber(b.id) || 0);
 
-  const aNum = Number(a.piece_number || 0);
-  const bNum = Number(b.piece_number || 0);
-
-  if (aNum !== bNum) {
-    return bNum - aNum;
-  }
+  if (aNum !== bNum) return bNum - aNum;
 
   return clean(b.id).localeCompare(clean(a.id));
 }
 
+function parsePieceNumber(id) {
+  const match = clean(id).match(/-(\d+)$/);
+  return match ? Number(match[1]) : 0;
+}
+
 function buildOvalCard(piece) {
-
   const id = clean(piece.id);
-
-  const dimensions = clean(piece.dimensions);
+  const dimensions = getDimensions(piece);
+  const price = getPrice(piece);
   const status = formatStatus(piece.status);
-  const price = formatPrice(piece.price);
-
   const image = chooseImage(piece);
 
-  const detailUrl =
-    `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+  const detailUrl = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
   return `
-    <article
-      class="gallery-card"
-      data-piece-id="${escapeAttribute(id)}"
-    >
-
-      <a
-        class="gallery-card-link"
-        href="${escapeAttribute(detailUrl)}"
-      >
+    <article class="gallery-card" data-piece-id="${escapeAttribute(id)}">
+      <a class="gallery-card-link" href="${escapeAttribute(detailUrl)}">
 
         <div class="gallery-thumb-wrap">
-
           ${
             image
               ? `
@@ -125,45 +109,48 @@ function buildOvalCard(piece) {
                   loading="lazy"
                 >
               `
-              : `
-                <div class="no-image">
-                  No image available
-                </div>
-              `
+              : `<div class="no-image">No image available</div>`
           }
-
         </div>
 
         <div class="gallery-card-body">
-
-          ${
-            dimensions
-              ? `<h2>${escapeHtml(dimensions)}</h2>`
-              : ""
-          }
-
-          ${
-            price
-              ? `<p class="gallery-meta">${escapeHtml(price)}</p>`
-              : ""
-          }
-
-          ${
-            status
-              ? `<p class="gallery-meta">${escapeHtml(status)}</p>`
-              : ""
-          }
-
+          ${dimensions ? `<h2>${escapeHtml(dimensions)}</h2>` : ""}
+          ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
+          ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
         </div>
 
       </a>
-
     </article>
   `;
 }
 
-function chooseImage(piece) {
+function getDimensions(piece) {
+  const direct =
+    clean(piece.dimensions) ||
+    clean(piece.dimension) ||
+    clean(piece.size);
 
+  if (direct) return direct;
+
+  const l = clean(piece.length || piece.dim_length || piece.dimHeight);
+  const w = clean(piece.width || piece.dim_width || piece.dimWidth);
+  const h = clean(piece.height || piece.dim_depth || piece.dimDepth);
+
+  if (l && w && h) return `${l} × ${w} × ${h} in.`;
+
+  return "";
+}
+
+function getPrice(piece) {
+  return formatPrice(
+    piece.price ||
+    piece.public_price ||
+    piece.sale_price ||
+    piece.amount
+  );
+}
+
+function chooseImage(piece) {
   const candidates = [
     piece.image_path,
     piece.thumbnail,
@@ -174,25 +161,17 @@ function chooseImage(piece) {
   ];
 
   for (const candidate of candidates) {
-
-    const normalized =
-      normalizeImagePath(candidate);
-
-    if (normalized) {
-      return normalized;
-    }
+    const normalized = normalizeImagePath(candidate);
+    if (normalized) return normalized;
   }
 
   return "";
 }
 
 function normalizeImagePath(path) {
-
   if (!path) return "";
 
-  const cleanPath = String(path)
-    .trim()
-    .replace(/\\/g, "/");
+  const cleanPath = String(path).trim().replace(/\\/g, "/");
 
   if (!cleanPath) return "";
 
@@ -208,17 +187,13 @@ function normalizeImagePath(path) {
 }
 
 function addCacheBust(path) {
-
   if (!path) return "";
 
-  const separator =
-    path.includes("?") ? "&" : "?";
-
+  const separator = path.includes("?") ? "&" : "?";
   return `${path}${separator}v=${Date.now()}`;
 }
 
 function formatStatus(value) {
-
   const raw = clean(value).toLowerCase();
 
   if (!raw) return "";
@@ -226,27 +201,23 @@ function formatStatus(value) {
   if (raw === "available") return "Available";
   if (raw === "sold") return "Sold";
   if (raw === "reserved") return "Reserved";
+  if (raw === "held") return "Held";
+  if (raw === "acquired") return "Acquired";
   if (raw === "archive") return "Archive";
 
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
 function formatPrice(value) {
-
   const raw = clean(value);
 
   if (!raw) return "";
 
-  if (raw.startsWith("$")) {
-    return raw;
-  }
+  if (raw.startsWith("$")) return raw;
 
   const number = Number(raw);
 
-  if (
-    Number.isFinite(number) &&
-    number > 0
-  ) {
+  if (Number.isFinite(number) && number > 0) {
     return `$${number}`;
   }
 
@@ -258,7 +229,6 @@ function clean(value) {
 }
 
 function escapeHtml(value) {
-
   return clean(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
