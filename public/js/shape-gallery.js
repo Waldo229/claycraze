@@ -83,7 +83,7 @@ function sortNewestFirst(a, b) {
 
 function buildCard(piece) {
   const id = clean(piece.id);
-  const dimensions = clean(piece.dimensions);
+  const dimensions = formatDimensions(piece);
   const status = formatStatus(piece.status);
   const price = formatPrice(piece.price);
   const image = chooseImage(piece);
@@ -206,4 +206,21 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value);
+}
+function formatDimensions(piece) {
+  const direct = clean(piece.dimensions);
+
+  if (direct) {
+    return direct;
+  }
+
+  const length = clean(piece.length);
+  const width = clean(piece.width);
+  const height = clean(piece.height);
+
+  if (length && width && height) {
+    return `${length} × ${width} × ${height} in.`;
+  }
+
+  return "";
 }
