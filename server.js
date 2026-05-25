@@ -164,22 +164,6 @@ function runCommand(command, args) {
   });
 }
 
-/*
-  SiteGround config.
-
-  Required Render environment variables:
-  SG_HOST
-  SG_USER
-  SG_CI_KEY
-
-  Optional:
-  SG_PORT
-  SG_PUBLIC_HTML
-
-  Important:
-  SG_PUBLIC_HTML should usually be:
-  /home/customer/www/claycraze.com/public_html
-*/
 function getSgConfig() {
   const { SG_HOST, SG_USER, SG_CI_KEY } = process.env;
   const SG_PORT = process.env.SG_PORT || "22";
@@ -285,7 +269,6 @@ function getLocalPiecesJsonCount() {
 
   try {
     const existing = JSON.parse(fs.readFileSync(outPath, "utf8"));
-
     return Array.isArray(existing) ? existing.length : 0;
   } catch (err) {
     console.warn("Could not read local pieces.json count:", err.message);
@@ -303,14 +286,26 @@ function getPublicDbCount() {
       `,
       PUBLIC_STATUSES,
       (err, row) => {
-        if (err) {
-          return reject(err);
-        }
-
+        if (err) return reject(err);
         resolve(row ? row.count : 0);
       }
     );
   });
+}
+
+async function getRegistrationState() {
+  const jsonCount = getLocalPiecesJsonCount();
+  const dbCount = await getPublicDbCount();
+
+  return {
+    registered: dbCount >= jsonCount,
+    local_pieces_json_count: jsonCount,
+    render_public_db_count: dbCount,
+    message:
+      dbCount >= jsonCount
+        ? "Render DB is registered with local pieces.json."
+        : "Render DB has fewer public records than local pieces.json. Run /admin/import-public-json before saving.",
+  };
 }
 
 /* =========================================================
@@ -466,6 +461,126 @@ function upsertPiece(piece) {
   });
 }
 
+async function importLocalPiecesJsonIntoDb() {
+  const localPath = path.join(DATA_DIR, "pieces.json");
+
+  if (!fs.existsSync(localPath)) {
+    return {
+      ok: false,
+      source: localPath,
+      imported: 0,
+      message: "Local pieces.json not found.",
+    };
+  }
+
+  const raw = fs.readFileSync(localPath, "utf8");
+  const pieces = JSON.parse(raw);
+
+  if (!Array.isArray(pieces)) {
+    throw new Error("Local pieces.json did not contain an array.");
+  }
+
+  const stmt = db.prepare(`
+    INSERT OR REPLACE INTO inventory (
+      id,
+      shape,
+      piece_number,
+      date_code,
+      title,
+      category,
+      description,
+      clay_body,
+      glaze,
+      notes,
+      dimensions,
+      image_path,
+      image_path_2,
+      image_path_3,
+      image_path_4,
+      status,
+      price
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  let inserted = 0;
+
+  for (const p of pieces) {
+    await new Promise((resolve, reject) => {
+      stmt.run(
+        p.id || "",
+        normalizeShapeCode(p.shape || ""),
+        p.piece_number || null,
+        p.date_code || "",
+        p.title || "",
+        p.category || "",
+        p.description || "",
+        p.clay_body || "",
+        p.glaze || "",
+        p.notes || "",
+        p.dimensions || "",
+        p.image_path || "",
+        p.image_path_2 || "",
+        p.image_path_3 || "",
+        p.image_path_4 || "",
+        normalizeStatus(p.status || "available"),
+        p.price || "",
+        (err) => {
+          if (err) return reject(err);
+          inserted++;
+          resolve();
+        }
+      );
+    });
+  }
+
+  await new Promise((resolve, reject) => {
+    stmt.finalize((err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+
+  return {
+    ok: true,
+    source: localPath,
+    imported: inserted,
+  };
+}
+
+async function autoRestoreFromLocalJsonOnStartup() {
+  const jsonCount = getLocalPiecesJsonCount();
+  const dbCount = await getPublicDbCount();
+
+  if (jsonCount > 0 && dbCount < jsonCount) {
+    console.log(
+      `Startup registration repair: DB has ${dbCount}, pieces.json has ${jsonCount}. Importing local JSON into SQLite.`
+    );
+
+    const imported = await importLocalPiecesJsonIntoDb();
+    const exported = await exportPiecesJsonPromise();
+
+    console.log(
+      `Startup registration repair complete: imported ${imported.imported}, exported ${exported.count}.`
+    );
+
+    return {
+      repaired: true,
+      imported: imported.imported,
+      exported_count: exported.count,
+    };
+  }
+
+  console.log(
+    `Startup registration OK: DB has ${dbCount}, pieces.json has ${jsonCount}.`
+  );
+
+  return {
+    repaired: false,
+    render_public_db_count: dbCount,
+    local_pieces_json_count: jsonCount,
+  };
+}
+
 /* =========================================================
    HEALTH / DEBUG ROUTES
 ========================================================= */
@@ -549,18 +664,11 @@ app.get("/debug/shapes", (req, res) => {
 
 app.get("/debug/registration", async (req, res) => {
   try {
-    const jsonCount = getLocalPiecesJsonCount();
-    const dbCount = await getPublicDbCount();
+    const registration = await getRegistrationState();
 
     res.json({
       ok: true,
-      registered: dbCount >= jsonCount,
-      local_pieces_json_count: jsonCount,
-      render_public_db_count: dbCount,
-      message:
-        dbCount >= jsonCount
-          ? "Render DB is registered with local pieces.json."
-          : "Render DB has fewer public records than local pieces.json. Run /admin/import-public-json before saving.",
+      ...registration,
     });
   } catch (err) {
     res.status(500).json({
@@ -612,12 +720,15 @@ app.get("/gallery-data/sculpture", (req, res) => {
 
 app.post("/api/save-curation", async (req, res) => {
   try {
-    const jsonCount = getLocalPiecesJsonCount();
-    const dbCount = await getPublicDbCount();
+    const beforeRegistration = await getRegistrationState();
 
-    if (jsonCount > 0 && dbCount < jsonCount) {
+    if (
+      beforeRegistration.local_pieces_json_count > 0 &&
+      beforeRegistration.render_public_db_count <
+        beforeRegistration.local_pieces_json_count
+    ) {
       throw new Error(
-        `REGISTRATION LOCK: Save blocked. Render DB has ${dbCount} public records, but pieces.json has ${jsonCount}. Run /admin/import-public-json before saving.`
+        `REGISTRATION LOCK: Save blocked. Render DB has ${beforeRegistration.render_public_db_count} public records, but pieces.json has ${beforeRegistration.local_pieces_json_count}. Run /admin/import-public-json before saving.`
       );
     }
 
@@ -681,6 +792,14 @@ app.post("/api/save-curation", async (req, res) => {
 
     const exported = await exportPiecesJsonPromise();
 
+    const afterRegistration = await getRegistrationState();
+
+    if (!afterRegistration.registered) {
+      throw new Error(
+        `POST-SAVE REGISTRATION FAILURE: DB has ${afterRegistration.render_public_db_count}, but pieces.json has ${afterRegistration.local_pieces_json_count}. Save not confirmed.`
+      );
+    }
+
     filesToDeploy.push({
       localPath: exported.outPath,
       remotePath: `${sgPublicHtml}/data/pieces.json`,
@@ -702,10 +821,13 @@ app.post("/api/save-curation", async (req, res) => {
 
     res.json({
       ok: true,
+      message:
+        "Images handled. DB record registered. Canonical local pieces.json updated.",
       saved_count: savedPieces.length,
       exported_count: exported.count,
       deployed_to_siteground: deployedToSiteGround,
       warning: deployWarning,
+      registration: afterRegistration,
       pieces: savedPieces,
     });
   } catch (err) {
@@ -725,98 +847,18 @@ app.post("/api/save-curation", async (req, res) => {
 
 app.get("/admin/import-public-json", async (req, res) => {
   try {
-    const localPath = path.join(DATA_DIR, "pieces.json");
+    const imported = await importLocalPiecesJsonIntoDb();
+    const exported = await exportPiecesJsonPromise();
+    const registration = await getRegistrationState();
 
-    if (!fs.existsSync(localPath)) {
-      return res.status(404).json({
-        ok: false,
-        error: `Local pieces.json not found at ${localPath}`,
-      });
-    }
-
-    const raw = fs.readFileSync(localPath, "utf8");
-    const pieces = JSON.parse(raw);
-
-    if (!Array.isArray(pieces)) {
-      return res.status(400).json({
-        ok: false,
-        error: "Local pieces.json did not contain an array",
-      });
-    }
-
-    const stmt = db.prepare(`
-      INSERT OR REPLACE INTO inventory (
-        id,
-        shape,
-        piece_number,
-        date_code,
-        title,
-        category,
-        description,
-        clay_body,
-        glaze,
-        notes,
-        dimensions,
-        image_path,
-        image_path_2,
-        image_path_3,
-        image_path_4,
-        status,
-        price
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    let inserted = 0;
-
-    for (const p of pieces) {
-      stmt.run(
-        p.id || "",
-        normalizeShapeCode(p.shape || ""),
-        p.piece_number || null,
-        p.date_code || "",
-        p.title || "",
-        p.category || "",
-        p.description || "",
-        p.clay_body || "",
-        p.glaze || "",
-        p.notes || "",
-        p.dimensions || "",
-        p.image_path || "",
-        p.image_path_2 || "",
-        p.image_path_3 || "",
-        p.image_path_4 || "",
-        normalizeStatus(p.status || "available"),
-        p.price || ""
-      );
-
-      inserted++;
-    }
-
-    stmt.finalize((err) => {
-      if (err) {
-        return res.status(500).json({
-          ok: false,
-          error: err.message,
-        });
-      }
-
-      exportPiecesJson((exportErr, count) => {
-        if (exportErr) {
-          return res.status(500).json({
-            ok: false,
-            error: exportErr.message,
-          });
-        }
-
-        res.json({
-          ok: true,
-          source: localPath,
-          imported: inserted,
-          exported_count: count,
-          message:
-            "Render SQLite database repopulated from local public/data/pieces.json",
-        });
-      });
+    res.json({
+      ok: true,
+      source: imported.source,
+      imported: imported.imported,
+      exported_count: exported.count,
+      registration,
+      message:
+        "Render SQLite database repopulated from local public/data/pieces.json",
     });
   } catch (err) {
     console.error("IMPORT LOCAL JSON ERROR:", err);
@@ -831,8 +873,6 @@ app.get("/admin/import-public-json", async (req, res) => {
 /* =========================================================
    REGISTER RENDER PUBLIC JSON WITH SITEGROUND
    Render public/data/pieces.json -> SG /data/pieces.json
-
-   Use this when Render DB/local JSON is correct but SG has stale data.
 ========================================================= */
 
 app.get("/admin/register-siteground", async (req, res) => {
@@ -886,9 +926,15 @@ app.get("/admin/register-siteground", async (req, res) => {
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, "0.0.0.0", async () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Curate: http://localhost:${PORT}/admin/curate.html`);
   console.log(`Deploy health: http://localhost:${PORT}/deploy-health`);
+
+  try {
+    await autoRestoreFromLocalJsonOnStartup();
+  } catch (err) {
+    console.error("STARTUP REGISTRATION REPAIR FAILED:", err);
+  }
 });
