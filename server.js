@@ -594,10 +594,6 @@ app.get("/gallery-data/cascade", (req, res) => {
   getPublicPiecesByShape("CS", res);
 });
 
-app.get("/gallery-data/forest", (req, res) => {
-  getPublicPiecesByShape("FJ", res);
-});
-
 app.get("/gallery-data/facejugs", (req, res) => {
   getPublicPiecesByShape("FJ", res);
 });
