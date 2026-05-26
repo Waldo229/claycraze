@@ -64,6 +64,7 @@ async function loadPiecesFresh() {
 
   return await response.json();
 }
+
 /* =========================================================
    EVENTS
 ========================================================= */
@@ -479,9 +480,58 @@ async function updateGeneratedId() {
    PLACEHOLDERS
 ========================================================= */
 
-function saveRecord(event) {
+async function saveRecord(event) {
+
   event.preventDefault();
-  showStatus("Save system active.", "working");
+
+  try {
+
+    showStatus("Saving record...", "working");
+
+    const piece = {
+      id: document.getElementById("pieceId").value.trim(),
+      shape: document.getElementById("shape").value.trim(),
+      description: document.getElementById("description").value.trim(),
+      glaze: document.getElementById("color").value.trim(),
+      notes: document.getElementById("privateNotes").value.trim(),
+      status: document.getElementById("status").value.trim(),
+      price: document.getElementById("price").value.trim()
+    };
+
+    const response = await fetch("/api/save-curation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(piece)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(
+        result.error || "Save failed."
+      );
+    }
+
+    showStatus(
+      "Record saved successfully.",
+      "success"
+    );
+
+    allPieces = await loadPiecesFresh();
+
+    populatePieceSelect(allPieces);
+
+  } catch (error) {
+
+    console.error(error);
+
+    showStatus(
+      error.message || "Save failed.",
+      "error"
+    );
+  }
 }
 
 function previewSelectedTopImage() {}
