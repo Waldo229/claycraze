@@ -1,7 +1,7 @@
 /* =========================================================
    ClaycrazE — Universal Shape Gallery
-   Cards show: image, dimensions, price, status
-   Version 1017
+   Cards show: image, ID, dimensions, price, status
+   Version 1018
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", loadShapeGallery);
@@ -68,6 +68,9 @@ function normalizeShape(value) {
   if (raw === "CASCADE") return "CS";
   if (raw === "FREEFORM") return "FREE";
   if (raw === "IK") return "IKE";
+  if (raw === "FACE") return "FJ";
+  if (raw === "FACEJUG") return "FJ";
+  if (raw === "FACEJUGS") return "FJ";
 
   return raw;
 }
@@ -109,6 +112,7 @@ function buildCard(piece) {
         </div>
 
         <div class="gallery-card-body">
+          ${id ? `<p class="piece-id">${escapeHtml(id)}</p>` : ""}
           ${dimensions ? `<h2>${escapeHtml(dimensions)}</h2>` : ""}
           ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
           ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
@@ -191,22 +195,6 @@ function formatPrice(value) {
   return raw;
 }
 
-function clean(value) {
-  return String(value ?? "").trim();
-}
-
-function escapeHtml(value) {
-  return clean(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function escapeAttribute(value) {
-  return escapeHtml(value);
-}
 function formatDimensions(piece) {
   const direct = clean(piece.dimensions);
 
@@ -223,4 +211,21 @@ function formatDimensions(piece) {
   }
 
   return "";
+}
+
+function clean(value) {
+  return String(value ?? "").trim();
+}
+
+function escapeHtml(value) {
+  return clean(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
 }
