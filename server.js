@@ -551,22 +551,16 @@ async function autoRestoreFromLocalJsonOnStartup() {
   const jsonCount = getLocalPiecesJsonCount();
   const dbCount = await getPublicDbCount();
 
-  if (jsonCount > 0 && dbCount < jsonCount) {
-    console.log(
-      `Startup registration repair: DB has ${dbCount}, pieces.json has ${jsonCount}. Importing local JSON into SQLite.`
-    );
-
-    const imported = await importLocalPiecesJsonIntoDb();
-    const exported = await exportPiecesJsonPromise();
-
-    console.log(
-      `Startup registration repair complete: imported ${imported.imported}, exported ${exported.count}.`
+  if (jsonCount !== dbCount) {
+    console.warn(
+      `REGISTRATION WARNING: DB has ${dbCount}, pieces.json has ${jsonCount}. No automatic repair performed.`
     );
 
     return {
-      repaired: true,
-      imported: imported.imported,
-      exported_count: exported.count,
+      repaired: false,
+      warning: true,
+      render_public_db_count: dbCount,
+      local_pieces_json_count: jsonCount,
     };
   }
 
