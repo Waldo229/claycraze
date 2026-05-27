@@ -56,7 +56,7 @@ function buildCardHtml(piece) {
           <p class="card-row"><span class="card-label">Dimensions:</span> ${escapeHtml(dimensions)}</p>
           <p class="card-row"><span class="card-label">Price:</span> ${escapeHtml(price)}</p>
           <p class="card-row">
-            <a class="more-link" href="/piece/${encodeURIComponent(id)}">More</a>
+           <a class="more-link" href="/gallery/facejugs.html">More</a>
           </p>
         </div>
       </div>
