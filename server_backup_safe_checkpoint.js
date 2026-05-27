@@ -210,7 +210,7 @@ async function deployToSiteGround(filesToDeploy) {
   await runCommand("ssh", [
     ...sshArgs,
     remote,
-    `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/data`,
+    `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/data ${SG_PUBLIC_HTML}/data/backups`,
   ]);
 
   for (const item of filesToDeploy) {
@@ -313,6 +313,7 @@ async function getRegistrationState() {
 /* =========================================================
    SAFE PUBLIC JSON EXPORT
 ========================================================= */
+
 function makeTimestamp() {
   return new Date()
     .toISOString()
@@ -336,6 +337,7 @@ function backupExistingPiecesJson() {
 
   return backupPath;
 }
+
 function exportPiecesJson(callback, options = {}) {
   const allowShrink = options.allowShrink === true;
   const outPath = path.join(DATA_DIR, "pieces.json");
@@ -373,19 +375,21 @@ function exportPiecesJson(callback, options = {}) {
       );
     }
 
+    const backupPath = backupExistingPiecesJson();
+
     fs.writeFileSync(outPath, JSON.stringify(rows, null, 2), "utf8");
 
     console.log(`pieces.json exported successfully (${newCount} records)`);
 
-    callback(null, newCount, outPath);
+    callback(null, newCount, outPath, backupPath);
   });
 }
 
 function exportPiecesJsonPromise(options = {}) {
   return new Promise((resolve, reject) => {
-    exportPiecesJson((err, count, outPath) => {
+    exportPiecesJson((err, count, outPath, backupPath) => {
       if (err) return reject(err);
-      resolve({ count, outPath });
+      resolve({ count, outPath, backupPath });
     }, options);
   });
 }
@@ -695,6 +699,7 @@ app.get("/debug/registration", async (req, res) => {
     });
   }
 });
+
 /* =========================================================
    NEXT PIECE ID ROUTES
    Single source of truth for ID generation
@@ -807,6 +812,7 @@ app.get("/api/next-piece-number", async (req, res) => {
     });
   }
 });
+
 /* =========================================================
    GALLERY DATA ROUTES
 ========================================================= */
@@ -842,6 +848,7 @@ app.get("/gallery-data/ikebana", (req, res) => {
 app.get("/gallery-data/sculpture", (req, res) => {
   getPublicPiecesByShape("SCULP", res);
 });
+
 app.get("/gallery-data/all", (req, res) => {
   const sql = `
     SELECT ${PUBLIC_FIELDS}
@@ -856,13 +863,14 @@ app.get("/gallery-data/all", (req, res) => {
 
       return res.status(500).json({
         ok: false,
-        error: err.message
+        error: err.message,
       });
     }
 
     res.json(rows || []);
   });
 });
+
 /* =========================================================
    ADMIN / CURATION ROUTES
 ========================================================= */
@@ -954,6 +962,15 @@ app.post("/api/save-curation", async (req, res) => {
       remotePath: `${sgPublicHtml}/data/pieces.json`,
     });
 
+    if (exported.backupPath) {
+      filesToDeploy.push({
+        localPath: exported.backupPath,
+        remotePath: `${sgPublicHtml}/data/backups/${path.basename(
+          exported.backupPath
+        )}`,
+      });
+    }
+
     let deployedToSiteGround = false;
     let deployWarning = "";
 
@@ -974,6 +991,7 @@ app.post("/api/save-curation", async (req, res) => {
         "Images handled. DB record registered. Canonical local pieces.json updated.",
       saved_count: savedPieces.length,
       exported_count: exported.count,
+      backup_path: exported.backupPath || "",
       deployed_to_siteground: deployedToSiteGround,
       warning: deployWarning,
       registration: afterRegistration,
@@ -1005,6 +1023,7 @@ app.get("/admin/import-public-json", async (req, res) => {
       source: imported.source,
       imported: imported.imported,
       exported_count: exported.count,
+      backup_path: exported.backupPath || "",
       registration,
       message:
         "Render SQLite database repopulated from local public/data/pieces.json",
@@ -1084,6 +1103,6 @@ app.listen(PORT, "0.0.0.0", async () => {
   try {
     await autoRestoreFromLocalJsonOnStartup();
   } catch (err) {
-    console.error("STARTUP REGISTRATION REPAIR FAILED:", err);
+    console.error("STARTUP REGISTRATION CHECK FAILED:", err);
   }
 });
