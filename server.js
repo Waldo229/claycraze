@@ -3,6 +3,8 @@ const sqlite3 = require("sqlite3").verbose();
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+const http = require("http");
+const https = require("https");
 const { execFile } = require("child_process");
 
 const app = express();
@@ -17,6 +19,17 @@ const PUBLIC_IMAGES_DIR = path.join(PUBLIC_DIR, "images");
 const FULL_DIR = path.join(PUBLIC_IMAGES_DIR, "full");
 const THUMBS_DIR = path.join(PUBLIC_IMAGES_DIR, "thumbs");
 const DB_PATH = path.join(ROOT, "claycraze_inventory.db");
+
+const SG_PUBLIC_DATA_URL =
+  process.env.SG_PUBLIC_DATA_URL || "https://claycraze.com/data/pieces.json";
+
+let STARTUP_RESTORE = {
+  ok: false,
+  source: SG_PUBLIC_DATA_URL,
+  count: 0,
+  message: "Startup restore has not run yet.",
+  time: null,
+};
 
 for (const dir of [
   PUBLIC_DIR,
@@ -232,6 +245,65 @@ async function deployToSiteGround(filesToDeploy) {
   return true;
 }
 
+function fetchText(url) {
+  return new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const client = parsed.protocol === "https:" ? https : http;
+
+    const req = client.get(
+      parsed,
+      {
+        headers: {
+          "User-Agent": "ClaycrazE-Render-Restore/1.0",
+          Accept: "application/json,text/plain,*/*",
+        },
+      },
+      (res) => {
+        let body = "";
+
+        res.setEncoding("utf8");
+
+        res.on("data", (chunk) => {
+          body += chunk;
+        });
+
+        res.on("end", () => {
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            return reject(
+              new Error(`${url} returned HTTP ${res.statusCode}`)
+            );
+          }
+
+          resolve(body);
+        });
+      }
+    );
+
+    req.setTimeout(30000, () => {
+      req.destroy(new Error(`Timeout fetching ${url}`));
+    });
+
+    req.on("error", reject);
+  });
+}
+
+async function fetchPiecesJsonFromSiteGround() {
+  const raw = await fetchText(SG_PUBLIC_DATA_URL);
+  const trimmed = raw.trim();
+
+  if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")) {
+    throw new Error(`${SG_PUBLIC_DATA_URL} returned HTML instead of JSON.`);
+  }
+
+  const pieces = JSON.parse(trimmed);
+
+  if (!Array.isArray(pieces)) {
+    throw new Error(`${SG_PUBLIC_DATA_URL} did not contain a JSON array.`);
+  }
+
+  return pieces;
+}
+
 const PUBLIC_FIELDS = `
   id,
   shape,
@@ -257,10 +329,6 @@ const PUBLIC_STATUSES = ["available", "held", "acquired"];
 function publicStatusPlaceholders() {
   return PUBLIC_STATUSES.map(() => "?").join(", ");
 }
-
-/* =========================================================
-   REGISTRATION HELPERS
-========================================================= */
 
 function getLocalPiecesJsonCount() {
   const outPath = path.join(DATA_DIR, "pieces.json");
@@ -300,19 +368,19 @@ async function getRegistrationState() {
   const dbCount = await getPublicDbCount();
 
   return {
-    registered: dbCount >= jsonCount,
+    registered: dbCount >= jsonCount && STARTUP_RESTORE.ok,
     local_pieces_json_count: jsonCount,
     render_public_db_count: dbCount,
+    startup_restore_ok: STARTUP_RESTORE.ok,
+    startup_restore_count: STARTUP_RESTORE.count,
+    startup_restore_source: STARTUP_RESTORE.source,
     message:
-      dbCount >= jsonCount
-        ? "Render DB is registered with local pieces.json."
-        : "Render DB has fewer public records than local pieces.json. Run /admin/import-public-json before saving.",
+      dbCount >= jsonCount && STARTUP_RESTORE.ok
+        ? "Render DB is registered with SiteGround-restored pieces.json."
+        : "Render DB is not safely registered. Restore from SiteGround before saving.",
   };
 }
 
-/* =========================================================
-   SAFE PUBLIC JSON EXPORT
-========================================================= */
 function makeTimestamp() {
   return new Date()
     .toISOString()
@@ -336,6 +404,7 @@ function backupExistingPiecesJson() {
 
   return backupPath;
 }
+
 function exportPiecesJson(callback, options = {}) {
   const allowShrink = options.allowShrink === true;
   const outPath = path.join(DATA_DIR, "pieces.json");
@@ -372,6 +441,8 @@ function exportPiecesJson(callback, options = {}) {
         )
       );
     }
+
+    backupExistingPiecesJson();
 
     fs.writeFileSync(outPath, JSON.stringify(rows, null, 2), "utf8");
 
@@ -485,24 +556,21 @@ function upsertPiece(piece) {
   });
 }
 
-async function importLocalPiecesJsonIntoDb() {
-  const localPath = path.join(DATA_DIR, "pieces.json");
+function clearInventoryTable() {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM inventory`, [], (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+}
 
-  if (!fs.existsSync(localPath)) {
-    return {
-      ok: false,
-      source: localPath,
-      imported: 0,
-      message: "Local pieces.json not found.",
-    };
-  }
-
-  const raw = fs.readFileSync(localPath, "utf8");
-  const pieces = JSON.parse(raw);
-
+async function replaceDbWithPieces(pieces) {
   if (!Array.isArray(pieces)) {
-    throw new Error("Local pieces.json did not contain an array.");
+    throw new Error("replaceDbWithPieces expected an array.");
   }
+
+  await clearInventoryTable();
 
   const stmt = db.prepare(`
     INSERT OR REPLACE INTO inventory (
@@ -564,6 +632,68 @@ async function importLocalPiecesJsonIntoDb() {
     });
   });
 
+  return inserted;
+}
+
+async function restoreFromSiteGround() {
+  const pieces = await fetchPiecesJsonFromSiteGround();
+  const localPath = path.join(DATA_DIR, "pieces.json");
+
+  backupExistingPiecesJson();
+
+  fs.writeFileSync(localPath, JSON.stringify(pieces, null, 2), "utf8");
+
+  const imported = await replaceDbWithPieces(pieces);
+  const dbCount = await getPublicDbCount();
+
+  STARTUP_RESTORE = {
+    ok: true,
+    source: SG_PUBLIC_DATA_URL,
+    count: pieces.length,
+    imported,
+    render_public_db_count: dbCount,
+    message: "Render restored from SiteGround canonical pieces.json.",
+    time: new Date().toISOString(),
+  };
+
+  console.log(
+    `SITEGROUND RESTORE OK: fetched ${pieces.length}, imported ${imported}, DB public count ${dbCount}.`
+  );
+
+  return STARTUP_RESTORE;
+}
+
+async function importLocalPiecesJsonIntoDb() {
+  const localPath = path.join(DATA_DIR, "pieces.json");
+
+  if (!fs.existsSync(localPath)) {
+    return {
+      ok: false,
+      source: localPath,
+      imported: 0,
+      message: "Local pieces.json not found.",
+    };
+  }
+
+  const raw = fs.readFileSync(localPath, "utf8");
+  const pieces = JSON.parse(raw);
+
+  if (!Array.isArray(pieces)) {
+    throw new Error("Local pieces.json did not contain an array.");
+  }
+
+  const inserted = await replaceDbWithPieces(pieces);
+
+  STARTUP_RESTORE = {
+    ok: false,
+    source: localPath,
+    count: pieces.length,
+    imported: inserted,
+    message:
+      "Local import completed, but this is not canonical truth. Restore from SiteGround before real saving.",
+    time: new Date().toISOString(),
+  };
+
   return {
     ok: true,
     source: localPath,
@@ -571,43 +701,13 @@ async function importLocalPiecesJsonIntoDb() {
   };
 }
 
-async function autoRestoreFromLocalJsonOnStartup() {
-  const jsonCount = getLocalPiecesJsonCount();
-  const dbCount = await getPublicDbCount();
-
-  if (jsonCount !== dbCount) {
-    console.warn(
-      `REGISTRATION WARNING: DB has ${dbCount}, pieces.json has ${jsonCount}. No automatic repair performed.`
-    );
-
-    return {
-      repaired: false,
-      warning: true,
-      render_public_db_count: dbCount,
-      local_pieces_json_count: jsonCount,
-    };
-  }
-
-  console.log(
-    `Startup registration OK: DB has ${dbCount}, pieces.json has ${jsonCount}.`
-  );
-
-  return {
-    repaired: false,
-    render_public_db_count: dbCount,
-    local_pieces_json_count: jsonCount,
-  };
-}
-
-/* =========================================================
-   HEALTH / DEBUG ROUTES
-========================================================= */
-
 app.get("/deploy-health", (req, res) => {
   res.json({
     ok: true,
     app: "ClaycrazE admin",
     db_path: DB_PATH,
+    siteground_truth_url: SG_PUBLIC_DATA_URL,
+    startup_restore: STARTUP_RESTORE,
     time: new Date().toISOString(),
   });
 });
@@ -621,6 +721,8 @@ app.get("/debug/siteground-env", (req, res) => {
     SG_PORT: process.env.SG_PORT || "22",
     SG_PUBLIC_HTML:
       process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html",
+    SG_PUBLIC_DATA_URL,
+    startup_restore: STARTUP_RESTORE,
   });
 });
 
@@ -645,6 +747,7 @@ app.get("/debug/inventory-count", (req, res) => {
         res.json({
           ok: true,
           db_path: DB_PATH,
+          startup_restore: STARTUP_RESTORE,
           counts: {
             total: totalRow ? totalRow.total : 0,
             public_total: publicRow ? publicRow.public_total : 0,
@@ -674,6 +777,7 @@ app.get("/debug/shapes", (req, res) => {
 
       res.json({
         ok: true,
+        startup_restore: STARTUP_RESTORE,
         shapes: rows || [],
       });
     }
@@ -695,10 +799,6 @@ app.get("/debug/registration", async (req, res) => {
     });
   }
 });
-/* =========================================================
-   NEXT PIECE ID ROUTES
-   Single source of truth for ID generation
-========================================================= */
 
 function getNextPieceNumber(shape, dateCode) {
   return new Promise((resolve, reject) => {
@@ -729,12 +829,19 @@ function buildPieceId(shape, dateCode, pieceNumber) {
   return `${normalizedShape}-${dateCode}-${String(pieceNumber).padStart(3, "0")}`;
 }
 
-/* ---------------------------------------------------------
-   Main next-ID route
---------------------------------------------------------- */
-
 app.get("/api/next-piece-id", async (req, res) => {
   try {
+    const registration = await getRegistrationState();
+
+    if (!registration.registered) {
+      return res.status(409).json({
+        ok: false,
+        error:
+          "Cannot generate piece ID. Render is not restored from SiteGround truth.",
+        registration,
+      });
+    }
+
     const shape = normalizeShapeCode(req.query.shape || "");
     const dateCode = cleanText(req.query.date_code || "");
 
@@ -746,7 +853,6 @@ app.get("/api/next-piece-id", async (req, res) => {
     }
 
     const nextNumber = await getNextPieceNumber(shape, dateCode);
-
     const nextId = buildPieceId(shape, dateCode, nextNumber);
 
     res.json({
@@ -766,12 +872,19 @@ app.get("/api/next-piece-id", async (req, res) => {
   }
 });
 
-/* ---------------------------------------------------------
-   Compatibility aliases for older curate forms
---------------------------------------------------------- */
-
 app.get("/api/generate-piece-id", async (req, res) => {
   try {
+    const registration = await getRegistrationState();
+
+    if (!registration.registered) {
+      return res.status(409).json({
+        ok: false,
+        error:
+          "Cannot generate piece ID. Render is not restored from SiteGround truth.",
+        registration,
+      });
+    }
+
     const shape = normalizeShapeCode(req.query.shape || "");
     const dateCode = cleanText(req.query.date_code || "");
 
@@ -791,6 +904,17 @@ app.get("/api/generate-piece-id", async (req, res) => {
 
 app.get("/api/next-piece-number", async (req, res) => {
   try {
+    const registration = await getRegistrationState();
+
+    if (!registration.registered) {
+      return res.status(409).json({
+        ok: false,
+        error:
+          "Cannot generate piece number. Render is not restored from SiteGround truth.",
+        registration,
+      });
+    }
+
     const shape = normalizeShapeCode(req.query.shape || "");
     const dateCode = cleanText(req.query.date_code || "");
 
@@ -807,9 +931,6 @@ app.get("/api/next-piece-number", async (req, res) => {
     });
   }
 });
-/* =========================================================
-   GALLERY DATA ROUTES
-========================================================= */
 
 app.get("/gallery-data/ovals", (req, res) => {
   getPublicPiecesByShape("OV", res);
@@ -842,6 +963,7 @@ app.get("/gallery-data/ikebana", (req, res) => {
 app.get("/gallery-data/sculpture", (req, res) => {
   getPublicPiecesByShape("SCULP", res);
 });
+
 app.get("/gallery-data/all", (req, res) => {
   const sql = `
     SELECT ${PUBLIC_FIELDS}
@@ -856,28 +978,21 @@ app.get("/gallery-data/all", (req, res) => {
 
       return res.status(500).json({
         ok: false,
-        error: err.message
+        error: err.message,
       });
     }
 
     res.json(rows || []);
   });
 });
-/* =========================================================
-   ADMIN / CURATION ROUTES
-========================================================= */
 
 app.post("/api/save-curation", async (req, res) => {
   try {
     const beforeRegistration = await getRegistrationState();
 
-    if (
-      beforeRegistration.local_pieces_json_count > 0 &&
-      beforeRegistration.render_public_db_count <
-        beforeRegistration.local_pieces_json_count
-    ) {
+    if (!beforeRegistration.registered) {
       throw new Error(
-        `REGISTRATION LOCK: Save blocked. Render DB has ${beforeRegistration.render_public_db_count} public records, but pieces.json has ${beforeRegistration.local_pieces_json_count}. Run /admin/import-public-json before saving.`
+        `REGISTRATION LOCK: Save blocked. Render is not restored from SiteGround truth. ${beforeRegistration.message}`
       );
     }
 
@@ -954,28 +1069,35 @@ app.post("/api/save-curation", async (req, res) => {
       remotePath: `${sgPublicHtml}/data/pieces.json`,
     });
 
-    let deployedToSiteGround = false;
-    let deployWarning = "";
-
     try {
       await deployToSiteGround(filesToDeploy);
-      deployedToSiteGround = true;
     } catch (deployErr) {
-      deployWarning =
-        deployErr.message ||
-        "Saved locally on Render, but SiteGround deploy failed.";
+      console.error("SITEGROUND DEPLOY FAILURE:", deployErr);
 
-      console.error("SITEGROUND DEPLOY WARNING:", deployErr);
+      return res.status(500).json({
+        ok: false,
+        archived: false,
+        temporary_render_save_only: true,
+        error:
+          "TEMPORARY SAVE ONLY: Render updated, but SiteGround publish failed. This record is NOT canonical truth yet.",
+        deploy_error: deployErr.message || "",
+        stdout: deployErr.stdout || "",
+        stderr: deployErr.stderr || "",
+        saved_count: savedPieces.length,
+        exported_count: exported.count,
+        registration: afterRegistration,
+        pieces: savedPieces,
+      });
     }
 
     res.json({
       ok: true,
+      archived: true,
+      deployed_to_siteground: true,
       message:
-        "Images handled. DB record registered. Canonical local pieces.json updated.",
+        "Truth confirmed: DB saved, pieces.json exported, and SiteGround archive updated.",
       saved_count: savedPieces.length,
       exported_count: exported.count,
-      deployed_to_siteground: deployedToSiteGround,
-      warning: deployWarning,
       registration: afterRegistration,
       pieces: savedPieces,
     });
@@ -984,20 +1106,48 @@ app.post("/api/save-curation", async (req, res) => {
 
     res.status(500).json({
       ok: false,
+      archived: false,
       error: err.message || "Could not save curatorial changes.",
     });
   }
 });
 
-/* =========================================================
-   IMPORT LOCAL PUBLIC JSON INTO SQLITE
-   Render local public/data/pieces.json -> Render SQLite
-========================================================= */
+app.get("/admin/restore-from-siteground", async (req, res) => {
+  try {
+    const restored = await restoreFromSiteGround();
+    const registration = await getRegistrationState();
+
+    res.json({
+      ok: true,
+      restored,
+      registration,
+      message:
+        "Render SQLite and local pieces.json restored from SiteGround canonical archive.",
+    });
+  } catch (err) {
+    console.error("RESTORE FROM SITEGROUND ERROR:", err);
+
+    STARTUP_RESTORE = {
+      ok: false,
+      source: SG_PUBLIC_DATA_URL,
+      count: 0,
+      message: err.message,
+      time: new Date().toISOString(),
+    };
+
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+      message:
+        "Could not restore from SiteGround. Do not save new records until this is fixed.",
+    });
+  }
+});
 
 app.get("/admin/import-public-json", async (req, res) => {
   try {
     const imported = await importLocalPiecesJsonIntoDb();
-    const exported = await exportPiecesJsonPromise();
+    const exported = await exportPiecesJsonPromise({ allowShrink: true });
     const registration = await getRegistrationState();
 
     res.json({
@@ -1006,6 +1156,8 @@ app.get("/admin/import-public-json", async (req, res) => {
       imported: imported.imported,
       exported_count: exported.count,
       registration,
+      warning:
+        "Local import completed. This is not canonical truth unless it came from SiteGround.",
       message:
         "Render SQLite database repopulated from local public/data/pieces.json",
     });
@@ -1019,17 +1171,25 @@ app.get("/admin/import-public-json", async (req, res) => {
   }
 });
 
-/* =========================================================
-   REGISTER RENDER PUBLIC JSON WITH SITEGROUND
-   Render public/data/pieces.json -> SG /data/pieces.json
-========================================================= */
-
 app.get("/admin/register-siteground", async (req, res) => {
   try {
+    const registration = await getRegistrationState();
+
+    if (!registration.registered) {
+      return res.status(409).json({
+        ok: false,
+        error:
+          "Refusing to publish to SiteGround because Render is not registered from SiteGround truth.",
+        registration,
+      });
+    }
+
     const sgPublicHtml =
       process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
-    const localPiecesPath = path.join(DATA_DIR, "pieces.json");
+    const exported = await exportPiecesJsonPromise();
+
+    const localPiecesPath = exported.outPath;
 
     if (!fs.existsSync(localPiecesPath)) {
       return res.status(404).json({
@@ -1057,10 +1217,12 @@ app.get("/admin/register-siteground", async (req, res) => {
 
     res.json({
       ok: true,
+      archived: true,
       registered_with_siteground: true,
       local_source: localPiecesPath,
       remote_target: `${sgPublicHtml}/data/pieces.json`,
       count: pieces.length,
+      registration,
       message: "SiteGround public data/pieces.json refreshed from Render.",
     });
   } catch (err) {
@@ -1068,6 +1230,7 @@ app.get("/admin/register-siteground", async (req, res) => {
 
     res.status(500).json({
       ok: false,
+      archived: false,
       error: err.message,
       stdout: err.stdout || "",
       stderr: err.stderr || "",
@@ -1080,10 +1243,23 @@ app.listen(PORT, "0.0.0.0", async () => {
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Curate: http://localhost:${PORT}/admin/curate.html`);
   console.log(`Deploy health: http://localhost:${PORT}/deploy-health`);
+  console.log(`SiteGround truth source: ${SG_PUBLIC_DATA_URL}`);
 
   try {
-    await autoRestoreFromLocalJsonOnStartup();
+    await restoreFromSiteGround();
   } catch (err) {
-    console.error("STARTUP REGISTRATION REPAIR FAILED:", err);
+    console.error("STARTUP SITEGROUND RESTORE FAILED:", err);
+
+    STARTUP_RESTORE = {
+      ok: false,
+      source: SG_PUBLIC_DATA_URL,
+      count: 0,
+      message: err.message,
+      time: new Date().toISOString(),
+    };
+
+    console.error(
+      "TRUTH LOCK: Render did not restore from SiteGround. Saves will be blocked."
+    );
   }
 });
