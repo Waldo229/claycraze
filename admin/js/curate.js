@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
-const APP_VERSION = "260527-stable-shape-fix-no-labels";
+const APP_VERSION = "260527-clean-no-labels";
 
 const SHAPE_MAP = {
 OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
@@ -47,35 +47,21 @@ return await response.json();
 }
 
 function bindEvents() {
-document
-.getElementById("createModeButton")
-.addEventListener("click", setCreateMode);
+document.getElementById("createModeButton").addEventListener("click", setCreateMode);
+document.getElementById("editModeButton").addEventListener("click", setEditMode);
 
-document
-.getElementById("editModeButton")
-.addEventListener("click", setEditMode);
-
-document
-.getElementById("pieceSelect")
-.addEventListener("change", event => {
+document.getElementById("pieceSelect").addEventListener("change", event => {
 loadPiece(event.target.value);
 });
 
-document
-.getElementById("shape")
-.addEventListener("change", async () => {
+document.getElementById("shape").addEventListener("change", async () => {
 if (formMode === "create") {
 await updateGeneratedId();
 }
 });
 
-document
-.getElementById("topImageFile")
-.addEventListener("change", previewSelectedTopImage);
-
-document
-.getElementById("curateForm")
-.addEventListener("submit", saveRecord);
+document.getElementById("topImageFile").addEventListener("change", previewSelectedTopImage);
+document.getElementById("curateForm").addEventListener("submit", saveRecord);
 
 bindOptionalButton("generateDescription", generateDescription);
 bindOptionalButton("suggestPrice", suggestPrice);
@@ -98,7 +84,6 @@ document.getElementById("pieceSelect").disabled = true;
 document.getElementById("shape").disabled = false;
 
 clearForm();
-
 setValue("status", "available");
 
 await updateGeneratedId();
@@ -137,15 +122,14 @@ const sorted = [...pieces].sort((a, b) =>
 String(b.id || "").localeCompare(String(a.id || ""))
 );
 
-select.innerHTML = `<option value="">Select piece</option>`;
+select.innerHTML = '<option value="">Select piece</option>';
 
 sorted.forEach(piece => {
 const option = document.createElement("option");
 
 ```
 option.value = piece.id;
-option.textContent =
-  `${piece.id || "Untitled record"}${piece.title ? " — " + piece.title : ""}`;
+option.textContent = `${piece.id || "Untitled record"}${piece.title ? " — " + piece.title : ""}`;
 
 select.appendChild(option);
 ```
@@ -345,9 +329,7 @@ if (!shape) {
 
 const response = await fetch(
   `/api/next-piece-id?shape=${encodeURIComponent(shape)}&date_code=${encodeURIComponent(dateCode)}&v=${Date.now()}`,
-  {
-    cache: "no-store"
-  }
+  { cache: "no-store" }
 );
 
 const result = await response.json();
