@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
-const APP_VERSION = "260525-final-curator-shape-edit-fix";
+const APP_VERSION = "260525-final-curator-shape-edit-fix-2";
 
 const SHAPE_MAP = {
 OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
@@ -157,9 +157,8 @@ showStatus("Saving record...", "working");
 let id = getValue("pieceId");
 let shape = normalizeShapeCode(getValue("shape"));
 
-if (!shape && currentPiece?.id) {
-  const parsedExisting = parsePieceIdParts(currentPiece.id);
-  shape = parsedExisting.shape;
+if (!shape && currentPiece && currentPiece.id) {
+  shape = normalizeShapeCode(currentPiece.shape || parsePieceIdParts(currentPiece.id).shape);
 }
 
 if (!shape) throw new Error("Choose a shape first.");
@@ -241,7 +240,6 @@ const savedPiece = result.pieces && result.pieces[0] ? result.pieces[0] : piece;
 currentPiece = savedPiece;
 
 setValue("pieceId", savedPiece.id || id);
-setValue("shape", normalizeShapeCode(savedPiece.shape || shape));
 document.getElementById("pieceSelect").value = savedPiece.id || id;
 
 updatePreview(savedPiece);
