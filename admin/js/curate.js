@@ -279,3 +279,230 @@ async function saveRecord(event) {
     showStatus(error.message || "Save failed.", "error");
   }
 }
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve("");
+
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Could not read image file."));
+
+    reader.readAsDataURL(file);
+  });
+}
+
+async function updateGeneratedId() {
+  let shape = normalizeShapeCode(getValue("shape"));
+  const existingId = getValue("pieceId");
+
+  if (!shape && existingId) {
+    const parsed = parsePieceIdParts(existingId);
+    shape = parsed.shape;
+  }
+
+  const dateCode = getCurrentDateCode();
+
+  try {
+    showStatus("Asking server for next piece ID...", "working");
+
+    if (!shape) {
+      throw new Error("Choose a shape first.");
+    }
+
+    const response = await fetch(
+      `/api/next-piece-id?shape=${encodeURIComponent(shape)}&date_code=${encodeURIComponent(dateCode)}&v=${Date.now()}`,
+      { cache: "no-store" }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || "Could not generate piece ID.");
+    }
+
+    setValue("pieceId", result.id);
+
+    return result.id;
+
+  } catch (error) {
+    console.error(error);
+
+    setValue("pieceId", "");
+    showStatus(error.message || "Could not generate piece ID.", "error");
+
+    return "";
+  }
+}
+
+async function ensureGeneratedId() {
+  let id = getValue("pieceId");
+
+  if (id) return id;
+
+  id = await updateGeneratedId();
+
+  if (!id) {
+    throw new Error("Could not generate piece ID.");
+  }
+
+  return id;
+}
+
+function previewSelectedTopImage() {
+  const file = document.getElementById("topImageFile").files[0];
+
+  if (!file) return;
+
+  const preview = document.getElementById("piecePreview");
+  const url = URL.createObjectURL(file);
+
+  preview.innerHTML = `
+    <img
+      src="${url}"
+      style="max-width:100%; border-radius:12px;"
+    >
+  `;
+}
+
+function clearForm() {
+  currentPiece = null;
+
+  setValue("pieceId", "");
+  setValue("shape", "");
+  setValue("color", "");
+  setValue("description", "");
+  setValue("price", "");
+  setValue("privateNotes", "");
+  setValue("status", "available");
+
+  setStructuredDimensions("");
+
+  clearFileInput("topImageFile");
+  clearFileInput("bottomImageFile");
+}
+
+function setStructuredDimensions(dimensions) {
+  const clean = String(dimensions || "").trim();
+
+  setValue("dimensions", clean);
+
+  const match = clean.match(/([\d.]+)\s*[×x]\s*([\d.]+)\s*[×x]\s*([\d.]+)/i);
+
+  if (match) {
+    setValue("dimHeight", match[1]);
+    setValue("dimWidth", match[2]);
+    setValue("dimDepth", match[3]);
+  }
+}
+
+function updateDimensionsHidden() {
+  const l = getValue("dimHeight");
+  const w = getValue("dimWidth");
+  const h = getValue("dimDepth");
+
+  if (l || w || h) {
+    setValue("dimensions", `${l || "0"} × ${w || "0"} × ${h || "0"} in.`);
+  } else {
+    setValue("dimensions", "");
+  }
+}
+
+function updatePreview(piece) {
+  const preview = document.getElementById("piecePreview");
+
+  const img = piece.image_path || piece.image_path_2 || "";
+
+  preview.innerHTML = `
+    ${
+      img
+        ? `<img
+            src="${img}"
+            style="max-width:100%; border-radius:12px;"
+          >`
+        : ""
+    }
+    <strong>${piece.id || ""}</strong>
+  `;
+}
+
+function showPreviewMessage(message) {
+  const preview = document.getElementById("piecePreview");
+  preview.textContent = message;
+}
+
+function getValue(id) {
+  const element = document.getElementById(id);
+  return element ? String(element.value || "").trim() : "";
+}
+
+function setValue(id, value) {
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.value = value || "";
+  }
+}
+
+function clearFileInput(id) {
+  const input = document.getElementById(id);
+
+  if (input) {
+    input.value = "";
+  }
+}
+
+function showStatus(message, type = "working") {
+  const box = document.getElementById("statusBox");
+
+  if (box) {
+    box.textContent = message;
+    box.className = `status-box ${type}`;
+  }
+}
+
+function getCurrentDateCode() {
+  const now = new Date();
+
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+
+  return `${yy}${mm}`;
+}
+
+function parsePieceIdParts(id) {
+  const cleanId = String(id || "").trim().toUpperCase();
+
+  const match = cleanId.match(/^([A-Z]+)-(\d{4})-(\d{2,4})$/);
+
+  if (!match) {
+    return {
+      shape: "",
+      dateCode: "",
+      number: 0
+    };
+  }
+
+  return {
+    shape: normalizeShapeCode(match[1]),
+    dateCode: match[2],
+    number: Number(match[3] || 0)
+  };
+}
+
+function normalizeShapeCode(shape) {
+  const raw = String(shape || "").trim().toUpperCase();
+
+  if (raw === "FF") return "FREE";
+  if (raw === "IK") return "IKE";
+  if (raw === "SC") return "SCULP";
+  if (raw === "ROUND") return "RD";
+  if (raw === "RND") return "RD";
+  if (raw === "RECT") return "RC";
+
+  return raw;
+}
+
+function generateDescription() {}
+
+function suggestPrice() {}
