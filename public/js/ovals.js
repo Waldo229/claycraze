@@ -114,10 +114,12 @@ function buildOvalCard(piece) {
         </div>
 
         <div class="gallery-card-body">
-          ${dimensions ? `<h2>${escapeHtml(dimensions)}</h2>` : ""}
-          ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
-          ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
-        </div>
+  <h2>${escapeHtml(id)}</h2>
+
+  ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
+  ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
+  ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
+</div>
 
       </a>
     </article>
