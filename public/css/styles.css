@@ -685,3 +685,65 @@ a {
   object-fit: cover;
   border-radius: 10px;
 }
+/* Theory room template */
+
+.theory-room {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 700px);
+  gap: 4rem;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.theory-room-copy {
+  position: relative;
+  padding-left: 6rem;
+}
+
+.theory-room-stamp {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 16px;
+  opacity: 0.9;
+}
+
+.theory-room-copy h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 5vw, 5rem);
+  line-height: 0.98;
+  font-weight: 400;
+  color: #f4e8cc;
+}
+
+.theory-room-copy p {
+  margin-top: 1.5rem;
+  font-size: 1.12rem;
+  line-height: 1.9;
+  color: rgba(244,232,204,0.76);
+}
+
+.theory-room-image {
+  width: 100%;
+  border-radius: 28px;
+  display: block;
+}
+
+@media (max-width: 860px) {
+  .theory-room {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .theory-room-copy {
+    padding-left: 0;
+  }
+
+  .theory-room-stamp {
+    position: static;
+    margin-bottom: 1rem;
+  }
+}
