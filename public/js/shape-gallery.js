@@ -1,12 +1,14 @@
 /* =========================================================
    ClaycrazE — Universal Shape Gallery
    Cards show: image, ID, dimensions, price, status
-   Version 1018
+   Version 1019
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", loadShapeGallery);
 
 async function loadShapeGallery() {
+  installGalleryImageTweaks();
+
   const galleryGrid = document.getElementById("galleryGrid");
   const shapeCode = String(window.CLAYCRAZE_GALLERY_SHAPE || "").toUpperCase();
 
@@ -43,12 +45,44 @@ async function loadShapeGallery() {
       return;
     }
 
-    galleryGrid.innerHTML = filtered.map(buildCard).join("");
+    galleryGrid.innerHTML = filtered.map(piece => buildCard(piece, shapeCode)).join("");
 
   } catch (error) {
     console.error("Gallery error:", error);
     galleryGrid.innerHTML = `<div class="empty-state">Could not load gallery data.</div>`;
   }
+}
+
+function installGalleryImageTweaks() {
+  if (document.getElementById("claycraze-gallery-image-tweaks")) return;
+
+  const style = document.createElement("style");
+  style.id = "claycraze-gallery-image-tweaks";
+
+  style.textContent = `
+    .gallery-card[data-shape="FJ"] .gallery-thumb,
+    .gallery-card[data-shape="S"] .gallery-thumb,
+    .gallery-card[data-shape="IK"] .gallery-thumb {
+      object-fit: contain;
+      object-position: center center;
+    }
+
+    .gallery-card[data-shape="RD"] .gallery-thumb,
+    .gallery-card[data-shape="CS"] .gallery-thumb {
+      object-fit: contain;
+      object-position: center center;
+    }
+
+    .gallery-card[data-shape="OV"] .gallery-thumb,
+    .gallery-card[data-shape="RC"] .gallery-thumb,
+    .gallery-card[data-shape="REC"] .gallery-thumb,
+    .gallery-card[data-shape="FF"] .gallery-thumb {
+      object-fit: cover;
+      object-position: center center;
+    }
+  `;
+
+  document.head.appendChild(style);
 }
 
 function matchesShape(piece, shapeCode) {
@@ -62,15 +96,30 @@ function normalizeShape(value) {
   const raw = clean(value).toUpperCase();
 
   if (raw === "ROUND") return "RD";
+  if (raw === "ROUNDS") return "RD";
   if (raw === "RND") return "RD";
+
   if (raw === "RECT") return "RC";
   if (raw === "RECTANGLE") return "RC";
+  if (raw === "RECTANGLES") return "RC";
+  if (raw === "REC") return "RC";
+
   if (raw === "CASCADE") return "CS";
-  if (raw === "FREEFORM") return "FREE";
-  if (raw === "IK") return "IKE";
+  if (raw === "CASCADES") return "CS";
+
+  if (raw === "FREEFORM") return "FF";
+  if (raw === "FREE") return "FF";
+
+  if (raw === "IKEBANA") return "IK";
+  if (raw === "IK") return "IK";
+
   if (raw === "FACE") return "FJ";
   if (raw === "FACEJUG") return "FJ";
   if (raw === "FACEJUGS") return "FJ";
+  if (raw === "FACE JUG") return "FJ";
+  if (raw === "FACE JUGS") return "FJ";
+
+  if (raw === "SCULPTURE") return "S";
 
   return raw;
 }
@@ -84,16 +133,21 @@ function sortNewestFirst(a, b) {
   return clean(b.id).localeCompare(clean(a.id));
 }
 
-function buildCard(piece) {
+function buildCard(piece, shapeCode) {
   const id = clean(piece.id);
-  const dimensions = formatDimensions(piece);
+  const normalizedShape = normalizeShape(clean(piece.shape)) || shapeCode;
+  const dimensions = formatDimensions(piece, normalizedShape);
   const status = formatStatus(piece.status);
   const price = formatPrice(piece.price);
   const image = chooseImage(piece);
   const detailUrl = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
 
   return `
-    <article class="gallery-card" data-piece-id="${escapeAttribute(id)}">
+    <article
+      class="gallery-card"
+      data-piece-id="${escapeAttribute(id)}"
+      data-shape="${escapeAttribute(normalizedShape)}"
+    >
       <a class="gallery-card-link" href="${escapeAttribute(detailUrl)}">
 
         <div class="gallery-thumb-wrap">
@@ -195,11 +249,11 @@ function formatPrice(value) {
   return raw;
 }
 
-function formatDimensions(piece) {
+function formatDimensions(piece, shapeCode) {
   const direct = clean(piece.dimensions);
 
   if (direct) {
-    return direct;
+    return formatDimensionString(direct, shapeCode);
   }
 
   const length = clean(piece.length);
@@ -207,10 +261,42 @@ function formatDimensions(piece) {
   const height = clean(piece.height);
 
   if (length && width && height) {
+    if (isZero(length)) {
+      return `${width} in. W × ${height} in. H`;
+    }
+
     return `${length} × ${width} × ${height} in.`;
   }
 
+  if (width && height) {
+    return `${width} in. W × ${height} in. H`;
+  }
+
+  if (height) {
+    return `${height} in. H`;
+  }
+
   return "";
+}
+
+function formatDimensionString(value, shapeCode) {
+  const raw = clean(value);
+
+  const parts = raw
+    .replace(/in\.?/gi, "")
+    .split("×")
+    .map(part => clean(part));
+
+  if (parts.length === 3 && isZero(parts[0])) {
+    return `${parts[1]} in. W × ${parts[2]} in. H`;
+  }
+
+  return raw;
+}
+
+function isZero(value) {
+  const raw = clean(value);
+  return raw === "0" || raw === "0.0" || raw === "0.00";
 }
 
 function clean(value) {
