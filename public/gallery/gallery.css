@@ -458,21 +458,16 @@ body {
 }
 
 .piece-id {
-  margin: 0 0 1rem;
-
-  color: var(--muted);
-
-  font-size: 0.98rem;
+  font-weight: 700;
+  margin: 0.35rem 0;
 }
 
-.piece-description {
-  line-height: 1.7;
-
-  color: var(--text);
-
-  margin: 0 0 1rem;
+.piece-dimensions,
+.piece-price,
+.piece-status {
+  font-weight: 400;
+  margin: 0.35rem 0;
 }
-
 .piece-details {
   display: grid;
 
