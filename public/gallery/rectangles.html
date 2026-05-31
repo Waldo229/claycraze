@@ -2,135 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Rectangles | ClaycrazE</title>
 
-  <link
-    rel="stylesheet"
-    href="/css/styles.css?v=3004"
-  />
-
-  <link
-    rel="stylesheet"
-    href="/css/gallery.css?v=3004"
-  />
+  <link rel="stylesheet" href="/css/styles.css?v=3004" />
+  <link rel="stylesheet" href="/css/gallery.css?v=3004" />
 </head>
 
 <body class="practice-page">
 
   <header class="site-header">
-
     <div class="header-shell">
 
       <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
-
-        <span class="site-tag">
-          Theory &amp; Practice
-        </span>
+        <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav
-        class="site-nav"
-        id="siteNav"
-        aria-label="Main navigation"
-      >
+      <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
+        <a class="active" href="/gallery/bonsai.html">Bonsai</a>
       </nav>
 
     </div>
-
   </header>
 
   <main class="gallery-page unified-gallery-page">
 
     <section class="gallery-hero">
-
-      <p class="gallery-kicker">
-        Practice / Bonsai / Rectangles
-      </p>
+      <p class="gallery-kicker">Practice / Bonsai</p>
 
       <h1>Rectangles</h1>
 
       <p>
-        Architectural bonsai forms with
-        structure, clarity, and edge.
+        Rectangular bonsai containers, for strong, structured compositions and dynamic visual movement.
       </p>
-
     </section>
 
-    <nav
-      class="category-nav"
-      aria-label="Bonsai galleries"
-    >
-
-      <a href="/gallery/ovals.html">
-        Ovals
-      </a>
-
-      <a href="/gallery/rounds.html">
-        Rounds
-      </a>
-
-      <a
-        href="/gallery/rectangles.html"
-        class="active"
-      >
-        Rectangles
-      </a>
-
-      <a href="/gallery/freeform.html">
-        Freeform
-      </a>
-
-      <a href="/gallery/cascade.html">
-        Cascade
-      </a>
-
-    </nav>
-
+    
     <section
       id="galleryGrid"
       class="gallery-grid"
       aria-label="Rectangular bonsai containers"
       aria-live="polite"
     >
-
-      <div class="loading">
-        Loading rectangular bonsai forms...
-      </div>
-
+      <div class="loading">Loading rectangular containers...</div>
     </section>
 
   </main>
-
-  <script src="/js/nav.js"></script>
-
-  <script>
-    window.CLAYCRAZE_GALLERY_SHAPE = "RC";
-  </script>
-
-  <script src="/js/shape-gallery.js?v=1018"></script>
-
-</body>
-</html>
+    <script>
+  window.CLAYCRAZE_GALLERY_SHAPE = "RC";
+</script>
