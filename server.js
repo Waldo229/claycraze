@@ -1089,13 +1089,32 @@ app.post("/api/save-curation", async (req, res) => {
         pieces: savedPieces,
       });
     }
+    let sgPieces;
 
+    try {
+      sgPieces = await fetchPiecesJsonFromSiteGround();
+    } catch (verifyErr) {
+      throw new Error(
+        `SITEGROUND VERIFY FAILED: Could not fetch canonical pieces.json after publish. ${verifyErr.message}`
+      );
+    }
+
+    for (const saved of savedPieces) {
+      const found = sgPieces.find((p) => p.id === saved.id);
+
+      if (!found) {
+        throw new Error(
+          `SITEGROUND VERIFY FAILED: ${saved.id} was saved in Render but not found in SiteGround pieces.json.`
+        );
+      }
+    }
+    q
     res.json({
       ok: true,
       archived: true,
       deployed_to_siteground: true,
       message:
-        "Truth confirmed: DB saved, pieces.json exported, and SiteGround archive updated.",
+        "Truth confirmed: DB saved, pieces.json exported, SiteGround archive updated, and canonical record verified.",
       saved_count: savedPieces.length,
       exported_count: exported.count,
       registration: afterRegistration,
