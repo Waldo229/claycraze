@@ -1108,7 +1108,7 @@ app.post("/api/save-curation", async (req, res) => {
         );
       }
     }
-    q
+    
     res.json({
       ok: true,
       archived: true,
