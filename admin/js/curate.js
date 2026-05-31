@@ -256,7 +256,7 @@ async function saveRecord(event) {
       throw new Error(result.error || "Save failed.");
     }
 
-    showStatus("Record saved successfully.", "success");
+   showStatus(result.message || "Record saved successfully.", "success");
 
     allPieces = await loadPiecesFresh();
     populatePieceSelect(allPieces);
