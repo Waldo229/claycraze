@@ -3,98 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Kiln</title>
-  <link rel="stylesheet" href="/css/styles.css?v=2" />
+
+  <title>Kiln | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3008" />
 </head>
+
 <body class="theory-page">
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html" class="active">Theory</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
       </nav>
+
     </div>
   </header>
 
-  <main class="theory-main">
-    <nav class="category-nav" aria-label="Theory sections">
-      <a href="/studio.html">Studio</a>
-      <a href="/materials.html">Materials</a>
-      <a href="/processes.html">Processes</a>
-      <a href="/places.html">Places</a>
-      <a href="/kiln.html" class="active">Kiln</a>
-      <a href="/gene.html">GENE Project</a>
-    </nav>
+  <main class="threshold-page">
 
-    <section class="theory-intro">
-      <h1>Kiln</h1>
-      <p>Heat, time, transformation, and reveal.</p>
+    <section class="threshold-intro">
+
+      <div class="threshold-symbol">
+        <img
+          src="/images/curated/theory_imgs/han-shan2.jpg"
+          alt="Han Shan"
+          class="threshold-face"
+        />
+      </div>
+
+      <div class="threshold-copy">
+        <p class="threshold-kicker">Theory / Kiln</p>
+
+        <h1>Heat, time, transformation, and reveal.</h1>
+
+        <p>
+          The kiln is the transforming field of the studio:
+          a place where clay, glaze, atmosphere, temperature,
+          patience, and surrender meet.
+        </p>
+      </div>
+
     </section>
 
-    <section class="theory-content-panel">
-      <img src="/images/kiln_001.png" alt="ClaycrazE kiln" />
+    <section class="room-section">
 
-      <h3>Heat</h3>
-      <p>
-        The kiln is the transforming field of the studio. Heat changes clay and glaze into something no longer merely assembled by hand but altered by atmosphere, time, and temperature.
-      </p>
+      <img
+        src="/images/kiln_001.png"
+        alt="ClaycrazE kiln"
+        class="room-feature-image"
+      />
 
-      <h3>Firing</h3>
-      <p>
-        Electric and gas firing each offer a different kind of attention. The kiln asks for planning, patience, and restraint; the final surface is the result of both intention and surrender.
-      </p>
+      <div class="room-copy">
+
+        <h2>Kiln</h2>
+
+        <p>
+          The kiln changes clay and glaze into something no longer merely
+          assembled by hand, but altered by heat, atmosphere, time,
+          and temperature.
+        </p>
+
+        <p>
+          Electric and gas firing each offer a different kind of attention.
+          The kiln asks for planning, patience, and restraint; the final
+          surface is the result of both intention and surrender.
+        </p>
+
+      </div>
+
     </section>
 
-    <section class="theory-grid" aria-label="Related Theory sections">
-      <article class="theory-card">
-        <a class="theory-card-link" href="/materials.html">
-          <h3>Materials</h3>
-          <p>
-            The clay and glaze choices that enter the fire.
-          </p>
-        </a>
-      </article>
+    <section class="archive-grid room-grid" aria-label="Related Theory sections">
 
-      <article class="theory-card">
-        <a class="theory-card-link" href="/processes.html">
-          <h3>Processes</h3>
-          <p>
-            The forming and preparation that precede firing.
-          </p>
-        </a>
-      </article>
+      <a class="archive-card" href="/materials.html">
+        <img
+          src="/images/curated/theory_imgs/materials_001s.png"
+          alt="Materials"
+        />
 
-      <article class="theory-card">
-        <a class="theory-card-link" href="/gene.html">
-          <h3>GENE Project</h3>
-          <p>
-            Observation, timing, and the studio as a registering system.
-          </p>
-        </a>
-      </article>
+        <div class="archive-card-text">
+          <p>Before the Fire</p>
+          <h2>Materials</h2>
+        </div>
+      </a>
+
+      <a class="archive-card" href="/studio.html">
+        <img
+          src="/images/curated/theory_imgs/cc_work_001s.jpg"
+          alt="Studio"
+        />
+
+        <div class="archive-card-text">
+          <p>Where It Happens</p>
+          <h2>Studio</h2>
+        </div>
+      </a>
+
+      <a class="archive-card" href="/gene.html">
+        <img
+          src="/images/curated/theory_imgs/gene_001s.png"
+          alt="GENE"
+        />
+
+        <div class="archive-card-text">
+          <p>Watcher</p>
+          <h2>GENE</h2>
+        </div>
+      </a>
+
     </section>
+
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>
