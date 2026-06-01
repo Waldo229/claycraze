@@ -845,3 +845,51 @@ a {
     min-height: 420px;
   }
 }
+/* Monk seal headings */
+
+.room-heading-with-seal {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.room-seal {
+  width: 96px;
+  height: 96px;
+  flex: 0 0 96px;
+  border-radius: 18px;
+  object-fit: cover;
+  opacity: 0.86;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.32);
+}
+
+.room-heading-copy h1 {
+  margin: 0;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.95;
+  font-weight: 400;
+  color: #f4e8cc;
+}
+
+.room-heading-copy p {
+  margin: 0.75rem 0 0;
+  max-width: 680px;
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: rgba(244,232,204,0.76);
+}
+
+@media (max-width: 640px) {
+  .room-heading-with-seal {
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .room-seal {
+    width: 72px;
+    height: 72px;
+    flex-basis: 72px;
+    border-radius: 14px;
+  }
+}
