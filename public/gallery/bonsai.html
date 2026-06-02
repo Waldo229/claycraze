@@ -6,7 +6,7 @@
 
   <title>Bonsai | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3010" />
+  <link rel="stylesheet" href="/css/styles.css?v=3011" />
 </head>
 
 <body class="practice-page bonsai-page">
@@ -45,16 +45,24 @@
 
     </section>
 
-    <section class="site-search minimalist-search">
+    <section class="site-search minimalist-search" aria-label="Site search">
+
+      <label class="search-label" for="siteSearchInput">
+        Search ClaycrazE
+      </label>
 
       <input
         type="search"
         id="siteSearchInput"
-        placeholder="Search"
+        placeholder="Search forms, pots, glaze, notes..."
         autocomplete="off"
       />
 
-      <div id="siteSearchResults" class="site-search-results"></div>
+      <div
+        id="siteSearchResults"
+        class="site-search-results"
+        aria-live="polite"
+      ></div>
 
     </section>
 
@@ -124,7 +132,7 @@
 
   </main>
 
-  <script src="/js/search.js?v=1"></script>
+  <script src="/js/search.js?v=2"></script>
 
 </body>
 </html>
