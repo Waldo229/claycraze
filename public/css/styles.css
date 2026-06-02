@@ -1138,6 +1138,7 @@ a {
   .bonsai-form-grid {
     grid-template-columns: 1fr;
   }
+}
 .welcome-card img {
   width: 100%;
   height: 220px;
@@ -1147,4 +1148,30 @@ a {
 
 .welcome-card {
   min-height: 340px;
-}}
+}
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.social-links a {
+  color: #e8dcc2;
+  text-decoration: none;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.social-links a:hover {
+  opacity: 1;
+}
+.site-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-brand-link {
+  color: #f2e6c9;
+  text-decoration: none;
+}
