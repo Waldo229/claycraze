@@ -1138,8 +1138,13 @@ a {
   .bonsai-form-grid {
     grid-template-columns: 1fr;
   }
+}
 .welcome-card img {
-    width: 100%;
-    height: 180 px;
-    object-fit: cover;
-}}
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.welcome-card {
+  min-height: 280px;
+}
