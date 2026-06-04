@@ -65,7 +65,7 @@
                 src="${topSrc}"
                 alt="${escapeHtml(piece.title || piece.id)} ${escapeHtml(piece.id)} top view"
                 class="flip-face front"
-              />
+              >
               ${
                 hasBottom
                   ? `
@@ -73,7 +73,7 @@
                 src="${bottomSrc}"
                 alt="${escapeHtml(piece.title || piece.id)} ${escapeHtml(piece.id)} underside"
                 class="flip-face back"
-              />
+              >
               `
                   : ""
               }

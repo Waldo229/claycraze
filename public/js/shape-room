@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <img
               src="${image}"
               alt="${piece.piece_number}"
-            />
+            >
 
           </div>
 

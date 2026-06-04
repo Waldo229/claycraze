@@ -68,7 +68,7 @@ function runSearch(query) {
 
     return `
       <a class="site-search-result" href="${href}">
-        ${image ? `<img src="${image}" alt="${escapeHtml(piece.title || piece.id)}" />` : ""}
+        ${image ? `<img src="${image}" alt="${escapeHtml(piece.title || piece.id)}" >` : ""}
         <span>
           <strong>${escapeHtml(piece.title || piece.id)}</strong>
           <small>
@@ -86,7 +86,7 @@ function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
+    .replace(>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }

@@ -72,7 +72,7 @@ function buildImageHtml(imagePath, altText) {
       alt="${escapeAttribute(altText || "ClaycrazE piece")}"
       loading="lazy"
       onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
-    />
+    >
   `;
 }
 
@@ -132,7 +132,7 @@ function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
+    .replace(>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
@@ -142,7 +142,7 @@ function escapeAttribute(value) {
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(>/g, "&gt;");
 }
 
 loadRectangles();

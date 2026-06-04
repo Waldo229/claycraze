@@ -58,7 +58,7 @@
                   src="${imageSrc}"
                   alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} top view"
                   loading="lazy"
-                />
+                >
               </div>
 
               <div class="gallery-card-body">
