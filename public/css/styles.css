@@ -641,10 +641,10 @@ a {
 /* Minimal search */
 
 .minimalist-search {
-  max-width: 520px;
-  margin: -1.5rem auto 3rem;
+  max-width: 620px;
+  margin: 2rem 0 3rem;
   padding: 0;
-  background: transparent;
+  background: #8e8c8c;
   border: 0;
   box-shadow: none;
 }
@@ -685,6 +685,7 @@ a {
   object-fit: cover;
   border-radius: 10px;
 }
+
 
 /* Topic cards — Theory room subfolders */
 
