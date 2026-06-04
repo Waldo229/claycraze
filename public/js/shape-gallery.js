@@ -306,6 +306,7 @@ function clean(value) {
 function escapeAttribute(value) {
   return escapeHtml(value);
 }
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
