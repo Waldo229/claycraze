@@ -637,21 +637,7 @@ a {
   .gallery-page {
     padding: 2rem 1rem 4rem;
   }
-}
-.minimalist-search input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(242, 230, 201, 0.22);
 
-  background: rgba(255, 248, 238, 0.08);
-
-  color: #f4e8cc;
-  font-family: inherit;
-  font-size: 1rem;
-
-  backdrop-filter: blur(4px);
-}
 
 /* Topic cards — Theory room subfolders */
 
@@ -1002,4 +988,4 @@ a {
 .site-brand-link {
   color: #f2e6c9;
   text-decoration: none;
-}
+} }
