@@ -988,4 +988,68 @@ a {
 .site-brand-link {
   color: #f2e6c9;
   text-decoration: none;
-} }
+} 
+/* Poor Boy kiln page */
+
+.poorboy-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4rem;
+
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 2rem 2rem 5rem;
+}
+
+.poorboy-image-column {
+  flex: 0 0 460px;
+}
+
+.poorboy-image {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+}
+
+.poorboy-copy {
+  flex: 1;
+  max-width: 520px;
+  text-align: right;
+}
+
+.poorboy-copy h2 {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+}
+
+.poorboy-copy h3 {
+  margin-top: 0;
+  margin-bottom: 1.75rem;
+  font-weight: normal;
+  opacity: 0.8;
+}
+
+.poorboy-copy p {
+  line-height: 1.75;
+}
+
+@media (max-width: 900px) {
+  .poorboy-layout {
+    display: block;
+  }
+
+  .poorboy-image-column {
+    width: 100%;
+  }
+
+  .poorboy-image {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .poorboy-copy {
+    max-width: none;
+    text-align: left;
+  }
+}
