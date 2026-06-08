@@ -1096,3 +1096,89 @@ a {
     margin-bottom: 2rem;
   }
 }
+/* Places page */
+
+.places-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 4rem;
+
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 2rem 2rem 5rem;
+}
+
+.places-feature-image {
+  width: 460px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.places-copy {
+  flex: 1;
+  max-width: 560px;
+}
+
+.places-copy h2 {
+  margin-top: 0;
+  font-size: 2.75rem;
+}
+
+.places-copy p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+  .places-layout {
+    display: block;
+  }
+
+  .places-feature-image {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+}
+/* Materials page */
+
+.materials-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 4rem;
+
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 2rem 2rem 5rem;
+}
+
+.materials-feature-image {
+  width: 460px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.materials-copy {
+  flex: 1;
+  max-width: 560px;
+}
+
+.materials-copy h2 {
+  margin-top: 0;
+  font-size: 2.75rem;
+}
+
+.materials-copy p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+  .materials-layout {
+    display: block;
+  }
+
+  .materials-feature-image {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+}
