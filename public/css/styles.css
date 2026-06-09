@@ -1337,3 +1337,10 @@ a {
     padding: 1.15rem 1.2rem;
   }
 }
+.gene-event.simple .simple-bullet {
+  animation: none;
+  width: 12px;
+  height: 12px;
+  background: rgba(190, 42, 28, 0.95);
+  box-shadow: 0 0 14px rgba(190, 42, 28, 0.6);
+}
