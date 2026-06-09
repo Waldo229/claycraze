@@ -1182,3 +1182,22 @@ a {
     margin-bottom: 2rem;
   }
 }
+.gene-reveal-link {
+  margin-top: 2rem;
+}
+
+.gene-reveal-link a {
+  color: #d8b35f;
+  text-decoration: none;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+
+  transition:
+    color 0.3s ease,
+    padding-left 0.3s ease;
+}
+
+.gene-reveal-link a:hover {
+  color: #f4e8cc;
+  padding-left: 0.4rem;
+}
