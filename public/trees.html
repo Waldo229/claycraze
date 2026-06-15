@@ -61,9 +61,14 @@
 
         const trees = await response.json();
 
-        const publicTrees = trees.filter(tree =>
-          tree.status !== "archive"
-        );
+        console.log("Trees loaded:", trees);
+
+const publicTrees = trees.filter(tree => {
+  const status = (tree.status || "").trim().toLowerCase();
+  return status !== "archive";
+});
+
+console.log("Public trees:", publicTrees);
 
         if (!publicTrees.length) {
           grid.innerHTML = "<p>No trees have been posted yet.</p>";
