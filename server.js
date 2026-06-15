@@ -1162,13 +1162,16 @@ app.post("/api/save-tree", async (req, res) => {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
-    const treeImagePath = path.join(TREES_DIR, `${id}.jpg`);
+   const treeImagePath = path.join(TREES_DIR, `${id}.jpg`);
 
 if (tree.tree_image_data) {
   saveDataUrlImage(tree.tree_image_data, treeImagePath);
+
   tree.image_path = `/images/trees/${id}.jpg`;
+
   delete tree.tree_image_data;
-} 
+};
+
     const savedTree = {
       ...tree,
       id,
