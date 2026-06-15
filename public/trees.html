@@ -6,7 +6,7 @@
 
   <title>Trees | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3024">
+  <link rel="stylesheet" href="/css/styles.css?v=3025">
 </head>
 
 <body class="practice-page trees-page">
@@ -28,7 +28,7 @@
     </div>
   </header>
 
-  <main class="threshold-page">
+  <main class="threshold-page trees-showcase">
 
     <section class="threshold-intro">
       <h1>Trees</h1>
@@ -39,7 +39,7 @@
     </section>
 
     <section
-      class="gallery-grid"
+      class="trees-grid"
       id="treesGrid"
       aria-label="Trees showcase"
     >
@@ -61,22 +61,17 @@
 
         const trees = await response.json();
 
-        console.log("Trees loaded:", trees);
-
-const publicTrees = trees.filter(tree => {
-  const status = (tree.status || "").trim().toLowerCase();
-  return status !== "archive";
-});
-
-console.log("Public trees:", publicTrees);
+        const publicTrees = trees.filter((tree) => {
+          const status = (tree.status || "").trim().toLowerCase();
+          return status !== "archive";
+        });
 
         if (!publicTrees.length) {
-          grid.innerHTML = "<p>No trees have been posted yet.</p>";
+          grid.innerHTML = "<p class=\"loading-message\">No trees have been posted yet.</p>";
           return;
         }
 
-        grid.innerHTML = publicTrees.map(tree => {
-          const id = tree.id || "";
+        grid.innerHTML = publicTrees.map((tree) => {
           const image = tree.image_path || "/images/trees/placeholder.jpg";
           const title = tree.title || "Untitled Tree";
           const species = tree.species || "";
@@ -87,16 +82,16 @@ console.log("Public trees:", publicTrees);
           const description = tree.description || "";
 
           return `
-            <article class="gallery-card tree-card">
-              <img
-                src="${image}"
-                alt="${title}"
-                loading="lazy"
-              >
+            <article class="tree-card">
+              <figure class="tree-card-image-wrap">
+                <img
+                  src="${image}"
+                  alt="${title}"
+                  loading="lazy"
+                >
+              </figure>
 
-              <div class="gallery-card-body">
-                ${id ? `<p class="piece-id"><strong>${id}</strong></p>` : ""}
-
+              <div class="tree-card-body">
                 <h2>${title}</h2>
 
                 ${species ? `<p class="tree-species">${species}</p>` : ""}
@@ -110,7 +105,7 @@ console.log("Public trees:", publicTrees);
 
                 ${trainingSince ? `<p class="tree-training">In training since ${trainingSince}</p>` : ""}
 
-                ${description ? `<p>${description}</p>` : ""}
+                ${description ? `<p class="tree-description">${description}</p>` : ""}
               </div>
             </article>
           `;
@@ -118,7 +113,7 @@ console.log("Public trees:", publicTrees);
       }
       catch (error) {
         console.error(error);
-        grid.innerHTML = "<p>Unable to load trees at this time.</p>";
+        grid.innerHTML = "<p class=\"loading-message\">Unable to load trees at this time.</p>";
       }
     }
 
