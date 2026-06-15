@@ -10,5 +10,17 @@
     "id": "plato",
     "updated_at": "2026-06-15T21:02:00.841Z",
     "created_at": "2026-06-15T21:02:00.841Z"
+  },
+  {
+    "title": "The Old Man",
+    "species": "Juniper",
+    "status": "nfs",
+    "price": "",
+    "owner_credit": "Collection of Jim Alexander",
+    "description": "I acquired this tree in 2017. In 2023 I attended a workshop sponsored by the Virginia Bonsai Society given by Jen Price. At that time she made a few observations, the tree desperately needed re-potting, she advised to leave the tree alone for 2 or 3 years before thinking about restyling, and she estimated the tree to be about 80 years old.",
+    "image_path": "/images/trees/the-old-man.jpg",
+    "id": "the-old-man",
+    "updated_at": "2026-06-15T22:37:16.087Z",
+    "created_at": "2026-06-15T22:37:16.087Z"
   }
 ]
