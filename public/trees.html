@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>Trees | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3024" >
+</head>
+
+<body class="practice-page trees-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+
+```
+  <a class="site-brand" href="/index.html">
+    <span class="site-title">ClaycrazE</span>
+    <span class="site-tag">Theory &amp; Practice</span>
+  </a>
+
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="/index.html">Home</a>
+    <a href="/theory.html">Theory</a>
+    <a class="active" href="/practice.html">Practice</a>
+  </nav>
+
+</div>
+```
+
+  </header>
+
+  <main class="threshold-page">
+
+```
+<section class="threshold-intro">
+  <h1>Trees</h1>
+
+  <p>
+    A small showcase of trees in the ClaycrazE studio and bonsai circle.
+  </p>
+</section>
+
+<section
+  class="gallery-grid"
+  id="treesGrid"
+  aria-label="Trees showcase"
+>
+  <p class="loading-message">Loading trees...</p>
+</section>
+```
+
+  </main>
+
+  <script>
+
+    async function loadTrees() {
+
+      const grid = document.getElementById("treesGrid");
+
+      try {
+
+        const response =
+          await fetch("/data/trees.json?v=" + Date.now());
+
+        if (!response.ok) {
+          throw new Error("Could not load trees.json");
+        }
+
+        const trees = await response.json();
+
+        const publicTrees = trees.filter(tree =>
+          tree.status !== "archive"
+        );
+
+        if (!publicTrees.length) {
+          grid.innerHTML =
+            "<p>No trees have been posted yet.</p>";
+          return;
+        }
+
+        grid.innerHTML = publicTrees.map(tree => {
+
+          const id =
+            tree.id || "";
+
+          const image =
+            tree.image_path ||
+            "/images/trees/placeholder.jpg";
+
+          const title =
+            tree.title || "Untitled Tree";
+
+          const species =
+            tree.species || "";
+
+          const status =
+            tree.status || "nfs";
+
+          const price =
+            tree.price
+              ? "$" + tree.price
+              : "";
+
+          const ownerCredit =
+            tree.owner_credit || "";
+
+          const trainingSince =
+            tree.training_since || "";
+
+          const description =
+            tree.description || "";
+
+          return `
+            <article class="gallery-card tree-card">
+
+              <img
+                src="${image}"
+                alt="${title}"
+                loading="lazy"
+              >
+
+              <div class="gallery-card-body">
+
+                ${
+                  id
+                    ? `<p class="piece-id"><strong>${id}</strong></p>`
+                    : ""
+                }
+
+                <h2>${title}</h2>
+
+                ${
+                  species
+                    ? `<p class="tree-species">${species}</p>`
+                    : ""
+                }
+
+                <p class="tree-status">
+                  <strong>${status.toUpperCase()}</strong>
+                  ${price ? ` · ${price}` : ""}
+                </p>
+
+                ${
+                  ownerCredit
+                    ? `<p class="tree-credit">${ownerCredit}</p>`
+                    : ""
+                }
+
+                ${
+                  trainingSince
+                    ? `<p class="tree-training">In training since ${trainingSince}</p>`
+                    : ""
+                }
+
+                ${
+                  description
+                    ? `<p>${description}</p>`
+                    : ""
+                }
+
+              </div>
+
+            </article>
+          `;
+
+        }).join("");
+
+      }
+      catch (error) {
+
+        console.error(error);
+
+        grid.innerHTML =
+          "<p>Unable to load trees at this time.</p>";
+      }
+    }
+
+    loadTrees();
+
+  </script>
+
+</body>
+</html>

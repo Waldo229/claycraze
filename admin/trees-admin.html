@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>ClaycrazE Trees Intake</title>
+
+  <link rel="stylesheet" href="/css/admin.css?v=3001" >
+</head>
+
+<body>
+
+  <main class="admin-shell">
+
+    <section class="admin-card">
+
+      <h1>ClaycrazE Trees Intake</h1>
+
+      <p class="admin-intro">
+        Intake records the tree. Curation comes later.
+      </p>
+
+      <form id="treeForm">
+
+        <label>
+          Tree Image *
+          <input type="file" id="treeImage" accept="image/jpeg" required >
+        </label>
+
+        <label>
+          Tree Title *
+          <input type="text" id="title" placeholder="Studio Juniper" required >
+        </label>
+
+        <label>
+          Species
+          <input type="text" id="species" placeholder="Juniper / Maple / Pine" >
+        </label>
+
+        <label>
+          Status *
+          <select id="status" required>
+            <option value="nfs">NFS</option>
+            <option value="available">Available</option>
+            <option value="acquired">Acquired</option>
+            <option value="on-loan">On loan</option>
+            <option value="archive">Archive</option>
+          </select>
+        </label>
+
+        <label>
+          Price
+          <input type="text" id="price" placeholder="125" >
+        </label>
+
+        <label>
+          Owner Credit
+          <input type="text" id="ownerCredit" value="Collection of Jim Alexander" >
+        </label>
+
+        <label>
+          Description
+          <textarea id="description" rows="6" placeholder="A studio tree in training."></textarea>
+        </label>
+
+        <button type="submit" id="submitButton">
+          Create Tree
+        </button>
+
+      </form>
+
+      <div id="statusBox" class="status-box"></div>
+
+    </section>
+
+  </main>
+
+  <script src="/admin/js/trees-admin.js?v=3001"></script>
+
+</body>
+</html>
