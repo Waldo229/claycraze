@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 10000;
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
 const ADMIN_DIR = path.join(ROOT, "admin");
-const DATA_DIR = path.join(PUBLIC_DIR, "data");
+const DATA_DIR = path.join(PUBLIC_DIR, "data");app.post
 const BACKUP_DIR = path.join(DATA_DIR, "backups");
 const PUBLIC_IMAGES_DIR = path.join(PUBLIC_DIR, "images");
 const FULL_DIR = path.join(PUBLIC_IMAGES_DIR, "full");
@@ -1130,6 +1130,73 @@ app.post("/api/save-curation", async (req, res) => {
     });
   }
 });
+
+   // <-- end of save-curation
+
+
+app.post("/api/save-tree", async (req, res) => {
+   try {
+    const tree = req.body.tree || req.body;
+
+    if (!tree.title) {
+      return res.status(400).json({
+        ok: false,
+        error: "Tree title is required."
+      });
+    }
+
+    const treesPath = path.join(DATA_DIR, "trees.json");
+
+    let trees = [];
+    if (fs.existsSync(treesPath)) {
+      trees = JSON.parse(fs.readFileSync(treesPath, "utf8"));
+      if (!Array.isArray(trees)) trees = [];
+    }
+
+    const safeTitle = String(tree.title || "tree").trim();
+    const id =
+      tree.id ||
+      safeTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+    const savedTree = {
+      ...tree,
+      id,
+      updated_at: new Date().toISOString()
+    };
+
+    const index = trees.findIndex((t) => t.id === id);
+
+    if (index >= 0) {
+      trees[index] = {
+        ...trees[index],
+        ...savedTree
+      };
+    } else {
+      savedTree.created_at = savedTree.updated_at;
+      trees.push(savedTree);
+    }
+
+    fs.writeFileSync(treesPath, JSON.stringify(trees, null, 2), "utf8");
+
+    res.json({
+      ok: true,
+      message: "Tree saved successfully.",
+      tree: savedTree
+    });
+  } catch (err) {
+    console.error("SAVE TREE ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message || "Could not save tree."
+    });
+  }
+});
+
+
 
 app.get("/admin/restore-from-siteground", async (req, res) => {
   try {
