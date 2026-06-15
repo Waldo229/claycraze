@@ -16,6 +16,7 @@ const ADMIN_DIR = path.join(ROOT, "admin");
 const DATA_DIR = path.join(PUBLIC_DIR, "data");app.post
 const BACKUP_DIR = path.join(DATA_DIR, "backups");
 const PUBLIC_IMAGES_DIR = path.join(PUBLIC_DIR, "images");
+const TREES_DIR = path.join(PUBLIC_IMAGES_DIR, "trees");
 const FULL_DIR = path.join(PUBLIC_IMAGES_DIR, "full");
 const THUMBS_DIR = path.join(PUBLIC_IMAGES_DIR, "thumbs");
 const DB_PATH = path.join(ROOT, "claycraze_inventory.db");
@@ -31,11 +32,12 @@ let STARTUP_RESTORE = {
   time: null,
 };
 
-for (const dir of [
+for (const dir of [TREES_DIR,
   PUBLIC_DIR,
   ADMIN_DIR,
   DATA_DIR,
   BACKUP_DIR,
+
   PUBLIC_IMAGES_DIR,
   FULL_DIR,
   THUMBS_DIR,
@@ -1160,7 +1162,13 @@ app.post("/api/save-tree", async (req, res) => {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
+    const treeImagePath = path.join(TREES_DIR, `${id}.jpg`);
 
+if (tree.tree_image_data) {
+  saveDataUrlImage(tree.tree_image_data, treeImagePath);
+  tree.image_path = `/images/trees/${id}.jpg`;
+  delete tree.tree_image_data;
+} 
     const savedTree = {
       ...tree,
       id,
