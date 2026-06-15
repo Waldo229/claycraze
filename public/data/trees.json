@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "title": "plato",
+    "species": "Juniper",
+    "status": "nfs",
+    "price": "",
+    "owner_credit": "Collection of Jim Alexander",
+    "description": "little big tree",
+    "image_path": "/images/trees/plato.jpg",
+    "id": "plato",
+    "updated_at": "2026-06-15T21:02:00.841Z",
+    "created_at": "2026-06-15T21:02:00.841Z"
+  }
+]

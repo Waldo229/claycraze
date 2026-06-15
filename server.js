@@ -225,7 +225,7 @@ async function deployToSiteGround(filesToDeploy) {
   await runCommand("ssh", [
     ...sshArgs,
     remote,
-    `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/data`,
+   `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/images/trees ${SG_PUBLIC_HTML}/data`
   ]);
 
   for (const item of filesToDeploy) {
@@ -1191,6 +1191,25 @@ if (tree.tree_image_data) {
     }
 
     fs.writeFileSync(treesPath, JSON.stringify(trees, null, 2), "utf8");
+
+    const sgPublicHtml =
+  process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
+
+const filesToDeploy = [
+  {
+    localPath: treesPath,
+    remotePath: `${sgPublicHtml}/data/trees.json`,
+  },
+];
+
+if (tree.image_path) {
+  filesToDeploy.push({
+    localPath: treeImagePath,
+    remotePath: `${sgPublicHtml}/images/trees/${id}.jpg`,
+  });
+}
+
+await deployToSiteGround(filesToDeploy);
 
     res.json({
       ok: true,
