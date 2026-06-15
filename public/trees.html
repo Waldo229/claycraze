@@ -6,7 +6,7 @@
 
   <title>Trees | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3025">
+  <link rel="stylesheet" href="/css/styles.css?v=3026">
 </head>
 
 <body class="practice-page trees-page">
@@ -28,7 +28,7 @@
     </div>
   </header>
 
-  <main class="threshold-page trees-showcase">
+  <main class="threshold-page">
 
     <section class="threshold-intro">
       <h1>Trees</h1>
@@ -39,7 +39,7 @@
     </section>
 
     <section
-      class="trees-grid"
+      class="gallery-grid trees-grid"
       id="treesGrid"
       aria-label="Trees showcase"
     >
@@ -67,7 +67,7 @@
         });
 
         if (!publicTrees.length) {
-          grid.innerHTML = "<p class=\"loading-message\">No trees have been posted yet.</p>";
+          grid.innerHTML = '<p class="loading-message">No trees have been posted yet.</p>';
           return;
         }
 
@@ -82,16 +82,14 @@
           const description = tree.description || "";
 
           return `
-            <article class="tree-card">
-              <figure class="tree-card-image-wrap">
-                <img
-                  src="${image}"
-                  alt="${title}"
-                  loading="lazy"
-                >
-              </figure>
+            <article class="gallery-card tree-card">
+              <img
+                src="${image}"
+                alt="${title}"
+                loading="lazy"
+              >
 
-              <div class="tree-card-body">
+              <div class="gallery-card-body">
                 <h2>${title}</h2>
 
                 ${species ? `<p class="tree-species">${species}</p>` : ""}
@@ -110,10 +108,9 @@
             </article>
           `;
         }).join("");
-      }
-      catch (error) {
+      } catch (error) {
         console.error(error);
-        grid.innerHTML = "<p class=\"loading-message\">Unable to load trees at this time.</p>";
+        grid.innerHTML = '<p class="loading-message">Unable to load trees at this time.</p>';
       }
     }
 
