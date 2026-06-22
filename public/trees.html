@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
 
   <title>Trees | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3027">
+  <link rel="stylesheet" href="/css/styles.css?v=3028" >
 </head>
 
-<body class="practice-page trees-page">
+<body class="practice-page bonsai-page trees-page">
 
   <header class="site-header">
     <div class="header-shell">
@@ -22,97 +22,66 @@
       <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
-        <a class="active" href="/practice.html">Practice</a>
+        <a href="/practice.html">Practice</a>
       </nav>
 
     </div>
   </header>
 
-  <main class="threshold-page">
+  <main class="threshold-page bonsai-threshold">
 
-    <section class="threshold-intro">
-      <h1>Trees</h1>
+    <section class="bonsai-intro">
 
-    <section
-      class="gallery-grid trees-grid"
-      id="treesGrid"
-      aria-label="Trees showcase"
-    >
-      <p class="loading-message">Loading trees...</p>
+      <p class="threshold-kicker">Theory + Practice / Trees</p>
+
+      <h1>Trees organized by artist.</h1>
+
+      <p>
+        Living material, shaped through time. Each artist page gathers trees,
+        notes, and visual records from the studio.
+      </p>
+
+    </section>
+
+    <section class="bonsai-showcase" aria-label="Tree artists">
+
+      <div class="bonsai-unity-panel">
+        <img
+          src="/images/monks_4.jpg?v=1"
+          alt="Han Shan and Shih-te laughing"
+          class="bonsai-unity-image"
+        >
+      </div>
+
+      <div class="bonsai-form-grid">
+
+        <a class="bonsai-form-card" href="/trees/jim-alexander/">
+          <img
+            src="/images/trees/jim-alexander/han-shan/han-shan.jpg?v=1"
+            alt="Trees by Jim Alexander"
+          >
+          <div>
+            <p>Artist</p>
+            <h2>Jim Alexander</h2>
+          </div>
+        </a>
+
+        <a class="bonsai-form-card" href="/trees/chris-schmuck/">
+          <img
+            src="/images/trees/chris-schmuck/tree1/tree1.jpg?v=1"
+            alt="Trees by Chris Schmuck"
+          >
+          <div>
+            <p>Artist</p>
+            <h2>Chris Schmuck</h2>
+          </div>
+        </a>
+
+      </div>
+
     </section>
 
   </main>
-
-  <script>
-    async function loadTrees() {
-      const grid = document.getElementById("treesGrid");
-
-      try {
-        const response = await fetch("/data/trees.json?v=" + Date.now());
-
-        if (!response.ok) {
-          throw new Error("Could not load trees.json");
-        }
-
-        const trees = await response.json();
-
-        const publicTrees = trees.filter((tree) => {
-          const status = (tree.status || "").trim().toLowerCase();
-          return status !== "archive";
-        });
-
-        if (!publicTrees.length) {
-          grid.innerHTML = '<p class="loading-message">No trees have been posted yet.</p>';
-          return;
-        }
-
-        grid.innerHTML = publicTrees.map((tree) => {
-          const image = tree.image_path || "/images/trees/placeholder.jpg";
-          const title = tree.title || "Untitled Tree";
-          const species = tree.species || "";
-          const status = tree.status || "nfs";
-          const price = tree.price ? "$" + tree.price : "";
-          const ownerCredit = tree.owner_credit || "";
-          const trainingSince = tree.training_since || "";
-          const description = tree.description || "";
-
-          return `
-            <article class="gallery-card tree-card">
-              <a class="tree-image-link" href="${image}" aria-label="View full-size image of ${title}">
-                <img
-                  src="${image}"
-                  alt="${title}"
-                  loading="lazy"
-                >
-              </a>
-
-              <div class="gallery-card-body">
-                <h2>${title}</h2>
-
-                ${species ? `<p class="tree-species">${species}</p>` : ""}
-
-                <p class="tree-status">
-                  <strong>${status.toUpperCase()}</strong>
-                  ${price ? ` · ${price}` : ""}
-                </p>
-
-                ${ownerCredit ? `<p class="tree-credit">${ownerCredit}</p>` : ""}
-
-                ${trainingSince ? `<p class="tree-training">In training since ${trainingSince}</p>` : ""}
-
-                ${description ? `<p class="tree-description">${description}</p>` : ""}
-              </div>
-            </article>
-          `;
-        }).join("");
-      } catch (error) {
-        console.error(error);
-        grid.innerHTML = '<p class="loading-message">Unable to load trees at this time.</p>';
-      }
-    }
-
-    loadTrees();
-  </script>
 
 </body>
 </html>
