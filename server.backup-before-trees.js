@@ -287,11 +287,18 @@ function fetchText(url) {
   });
 }
 
+
 async function fetchPiecesJsonFromSiteGround() {
-  const raw = await fetchText(SG_PUBLIC_DATA_URL);
+  const raw = await fetchText(
+    `${SG_PUBLIC_DATA_URL}?v=${Date.now()}`
+  );
+
   const trimmed = raw.trim();
 
   if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")) {
+    console.error("FIRST 500 CHARACTERS:");
+    console.error(trimmed.substring(0, 500));
+
     throw new Error(`${SG_PUBLIC_DATA_URL} returned HTML instead of JSON.`);
   }
 

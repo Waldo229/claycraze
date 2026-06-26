@@ -289,7 +289,7 @@ function fetchText(url) {
   });
 }
 
-async function fetchPiecesJsonFromSiteGround() {
+`${SG_PUBLIC_DATA_URL}?v=${Date.now()}`
   const raw = await fetchText(SG_PUBLIC_DATA_URL);
   const trimmed = raw.trim();
 
