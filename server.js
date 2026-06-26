@@ -1136,7 +1136,7 @@ app.post("/api/save-curation", async (req, res) => {
     let sgPieces;
 
     try {
-      sgPieces = await fetchPiecesJsonFromSiteGround();
+     sgPieces = await fetchPiecesJsonViaScp();
     } catch (verifyErr) {
       throw new Error(
         `SITEGROUND VERIFY FAILED: Could not fetch canonical pieces.json after publish. ${verifyErr.message}`

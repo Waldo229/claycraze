@@ -213,6 +213,38 @@ async function deployToSiteGround(filesToDeploy) {
     `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/data ${SG_PUBLIC_HTML}/data/backups`,
   ]);
 
+  async function fetchPiecesJsonViaScp() {
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } =
+    getSgConfig();
+
+  const keyPath = writeSshKey(SG_CI_KEY);
+  const remote = `${SG_USER}@${SG_HOST}`;
+  const remoteJson = `${remote}:${SG_PUBLIC_HTML}/data/pieces.json`;
+  const localTempJson = path.join(os.tmpdir(), `pieces-${Date.now()}.json`);
+
+  await runCommand("scp", [
+    "-P",
+    SG_PORT,
+    "-i",
+    keyPath,
+    "-o",
+    "StrictHostKeyChecking=no",
+    remoteJson,
+    localTempJson,
+  ]);
+
+  const raw = fs.readFileSync(localTempJson, "utf8");
+  fs.unlinkSync(localTempJson);
+
+  const pieces = JSON.parse(raw);
+
+  if (!Array.isArray(pieces)) {
+    throw new Error("SCP-restored pieces.json did not contain a JSON array.");
+  }
+
+  return pieces;
+}
+
   for (const item of filesToDeploy) {
     if (!item || !item.localPath || !item.remotePath) continue;
     if (!fs.existsSync(item.localPath)) continue;
