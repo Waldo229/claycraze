@@ -289,18 +289,22 @@ function fetchText(url) {
   });
 }
 
-`${SG_PUBLIC_DATA_URL}?v=${Date.now()}`
-  const raw = await fetchText(SG_PUBLIC_DATA_URL);
+async function fetchPiecesJsonFromSiteGround() {
+  const url = `${SG_PUBLIC_DATA_URL}?v=${Date.now()}`;
+  const raw = await fetchText(url);
   const trimmed = raw.trim();
 
   if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")) {
-    throw new Error(`${SG_PUBLIC_DATA_URL} returned HTML instead of JSON.`);
+    console.error("FIRST 500 CHARACTERS:");
+    console.error(trimmed.substring(0, 500));
+
+    throw new Error(`${url} returned HTML instead of JSON.`);
   }
 
   const pieces = JSON.parse(trimmed);
 
   if (!Array.isArray(pieces)) {
-    throw new Error(`${SG_PUBLIC_DATA_URL} did not contain a JSON array.`);
+    throw new Error(`${url} did not contain a JSON array.`);
   }
 
   return pieces;
