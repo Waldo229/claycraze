@@ -246,6 +246,42 @@ async function deployToSiteGround(filesToDeploy) {
 
   return true;
 }
+async function fetchPiecesJsonViaScp() {
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } =
+    getSgConfig();
+
+  const keyPath = writeSshKey(SG_CI_KEY);
+  const remote = `${SG_USER}@${SG_HOST}`;
+  const remoteJson = `${remote}:${SG_PUBLIC_HTML}/data/pieces.json`;
+  const localTempJson = path.join(os.tmpdir(), `pieces-${Date.now()}.json`);
+
+  await runCommand("scp", [
+    "-P",
+    SG_PORT,
+    "-i",
+    keyPath,
+    "-o",
+    "StrictHostKeyChecking=no",
+    remoteJson,
+    localTempJson,
+  ]);
+
+  const raw = fs.readFileSync(localTempJson, "utf8");
+
+  try {
+    fs.unlinkSync(localTempJson);
+  } catch (_) {
+    // Ignore cleanup errors
+  }
+
+  const pieces = JSON.parse(raw);
+
+  if (!Array.isArray(pieces)) {
+    throw new Error("SCP-restored pieces.json did not contain a JSON array.");
+  }
+
+  return pieces;
+}
 
 function fetchText(url) {
   return new Promise((resolve, reject) => {
@@ -641,8 +677,10 @@ async function replaceDbWithPieces(pieces) {
   return inserted;
 }
 
+
+
 async function restoreFromSiteGround() {
-  const pieces = await fetchPiecesJsonFromSiteGround();
+  const pieces = await fetchPiecesJsonViaScp();
   const localPath = path.join(DATA_DIR, "pieces.json");
 
   backupExistingPiecesJson();
