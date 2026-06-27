@@ -1094,7 +1094,8 @@ app.post("/api/save-curation", async (req, res) => {
 
       delete piece.top_image_data;
       delete piece.bottom_image_data;
-         savedPieces.push(await upsertPiece(piece));
+
+      savedPieces.push(await upsertPiece(piece));
     }
 
     const exported = await exportPiecesJsonPromise();
@@ -1132,11 +1133,10 @@ app.post("/api/save-curation", async (req, res) => {
         pieces: savedPieces,
       });
     }
-
     let sgPieces;
 
     try {
-      sgPieces = await fetchPiecesJsonViaScp();
+     sgPieces = await fetchPiecesJsonViaScp();
     } catch (verifyErr) {
       throw new Error(
         `SITEGROUND VERIFY FAILED: Could not fetch canonical pieces.json after publish. ${verifyErr.message}`
@@ -1152,7 +1152,7 @@ app.post("/api/save-curation", async (req, res) => {
         );
       }
     }
-
+    
     res.json({
       ok: true,
       archived: true,
@@ -1197,13 +1197,6 @@ app.post("/api/save-tree", async (req, res) => {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
 
-    const escapeHtml = (value) =>
-      String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-
     const treesPath = path.join(DATA_DIR, "trees.json");
 
     let trees = [];
@@ -1239,12 +1232,6 @@ app.post("/api/save-tree", async (req, res) => {
       delete tree.tree_image_data;
     }
 
-    const pageDir = path.join(PUBLIC_DIR, "trees", personSlug, treeSlug);
-    fs.mkdirSync(pageDir, { recursive: true });
-
-    const pagePath = `/trees/${personSlug}/${treeSlug}/`;
-    const localTreePagePath = path.join(pageDir, "index.html");
-
     const savedTree = {
       ...tree,
       id,
@@ -1252,60 +1239,9 @@ app.post("/api/save-tree", async (req, res) => {
       person_slug: personSlug,
       tree_slug: treeSlug,
       image_path: tree.image_path || `/images/trees/${personSlug}/${treeSlug}.jpg`,
-      page_path: pagePath,
+      page_path: `/trees/${personSlug}/${treeSlug}/`,
       updated_at: new Date().toISOString()
     };
-
-    const treePageHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" >
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
-  <title>${escapeHtml(savedTree.title)} | ClaycrazE Trees</title>
-  <link rel="stylesheet" href="/css/styles.css?v=3028" >
-  <link rel="stylesheet" href="/css/gallery.css?v=3004" >
-</head>
-
-<body class="practice-page trees-page">
-  <header class="site-header">
-    <div class="header-shell">
-      <a class="site-brand" href="/index.html">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
-      </a>
-
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="/index.html">Home</a>
-        <a href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-        <a class="active" href="/trees/">Trees</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="gallery-page">
-    <section class="gallery-intro minimalist-intro">
-      <h1>${escapeHtml(savedTree.title)}</h1>
-      <p>${escapeHtml(savedTree.species || "Bonsai tree")}</p>
-    </section>
-
-    <section class="piece-detail">
-      <figure>
-        <img src="${escapeHtml(savedTree.image_path)}" alt="${escapeHtml(savedTree.title)}" >
-      </figure>
-
-      <article>
-        <p><strong>Status:</strong> ${escapeHtml(savedTree.status || "")}</p>
-        <p><strong>Credit:</strong> ${escapeHtml(savedTree.owner_credit || "")}</p>
-        <p>${escapeHtml(savedTree.description || "")}</p>
-      </article>
-    </section>
-  </main>
-</body>
-</html>
-`;
-
-    fs.writeFileSync(localTreePagePath, treePageHtml, "utf8");
 
     const index = trees.findIndex((t) => t.id === id);
 
@@ -1324,29 +1260,10 @@ app.post("/api/save-tree", async (req, res) => {
     const sgPublicHtml =
       process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
-    const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY } = getSgConfig();
-    const keyPath = writeSshKey(SG_CI_KEY);
-    const remote = `${SG_USER}@${SG_HOST}`;
-
-    await runCommand("ssh", [
-      "-p",
-      SG_PORT,
-      "-i",
-      keyPath,
-      "-o",
-      "StrictHostKeyChecking=no",
-      remote,
-      `mkdir -p ${sgPublicHtml}/data ${sgPublicHtml}/images/trees/${personSlug} ${sgPublicHtml}/trees/${personSlug}/${treeSlug}`
-    ]);
-
     const filesToDeploy = [
       {
         localPath: treesPath,
         remotePath: `${sgPublicHtml}/data/trees.json`,
-      },
-      {
-        localPath: localTreePagePath,
-        remotePath: `${sgPublicHtml}/trees/${personSlug}/${treeSlug}/index.html`,
       },
     ];
 
@@ -1373,6 +1290,62 @@ app.post("/api/save-tree", async (req, res) => {
     });
   }
 });
+
+  
+    const savedTree = {
+      ...tree,
+      id,
+      updated_at: new Date().toISOString()
+    };
+
+    const index = trees.findIndex((t) => t.id === id);
+
+    if (index >= 0) {
+      trees[index] = {
+        ...trees[index],
+        ...savedTree
+      };
+    } else {
+      savedTree.created_at = savedTree.updated_at;
+      trees.push(savedTree);
+    }
+
+    fs.writeFileSync(treesPath, JSON.stringify(trees, null, 2), "utf8");
+
+    const sgPublicHtml =
+  process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
+
+const filesToDeploy = [
+  {
+    localPath: treesPath,
+    remotePath: `${sgPublicHtml}/data/trees.json`,
+  },
+];
+
+if (tree.image_path) {
+  filesToDeploy.push({
+    localPath: treeImagePath,
+    remotePath: `${sgPublicHtml}/images/trees/${id}.jpg`,
+  });
+}
+
+await deployToSiteGround(filesToDeploy);
+
+    res.json({
+      ok: true,
+      message: "Tree saved successfully.",
+      tree: savedTree
+    });
+  } catch (err) {
+    console.error("SAVE TREE ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message || "Could not save tree."
+    });
+  }
+});
+
 
 
 app.get("/admin/restore-from-siteground", async (req, res) => {

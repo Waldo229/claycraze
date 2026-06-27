@@ -25,12 +25,16 @@ form.addEventListener("submit", async function(event) {
     const treeImage = document.getElementById("treeImage").files[0];
 
     const tree = {
+      person_slug: document.getElementById("personSlug").value.trim(),
+      tree_slug: document.getElementById("treeSlug").value.trim(),
+
       title: document.getElementById("title").value.trim(),
       species: document.getElementById("species").value.trim(),
       status: document.getElementById("status").value.trim(),
       price: document.getElementById("price").value.trim(),
       owner_credit: document.getElementById("ownerCredit").value.trim(),
       description: document.getElementById("description").value.trim(),
+
       tree_image_data: await fileToDataUrl(treeImage)
     };
 
