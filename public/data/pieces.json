@@ -131,5 +131,24 @@
     "image_path_4": "",
     "status": "available",
     "price": "144"
+  },
+  {
+    "id": "SL-2606-001",
+    "shape": "SL",
+    "piece_number": 1,
+    "date_code": "2606",
+    "title": "Slab Bonsai Container",
+    "category": "bonsai",
+    "description": "Cornwall Green matte glaze rests over Phil Rogers white slip, catching in waves of sgraffito like water in worn stone. Low and quiet in profile, this container feels less like an object than a small landscape waiting for a tree. Fired to cone 10, approximately 2300°F, in oxidation, it is durable, weather resistant, and made for outdoor bonsai use.",
+    "clay_body": "Stoneware - Cone 10",
+    "glaze": "",
+    "notes": "",
+    "dimensions": "13 × 9 × .5 in.",
+    "image_path": "/images/thumbs/SL-2606-001_top_thumb.jpg",
+    "image_path_2": "/images/full/SL-2606-001_top.jpg",
+    "image_path_3": "/images/full/SL-2606-001_bottom.jpg",
+    "image_path_4": "",
+    "status": "available",
+    "price": ""
   }
 ]
