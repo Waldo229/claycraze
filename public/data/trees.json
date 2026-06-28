@@ -23,7 +23,7 @@
   {
     "id": "i-hardly-know-yew",
     "title": "I hardly know Yew",
-    "species": "Yew",
+    "species": "yew",
     "cultivar": "",
     "style": "",
     "person_slug": "jim-alexander",
@@ -36,10 +36,10 @@
     "pot_credit": "",
     "display_notes": "",
     "provenance": "",
-    "description": "This is a tree I've had since 2017. I acquired it at a nursery that decided to no longer carry shrubs and bought it on sale. This is the first tree I ever entered in a show, the Virginia Bonsai Society Annual Show at the Norfolk Botanical Garden, April 2026.",
+    "description": "my tree",
     "notes": "",
-    "created_at": "2026-06-28 15:09:39",
-    "updated_at": "2026-06-28 15:09:39"
+    "created_at": "2026-06-28 15:52:22",
+    "updated_at": "2026-06-28 15:52:22"
   },
   {
     "id": "shih-te",
@@ -47,19 +47,19 @@
     "species": "Black Pine",
     "cultivar": "",
     "style": "",
-    "person_slug": "",
-    "owner_slug": "",
-    "tree_slug": "",
-    "image_path": "/images/trees/shih-te.jpg",
-    "page_path": "",
+    "person_slug": "jim-alexander",
+    "owner_slug": "jim-alexander",
+    "tree_slug": "shih-te",
+    "image_path": "/images/trees/jim-alexander/shih-te.jpg",
+    "page_path": "/trees/jim-alexander/shih-te/",
     "status": "nfs",
     "owner_credit": "Collection of Jim Alexander",
     "pot_credit": "",
     "display_notes": "",
     "provenance": "",
-    "description": "This is one of the older trees in my collection. It was repotted in 2023 and allowed to regain its vigor. Three years later, it is ready to be styled.",
+    "description": "Black pine a big one",
     "notes": "",
-    "created_at": "2026-06-28 07:55:06",
-    "updated_at": "2026-06-28 07:55:06"
+    "created_at": "2026-06-28 16:09:51",
+    "updated_at": "2026-06-28 16:09:51"
   }
 ]
