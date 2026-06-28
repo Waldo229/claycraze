@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const topData = await fileToDataUrl(topImage);
       const bottomData = bottomImage ? await fileToDataUrl(bottomImage) : "";
-
       const thumbData = await createThumbDataUrl(topImage);
 
       const payload = {
@@ -137,6 +136,7 @@ function defaultTitle(shape) {
     RC: "Rectangular Bonsai Container",
     CS: "Cascade Bonsai Container",
     FF: "Freeform Bonsai Container",
+    SL: "Slab Bonsai Container",
     IK: "Ikebana Container",
     SC: "Sculpture"
   };
