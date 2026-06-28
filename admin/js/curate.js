@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
 const APP_VERSION = "260527-clean-no-labels-file";
-const SHAPE_MAP = FORM_TYPES;
+
 const FORM_TYPES = {
   OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
   RD: { label: "Round", category: "bonsai", title: "Round Bonsai Container" },
@@ -10,6 +10,7 @@ const FORM_TYPES = {
   FREE: { label: "Freeform", category: "vessel", title: "Freeform Ceramic Piece" },
   SL: { label: "Slab", category: "bonsai", title: "Slab Bonsai Container" },
 };
+const SHAPE_MAP = FORM_TYPES;
 let allPieces = [];
 let currentPiece = null;
 let formMode = "edit";
