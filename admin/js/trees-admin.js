@@ -53,7 +53,7 @@ form.addEventListener("submit", async function(event) {
     }
 
     statusBox.textContent =
-      `Tree saved: ${result.tree.id}. SiteGround archive confirmed.`;
+      result.message || `Tree saved: ${result.tree.id}. SiteGround archive confirmed.`;
 
     form.reset();
 

@@ -71,6 +71,30 @@ db.serialize(() => {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS trees (
+      id TEXT PRIMARY KEY,
+      title TEXT,
+      species TEXT,
+      cultivar TEXT,
+      style TEXT,
+      person_slug TEXT,
+      owner_slug TEXT,
+      tree_slug TEXT,
+      image_path TEXT,
+      page_path TEXT,
+      status TEXT DEFAULT 'active',
+      owner_credit TEXT,
+      pot_credit TEXT,
+      display_notes TEXT,
+      provenance TEXT,
+      description TEXT,
+      notes TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 });
 
 app.use(express.urlencoded({ extended: true, limit: "80mb" }));
@@ -194,10 +218,16 @@ function getSgConfig() {
   return { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML };
 }
 
-function writeSshKey(keyText) {
+function writeSshKey(keyTextOrPath) {
+  const value = String(keyTextOrPath || "").trim();
+
+  if (fs.existsSync(value)) {
+    return value;
+  }
+
   const keyPath = path.join(os.tmpdir(), "sg_ci_key");
 
-  fs.writeFileSync(keyPath, String(keyText).replace(/\r/g, ""), {
+  fs.writeFileSync(keyPath, value.replace(/\r/g, ""), {
     mode: 0o600,
   });
 
@@ -597,7 +627,213 @@ function upsertPiece(piece) {
     );
   });
 }
+const TREE_PUBLIC_FIELDS = `
+  id,
+  title,
+  species,
+  cultivar,
+  style,
+  person_slug,
+  owner_slug,
+  tree_slug,
+  image_path,
+  page_path,
+  status,
+  owner_credit,
+  pot_credit,
+  display_notes,
+  provenance,
+  description,
+  notes,
+  created_at,
+  updated_at
+`;
 
+function normalizeTreeStatus(status) {
+  const raw = cleanText(status).toLowerCase();
+  return raw || "active";
+}
+
+function upsertTree(tree) {
+  return new Promise((resolve, reject) => {
+    const finalTree = {
+      id: cleanText(tree.id),
+      title: cleanText(tree.title),
+      species: cleanText(tree.species),
+      cultivar: cleanText(tree.cultivar),
+      style: cleanText(tree.style),
+      person_slug: cleanText(tree.person_slug),
+      owner_slug: cleanText(tree.owner_slug),
+      tree_slug: cleanText(tree.tree_slug),
+      image_path: cleanText(tree.image_path),
+      page_path: cleanText(tree.page_path),
+      status: normalizeTreeStatus(tree.status),
+      owner_credit: cleanText(tree.owner_credit),
+      pot_credit: cleanText(tree.pot_credit),
+      display_notes: cleanText(tree.display_notes),
+      provenance: cleanText(tree.provenance),
+      description: cleanText(tree.description),
+      notes: cleanText(tree.notes),
+    };
+
+    db.run(
+      `
+      INSERT OR REPLACE INTO trees (
+        id,
+        title,
+        species,
+        cultivar,
+        style,
+        person_slug,
+        owner_slug,
+        tree_slug,
+        image_path,
+        page_path,
+        status,
+        owner_credit,
+        pot_credit,
+        display_notes,
+        provenance,
+        description,
+        notes,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `,
+      [
+        finalTree.id,
+        finalTree.title,
+        finalTree.species,
+        finalTree.cultivar,
+        finalTree.style,
+        finalTree.person_slug,
+        finalTree.owner_slug,
+        finalTree.tree_slug,
+        finalTree.image_path,
+        finalTree.page_path,
+        finalTree.status,
+        finalTree.owner_credit,
+        finalTree.pot_credit,
+        finalTree.display_notes,
+        finalTree.provenance,
+        finalTree.description,
+        finalTree.notes,
+      ],
+      function (err) {
+        if (err) return reject(err);
+        resolve(finalTree);
+      }
+    );
+  });
+}
+
+function backupExistingTreesJson() {
+  const sourcePath = path.join(DATA_DIR, "trees.json");
+
+  if (!fs.existsSync(sourcePath)) {
+    return "";
+  }
+
+  const backupName = `trees-${makeTimestamp()}.json`;
+  const backupPath = path.join(BACKUP_DIR, backupName);
+
+  fs.copyFileSync(sourcePath, backupPath);
+
+  console.log(`trees.json backup created: ${backupName}`);
+
+  return backupPath;
+}
+
+function exportTreesJson(callback, options = {}) {
+  const allowShrink = options.allowShrink === true;
+  const outPath = path.join(DATA_DIR, "trees.json");
+
+  let previousCount = 0;
+
+  if (fs.existsSync(outPath)) {
+    try {
+      const existing = JSON.parse(fs.readFileSync(outPath, "utf8"));
+      if (Array.isArray(existing)) {
+        previousCount = existing.length;
+      }
+    } catch (err) {
+      console.warn("Could not read existing trees.json:", err.message);
+    }
+  }
+
+  const sql = `
+    SELECT ${TREE_PUBLIC_FIELDS}
+    FROM trees
+    ORDER BY title ASC
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) return callback(err);
+
+    const newCount = Array.isArray(rows) ? rows.length : 0;
+
+    if (!allowShrink && previousCount > 0 && newCount < previousCount) {
+      return callback(
+        new Error(
+          `SAFETY LOCK: Export blocked. trees.json would shrink from ${previousCount} records to ${newCount}. Use explicit reset/delete workflow to allow shrink.`
+        )
+      );
+    }
+
+    backupExistingTreesJson();
+
+    fs.writeFileSync(outPath, JSON.stringify(rows, null, 2), "utf8");
+
+    console.log(`trees.json exported successfully (${newCount} records)`);
+
+    callback(null, newCount, outPath);
+  });
+}
+
+function exportTreesJsonPromise(options = {}) {
+  return new Promise((resolve, reject) => {
+    exportTreesJson((err, count, outPath) => {
+      if (err) return reject(err);
+      resolve({ count, outPath });
+    }, options);
+  });
+}
+
+async function fetchTreesJsonViaScp() {
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } =
+    getSgConfig();
+
+  const keyPath = writeSshKey(SG_CI_KEY);
+  const remote = `${SG_USER}@${SG_HOST}`;
+  const remoteJson = `${remote}:${SG_PUBLIC_HTML}/data/trees.json`;
+  const localTempJson = path.join(os.tmpdir(), `trees-${Date.now()}.json`);
+
+  await runCommand("scp", [
+    "-P",
+    SG_PORT,
+    "-i",
+    keyPath,
+    "-o",
+    "StrictHostKeyChecking=no",
+    remoteJson,
+    localTempJson,
+  ]);
+
+  const raw = fs.readFileSync(localTempJson, "utf8");
+
+  try {
+    fs.unlinkSync(localTempJson);
+  } catch (_) {
+    // Ignore cleanup errors
+  }
+
+  const trees = JSON.parse(raw);
+
+  if (!Array.isArray(trees)) {
+    throw new Error("SCP-restored trees.json did not contain a JSON array.");
+  }
+
+  return trees;
+}
 function clearInventoryTable() {
   return new Promise((resolve, reject) => {
     db.run(`DELETE FROM inventory`, [], (err) => {
@@ -1185,7 +1421,7 @@ app.post("/api/save-tree", async (req, res) => {
     if (!tree.title) {
       return res.status(400).json({
         ok: false,
-        error: "Tree title is required."
+        error: "Tree title is required.",
       });
     }
 
@@ -1204,15 +1440,7 @@ app.post("/api/save-tree", async (req, res) => {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
 
-    const treesPath = path.join(DATA_DIR, "trees.json");
-
-    let trees = [];
-    if (fs.existsSync(treesPath)) {
-      trees = JSON.parse(fs.readFileSync(treesPath, "utf8"));
-      if (!Array.isArray(trees)) trees = [];
-    }
-
-    const title = String(tree.title || "tree").trim();
+    const title = cleanText(tree.title || "tree");
 
     const personSlug =
       slugify(tree.person_slug) ||
@@ -1224,7 +1452,7 @@ app.post("/api/save-tree", async (req, res) => {
       slugify(tree.id) ||
       slugify(title);
 
-    const id = tree.id || treeSlug;
+    const id = cleanText(tree.id) || treeSlug;
 
     const imageDir = path.join(PUBLIC_DIR, "images", "trees", personSlug);
     fs.mkdirSync(imageDir, { recursive: true });
@@ -1233,9 +1461,7 @@ app.post("/api/save-tree", async (req, res) => {
 
     if (tree.tree_image_data) {
       saveDataUrlImage(tree.tree_image_data, treeImagePath);
-
       tree.image_path = `/images/trees/${personSlug}/${treeSlug}.jpg`;
-
       delete tree.tree_image_data;
     }
 
@@ -1250,10 +1476,12 @@ app.post("/api/save-tree", async (req, res) => {
       id,
       title,
       person_slug: personSlug,
+      owner_slug: cleanText(tree.owner_slug || personSlug),
       tree_slug: treeSlug,
-      image_path: tree.image_path || `/images/trees/${personSlug}/${treeSlug}.jpg`,
+      image_path:
+        tree.image_path || `/images/trees/${personSlug}/${treeSlug}.jpg`,
       page_path: pagePath,
-      updated_at: new Date().toISOString()
+      status: normalizeTreeStatus(tree.status),
     };
 
     const treePageHtml = `<!DOCTYPE html>
@@ -1307,41 +1535,15 @@ app.post("/api/save-tree", async (req, res) => {
 
     fs.writeFileSync(localTreePagePath, treePageHtml, "utf8");
 
-    const index = trees.findIndex((t) => t.id === id);
-
-    if (index >= 0) {
-      trees[index] = {
-        ...trees[index],
-        ...savedTree
-      };
-    } else {
-      savedTree.created_at = savedTree.updated_at;
-      trees.push(savedTree);
-    }
-
-    fs.writeFileSync(treesPath, JSON.stringify(trees, null, 2), "utf8");
+    const dbTree = await upsertTree(savedTree);
+    const exported = await exportTreesJsonPromise();
 
     const sgPublicHtml =
       process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
-    const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY } = getSgConfig();
-    const keyPath = writeSshKey(SG_CI_KEY);
-    const remote = `${SG_USER}@${SG_HOST}`;
-
-    await runCommand("ssh", [
-      "-p",
-      SG_PORT,
-      "-i",
-      keyPath,
-      "-o",
-      "StrictHostKeyChecking=no",
-      remote,
-      `mkdir -p ${sgPublicHtml}/data ${sgPublicHtml}/images/trees/${personSlug} ${sgPublicHtml}/trees/${personSlug}/${treeSlug}`
-    ]);
-
     const filesToDeploy = [
       {
-        localPath: treesPath,
+        localPath: exported.outPath,
         remotePath: `${sgPublicHtml}/data/trees.json`,
       },
       {
@@ -1350,7 +1552,7 @@ app.post("/api/save-tree", async (req, res) => {
       },
     ];
 
-    if (tree.image_path) {
+    if (fs.existsSync(treeImagePath)) {
       filesToDeploy.push({
         localPath: treeImagePath,
         remotePath: `${sgPublicHtml}/images/trees/${personSlug}/${treeSlug}.jpg`,
@@ -1359,20 +1561,46 @@ app.post("/api/save-tree", async (req, res) => {
 
     await deployToSiteGround(filesToDeploy);
 
+    let sgTrees;
+
+    try {
+      sgTrees = await fetchTreesJsonViaScp();
+    } catch (verifyErr) {
+      throw new Error(
+        `SITEGROUND VERIFY FAILED: Could not fetch canonical trees.json after publish. ${verifyErr.message}`
+      );
+    }
+
+    const found = sgTrees.find((t) => t.id === dbTree.id);
+
+    if (!found) {
+      throw new Error(
+        `SITEGROUND VERIFY FAILED: ${dbTree.id} was saved locally but not found in SiteGround trees.json.`
+      );
+    }
+
     res.json({
       ok: true,
-      message: "Tree saved successfully.",
-      tree: savedTree
+      archived: true,
+      deployed_to_siteground: true,
+      message:
+        "Truth confirmed: tree DB saved, trees.json exported, SiteGround archive updated, and canonical tree record verified.",
+      exported_count: exported.count,
+      tree: dbTree,
     });
   } catch (err) {
     console.error("SAVE TREE ERROR:", err);
 
     res.status(500).json({
       ok: false,
-      error: err.message || "Could not save tree."
+      archived: false,
+      error: err.message || "Could not save tree.",
+      stdout: err.stdout || "",
+      stderr: err.stderr || "",
     });
   }
 });
+
 
 
 app.get("/admin/restore-from-siteground", async (req, res) => {
@@ -1497,6 +1725,50 @@ app.get("/admin/register-siteground", async (req, res) => {
       error: err.message,
       stdout: err.stdout || "",
       stderr: err.stderr || "",
+    });
+  }
+});
+app.get("/admin/import-local-trees-json", async (req, res) => {
+  try {
+    const localPath = path.join(DATA_DIR, "trees.json");
+
+    if (!fs.existsSync(localPath)) {
+      return res.status(404).json({
+        ok: false,
+        error: "Local public/data/trees.json not found.",
+      });
+    }
+
+    const raw = fs.readFileSync(localPath, "utf8");
+    const trees = JSON.parse(raw);
+
+    if (!Array.isArray(trees)) {
+      throw new Error("Local trees.json did not contain an array.");
+    }
+
+    let imported = 0;
+
+    for (const tree of trees) {
+      await upsertTree(tree);
+      imported++;
+    }
+
+    const exported = await exportTreesJsonPromise();
+
+    res.json({
+      ok: true,
+      source: localPath,
+      imported,
+      exported_count: exported.count,
+      message:
+        "Local trees.json imported into SQLite trees table and re-exported safely.",
+    });
+  } catch (err) {
+    console.error("IMPORT LOCAL TREES JSON ERROR:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message,
     });
   }
 });
