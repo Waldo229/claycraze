@@ -2,17 +2,14 @@ document.addEventListener("DOMContentLoaded", initializeCurator);
 
 const APP_VERSION = "260527-clean-no-labels-file";
 
-const SHAPE_MAP = {
+const FORM_TYPES = {
   OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
   RD: { label: "Round", category: "bonsai", title: "Round Bonsai Container" },
   RC: { label: "Rectangle", category: "bonsai", title: "Rectangular Bonsai Container" },
   CS: { label: "Cascade", category: "bonsai", title: "Cascade Bonsai Container" },
   FREE: { label: "Freeform", category: "vessel", title: "Freeform Ceramic Piece" },
-  FJ: { label: "Face Jugs", category: "face-jug", title: "Face Jug" },
-  IKE: { label: "Ikebana", category: "ikebana", title: "Ikebana Container" },
-  SCULP: { label: "Sculpture", category: "sculpture", title: "Ceramic Sculpture" }
+  SL: { label: "Slab", category: "bonsai", title: "Slab Bonsai Container" },
 };
-
 let allPieces = [];
 let currentPiece = null;
 let formMode = "edit";
@@ -496,6 +493,7 @@ function normalizeShapeCode(shape) {
   if (raw === "FF") return "FREE";
   if (raw === "IK") return "IKE";
   if (raw === "SC") return "SCULP";
+  if (raw === "SLAB") return "SL";
   if (raw === "ROUND") return "RD";
   if (raw === "RND") return "RD";
   if (raw === "RECT") return "RC";
