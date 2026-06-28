@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
 const APP_VERSION = "260527-clean-no-labels-file";
-
+const SHAPE_MAP = FORM_TYPES;
 const FORM_TYPES = {
   OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
   RD: { label: "Round", category: "bonsai", title: "Round Bonsai Container" },
