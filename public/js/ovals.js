@@ -2,7 +2,8 @@
    ClaycrazE — Ovals Gallery
    Full drop-in replacement for /js/ovals.js
    Cards show: dimensions, price, status
-   Version 1018
+   Uses live endpoint: /gallery-data/ovals
+   Version 1019
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", loadOvals);
@@ -15,25 +16,23 @@ async function loadOvals() {
   galleryGrid.innerHTML = `<div class="loading">Loading ovals...</div>`;
 
   try {
-    const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
+    const response = await fetch(`/gallery-data/ovals?v=${Date.now()}`, {
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(`Could not load pieces.json: ${response.status}`);
+      throw new Error(`Could not load oval gallery data: ${response.status}`);
     }
 
-    const pieces = await response.json();
+    const ovals = await response.json();
 
-    if (!Array.isArray(pieces)) {
-      throw new Error("pieces.json did not return an array.");
+    if (!Array.isArray(ovals)) {
+      throw new Error("Oval gallery endpoint did not return an array.");
     }
 
-    const ovals = pieces
-      .filter(isOval)
-      .sort(sortNewestFirst);
+    const sortedOvals = ovals.sort(sortNewestFirst);
 
-    if (!ovals.length) {
+    if (!sortedOvals.length) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
           No oval pieces are currently available.
@@ -42,7 +41,7 @@ async function loadOvals() {
       return;
     }
 
-    galleryGrid.innerHTML = ovals.map(buildOvalCard).join("");
+    galleryGrid.innerHTML = sortedOvals.map(buildOvalCard).join("");
 
   } catch (error) {
     console.error("Oval gallery error:", error);
@@ -53,22 +52,6 @@ async function loadOvals() {
       </div>
     `;
   }
-}
-
-function isOval(piece) {
-  const id = clean(piece.id).toUpperCase();
-  const shape = normalizeShape(clean(piece.shape));
-
-  return shape === "OV" || id.startsWith("OV-");
-}
-
-function normalizeShape(value) {
-  const raw = clean(value).toUpperCase();
-
-  if (raw === "OVAL") return "OV";
-  if (raw === "OVALS") return "OV";
-
-  return raw;
 }
 
 function sortNewestFirst(a, b) {
@@ -87,6 +70,7 @@ function parsePieceNumber(id) {
 
 function buildOvalCard(piece) {
   const id = clean(piece.id);
+  const title = clean(piece.title) || id || "Oval Bonsai Container";
   const dimensions = getDimensions(piece);
   const price = getPrice(piece);
   const status = formatStatus(piece.status);
@@ -105,7 +89,7 @@ function buildOvalCard(piece) {
                 <img
                   class="gallery-thumb"
                   src="${escapeAttribute(addCacheBust(image))}"
-                  alt="${escapeAttribute(id)}"
+                  alt="${escapeAttribute(title)}"
                   loading="lazy"
                 >
               `
@@ -114,12 +98,12 @@ function buildOvalCard(piece) {
         </div>
 
         <div class="gallery-card-body">
-  <h2>${escapeHtml(id)}</h2>
+          <h2>${escapeHtml(id)}</h2>
 
-  ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
-  ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
-  ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
-</div>
+          ${dimensions ? `<p class="gallery-meta">${escapeHtml(dimensions)}</p>` : ""}
+          ${price ? `<p class="gallery-meta">${escapeHtml(price)}</p>` : ""}
+          ${status ? `<p class="gallery-meta">${escapeHtml(status)}</p>` : ""}
+        </div>
 
       </a>
     </article>
