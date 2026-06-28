@@ -9,7 +9,7 @@ async function initializeSiteSearch() {
   if (!input || !results) return;
 
   try {
-    const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
+    const response = await fetch(`/gallery-data/ovals?v=${Date.now()}`, {
       cache: "no-store"
     });
 
