@@ -947,17 +947,17 @@ app.post("/api/save-curation", async (req, res) => {
 
         fs.copyFileSync(topFullPath, topThumbPath);
 
-        piece.image_path = `/images/thumbs/${id}_top_thumb.jpg`;
-        piece.image_path_2 = `/images/full/${id}_top.jpg`;
+        piece.image_path = `/images/bonsai/thumbs/${id}_top_thumb.jpg`;
+        piece.image_path_2 = `/images/bonsai/full/${id}_top.jpg`;
 
         filesToDeploy.push(
           {
             localPath: topFullPath,
-            remotePath: `${sgPublicHtml}/images/full/${id}_top.jpg`,
+            remotePath: `${sgPublicHtml}/images/bonsai/full/${id}_top.jpg`,
           },
           {
             localPath: topThumbPath,
-            remotePath: `${sgPublicHtml}/images/thumbs/${id}_top_thumb.jpg`,
+            remotePath: `${sgPublicHtml}/images/bonsai/thumbs/${id}_top_thumb.jpg`,
           }
         );
       }
@@ -965,11 +965,11 @@ app.post("/api/save-curation", async (req, res) => {
       if (piece.bottom_image_data) {
         saveDataUrlImage(piece.bottom_image_data, bottomFullPath);
 
-        piece.image_path_3 = `/images/full/${id}_bottom.jpg`;
+        piece.image_path_3 = `/images/bonsai/full/${id}_bottom.jpg`;
 
         filesToDeploy.push({
           localPath: bottomFullPath,
-          remotePath: `${sgPublicHtml}/images/full/${id}_bottom.jpg`,
+          remotePath: `${sgPublicHtml}/images/bonsai/full/${id}_bottom.jpg`,
         });
       }
 

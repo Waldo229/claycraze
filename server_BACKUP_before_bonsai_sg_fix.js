@@ -143,6 +143,7 @@ function isValidShapeCode(shape) {
     "FF",
     "IK",
     "SC",
+    "SL",
   ].includes(String(shape || "").toUpperCase());
 }
 
@@ -152,6 +153,7 @@ function normalizeShapeCode(shape) {
   if (raw === "FF") return "FREE";
   if (raw === "IK") return "IKE";
   if (raw === "SC") return "SCULP";
+  if (raw === "SLAB") return "SL";
 
   return raw;
 }
@@ -207,7 +209,7 @@ function runCommand(command, args) {
 
 function getSgConfig() {
   const { SG_HOST, SG_USER, SG_CI_KEY } = process.env;
-  const SG_PORT = process.env.SG_PORT || "22";
+  const SG_PORT = process.env.SG_PORT || "18765";
   const SG_PUBLIC_HTML =
     process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
@@ -221,13 +223,23 @@ function getSgConfig() {
 function writeSshKey(keyTextOrPath) {
   const value = String(keyTextOrPath || "").trim();
 
+  if (!value) {
+    throw new Error("Missing SSH key text or path.");
+  }
+
   if (fs.existsSync(value)) {
     return value;
   }
 
   const keyPath = path.join(os.tmpdir(), "sg_ci_key");
 
-  fs.writeFileSync(keyPath, value.replace(/\r/g, ""), {
+  const normalizedKey =
+    value
+      .replace(/\\n/g, "\n")
+      .replace(/\r/g, "")
+      .trim() + "\n";
+
+  fs.writeFileSync(keyPath, normalizedKey, {
     mode: 0o600,
   });
 
@@ -1231,7 +1243,9 @@ app.get("/gallery-data/freeform", (req, res) => {
 app.get("/gallery-data/cascade", (req, res) => {
   getPublicPiecesByShape("CS", res);
 });
-
+app.get("/gallery-data/slabs", (req, res) => {
+  getPublicPiecesByShape("SL", res);
+});
 app.get("/gallery-data/facejugs", (req, res) => {
   getPublicPiecesByShape("FJ", res);
 });

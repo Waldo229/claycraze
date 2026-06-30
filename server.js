@@ -19,6 +19,9 @@ const PUBLIC_IMAGES_DIR = path.join(PUBLIC_DIR, "images");
 const TREES_DIR = path.join(PUBLIC_IMAGES_DIR, "trees");
 const FULL_DIR = path.join(PUBLIC_IMAGES_DIR, "full");
 const THUMBS_DIR = path.join(PUBLIC_IMAGES_DIR, "thumbs");
+const BONSAI_DIR = path.join(PUBLIC_IMAGES_DIR, "bonsai");
+const BONSAI_FULL_DIR = path.join(BONSAI_DIR, "full");
+const BONSAI_THUMBS_DIR = path.join(BONSAI_DIR, "thumbs");
 const DB_PATH = path.join(ROOT, "claycraze_inventory.db");
 
 const SG_PUBLIC_DATA_URL =
@@ -32,15 +35,18 @@ let STARTUP_RESTORE = {
   time: null,
 };
 
-for (const dir of [TREES_DIR,
+for (const dir of [
   PUBLIC_DIR,
   ADMIN_DIR,
   DATA_DIR,
   BACKUP_DIR,
-
   PUBLIC_IMAGES_DIR,
   FULL_DIR,
   THUMBS_DIR,
+  BONSAI_DIR,
+  BONSAI_FULL_DIR,
+  BONSAI_THUMBS_DIR,
+  TREES_DIR,
 ]) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -267,7 +273,7 @@ async function deployToSiteGround(filesToDeploy) {
   await runCommand("ssh", [
     ...sshArgs,
     remote,
-   `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/images/trees ${SG_PUBLIC_HTML}/data`
+   `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/images/bonsai/full ${SG_PUBLIC_HTML}/images/bonsai/thumbs ${SG_PUBLIC_HTML}/images/trees ${SG_PUBLIC_HTML}/data`
   ]);
 
   for (const item of filesToDeploy) {
@@ -1307,26 +1313,26 @@ app.post("/api/save-curation", async (req, res) => {
       const parsed = parsePieceId(piece.id);
       const id = parsed.id;
 
-      const topFullPath = path.join(FULL_DIR, `${id}_top.jpg`);
-      const bottomFullPath = path.join(FULL_DIR, `${id}_bottom.jpg`);
-      const topThumbPath = path.join(THUMBS_DIR, `${id}_top_thumb.jpg`);
+      const topFullPath = path.join(BONSAI_FULL_DIR, `${id}_top.jpg`);
+      const bottomFullPath = path.join(BONSAI_FULL_DIR, `${id}_bottom.jpg`);
+      const topThumbPath = path.join(BONSAI_THUMBS_DIR, `${id}_top_thumb.jpg`);
 
       if (piece.top_image_data) {
         saveDataUrlImage(piece.top_image_data, topFullPath);
 
         fs.copyFileSync(topFullPath, topThumbPath);
 
-        piece.image_path = `/images/thumbs/${id}_top_thumb.jpg`;
-        piece.image_path_2 = `/images/full/${id}_top.jpg`;
+        piece.image_path = `/images/bonsai/thumbs/${id}_top_thumb.jpg`;
+        piece.image_path_2 = `/images/bonsai/full/${id}_top.jpg`;
 
         filesToDeploy.push(
           {
             localPath: topFullPath,
-            remotePath: `${sgPublicHtml}/images/full/${id}_top.jpg`,
+            remotePath: `${sgPublicHtml}/images/bonsai/full/${id}_top.jpg`,
           },
           {
             localPath: topThumbPath,
-            remotePath: `${sgPublicHtml}/images/thumbs/${id}_top_thumb.jpg`,
+            remotePath: `${sgPublicHtml}/images/bonsai/thumbs/${id}_top_thumb.jpg`,
           }
         );
       }
@@ -1334,11 +1340,11 @@ app.post("/api/save-curation", async (req, res) => {
       if (piece.bottom_image_data) {
         saveDataUrlImage(piece.bottom_image_data, bottomFullPath);
 
-        piece.image_path_3 = `/images/full/${id}_bottom.jpg`;
+        piece.image_path_3 = `/images/bonsai/full/${id}_bottom.jpg`;
 
         filesToDeploy.push({
           localPath: bottomFullPath,
-          remotePath: `${sgPublicHtml}/images/full/${id}_bottom.jpg`,
+          remotePath: `${sgPublicHtml}/images/bonsai/full/${id}_bottom.jpg`,
         });
       }
 
@@ -1795,20 +1801,31 @@ app.listen(PORT, "0.0.0.0", async () => {
   console.log(`SiteGround truth source: ${SG_PUBLIC_DATA_URL}`);
 
   try {
-    await restoreFromSiteGround();
+    console.warn(
+      "STARTUP RESTORE DISABLED TEMPORARILY: using local SQLite DB while repairing SiteGround canonical pieces.json."
+    );
+
+    STARTUP_RESTORE = {
+      ok: true,
+      source: "local SQLite temporary recovery mode",
+      count: await getPublicDbCount(),
+      message:
+        "Startup restore temporarily disabled while repairing SiteGround canonical pieces.json.",
+      time: new Date().toISOString(),
+    };
   } catch (err) {
-    console.error("STARTUP SITEGROUND RESTORE FAILED:", err);
+    console.error("STARTUP LOCAL RECOVERY MODE FAILED:", err);
 
     STARTUP_RESTORE = {
       ok: false,
-      source: SG_PUBLIC_DATA_URL,
+      source: "local SQLite temporary recovery mode",
       count: 0,
       message: err.message,
       time: new Date().toISOString(),
     };
 
     console.error(
-      "TRUTH LOCK: Render did not restore from SiteGround. Saves will be blocked."
+      "TRUTH LOCK: Local SQLite recovery mode failed. Saves will be blocked."
     );
   }
 });
