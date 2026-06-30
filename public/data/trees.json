@@ -1,5 +1,26 @@
 [
   {
+    "id": "bare-in-the-forest",
+    "title": "Bare in the Forest",
+    "species": "Maple",
+    "cultivar": "",
+    "style": "",
+    "person_slug": "chris-schmuck",
+    "owner_slug": "chris-schmuck",
+    "tree_slug": "bare-in-the-forest",
+    "image_path": "/images/trees/chris-schmuck/bare-in-the-forest.jpg",
+    "page_path": "/trees/chris-schmuck/bare-in-the-forest/",
+    "status": "nfs",
+    "owner_credit": "Collection of Chris Schmuck",
+    "pot_credit": "",
+    "display_notes": "",
+    "provenance": "",
+    "description": "This tree was exhibited at the Winter Silhouette Bonsai Show at the University of North Carolina Research Campus. Set within an elegant four-story marble-lined atrium, the show is nationally recognized and regarded as one of the premier bonsai exhibitions on the East Coast, drawing exhibitors and vendors from across the country.",
+    "notes": "",
+    "created_at": "2026-06-30 16:25:26",
+    "updated_at": "2026-06-30 16:25:26"
+  },
+  {
     "id": "han-shan",
     "title": "Han Shan",
     "species": "Juniper",
@@ -17,8 +38,8 @@
     "provenance": "",
     "description": "I acquired this tree in 2018 and in 2023 took it to a Jenifer Price workshop sponsored by the Virginia Bonsai Society.  Jenifer observed that the tree was weak and in desperate need of re-potting. She advised that I should wait at least two years, maybe three, before thinking about styling. It was her opinion that the tree is roughly 80 year old. It appears that the tree has become more healthy and vigorous and I look forward to perhaps returning with it when she conducts another session for the club.",
     "notes": "",
-    "created_at": "2026-06-28 07:57:54",
-    "updated_at": "2026-06-28 07:57:54"
+    "created_at": "2026-06-30 16:34:32",
+    "updated_at": "2026-06-30 16:34:32"
   },
   {
     "id": "i-hardly-know-yew",
@@ -38,33 +59,9 @@
     "provenance": "",
     "description": "my tree",
     "notes": "",
-    "created_at": "2026-06-28 15:52:22",
-    "updated_at": "2026-06-28 15:52:22"
+    "created_at": "2026-06-30 16:34:32",
+    "updated_at": "2026-06-30 16:34:32"
   },
- 
-  {
-    "id": "shih-te",
-    "title": "Shih-te",
-    "species": "Black Pine",
-    "cultivar": "",
-    "style": "",
-    "person_slug": "jim-alexander",
-    "owner_slug": "jim-alexander",
-    "tree_slug": "shih-te",
-    "image_path": "/images/trees/jim-alexander/shih-te.jpg",
-    "page_path": "/trees/jim-alexander/shih-te/",
-    "status": "nfs",
-    "owner_credit": "Collection of Jim Alexander",
-    "pot_credit": "",
-    "display_notes": "",
-    "provenance": "",
-    "description": "Black pine a big one",
-    "notes": "",
-    "created_at": "2026-06-28 16:09:51",
-    "updated_at": "2026-06-28 16:09:51"
-  },
-  
-  
   {
     "id": "tree8",
     "title": "Ironwood",
@@ -83,7 +80,28 @@
     "provenance": "",
     "description": "Currently shown at Longwood Gardens Bonsai Show.",
     "notes": "",
-    "created_at": "2026-06-28 17:33:16",
-    "updated_at": "2026-06-28 17:33:16"
+    "created_at": "2026-06-30 16:34:32",
+    "updated_at": "2026-06-30 16:34:32"
+  },
+  {
+    "id": "shih-te",
+    "title": "Shih-te",
+    "species": "Black Pine",
+    "cultivar": "",
+    "style": "",
+    "person_slug": "jim-alexander",
+    "owner_slug": "jim-alexander",
+    "tree_slug": "shih-te",
+    "image_path": "/images/trees/jim-alexander/shih-te.jpg",
+    "page_path": "/trees/jim-alexander/shih-te/",
+    "status": "nfs",
+    "owner_credit": "Collection of Jim Alexander",
+    "pot_credit": "",
+    "display_notes": "",
+    "provenance": "",
+    "description": "Black pine a big one",
+    "notes": "",
+    "created_at": "2026-06-30 16:34:32",
+    "updated_at": "2026-06-30 16:34:32"
   }
 ]
