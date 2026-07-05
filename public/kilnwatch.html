@@ -4,7 +4,7 @@
   <meta charset="UTF-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1.0" >
 
-  <title>Kiln Watch | ClaycrazE</title>
+  <title>GENE Kiln Watch | ClaycrazE</title>
 
   <link rel="stylesheet" href="/css/styles.css?v=3009" >
 </head>
@@ -40,57 +40,80 @@
             alt="Han Shan"
             class="room-seal"
           >
-          <span class="threshold-kicker">Theory / Kiln Watch</span>
+          <span class="threshold-kicker">GENE / Kiln Watch</span>
         </div>
 
-        <h1>Live firing record.</h1>
+        <h1>Latest firing field.</h1>
 
         <p>
-          A single image records the state of the firing:
-          temperature, rate of rise, and system behavior captured
-          as they occur.
+          GENE observes the kiln-watch field from inside the studio network
+          and publishes interpreted evidence here. The raw ESP32 service remains
+          private on the studio network.
         </p>
 
       </div>
 
     </section>
 
-    <section class="room-section">
+    <section class="room-section kiln-watch-room">
 
-      <img
-        src="/images/kilnwatch_001s.jpg"
-        alt="Kiln firing data"
-        class="room-feature-image"
-      >
+      <figure class="kiln-watch-figure">
+        <img
+          src="/gene/kiln_watch_latest.png"
+          alt="GENE Kiln Watch graph showing the latest interpreted kiln temperature behavior"
+          class="room-feature-image kiln-watch-image"
+        >
+
+        <figcaption>
+          Latest interpreted kiln-watch graph generated locally by GENE.
+        </figcaption>
+      </figure>
 
       <div class="room-copy">
 
-        <h2>Kiln Watch</h2>
+        <h2>GENE Kiln Watch</h2>
 
         <p>
           The kiln watch record gives visual form to the firing:
-          temperature progression, timing, rate of rise, and
-          system behavior held together as a single studio note.
+          temperature progression, timing, rate of rise, and signal behavior
+          held together as a single studio note.
         </p>
 
         <p>
-          It supports attention rather than control, preserving
-          a record of what the firing was doing at a particular
-          moment in time.
+          It supports attention rather than control. GENE does not command the
+          kiln or expose the raw local service. It registers the field and
+          publishes a restrained public trace.
         </p>
 
-        <p>
-          <strong>Firing:</strong> 2026-03<br >
-          <strong>Status:</strong> Active<br >
-          <strong>Reference:</strong> Electric kiln<br >
-          <strong>Observation:</strong> Parallel gas kiln
-        </p>
+        <pre id="kiln-note" class="gene-kiln-note">Loading latest kiln note...</pre>
 
       </div>
 
     </section>
 
   </main>
+
+  <script>
+    fetch('/gene/kiln_watch_latest.txt')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Kiln note not available');
+        }
+        return response.text();
+      })
+      .then(text => {
+        const note = document.getElementById('kiln-note');
+        if (note) {
+          note.textContent = text;
+        }
+      })
+      .catch(() => {
+        const note = document.getElementById('kiln-note');
+        if (note) {
+          note.textContent = 'GENE has not published a kiln-watch note yet.';
+        }
+      });
+  </script>
 
 </body>
 </html>
