@@ -290,6 +290,14 @@ async function deployToSiteGround(filesToDeploy) {
     if (!item || !item.localPath || !item.remotePath) continue;
     if (!fs.existsSync(item.localPath)) continue;
 
+    const remoteDir = path.posix.dirname(item.remotePath);
+
+    await runCommand("ssh", [
+      ...sshArgs,
+      remote,
+      `mkdir -p ${remoteDir}`,
+    ]);
+
     await runCommand("scp", [
       "-P",
       SG_PORT,
@@ -478,6 +486,49 @@ async function getRegistrationState() {
       dbCount >= jsonCount && STARTUP_RESTORE.ok
         ? "Render DB is registered with SiteGround-restored pieces.json."
         : "Render DB is not safely registered. Restore from SiteGround before saving.",
+  };
+}
+
+function getLocalTreesJsonCount() {
+  const outPath = path.join(DATA_DIR, "trees.json");
+
+  if (!fs.existsSync(outPath)) {
+    return 0;
+  }
+
+  try {
+    const existing = JSON.parse(fs.readFileSync(outPath, "utf8"));
+    return Array.isArray(existing) ? existing.length : 0;
+  } catch (err) {
+    console.warn("Could not read local trees.json count:", err.message);
+    return 0;
+  }
+}
+
+function getTreeDbCount() {
+  return new Promise((resolve, reject) => {
+    db.get(`SELECT COUNT(*) AS count FROM trees`, [], (err, row) => {
+      if (err) return reject(err);
+      resolve(row ? row.count : 0);
+    });
+  });
+}
+
+async function getTreeRegistrationState() {
+  const jsonCount = getLocalTreesJsonCount();
+  const dbCount = await getTreeDbCount();
+
+  return {
+    registered: dbCount >= jsonCount && TREE_STARTUP_RESTORE.ok,
+    local_trees_json_count: jsonCount,
+    render_tree_db_count: dbCount,
+    startup_restore_ok: TREE_STARTUP_RESTORE.ok,
+    startup_restore_count: TREE_STARTUP_RESTORE.count,
+    startup_restore_source: TREE_STARTUP_RESTORE.source,
+    message:
+      dbCount >= jsonCount && TREE_STARTUP_RESTORE.ok
+        ? "Render tree DB is registered with SiteGround-restored trees.json."
+        : "Render tree DB is not safely registered. Restore trees from SiteGround before saving.",
   };
 }
 
@@ -941,7 +992,84 @@ async function replaceDbWithPieces(pieces) {
   return inserted;
 }
 
+function clearTreesTable() {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM trees`, [], (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+}
 
+async function replaceDbWithTrees(trees) {
+  if (!Array.isArray(trees)) {
+    throw new Error("replaceDbWithTrees expected an array.");
+  }
+
+  await clearTreesTable();
+
+  const stmt = db.prepare(`
+    INSERT OR REPLACE INTO trees (
+      id,
+      title,
+      species,
+      cultivar,
+      style,
+      person_slug,
+      owner_slug,
+      tree_slug,
+      image_path,
+      page_path,
+      status,
+      owner_credit,
+      pot_credit,
+      display_notes,
+      provenance,
+      description,
+      notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  let inserted = 0;
+
+  for (const t of trees) {
+    await new Promise((resolve, reject) => {
+      stmt.run(
+        t.id || "",
+        t.title || "",
+        t.species || "",
+        t.cultivar || "",
+        t.style || "",
+        t.person_slug || "",
+        t.owner_slug || "",
+        t.tree_slug || "",
+        t.image_path || "",
+        t.page_path || "",
+        normalizeTreeStatus(t.status || "active"),
+        t.owner_credit || "",
+        t.pot_credit || "",
+        t.display_notes || "",
+        t.provenance || "",
+        t.description || "",
+        t.notes || "",
+        (err) => {
+          if (err) return reject(err);
+          inserted++;
+          resolve();
+        }
+      );
+    });
+  }
+
+  await new Promise((resolve, reject) => {
+    stmt.finalize((err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+
+  return inserted;
+}
 
 async function restoreFromSiteGround() {
   const pieces = await fetchPiecesJsonViaScp();
@@ -969,6 +1097,34 @@ async function restoreFromSiteGround() {
   );
 
   return STARTUP_RESTORE;
+}
+
+async function restoreTreesFromSiteGround() {
+  const trees = await fetchTreesJsonViaScp();
+  const localPath = path.join(DATA_DIR, "trees.json");
+
+  backupExistingTreesJson();
+
+  fs.writeFileSync(localPath, JSON.stringify(trees, null, 2), "utf8");
+
+  const imported = await replaceDbWithTrees(trees);
+  const dbCount = await getTreeDbCount();
+
+  TREE_STARTUP_RESTORE = {
+    ok: true,
+    source: SG_PUBLIC_TREES_URL,
+    count: trees.length,
+    imported,
+    render_tree_db_count: dbCount,
+    message: "Render restored from SiteGround canonical trees.json.",
+    time: new Date().toISOString(),
+  };
+
+  console.log(
+    `SITEGROUND TREE RESTORE OK: fetched ${trees.length}, imported ${imported}, tree DB count ${dbCount}.`
+  );
+
+  return TREE_STARTUP_RESTORE;
 }
 
 async function importLocalPiecesJsonIntoDb() {
@@ -1015,7 +1171,9 @@ app.get("/deploy-health", (req, res) => {
     app: "ClaycrazE admin",
     db_path: DB_PATH,
     siteground_truth_url: SG_PUBLIC_DATA_URL,
+    tree_truth_url: SG_PUBLIC_TREES_URL,
     startup_restore: STARTUP_RESTORE,
+    tree_startup_restore: TREE_STARTUP_RESTORE,
     time: new Date().toISOString(),
   });
 });
@@ -1030,7 +1188,9 @@ app.get("/debug/siteground-env", (req, res) => {
     SG_PUBLIC_HTML:
       process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html",
     SG_PUBLIC_DATA_URL,
+    SG_PUBLIC_TREES_URL,
     startup_restore: STARTUP_RESTORE,
+    tree_startup_restore: TREE_STARTUP_RESTORE,
   });
 });
 
@@ -1095,6 +1255,22 @@ app.get("/debug/shapes", (req, res) => {
 app.get("/debug/registration", async (req, res) => {
   try {
     const registration = await getRegistrationState();
+
+    res.json({
+      ok: true,
+      ...registration,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
+});
+
+app.get("/debug/tree-registration", async (req, res) => {
+  try {
+    const registration = await getTreeRegistrationState();
 
     res.json({
       ok: true,
@@ -1446,6 +1622,14 @@ app.post("/api/save-curation", async (req, res) => {
 
 app.post("/api/save-tree", async (req, res) => {
   try {
+    const treeRegistration = await getTreeRegistrationState();
+
+    if (!treeRegistration.registered) {
+      throw new Error(
+        `TREE REGISTRATION LOCK: Save blocked. Render tree DB is not restored from SiteGround truth. ${treeRegistration.message}`
+      );
+    }
+
     const tree = req.body.tree || req.body;
 
     if (!tree.title) {
@@ -1637,13 +1821,17 @@ app.get("/admin/restore-from-siteground", async (req, res) => {
   try {
     const restored = await restoreFromSiteGround();
     const registration = await getRegistrationState();
+    const restoredTrees = await restoreTreesFromSiteGround();
+    const treeRegistration = await getTreeRegistrationState();
 
     res.json({
       ok: true,
       restored,
       registration,
+      restored_trees: restoredTrees,
+      tree_registration: treeRegistration,
       message:
-        "Render SQLite and local pieces.json restored from SiteGround canonical archive.",
+        "Render SQLite and local public JSON restored from SiteGround canonical archives.",
     });
   } catch (err) {
     console.error("RESTORE FROM SITEGROUND ERROR:", err);
@@ -1651,6 +1839,14 @@ app.get("/admin/restore-from-siteground", async (req, res) => {
     STARTUP_RESTORE = {
       ok: false,
       source: SG_PUBLIC_DATA_URL,
+      count: 0,
+      message: err.message,
+      time: new Date().toISOString(),
+    };
+
+    TREE_STARTUP_RESTORE = {
+      ok: false,
+      source: SG_PUBLIC_TREES_URL,
       count: 0,
       message: err.message,
       time: new Date().toISOString(),
@@ -1818,12 +2014,28 @@ const claycrazeServer = app.listen(PORT, "0.0.0.0", async () => {
     const registration = await getRegistrationState();
 
     console.log("STARTUP REGISTRATION:", registration);
+
+    const restoredTrees = await restoreTreesFromSiteGround();
+
+    console.log("TREE STARTUP RESTORE OK:", restoredTrees);
+
+    const treeRegistration = await getTreeRegistrationState();
+
+    console.log("TREE STARTUP REGISTRATION:", treeRegistration);
   } catch (err) {
     console.error("STARTUP RESTORE FROM SITEGROUND FAILED:", err);
 
     STARTUP_RESTORE = {
       ok: false,
       source: SG_PUBLIC_DATA_URL,
+      count: 0,
+      message: err.message,
+      time: new Date().toISOString(),
+    };
+
+    TREE_STARTUP_RESTORE = {
+      ok: false,
+      source: SG_PUBLIC_TREES_URL,
       count: 0,
       message: err.message,
       time: new Date().toISOString(),
