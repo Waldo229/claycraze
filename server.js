@@ -1793,7 +1793,7 @@ app.get("/admin/import-local-trees-json", async (req, res) => {
   }
 });
 
-app.listen(PORT, "0.0.0.0", async () => {
+const claycrazeServer = app.listen(PORT, "0.0.0.0", async () => {
   console.log(`ClaycrazE admin running on port ${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
   console.log(`Curate: http://localhost:${PORT}/admin/curate.html`);
@@ -1801,31 +1801,32 @@ app.listen(PORT, "0.0.0.0", async () => {
   console.log(`SiteGround truth source: ${SG_PUBLIC_DATA_URL}`);
 
   try {
-    console.warn(
-      "STARTUP RESTORE DISABLED TEMPORARILY: using local SQLite DB while repairing SiteGround canonical pieces.json."
-    );
+    const restored = await restoreFromSiteGround();
 
-    STARTUP_RESTORE = {
-      ok: true,
-      source: "local SQLite temporary recovery mode",
-      count: await getPublicDbCount(),
-      message:
-        "Startup restore temporarily disabled while repairing SiteGround canonical pieces.json.",
-      time: new Date().toISOString(),
-    };
+    console.log("STARTUP RESTORE OK:", restored);
+
+    const registration = await getRegistrationState();
+
+    console.log("STARTUP REGISTRATION:", registration);
   } catch (err) {
-    console.error("STARTUP LOCAL RECOVERY MODE FAILED:", err);
+    console.error("STARTUP RESTORE FROM SITEGROUND FAILED:", err);
 
     STARTUP_RESTORE = {
       ok: false,
-      source: "local SQLite temporary recovery mode",
+      source: SG_PUBLIC_DATA_URL,
       count: 0,
       message: err.message,
       time: new Date().toISOString(),
     };
 
     console.error(
-      "TRUTH LOCK: Local SQLite recovery mode failed. Saves will be blocked."
+      "TRUTH LOCK: Render could not restore from SiteGround. Saves will be blocked."
     );
   }
 });
+
+claycrazeServer.on("error", (err) => {
+  console.error("CLAYCRAZE SERVER LISTEN ERROR:", err);
+});
+
+console.log("ClaycrazE server handle retained:", !!claycrazeServer);
