@@ -34,6 +34,16 @@ let STARTUP_RESTORE = {
   message: "Startup restore has not run yet.",
   time: null,
 };
+const SG_PUBLIC_TREES_URL =
+  process.env.SG_PUBLIC_TREES_URL || "https://claycraze.com/data/trees.json";
+
+let TREE_STARTUP_RESTORE = {
+  ok: false,
+  source: SG_PUBLIC_TREES_URL,
+  count: 0,
+  message: "Tree startup restore has not run yet.",
+  time: null,
+};
 
 for (const dir of [
   PUBLIC_DIR,
