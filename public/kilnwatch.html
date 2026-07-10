@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" >
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>GENE Kiln Watch | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3009" >
+  <link rel="stylesheet" href="/css/styles.css?v=3012">
 </head>
 
 <body class="theory-page">
@@ -14,103 +15,129 @@
   <header class="site-header">
     <div class="header-shell">
 
-      <a class="site-brand" href="/index.html">
-        <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
-      </a>
+  <a class="site-brand" href="/index.html">
+    <span class="site-title">ClaycrazE</span>
+    <span class="site-tag">Theory &amp; Practice</span>
+  </a>
 
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="/index.html">Home</a>
-        <a class="active" href="/theory.html">Theory</a>
-        <a href="/practice.html">Practice</a>
-      </nav>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="/index.html">Home</a>
+    <a class="active" href="/theory.html">Theory</a>
+    <a href="/practice.html">Practice</a>
+  </nav>
 
-    </div>
+</div>
+
+
   </header>
 
   <main class="threshold-page">
 
-    <section class="threshold-intro">
+<section class="threshold-intro">
 
-      <div class="threshold-copy">
+  <div class="threshold-copy">
 
-        <div class="section-label">
-          <img
-            src="/images/curated/theory_imgs/han-shan2.jpg"
-            alt="Han Shan"
-            class="room-seal"
-          >
-          <span class="threshold-kicker">GENE / Kiln Watch</span>
-        </div>
+    <div class="section-label">
+      <img
+        src="/images/curated/theory_imgs/han-shan2.jpg"
+        alt="Han Shan"
+        class="room-seal"
+      >
+      <span class="threshold-kicker">GENE / Kiln Watch</span>
+    </div>
 
-        <h1>Latest firing field.</h1>
+    <h1>Latest firing field.</h1>
 
-        <p>
-          GENE observes the kiln-watch field from inside the studio network
-          and publishes interpreted evidence here. The raw ESP32 service remains
-          private on the studio network.
-        </p>
+    <p>
+      GENE observes the kiln-watch field from inside the studio network
+      and publishes interpreted evidence here. The raw ESP32 service remains
+      private on the studio network.
+    </p>
 
-      </div>
+  </div>
 
-    </section>
+</section>
 
-    <section class="room-section kiln-watch-room">
+<section
+  class="kiln-watch-grid"
+  aria-label="Latest GENE kiln-watch report"
+>
 
-      <figure class="kiln-watch-figure">
-        <img
-          src="/gene/kiln_watch_latest.png"
-          alt="GENE Kiln Watch graph showing the latest interpreted kiln temperature behavior"
-          class="room-feature-image kiln-watch-image"
-        >
+  <article class="kiln-watch-card kiln-watch-graph-card">
 
-        <figcaption>
-          Latest interpreted kiln-watch graph generated locally by GENE.
-        </figcaption>
-      </figure>
+    <figure class="kiln-watch-figure">
 
-      <div class="room-copy">
+      <img
+        src="/gene/kiln_watch_latest.png"
+        alt="GENE Kiln Watch graph showing the latest interpreted kiln temperature behavior"
+        class="kiln-watch-image"
+      >
 
-        <h2>GENE Kiln Watch</h2>
+      <figcaption>
+        Latest interpreted kiln-watch graph generated locally by GENE.
+      </figcaption>
 
-        <p>
-          The kiln watch record gives visual form to the firing:
-          temperature progression, timing, rate of rise, and signal behavior
-          held together as a single studio note.
-        </p>
+    </figure>
 
-        <p>
-          It supports attention rather than control. GENE does not command the
-          kiln or expose the raw local service. It registers the field and
-          publishes a restrained public trace.
-        </p>
+  </article>
 
-        <pre id="kiln-note" class="gene-kiln-note">Loading latest kiln note...</pre>
+  <article class="kiln-watch-card kiln-watch-note-card">
 
-      </div>
+    <div class="room-copy">
 
-    </section>
+      <span class="threshold-kicker">Current observation</span>
+
+      <h2>GENE Kiln Watch</h2>
+
+      <p>
+        The kiln-watch record gives visual form to the firing:
+        temperature progression, timing, rate of rise, and signal behavior
+        held together as a single studio note.
+      </p>
+
+      <p>
+        It supports attention rather than control. GENE does not command the
+        kiln or expose the raw local service. It registers the field and
+        publishes a restrained public trace.
+      </p>
+
+      <pre
+        id="kiln-note"
+        class="gene-kiln-note"
+        aria-live="polite"
+      >Loading latest kiln note...</pre>
+
+    </div>
+
+  </article>
+
+</section>
+
 
   </main>
 
   <script>
-    fetch('/gene/kiln_watch_latest.txt')
+    const kilnNote = document.getElementById('kiln-note');
+
+    fetch('/gene/kiln_watch_latest.txt', {
+      cache: 'no-store'
+    })
       .then(response => {
         if (!response.ok) {
           throw new Error('Kiln note not available');
         }
+
         return response.text();
       })
       .then(text => {
-        const note = document.getElementById('kiln-note');
-        if (note) {
-          note.textContent = text;
+        if (kilnNote) {
+          kilnNote.textContent = text.trim();
         }
       })
       .catch(() => {
-        const note = document.getElementById('kiln-note');
-        if (note) {
-          note.textContent = 'GENE has not published a kiln-watch note yet.';
+        if (kilnNote) {
+          kilnNote.textContent =
+            'GENE has not published a kiln-watch note yet.';
         }
       });
   </script>
