@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kiln Watch — ClaycrazE</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/css/styles.css?v=3010">
 
   <style>
     :root {
@@ -609,8 +609,11 @@
     (() => {
       "use strict";
 
-      const GENE_STATE_URL = "/gene/gene_state_latest.json";
-      const KILN_STATE_URL = "/gene/kiln_watch_latest.json";
+     const GENE_STATE_URL =
+  "https://claycraze.com/gene/gene_state_latest.json";
+
+     const KILN_STATE_URL =
+  "https://claycraze.com/gene/kiln_watch_latest.json";
       const REFRESH_MS = 10000;
 
       // These are display thresholds, not safety thresholds.
