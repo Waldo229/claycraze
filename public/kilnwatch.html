@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kiln Watch — ClaycrazE</title>
-  <link rel="stylesheet" href="/css/styles.css?v=3010">
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
 
   <style>
     :root {
@@ -30,7 +30,7 @@
 
     .kilnwatch-shell {
       width: min(1180px, calc(100% - 28px));
-      margin: 0 auto 64px;
+      margin: 34px auto 64px;
     }
 
     .gene-card {
@@ -462,25 +462,23 @@
   </style>
 </head>
 
-<body>
+<body class="practice-page">
 
-  <div class="path-nav">
-    <a href="materials.html">Theory</a> |
-    <a href="practice.html">Practice</a> |
-    <a href="node-notes.html">GENE</a>
-  </div>
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
 
-  <header class="header">
-    <h1>Kiln Watch</h1>
-    <p>Live firing record.</p>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+        <a class="active" href="/gene.html">GENE</a>
+      </nav>
+    </div>
   </header>
-
-  <div class="note">
-    <p>
-      GENE watches the firing field. Temperature, heartbeat, arousal, and studio
-      inputs are registered as they change.
-    </p>
-  </div>
 
   <main class="kilnwatch-shell">
     <section class="gene-card" aria-label="Live GENE kiln-watch status">
@@ -496,7 +494,7 @@
         <div class="gene-mascot-wrap">
           <img
             class="gene-mascot"
-            src="images/gene-kilnwatch-emoji.png"
+            src="/images/gene-kilnwatch-emoji.png"
             alt="GENE clay studio watcher">
         </div>
 
@@ -609,11 +607,8 @@
     (() => {
       "use strict";
 
-     const GENE_STATE_URL =
-  "https://claycraze.com/gene/gene_state_latest.json";
-
-     const KILN_STATE_URL =
-  "https://claycraze.com/gene/kiln_watch_latest.json";
+      const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
+      const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
       const REFRESH_MS = 10000;
 
       // These are display thresholds, not safety thresholds.
