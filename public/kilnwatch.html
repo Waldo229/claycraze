@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kiln Watch â€” ClaycrazE</title>
+  <title>Kiln Watch &mdash; ClaycrazE</title>
   <link rel="stylesheet" href="/css/styles.css?v=3031">
 
   <style>
@@ -639,12 +639,12 @@
       <div class="gene-right">
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">â™¨ï¸</div>
+          <div class="reading-icon" aria-hidden="true">&#9832;&#65039;</div>
 
           <div>
             <p class="reading-label">Kiln Temperature</p>
             <p class="reading-value">
-              <span id="temperature">--</span><span class="reading-unit">Â°F</span>
+              <span id="temperature">--</span><span class="reading-unit">&deg;F</span>
             </p>
             <p class="reading-state" id="heatState">Awaiting kiln field</p>
             <p class="reading-note" id="rampNote">Ramp unavailable</p>
@@ -658,7 +658,7 @@
         </article>
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">â—‰</div>
+          <div class="reading-icon" aria-hidden="true">&#9673;</div>
 
           <div>
             <p class="reading-label">Arousal Level</p>
@@ -675,7 +675,7 @@
         </article>
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">âŒ</div>
+          <div class="reading-icon" aria-hidden="true">&#8961;</div>
 
           <div>
             <p class="reading-label">Heartbeat</p>
@@ -686,7 +686,7 @@
           </div>
 
           <div class="reading-visual heartbeat-visual" aria-hidden="true">
-            <span class="heart" id="mainHeart">â™¥</span>
+            <span class="heart" id="mainHeart">&#9829;</span>
             <svg class="pulse-line" viewBox="0 0 120 44" role="img">
               <path
                 d="M2 25 H18 L24 15 L31 34 L39 22 L48 25 L58 25 L65 5 L74 40 L82 20 L90 25 H118"
@@ -704,30 +704,30 @@
 
           <div class="input-grid">
             <div class="input-state" title="Microphone">
-              <span class="input-icon" aria-hidden="true">ðŸŽ™ï¸</span>
+              <span class="input-icon" aria-hidden="true">&#127897;&#65039;</span>
               <div class="input-reading">
                 <strong>Microphone</strong>
                 <span id="micValue">--</span>
               </div>
-              <span class="state-heart off" id="micHeart" aria-label="Microphone quiet">â™¡</span>
+              <span class="state-heart off" id="micHeart" aria-label="Microphone quiet">&#9825;</span>
             </div>
 
             <div class="input-state" title="Motion">
-              <span class="input-icon" aria-hidden="true">ðŸƒ</span>
+              <span class="input-icon" aria-hidden="true">&#127939;</span>
               <div class="input-reading">
                 <strong>Motion</strong>
                 <span id="motionValue">--</span>
               </div>
-              <span class="state-heart off" id="motionHeart" aria-label="Motion quiet">â™¡</span>
+              <span class="state-heart off" id="motionHeart" aria-label="Motion quiet">&#9825;</span>
             </div>
 
             <div class="input-state" title="Heat">
-              <span class="input-icon" aria-hidden="true">â™¨ï¸</span>
+              <span class="input-icon" aria-hidden="true">&#9832;&#65039;</span>
               <div class="input-reading">
                 <strong>Heat</strong>
-                <span id="heatValue">-- Â°F</span>
+                <span id="heatValue">-- &deg;F</span>
               </div>
-              <span class="state-heart off" id="heatHeart" aria-label="Heat field inactive">â™¡</span>
+              <span class="state-heart off" id="heatHeart" aria-label="Heat field inactive">&#9825;</span>
             </div>
           </div>
         </section>
@@ -739,14 +739,8 @@
           </a>
         </div>
 
-        <div class="kiln-graph-link-wrap">
-          <a class="kiln-graph-button" href="/kiln-watch-graph.html">
-            Open Firing Graph
-          </a>
-        </div>
-
         <footer class="gene-footer">
-          <span><strong>GENE</strong> â€” Generally Expresses Nothing Extraneous.</span>
+          <span><strong>GENE</strong> &mdash; Generally Expresses Nothing Extraneous.</span>
           <span class="transmit">Witness. Remember. Transmit.</span>
         </footer>
       </div>
@@ -785,17 +779,17 @@
       }
 
       function setHeart(element, active, activeLabel, inactiveLabel) {
-        element.textContent = active ? "â™¥" : "â™¡";
+        element.textContent = active ? "\u2665" : "\u2661";
         element.classList.toggle("off", !active);
         element.setAttribute("aria-label", active ? activeLabel : inactiveLabel);
       }
 
       function arousalLanguage(arousal) {
         if (arousal < 0.08) {
-          return ["Resting", "Quiet â€¢ Present â€¢ Registering"];
+          return ["Resting", "Quiet \u2022 Present \u2022 Registering"];
         }
         if (arousal < 0.20) {
-          return ["Attentive", "Calm â€¢ Present â€¢ Observing"];
+          return ["Attentive", "Calm \u2022 Present \u2022 Observing"];
         }
         if (arousal < 0.45) {
           return ["Awake", "The studio field is changing"];
@@ -945,14 +939,14 @@
 
         if (temperature !== null) {
           $("temperature").textContent = Math.round(temperature);
-          $("heatValue").textContent = `${Math.round(temperature)} Â°F`;
+          $("heatValue").textContent = `${Math.round(temperature)} \u00B0F`;
           const [state, note] = kilnLanguage(temperature, ramp);
           $("heatState").textContent = state;
           $("rampNote").textContent = ramp === null
             ? note
-            : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} Â°F/hr.`;
+            : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} \u00B0F/hr.`;
 
-          // Display range is 60â€“2400 Â°F.
+          // Display range is 60-2400 degrees F.
           setNeedle(
             $("temperatureNeedle"),
             (temperature - 60) / (2400 - 60)
