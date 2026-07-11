@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Firing Graph | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3032">
+
+  <style>
+    :root {
+      --graph-bg: #090d10;
+      --graph-panel: #101519;
+      --graph-line: rgba(222, 211, 184, 0.18);
+      --graph-cream: #e7ddc7;
+      --graph-muted: #aaa79e;
+      --graph-green: #9ac64e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    .graph-shell {
+      width: min(1240px, calc(100% - 28px));
+      margin: 36px auto 70px;
+    }
+
+    .graph-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .graph-heading {
+      margin: 0;
+      color: var(--graph-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 500;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+    }
+
+    .graph-kicker {
+      margin: 0 0 8px;
+      color: var(--graph-green);
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .graph-intro {
+      max-width: 700px;
+      margin: 10px 0 0;
+      color: var(--graph-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.08rem;
+      line-height: 1.6;
+    }
+
+    .console-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 11px 18px;
+      border: 1px solid rgba(154, 198, 78, 0.6);
+      border-radius: 9px;
+      color: var(--graph-green);
+      background: rgba(154, 198, 78, 0.04);
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.07em;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .graph-panel {
+      overflow: hidden;
+      padding: 18px;
+      border: 1px solid rgba(231, 221, 199, 0.23);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(154, 198, 78, 0.06), transparent 34%),
+        linear-gradient(145deg, var(--graph-panel), var(--graph-bg));
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.36),
+        inset 0 0 0 7px rgba(255, 255, 255, 0.018);
+    }
+
+    .graph-image-wrap {
+      display: grid;
+      min-height: 420px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid var(--graph-line);
+      border-radius: 16px;
+      background: #f3ead8;
+    }
+
+    .graph-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .graph-error {
+      display: none;
+      padding: 30px;
+      color: #5f5b52;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    .graph-meta {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.7fr);
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .graph-note,
+    .graph-status {
+      min-height: 150px;
+      padding: 20px;
+      border: 1px solid var(--graph-line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .graph-meta h2 {
+      margin: 0 0 12px;
+      color: var(--graph-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .graph-note pre {
+      margin: 0;
+      color: var(--graph-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .status-line {
+      margin: 0 0 9px;
+      color: var(--graph-muted);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .status-line strong {
+      color: var(--graph-green);
+      font-weight: 500;
+    }
+
+    .archive-link {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--graph-green);
+      font-family: Georgia, "Times New Roman", serif;
+      text-underline-offset: 4px;
+    }
+
+    @media (max-width: 760px) {
+      .graph-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .graph-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .graph-panel {
+        padding: 11px;
+      }
+
+      .graph-image-wrap {
+        min-height: 260px;
+      }
+    }
+  </style>
+</head>
+
+<body class="practice-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+        <a class="active" href="/gene.html">GENE</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="graph-shell">
+
+    <header class="graph-header">
+      <div>
+        <p class="graph-kicker">GENE / Studio Instrument</p>
+        <h1 class="graph-heading">Firing Graph</h1>
+        <p class="graph-intro">
+          The console shows the present condition. This page preserves the
+          curve: temperature, pace, duration, and the accumulated evidence of
+          the firing as it unfolds.
+        </p>
+      </div>
+
+      <a class="console-button" href="/kilnwatch.html">
+        Return to Console
+      </a>
+    </header>
+
+    <section class="graph-panel" aria-label="Latest GENE firing graph">
+
+      <div class="graph-image-wrap">
+        <img
+          class="graph-image"
+          id="firingGraph"
+          src="https://claycraze.com/gene/kiln_watch_latest.png"
+          alt="Latest GENE kiln firing graph"
+        >
+        <div class="graph-error" id="graphError">
+          The firing graph is not available yet.
+        </div>
+      </div>
+
+      <div class="graph-meta">
+
+        <section class="graph-note">
+          <h2>Latest Interpretation</h2>
+          <pre id="firingNote">Loading the latest firing note…</pre>
+        </section>
+
+        <aside class="graph-status">
+          <h2>Graph Status</h2>
+          <p class="status-line">
+            Updated:
+            <strong id="graphUpdated">Checking…</strong>
+          </p>
+          <p class="status-line">
+            Display refresh:
+            <strong>Every five minutes</strong>
+          </p>
+          <p class="status-line">
+            Public evidence:
+            <strong>Graph, JSON, note, and log</strong>
+          </p>
+
+          <a
+            class="archive-link"
+            href="/gene/firing_archive/"
+          >
+            Open firing archive
+          </a>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const GRAPH_URL = "https://claycraze.com/gene/kiln_watch_latest.png";
+      const NOTE_URL = "https://claycraze.com/gene/kiln_watch_latest.txt";
+      const REFRESH_MS = 5 * 60 * 1000;
+
+      const graph = document.getElementById("firingGraph");
+      const error = document.getElementById("graphError");
+      const note = document.getElementById("firingNote");
+      const updated = document.getElementById("graphUpdated");
+
+      function cacheBusted(url) {
+        const separator = url.includes("?") ? "&" : "?";
+        return `${url}${separator}t=${Date.now()}`;
+      }
+
+      async function refreshGraph() {
+        graph.style.display = "block";
+        error.style.display = "none";
+
+        graph.onerror = () => {
+          graph.style.display = "none";
+          error.style.display = "block";
+        };
+
+        graph.onload = () => {
+          updated.textContent = new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            second: "2-digit"
+          }).format(new Date());
+        };
+
+        graph.src = cacheBusted(GRAPH_URL);
+
+        try {
+          const response = await fetch(cacheBusted(NOTE_URL), {
+            cache: "no-store"
+          });
+
+          if (!response.ok) {
+            throw new Error(`Note returned ${response.status}`);
+          }
+
+          note.textContent = await response.text();
+        } catch (fetchError) {
+          note.textContent = "The latest interpreted firing note is unavailable.";
+          console.warn(fetchError);
+        }
+      }
+
+      refreshGraph();
+      window.setInterval(refreshGraph, REFRESH_MS);
+    })();
+  </script>
+
+</body>
+</html>
