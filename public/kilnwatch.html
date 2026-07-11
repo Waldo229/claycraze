@@ -425,6 +425,37 @@
       background: rgba(154, 198, 78, 0.11);
       outline: none;
     }
+
+    .kiln-graph-link-wrap {
+      display: flex;
+      justify-content: center;
+      padding-top: 22px;
+    }
+
+    .kiln-graph-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 22px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .kiln-graph-button:hover,
+    .kiln-graph-button:focus-visible {
+      border-color: rgba(154, 198, 78, 0.95);
+      background: rgba(154, 198, 78, 0.11);
+      outline: none;
+    }
+
     .gene-footer {
       display: flex;
       justify-content: space-between;
@@ -707,6 +738,13 @@
             Open Firing Graph
           </a>
         </div>
+
+        <div class="kiln-graph-link-wrap">
+          <a class="kiln-graph-button" href="/kiln-watch-graph.html">
+            Open Firing Graph
+          </a>
+        </div>
+
         <footer class="gene-footer">
           <span><strong>GENE</strong> â€” Generally Expresses Nothing Extraneous.</span>
           <span class="transmit">Witness. Remember. Transmit.</span>
