@@ -128,6 +128,15 @@
       display: block;
     }
 
+    .mascot-error {
+      display: none;
+      padding: 20px;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1rem;
+      text-align: center;
+    }
+
     .presence-title {
       margin: 18px 0 6px;
       color: var(--gene-green);
@@ -347,6 +356,29 @@
       line-height: 1;
     }
 
+    .input-reading {
+      display: flex;
+      min-width: 92px;
+      flex-direction: column;
+      gap: 5px;
+      text-align: left;
+    }
+
+    .input-reading strong {
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .input-reading span {
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1rem;
+    }
+
     .state-heart {
       min-width: 36px;
       color: var(--gene-green);
@@ -494,8 +526,10 @@
         <div class="gene-mascot-wrap">
           <img
             class="gene-mascot"
-            src="/images/gene-kilnwatch-emoji.png"
-            alt="GENE clay studio watcher">
+            src="/images/gene-kilnwatch-emoji.png?v=2"
+            alt="GENE clay studio watcher"
+            onerror="this.style.display='none'; document.getElementById('mascotError').style.display='block';">
+          <div id="mascotError" class="mascot-error">GENE image unavailable</div>
         </div>
 
         <h3 class="presence-title" id="presenceTitle">GENE is present</h3>
@@ -579,18 +613,30 @@
 
           <div class="input-grid">
             <div class="input-state" title="Microphone">
-              <span class="input-icon" aria-label="Microphone">🎙️</span>
-              <span class="state-heart off" id="micHeart" aria-label="Microphone inactive">♡</span>
+              <span class="input-icon" aria-hidden="true">🎙️</span>
+              <div class="input-reading">
+                <strong>Microphone</strong>
+                <span id="micValue">--</span>
+              </div>
+              <span class="state-heart off" id="micHeart" aria-label="Microphone quiet">♡</span>
             </div>
 
             <div class="input-state" title="Motion">
-              <span class="input-icon" aria-label="Motion">🏃</span>
-              <span class="state-heart off" id="motionHeart" aria-label="Motion inactive">♡</span>
+              <span class="input-icon" aria-hidden="true">🏃</span>
+              <div class="input-reading">
+                <strong>Motion</strong>
+                <span id="motionValue">--</span>
+              </div>
+              <span class="state-heart off" id="motionHeart" aria-label="Motion quiet">♡</span>
             </div>
 
             <div class="input-state" title="Heat">
-              <span class="input-icon" aria-label="Heat">♨️</span>
-              <span class="state-heart off" id="heatHeart" aria-label="Heat inactive">♡</span>
+              <span class="input-icon" aria-hidden="true">♨️</span>
+              <div class="input-reading">
+                <strong>Heat</strong>
+                <span id="heatValue">-- °F</span>
+              </div>
+              <span class="state-heart off" id="heatHeart" aria-label="Heat field inactive">♡</span>
             </div>
           </div>
         </section>
@@ -610,6 +656,7 @@
       const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
       const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
       const REFRESH_MS = 10000;
+      const GENE_STALE_AFTER_SECONDS = 120;
 
       // These are display thresholds, not safety thresholds.
       const MIC_ACTIVE_AT = 0.002;
@@ -748,6 +795,9 @@
         const mic = asFiniteNumber(data.mic);
         const motion = asFiniteNumber(data.motion);
 
+        $("micValue").textContent = mic === null ? "--" : mic.toFixed(4);
+        $("motionValue").textContent = motion === null ? "--" : motion.toFixed(4);
+
         if (arousal !== null) {
           $("arousal").textContent = arousal.toFixed(2);
           const [state, note] = arousalLanguage(arousal);
@@ -791,6 +841,7 @@
 
         if (temperature !== null) {
           $("temperature").textContent = Math.round(temperature);
+          $("heatValue").textContent = `${Math.round(temperature)} °F`;
           const [state, note] = kilnLanguage(temperature, ramp);
           $("heatState").textContent = state;
           $("rampNote").textContent = ramp === null
@@ -814,7 +865,7 @@
         return { heatKnown: temperature !== null };
       }
 
-      function updateSummary(results) {
+      function updateSummary(results, generatedUnix) {
         const known = [
           results.micKnown,
           results.motionKnown,
@@ -822,6 +873,22 @@
         ];
 
         const allKnown = known.every(Boolean);
+        const generated = asFiniteNumber(generatedUnix);
+        const ageSeconds = generated === null
+          ? Infinity
+          : (Date.now() / 1000) - generated;
+        const geneFresh = ageSeconds <= GENE_STALE_AFTER_SECONDS;
+
+        if (!geneFresh) {
+          $("sensorSummary").textContent = "GENE signal stale";
+          $("summaryDot").classList.add("off");
+          $("presenceTitle").textContent = "GENE is offline";
+          $("presenceCopy").textContent = generated === null
+            ? "No current studio signal."
+            : `Last signal received ${Math.max(1, Math.round(ageSeconds / 60))} minutes ago.`;
+          return;
+        }
+
         $("sensorSummary").textContent = allKnown
           ? "All sensors reporting"
           : "Partial field reporting";
@@ -869,7 +936,15 @@
           kilnStatus = renderKiln(kilnResult.value);
         }
 
-        updateSummary({ ...geneStatus, ...kilnStatus });
+        const generatedUnix =
+          geneResult.status === "fulfilled"
+            ? geneResult.value.generated_unix
+            : null;
+
+        updateSummary(
+          { ...geneStatus, ...kilnStatus },
+          generatedUnix
+        );
 
         const failed =
           geneResult.status === "rejected" ||
