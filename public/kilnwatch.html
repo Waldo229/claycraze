@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kiln Watch — ClaycrazE</title>
+  <title>Kiln Watch â€” ClaycrazE</title>
   <link rel="stylesheet" href="/css/styles.css?v=3031">
 
   <style>
@@ -395,6 +395,36 @@
       opacity: 0.75;
     }
 
+
+    .kiln-graph-link-wrap {
+      display: flex;
+      justify-content: center;
+      padding-top: 22px;
+    }
+
+    .kiln-graph-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 22px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .kiln-graph-button:hover,
+    .kiln-graph-button:focus-visible {
+      border-color: rgba(154, 198, 78, 0.95);
+      background: rgba(154, 198, 78, 0.11);
+      outline: none;
+    }
     .gene-footer {
       display: flex;
       justify-content: space-between;
@@ -483,7 +513,37 @@
         border-top: 1px solid var(--gene-line);
       }
 
-      .gene-footer {
+  
+    .kiln-graph-link-wrap {
+      display: flex;
+      justify-content: center;
+      padding-top: 22px;
+    }
+
+    .kiln-graph-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 22px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .kiln-graph-button:hover,
+    .kiln-graph-button:focus-visible {
+      border-color: rgba(154, 198, 78, 0.95);
+      background: rgba(154, 198, 78, 0.11);
+      outline: none;
+    }
+    .gene-footer {
         flex-direction: column;
       }
 
@@ -548,12 +608,12 @@
       <div class="gene-right">
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">♨️</div>
+          <div class="reading-icon" aria-hidden="true">â™¨ï¸</div>
 
           <div>
             <p class="reading-label">Kiln Temperature</p>
             <p class="reading-value">
-              <span id="temperature">--</span><span class="reading-unit">°F</span>
+              <span id="temperature">--</span><span class="reading-unit">Â°F</span>
             </p>
             <p class="reading-state" id="heatState">Awaiting kiln field</p>
             <p class="reading-note" id="rampNote">Ramp unavailable</p>
@@ -567,7 +627,7 @@
         </article>
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">◉</div>
+          <div class="reading-icon" aria-hidden="true">â—‰</div>
 
           <div>
             <p class="reading-label">Arousal Level</p>
@@ -584,7 +644,7 @@
         </article>
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">⌁</div>
+          <div class="reading-icon" aria-hidden="true">âŒ</div>
 
           <div>
             <p class="reading-label">Heartbeat</p>
@@ -595,7 +655,7 @@
           </div>
 
           <div class="reading-visual heartbeat-visual" aria-hidden="true">
-            <span class="heart" id="mainHeart">♥</span>
+            <span class="heart" id="mainHeart">â™¥</span>
             <svg class="pulse-line" viewBox="0 0 120 44" role="img">
               <path
                 d="M2 25 H18 L24 15 L31 34 L39 22 L48 25 L58 25 L65 5 L74 40 L82 20 L90 25 H118"
@@ -613,36 +673,42 @@
 
           <div class="input-grid">
             <div class="input-state" title="Microphone">
-              <span class="input-icon" aria-hidden="true">🎙️</span>
+              <span class="input-icon" aria-hidden="true">ðŸŽ™ï¸</span>
               <div class="input-reading">
                 <strong>Microphone</strong>
                 <span id="micValue">--</span>
               </div>
-              <span class="state-heart off" id="micHeart" aria-label="Microphone quiet">♡</span>
+              <span class="state-heart off" id="micHeart" aria-label="Microphone quiet">â™¡</span>
             </div>
 
             <div class="input-state" title="Motion">
-              <span class="input-icon" aria-hidden="true">🏃</span>
+              <span class="input-icon" aria-hidden="true">ðŸƒ</span>
               <div class="input-reading">
                 <strong>Motion</strong>
                 <span id="motionValue">--</span>
               </div>
-              <span class="state-heart off" id="motionHeart" aria-label="Motion quiet">♡</span>
+              <span class="state-heart off" id="motionHeart" aria-label="Motion quiet">â™¡</span>
             </div>
 
             <div class="input-state" title="Heat">
-              <span class="input-icon" aria-hidden="true">♨️</span>
+              <span class="input-icon" aria-hidden="true">â™¨ï¸</span>
               <div class="input-reading">
                 <strong>Heat</strong>
-                <span id="heatValue">-- °F</span>
+                <span id="heatValue">-- Â°F</span>
               </div>
-              <span class="state-heart off" id="heatHeart" aria-label="Heat field inactive">♡</span>
+              <span class="state-heart off" id="heatHeart" aria-label="Heat field inactive">â™¡</span>
             </div>
           </div>
         </section>
 
+
+        <div class="kiln-graph-link-wrap">
+          <a class="kiln-graph-button" href="/kiln-watch-graph.html">
+            Open Firing Graph
+          </a>
+        </div>
         <footer class="gene-footer">
-          <span><strong>GENE</strong> — Generally Expresses Nothing Extraneous.</span>
+          <span><strong>GENE</strong> â€” Generally Expresses Nothing Extraneous.</span>
           <span class="transmit">Witness. Remember. Transmit.</span>
         </footer>
       </div>
@@ -681,17 +747,17 @@
       }
 
       function setHeart(element, active, activeLabel, inactiveLabel) {
-        element.textContent = active ? "♥" : "♡";
+        element.textContent = active ? "â™¥" : "â™¡";
         element.classList.toggle("off", !active);
         element.setAttribute("aria-label", active ? activeLabel : inactiveLabel);
       }
 
       function arousalLanguage(arousal) {
         if (arousal < 0.08) {
-          return ["Resting", "Quiet • Present • Registering"];
+          return ["Resting", "Quiet â€¢ Present â€¢ Registering"];
         }
         if (arousal < 0.20) {
-          return ["Attentive", "Calm • Present • Observing"];
+          return ["Attentive", "Calm â€¢ Present â€¢ Observing"];
         }
         if (arousal < 0.45) {
           return ["Awake", "The studio field is changing"];
@@ -841,14 +907,14 @@
 
         if (temperature !== null) {
           $("temperature").textContent = Math.round(temperature);
-          $("heatValue").textContent = `${Math.round(temperature)} °F`;
+          $("heatValue").textContent = `${Math.round(temperature)} Â°F`;
           const [state, note] = kilnLanguage(temperature, ramp);
           $("heatState").textContent = state;
           $("rampNote").textContent = ramp === null
             ? note
-            : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} °F/hr.`;
+            : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} Â°F/hr.`;
 
-          // Display range is 60–2400 °F.
+          // Display range is 60â€“2400 Â°F.
           setNeedle(
             $("temperatureNeedle"),
             (temperature - 60) / (2400 - 60)
