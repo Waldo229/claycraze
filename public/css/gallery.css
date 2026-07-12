@@ -576,3 +576,222 @@
   opacity: 1;
   text-shadow: none;
 }
+/* =========================================================
+   TREES PAGE — MOBILE REPAIR
+   Append to the bottom of gallery.css
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  /* Prevent wide elements from forcing horizontal scrolling */
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* -------------------------
+     Header
+     ------------------------- */
+
+  .trees-page .site-header {
+    width: 100%;
+  }
+
+  .trees-page .header-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .trees-page .site-brand {
+    display: block;
+    width: auto;
+  }
+
+  .trees-page .site-title,
+  .trees-page .site-tag {
+    display: block;
+  }
+
+  .trees-page .site-nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px 16px;
+  }
+
+  .trees-page .site-nav a {
+    margin: 0;
+    padding: 4px 0;
+    white-space: nowrap;
+  }
+
+  /* -------------------------
+     Main page
+     ------------------------- */
+
+  .trees-page .threshold-page,
+  .trees-page .bonsai-threshold {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 34px 18px 60px;
+  }
+
+  .trees-page .bonsai-intro {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 30px;
+  }
+
+  .trees-page .threshold-kicker {
+    margin-bottom: 10px;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    letter-spacing: 0.11em;
+  }
+
+  .trees-page .bonsai-intro h1 {
+    max-width: 100%;
+    margin: 0 0 16px;
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  .trees-page .bonsai-intro > p:not(.threshold-kicker) {
+    max-width: 100%;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  /* -------------------------
+     Showcase
+     ------------------------- */
+
+  .trees-page .bonsai-showcase,
+  .trees-page .trees-artist-showcase {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    display: block;
+  }
+
+  .trees-page .bonsai-unity-panel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 22px;
+    overflow: hidden;
+    border-radius: 18px;
+  }
+
+  .trees-page .bonsai-unity-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  /* -------------------------
+     Artist cards
+     ------------------------- */
+
+  .trees-page .bonsai-form-grid,
+  .trees-page .trees-artist-grid {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .trees-page .bonsai-form-card,
+  .trees-page .trees-artist-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    display: block;
+    overflow: hidden;
+    border-radius: 18px;
+  }
+
+  .trees-page .bonsai-form-card img,
+  .trees-page .trees-artist-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .trees-page .bonsai-form-card > div,
+  .trees-page .trees-artist-card > div {
+    width: 100%;
+    padding: 18px;
+  }
+
+  .trees-page .bonsai-form-card p,
+  .trees-page .trees-artist-card p {
+    margin: 0 0 5px;
+    font-size: 0.72rem;
+    line-height: 1.3;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .trees-page .bonsai-form-card h2,
+  .trees-page .trees-artist-card h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 7vw, 1.8rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+}
+
+
+/* Very narrow phones */
+@media (max-width: 390px) {
+
+  .trees-page .header-shell {
+    padding: 14px;
+  }
+
+  .trees-page .threshold-page,
+  .trees-page .bonsai-threshold {
+    padding: 28px 14px 48px;
+  }
+
+  .trees-page .site-nav {
+    gap: 7px 13px;
+    font-size: 0.9rem;
+  }
+
+  .trees-page .bonsai-intro h1 {
+    font-size: 2rem;
+  }
+
+  .trees-page .bonsai-form-card > div,
+  .trees-page .trees-artist-card > div {
+    padding: 15px;
+  }
+}
