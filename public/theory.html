@@ -1,114 +1,384 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Theory | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3018">
+  <link rel="stylesheet" href="/css/styles.css?v=3019">
+
+  <style>
+    /* ==========================================
+       THEORY — UNIFIED CONSOLE PRESENTATION
+       Page-specific test styles
+       ========================================== */
+
+    .theory-page {
+      background:
+        linear-gradient(
+          180deg,
+          #100b07 0,
+          #17110c 100%
+        );
+    }
+
+    .theory-threshold {
+      width: 100%;
+      max-width: none;
+      padding: 2.65rem clamp(1rem, 2vw, 2rem) 4rem;
+    }
+
+    /* Compact introduction */
+
+    .theory-threshold .threshold-intro {
+      width: min(100%, 1480px);
+      margin: 0 auto 1.6rem;
+    }
+
+    .theory-threshold .threshold-copy {
+      max-width: 760px;
+    }
+
+    .theory-threshold .section-label {
+      margin-bottom: 0.8rem;
+    }
+
+    .theory-threshold h1 {
+      margin-top: 0;
+      margin-bottom: 0.7rem;
+      line-height: 1.08;
+    }
+
+    .theory-threshold .threshold-copy > p {
+      max-width: 720px;
+      margin-top: 0;
+      margin-bottom: 0;
+      line-height: 1.55;
+    }
+
+    /* Four rooms inside one shared console */
+
+    .theory-threshold .theory-grid {
+      width: min(100%, 1480px);
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+
+      padding: 11px;
+      overflow: hidden;
+
+      border: 1px solid rgba(220, 207, 179, 0.22);
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 25, 28, 0.99),
+          rgba(9, 14, 17, 0.99)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
+        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
+    }
+
+    /* Existing archive cards become console chambers */
+
+    .theory-threshold .theory-grid .archive-card {
+      position: relative;
+      min-width: 0;
+      margin: 0;
+      padding: 1rem;
+
+      display: flex;
+      flex-direction: column;
+
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+
+      color: inherit;
+      text-decoration: none;
+
+      transition:
+        background-color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .theory-threshold
+    .theory-grid
+    .archive-card + .archive-card {
+      border-left: 1px solid rgba(220, 207, 179, 0.16);
+    }
+
+    .theory-threshold .theory-grid .archive-card:hover,
+    .theory-threshold .theory-grid .archive-card:focus-visible {
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .theory-threshold .theory-grid .archive-card:focus-visible {
+      outline: 2px solid rgba(151, 205, 63, 0.8);
+      outline-offset: -3px;
+    }
+
+    /* Images */
+
+    .theory-threshold .theory-grid .archive-card > img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+
+      margin: 0;
+      border-radius: 1rem;
+
+      background: #eee7d9;
+    }
+
+    /* Titles and labels */
+
+    .theory-threshold .archive-card-text {
+      padding: 1rem 0.15rem 0.35rem;
+    }
+
+    .theory-threshold .archive-card-text p {
+      margin: 0 0 0.35rem;
+
+      font-size: 0.78rem;
+      line-height: 1.2;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+
+      color: rgba(229, 220, 200, 0.68);
+    }
+
+    .theory-threshold .archive-card-text h2 {
+      margin: 0;
+
+      font-size: clamp(1.25rem, 1.55vw, 1.7rem);
+      line-height: 1.08;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    /* Tablet */
+
+    @media (max-width: 1050px) {
+      .theory-threshold .theory-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .theory-threshold
+      .theory-grid
+      .archive-card + .archive-card {
+        border-left: 0;
+      }
+
+      .theory-threshold
+      .theory-grid
+      .archive-card:nth-child(even) {
+        border-left: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .theory-threshold
+      .theory-grid
+      .archive-card:nth-child(n + 3) {
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .theory-threshold .theory-grid .archive-card > img {
+        aspect-ratio: 4 / 3;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .theory-threshold {
+        padding:
+          1.6rem
+          0.8rem
+          2.75rem;
+      }
+
+      .theory-threshold .threshold-intro {
+        margin-bottom: 1.2rem;
+      }
+
+      .theory-threshold .theory-grid {
+        padding: 8px;
+        border-radius: 1.4rem;
+      }
+    }
+
+    /* Phone: one clear vertical sequence */
+
+    @media (max-width: 540px) {
+      .theory-threshold {
+        padding-inline: 0.65rem;
+      }
+
+      .theory-threshold .threshold-copy {
+        padding-inline: 0.35rem;
+      }
+
+      .theory-threshold .theory-grid {
+        grid-template-columns: 1fr;
+        padding: 7px;
+        border-radius: 1.25rem;
+      }
+
+      .theory-threshold
+      .theory-grid
+      .archive-card,
+      .theory-threshold
+      .theory-grid
+      .archive-card:nth-child(even),
+      .theory-threshold
+      .theory-grid
+      .archive-card:nth-child(n + 3) {
+        border-left: 0;
+      }
+
+      .theory-threshold
+      .theory-grid
+      .archive-card + .archive-card {
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .theory-threshold .theory-grid .archive-card {
+        padding: 0.8rem;
+      }
+
+      .theory-threshold .theory-grid .archive-card > img {
+        aspect-ratio: 16 / 10;
+        border-radius: 0.8rem;
+      }
+
+      .theory-threshold .archive-card-text {
+        padding:
+          0.85rem
+          0.25rem
+          0.5rem;
+      }
+
+      .theory-threshold .archive-card-text h2 {
+        font-size: 1.45rem;
+      }
+
+      .theory-threshold .archive-card-text p {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
 </head>
 
 <body class="theory-page">
 
   <header class="site-header">
     <div class="header-shell">
-  <a class="site-brand" href="/index.html">
-    <span class="site-title">ClaycrazE</span>
-    <span class="site-tag">Theory &amp; Practice</span>
-  </a>
 
-  <nav class="site-nav" aria-label="Main navigation">
-    <a href="/index.html">Home</a>
-    <a class="active" href="/theory.html">Theory</a>
-    <a href="/practice.html">Practice</a>
-  </nav>
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
 
-</div>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
 
-
+    </div>
   </header>
 
   <main class="threshold-page theory-threshold">
 
-<section class="threshold-intro">
+    <section class="threshold-intro">
 
-  <div class="threshold-copy">
+      <div class="threshold-copy">
 
-    <div class="section-label">
-      <img
-        src="/images/curated/theory_imgs/han-shan2.jpg"
-        alt="Han Shan"
-        class="room-seal">
+        <div class="section-label">
+          <img
+            src="/images/curated/theory_imgs/han-shan2.jpg"
+            alt="Han Shan"
+            class="room-seal"
+          >
 
-      <span class="threshold-kicker">Theory</span>
-    </div>
+          <span class="threshold-kicker">Theory</span>
+        </div>
 
-    <h1>Reflection, materials, memory, and place.</h1>
+        <h1>Reflection, materials, memory, and place.</h1>
 
-    <p>
-      The Theory side gathers the thinking around the work:
-      geology, studio practice, field notes, memory, rhythm,
-      and the quiet systems that shape ClaycrazE.
-    </p>
+        <p>
+          The Theory side gathers the thinking around the work:
+          geology, studio practice, field notes, memory, rhythm,
+          and the quiet systems that shape ClaycrazE.
+        </p>
 
-  </div>
+      </div>
 
-</section>
+    </section>
 
-<section class="archive-grid theory-grid" aria-label="Theory rooms">
+    <section
+      class="archive-grid theory-grid"
+      aria-label="Theory rooms"
+    >
 
-  <a class="archive-card" href="/studio.html">
-    <img
-      src="/images/curated/theory_imgs/studio.jpg"
-      alt="Studio">
+      <a class="archive-card" href="/studio.html">
+        <img
+          src="/images/curated/theory_imgs/studio.jpg"
+          alt="Studio"
+        >
 
-    <div class="archive-card-text">
-      <p>Room</p>
-      <h2>Studio</h2>
-    </div>
-  </a>
+        <div class="archive-card-text">
+          <p>Room</p>
+          <h2>Studio</h2>
+        </div>
+      </a>
 
-  <a class="archive-card" href="/materials.html">
-    <img
-      src="/images/curated/theory_imgs/materials_001s.png"
-      alt="Materials">
+      <a class="archive-card" href="/materials.html">
+        <img
+          src="/images/curated/theory_imgs/materials_001s.png"
+          alt="Materials"
+        >
 
-    <div class="archive-card-text">
-      <p>Clay & Glazes</p>
-      <h2>Materials</h2>
-    </div>
-  </a>
+        <div class="archive-card-text">
+          <p>Clay &amp; Glazes</p>
+          <h2>Materials</h2>
+        </div>
+      </a>
 
-  <a class="archive-card" href="/places.html">
-    <img
-      src="/images/curated/theory_imgs/jamestown_001s.jpg"
-      alt="The Historic Triangle">
+      <a class="archive-card" href="/places.html">
+        <img
+          src="/images/curated/theory_imgs/jamestown_001s.jpg"
+          alt="The Historic Triangle"
+        >
 
-    <div class="archive-card-text">
-      <p>Virginia's Historic Triangle</p>
-      <h2>Places</h2>
-    </div>
-  </a>
+        <div class="archive-card-text">
+          <p>Virginia's Historic Triangle</p>
+          <h2>Places</h2>
+        </div>
+      </a>
 
-  <a class="archive-card" href="/gene-project.html">
-    <img
-      src="/images/curated/theory_imgs/gene_001s.png"
-      alt="The GENIE">
+      <a class="archive-card" href="/gene-project.html">
+        <img
+          src="/images/curated/theory_imgs/gene_001s.png"
+          alt="GENE"
+        >
 
-    <div class="archive-card-text">
-      <p>Watcher</p>
-      <h2>GENE</h2>
-    </div>
-  </a>
+        <div class="archive-card-text">
+          <p>Watcher</p>
+          <h2>GENE</h2>
+        </div>
+      </a>
 
-</section>
-
+    </section>
 
   </main>
 
 </body>
-
 </html>
