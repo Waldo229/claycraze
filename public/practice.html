@@ -6,7 +6,7 @@
 
   <title>Practice | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3010" >
+  <link rel="stylesheet" href="/css/styles.css?v=3011" >
 
   <style>
     /* ==========================================
@@ -26,18 +26,18 @@
     .practice-threshold {
       width: 100%;
       max-width: none;
-      padding: 2.65rem clamp(1rem, 2vw, 2rem) 4rem;
+      padding: 1.9rem clamp(1rem, 2vw, 2rem) 4rem;
     }
 
     /* Compact introduction */
 
     .practice-threshold .threshold-intro {
       width: min(100%, 1480px);
-      margin: 0 auto 1.6rem;
+      margin: 0 auto 1.1rem;
     }
 
     .practice-threshold .threshold-copy {
-      max-width: 760px;
+      max-width: 980px;
     }
 
     .practice-threshold .section-label {
@@ -45,16 +45,21 @@
     }
 
     .practice-threshold h1 {
+      max-width: 980px;
       margin-top: 0;
-      margin-bottom: 0.7rem;
-      line-height: 1.08;
+      margin-bottom: 0.55rem;
+
+      font-size: clamp(3rem, 5.2vw, 5.4rem);
+      line-height: 1.02;
     }
 
     .practice-threshold .threshold-copy > p {
-      max-width: 720px;
+      max-width: 760px;
       margin-top: 0;
       margin-bottom: 0;
-      line-height: 1.55;
+
+      font-size: 1rem;
+      line-height: 1.45;
     }
 
     /* Five rooms inside one shared console */
@@ -214,6 +219,11 @@
         margin-bottom: 1.2rem;
       }
 
+      .practice-threshold h1 {
+        font-size: clamp(2.45rem, 10vw, 4rem);
+        line-height: 1.04;
+      }
+
       .practice-threshold .practice-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         padding: 8px;
@@ -257,6 +267,15 @@
 
       .practice-threshold .threshold-copy {
         padding-inline: 0.35rem;
+      }
+
+      .practice-threshold h1 {
+        font-size: clamp(2.15rem, 11vw, 3.25rem);
+      }
+
+      .practice-threshold .threshold-copy > p {
+        font-size: 0.96rem;
+        line-height: 1.5;
       }
 
       .practice-threshold .practice-grid {
