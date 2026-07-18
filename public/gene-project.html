@@ -6,7 +6,267 @@
 
   <title>The GENE Project | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3014">
+  <link rel="stylesheet" href="/css/styles.css?v=3015">
+
+  <style>
+    /* ==========================================
+       GENE PROJECT — UNIFIED CONSOLE PRESENTATION
+       ========================================== */
+
+    .gene-project-page {
+      background:
+        linear-gradient(
+          180deg,
+          #100b07 0,
+          #17110c 100%
+        );
+    }
+
+    .gene-project-page .threshold-page {
+      width: 100%;
+      max-width: none;
+      padding: 1.9rem clamp(1rem, 2vw, 2rem) 4rem;
+    }
+
+    .gene-project-page .threshold-intro {
+      width: min(100%, 1480px);
+      margin: 0 auto 1.1rem;
+    }
+
+    .gene-project-page .threshold-copy {
+      max-width: 1100px;
+    }
+
+    .gene-project-page .section-label {
+      margin-bottom: 0.8rem;
+    }
+
+    .gene-project-page h1 {
+      max-width: 1100px;
+      margin: 0;
+
+      font-size: clamp(3rem, 5.2vw, 5.4rem);
+      line-height: 1.02;
+    }
+
+    /* GENE's primary console */
+
+    .gene-project-page .gene-console {
+      width: min(100%, 1480px);
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns:
+        minmax(0, 0.9fr)
+        minmax(380px, 1.1fr);
+      gap: 0;
+
+      padding: 11px;
+      overflow: hidden;
+
+      border: 1px solid rgba(220, 207, 179, 0.22);
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 25, 28, 0.99),
+          rgba(9, 14, 17, 0.99)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
+        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
+    }
+
+    .gene-project-page .gene-image-panel {
+      position: relative;
+      min-width: 0;
+    }
+
+    .gene-project-page .gene-feature-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 560px;
+      object-fit: cover;
+
+      margin: 0;
+      border-radius: 1rem 0 0 1rem;
+
+      background: #eee7d9;
+    }
+
+    .gene-project-page .gene-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      padding: clamp(1.75rem, 3.2vw, 3.8rem);
+
+      border-left: 1px solid rgba(220, 207, 179, 0.16);
+    }
+
+    .gene-project-page .gene-eyebrow {
+      margin: 0 0 0.75rem;
+
+      font-size: 0.76rem;
+      line-height: 1.2;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+
+      color: rgba(229, 220, 200, 0.62);
+    }
+
+    .gene-project-page .gene-copy h2 {
+      max-width: 720px;
+      margin: 0 0 1.15rem;
+
+      font-size: clamp(2rem, 3.4vw, 3.5rem);
+      line-height: 1.08;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    .gene-project-page .gene-name {
+      max-width: 720px;
+      margin: 0 0 1.5rem;
+
+      font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+
+      color: rgba(151, 205, 63, 0.92);
+    }
+
+    .gene-project-page .gene-copy p {
+      max-width: 700px;
+      margin: 0 0 1.1rem;
+
+      font-size: 1rem;
+      line-height: 1.65;
+
+      color: rgba(238, 225, 196, 0.86);
+    }
+
+    .gene-project-page .gene-copy p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .gene-project-page .gene-reveal-link {
+      margin-top: 1.75rem;
+    }
+
+    .gene-project-page .gene-reveal-link a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+
+      padding: 0.8rem 1.1rem;
+
+      border: 1px solid rgba(151, 205, 63, 0.45);
+      border-radius: 999px;
+
+      color: #dce9bd;
+      text-decoration: none;
+
+      background: rgba(151, 205, 63, 0.06);
+
+      transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .gene-project-page .gene-reveal-link a:hover,
+    .gene-project-page .gene-reveal-link a:focus-visible {
+      background: rgba(151, 205, 63, 0.12);
+      border-color: rgba(151, 205, 63, 0.75);
+      transform: translateY(-1px);
+    }
+
+    .gene-project-page .gene-reveal-link a:focus-visible {
+      outline: 2px solid rgba(151, 205, 63, 0.8);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 980px) {
+      .gene-project-page .gene-console {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        border-radius: 1.4rem;
+      }
+
+      .gene-project-page .gene-feature-image {
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+        border-radius: 0.9rem 0.9rem 0 0;
+      }
+
+      .gene-project-page .gene-copy {
+        padding: 1.8rem 1.5rem 2rem;
+
+        border-left: 0;
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .gene-project-page .threshold-page {
+        padding:
+          1.6rem
+          0.8rem
+          2.75rem;
+      }
+
+      .gene-project-page h1 {
+        font-size: clamp(2.45rem, 10vw, 4rem);
+        line-height: 1.04;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .gene-project-page .threshold-page {
+        padding-inline: 0.65rem;
+      }
+
+      .gene-project-page .threshold-copy {
+        padding-inline: 0.35rem;
+      }
+
+      .gene-project-page h1 {
+        font-size: clamp(2.15rem, 11vw, 3.25rem);
+      }
+
+      .gene-project-page .gene-console {
+        padding: 7px;
+        border-radius: 1.25rem;
+      }
+
+      .gene-project-page .gene-feature-image {
+        aspect-ratio: 4 / 3;
+        border-radius: 0.8rem 0.8rem 0 0;
+      }
+
+      .gene-project-page .gene-copy {
+        padding: 1.35rem 1rem 1.55rem;
+      }
+
+      .gene-project-page .gene-copy h2 {
+        font-size: 1.9rem;
+      }
+
+      .gene-project-page .gene-name {
+        font-size: 1rem;
+      }
+
+      .gene-project-page .gene-copy p {
+        font-size: 0.96rem;
+        line-height: 1.58;
+      }
+    }
+  </style>
 </head>
 
 <body class="theory-page gene-project-page">
@@ -40,6 +300,7 @@
             alt="Han Shan"
             class="room-seal"
           >
+
           <span class="threshold-kicker">Theory / GENE</span>
         </div>
 
@@ -49,38 +310,57 @@
 
     </section>
 
-    <section class="room-section">
+    <section
+      class="gene-console"
+      aria-label="The GENE Project"
+    >
 
-      <div class="room-copy">
-
+      <div class="gene-image-panel">
         <img
           src="/images/gene_node_s.jpg"
           alt="GENE project capsule"
-          class="room-feature-image"
-          style="
-            float: right;
-            width: 340px;
-            max-width: 42%;
-            margin: 0 0 1.5rem 2rem;
-            border-radius: 16px;
-          "
+          class="gene-feature-image"
         >
+      </div>
+
+      <div class="gene-copy">
+
+        <p class="gene-eyebrow">
+          Studio instrument
+        </p>
 
         <h2>A Kiln Spirit for the Twenty-First Century</h2>
 
-        <p>
-          GENE (Guardian of Emergent New Experiences) is home to the kiln watcher. The GENE project explores what happens when the traditional kiln spirit becomes articulate.
-
-Over time, GENE learns to pay attention. The spirit is no longer a mute sentinel, but an oracle, articulating in its own language patterns, changes, and departures from expectation.
-
-GENE amplifies the idea that the whole is more than the sum of its parts and that simplicity, registration, and attunement are virtues.
-
-GENE never intervenes. But when asked, it may reveal.
+        <p class="gene-name">
+          GENE — Guardian of Emergent New Experiences
         </p>
-<p class="gene-reveal-link">
-  <a href="/gene_reveals.html">Visit GENE →</a>
-</p>
-        <div style="clear: both;"></div>
+
+        <p>
+          GENE is home to the kiln watcher. The project explores what
+          happens when the traditional kiln spirit becomes articulate.
+        </p>
+
+        <p>
+          Over time, GENE learns to pay attention. The spirit is no longer
+          a mute sentinel, but an oracle, articulating in its own language
+          patterns, changes, and departures from expectation.
+        </p>
+
+        <p>
+          GENE amplifies the idea that the whole is more than the sum of
+          its parts, and that simplicity, registration, and attunement
+          are virtues.
+        </p>
+
+        <p>
+          GENE never intervenes. But when asked, it may reveal.
+        </p>
+
+        <p class="gene-reveal-link">
+          <a href="/gene_reveals.html">
+            Visit GENE &rarr;
+          </a>
+        </p>
 
       </div>
 
