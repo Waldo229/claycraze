@@ -6,7 +6,199 @@
 
   <title>Places | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3017">
+  <link rel="stylesheet" href="/css/styles.css?v=3018">
+
+  <style>
+    /* ==========================================
+       PLACES — UNIFIED CONSOLE PRESENTATION
+       ========================================== */
+
+    .places-page {
+      background:
+        linear-gradient(
+          180deg,
+          #100b07 0,
+          #17110c 100%
+        );
+    }
+
+    .places-page .places-threshold {
+      width: 100%;
+      max-width: none;
+      padding: 1.9rem clamp(1rem, 2vw, 2rem) 4rem;
+    }
+
+    .places-page .threshold-intro {
+      width: min(100%, 1480px);
+      margin: 0 auto 1.1rem;
+    }
+
+    .places-page .threshold-copy {
+      max-width: 1100px;
+    }
+
+    .places-page .section-label {
+      margin-bottom: 0.8rem;
+    }
+
+    .places-page h1 {
+      max-width: 1100px;
+      margin-top: 0;
+      margin-bottom: 0;
+
+      font-size: clamp(3rem, 5.2vw, 5.4rem);
+      line-height: 1.02;
+    }
+
+    /* Unified image-and-text shell */
+
+    .places-page .places-layout {
+      width: min(100%, 1480px);
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.15fr)
+        minmax(340px, 0.85fr);
+      gap: 0;
+
+      padding: 11px;
+      overflow: hidden;
+
+      border: 1px solid rgba(220, 207, 179, 0.22);
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 25, 28, 0.99),
+          rgba(9, 14, 17, 0.99)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
+        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
+    }
+
+    .places-page .places-feature-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      object-fit: cover;
+
+      margin: 0;
+      border-radius: 1rem 0 0 1rem;
+
+      background: #eee7d9;
+    }
+
+    .places-page .places-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      padding: clamp(1.75rem, 3vw, 3.5rem);
+
+      border-left: 1px solid rgba(220, 207, 179, 0.16);
+    }
+
+    .places-page .places-copy h2 {
+      margin: 0 0 1rem;
+
+      font-size: clamp(2rem, 3.4vw, 3.4rem);
+      line-height: 1.08;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    .places-page .places-copy p {
+      max-width: 620px;
+      margin: 0 0 1.15rem;
+
+      font-size: 1rem;
+      line-height: 1.65;
+
+      color: rgba(238, 225, 196, 0.86);
+    }
+
+    .places-page .places-copy p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 980px) {
+      .places-page .places-layout {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        border-radius: 1.4rem;
+      }
+
+      .places-page .places-feature-image {
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+        border-radius: 0.9rem 0.9rem 0 0;
+      }
+
+      .places-page .places-copy {
+        padding: 1.8rem 1.5rem 2rem;
+
+        border-left: 0;
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .places-page .places-threshold {
+        padding:
+          1.6rem
+          0.8rem
+          2.75rem;
+      }
+
+      .places-page h1 {
+        font-size: clamp(2.45rem, 10vw, 4rem);
+        line-height: 1.04;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .places-page .places-threshold {
+        padding-inline: 0.65rem;
+      }
+
+      .places-page .threshold-copy {
+        padding-inline: 0.35rem;
+      }
+
+      .places-page h1 {
+        font-size: clamp(2.15rem, 11vw, 3.25rem);
+      }
+
+      .places-page .places-layout {
+        padding: 7px;
+        border-radius: 1.25rem;
+      }
+
+      .places-page .places-feature-image {
+        aspect-ratio: 4 / 3;
+        border-radius: 0.8rem 0.8rem 0 0;
+      }
+
+      .places-page .places-copy {
+        padding: 1.35rem 1rem 1.5rem;
+      }
+
+      .places-page .places-copy h2 {
+        font-size: 1.8rem;
+      }
+
+      .places-page .places-copy p {
+        font-size: 0.96rem;
+        line-height: 1.58;
+      }
+    }
+  </style>
 </head>
 
 <body class="theory-page places-page">
@@ -23,7 +215,7 @@
         <a href="/index.html">Home</a>
         <a class="active" href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-</nav>
+      </nav>
 
     </div>
   </header>
@@ -31,6 +223,7 @@
   <main class="threshold-page places-threshold">
 
     <section class="threshold-intro">
+
       <div class="threshold-copy">
 
         <div class="section-label">
@@ -39,36 +232,46 @@
             alt="Han Shan"
             class="room-seal"
           >
+
           <span class="threshold-kicker">Theory / Places</span>
         </div>
 
         <h1>Clay, commerce, and culture.</h1>
 
       </div>
+
     </section>
 
-    <section class="places-layout">
+    <section
+      class="places-layout"
+      aria-label="Places"
+    >
 
       <img
-
-      src="/images/jamestown_001s.jpg"
-      alt="Places"
-      class="places-feature-image"
-  >
+        src="/images/jamestown_001s.jpg"
+        alt="The historic James River region"
+        class="places-feature-image"
+      >
 
       <div class="places-copy">
+
+        <h2>Places</h2>
 
         <p>
           Along the James River and beyond &mdash; places that shaped
           the craft, the trade, and the movement of materials,
           people, and ideas.
-          Pottery does not emerge in isolation. Geography,
-          rivers, ports, roads, trade networks, workshops,
-          plantations, and weather all shape the visual
-          and material language surrounding the work.       
-          The Tidewater region of Virginia remains deeply tied
-          to clay, transport, labor, commerce, and the movement
-          of ideas through time.
+        </p>
+
+        <p>
+          Pottery does not emerge in isolation. Geography, rivers, ports,
+          roads, trade networks, workshops, plantations, and weather all
+          shape the visual and material language surrounding the work.
+        </p>
+
+        <p>
+          The Tidewater region of Virginia remains deeply tied to clay,
+          transport, labor, commerce, and the movement of ideas through time.
         </p>
 
       </div>
