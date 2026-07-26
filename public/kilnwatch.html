@@ -1,56 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
-<title>Kiln Watch — ClaycrazE</title>
+<title>Kiln Watch - ClaycrazE</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  .kiln-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 1100px;
+    padding: 0 1rem 2rem;
+  }
+
+  .kiln-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px;
+    padding: 1.25rem;
+  }
+
+  .kiln-card h2,
+  .kiln-card h3 {
+    margin-top: 0;
+  }
+
+  .kiln-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+  }
+
+  .gene-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .gene-wrap img {
+    width: 120px;
+    height: auto;
+    display: block;
+  }
+
+  .status-line {
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .small-note {
+    opacity: 0.82;
+    font-size: 0.95rem;
+  }
+
+  .reading-list {
+    margin: 0.75rem 0 0 1.25rem;
+    padding: 0;
+  }
+
+  .reading-list li {
+    margin: 0.35rem 0;
+  }
+
+  pre#gene-note {
+    white-space: pre-wrap;
+    line-height: 1.35;
+    font-family: inherit;
+    font-size: 0.98rem;
+    margin: 0;
+  }
+</style>
 </head>
 
 <body>
 
-<!-- PATH NAV -->
 <div class="path-nav">
   <a href="materials.html">Theory</a> |
   <a href="practice.html">Practice</a> |
   <a href="node-notes.html">GENE</a>
 </div>
 
-<!-- HEADER -->
 <header class="header">
   <h1>Kiln Watch</h1>
   <p>Live firing record.</p>
 </header>
 
-<!-- CONTEXT -->
 <div class="note">
-
-<p>
-A single image records the state of the firing. Temperature, rate of rise, and system behavior are captured as they occur.
-</p>
-
+  <p>
+    GENE publishes interpreted evidence from the local kiln-watch field.
+    When the hottest current probe exceeds 400 deg F, Pocket GENE shifts into
+    its firing state.
+  </p>
 </div>
 
-<!-- DATA IMAGE -->
-<div class="container-card">
+<div class="kiln-grid">
 
-  <img src="images/kilnwatch_001s.jpg" alt="Kiln firing data">
-
-  <div class="object-record">
-
-    <div class="label">
-      <div class="object-id">Firing 2026-03</div>
-      <div class="status">Active</div>
+  <section class="kiln-card">
+    <div class="gene-wrap">
+      <img id="gene-state-image" src="/gene/kiln_watch_gene.gif" alt="GENE kiln state">
+      <div>
+        <h2>Pocket GENE</h2>
+        <p id="source-status" class="status-line">Loading kiln state...</p>
+        <p id="gene-visual-state" class="small-note">Checking firing condition...</p>
+      </div>
     </div>
+  </section>
 
-    <h3>Temperature Progression</h3>
+  <section class="kiln-card">
+    <h2>Temperature Progression</h2>
+    <img
+      id="kiln-graph"
+      class="kiln-image"
+      src="/gene/kiln_watch_latest.png"
+      alt="Live kiln firing graph"
+    >
+    <p class="small-note">
+      The graph and GENE state image refresh automatically.
+    </p>
+  </section>
 
-    <p>Electric kiln reference</p>
-    <p>Parallel gas kiln observation</p>
+  <section class="kiln-card">
+    <h3>Current Readings</h3>
+    <ul id="reading-list" class="reading-list">
+      <li>Loading current readings...</li>
+    </ul>
+  </section>
 
-  </div>
+  <section class="kiln-card">
+    <h3>GENE Note</h3>
+    <pre id="gene-note">Loading note...</pre>
+  </section>
 
 </div>
+
+<script>
+async function refreshKilnWatch() {
+  const stamp = Date.now();
+  const jsonUrl = `/gene/kiln_watch_latest.json?t=${stamp}`;
+  const txtUrl = `/gene/kiln_watch_latest.txt?t=${stamp}`;
+  const gifUrl = `/gene/kiln_watch_gene.gif?t=${stamp}`;
+  const pngUrl = `/gene/kiln_watch_latest.png?t=${stamp}`;
+
+  const graph = document.getElementById('kiln-graph');
+  const geneImage = document.getElementById('gene-state-image');
+  const statusLine = document.getElementById('source-status');
+  const visualState = document.getElementById('gene-visual-state');
+  const readingList = document.getElementById('reading-list');
+  const noteBox = document.getElementById('gene-note');
+
+  graph.src = pngUrl;
+  geneImage.src = gifUrl;
+
+  try {
+    const response = await fetch(jsonUrl, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const sourceStatus = data.source_status || 'unknown';
+    const geneVisual = data.gene_visual || {};
+    const summaries = Array.isArray(data.summaries) ? data.summaries : [];
+
+    statusLine.textContent = `Source status: ${sourceStatus}`;
+
+    if (sourceStatus === 'unavailable') {
+      visualState.textContent = 'Kiln-watch records unavailable. Pocket GENE is in empty-pockets mode.';
+    } else if (geneVisual.state === 'firing') {
+      visualState.textContent = `Firing state active. Hottest probe: ${geneVisual.hottest_temp_f} deg F.`;
+    } else {
+      visualState.textContent = `Watching state. Pocket GENE remains calm below ${geneVisual.threshold_f || 400} deg F.`;
+    }
+
+    readingList.innerHTML = '';
+    if (!summaries.length) {
+      const li = document.createElement('li');
+      li.textContent = 'No current probe summaries available.';
+      readingList.appendChild(li);
+    } else {
+      summaries.forEach(summary => {
+        const li = document.createElement('li');
+        const temp = summary.latest_temp != null ? `${summary.latest_temp} deg F` : 'no temp';
+        const rate = summary.latest_rate != null ? `${summary.latest_rate} deg F/hr` : 'no ramp';
+        li.textContent = `${summary.name}: ${temp}; ramp ${rate}; ${summary.behavior}.`;
+        readingList.appendChild(li);
+      });
+    }
+  } catch (error) {
+    statusLine.textContent = 'Source status: unavailable';
+    visualState.textContent = 'Unable to load live kiln-watch JSON.';
+    readingList.innerHTML = '<li>Live readings unavailable.</li>';
+  }
+
+  try {
+    const noteResponse = await fetch(txtUrl, { cache: 'no-store' });
+    if (!noteResponse.ok) {
+      throw new Error(`HTTP ${noteResponse.status}`);
+    }
+    const noteText = await noteResponse.text();
+    noteBox.textContent = noteText;
+  } catch (error) {
+    noteBox.textContent = 'GENE note unavailable.';
+  }
+}
+
+refreshKilnWatch();
+setInterval(refreshKilnWatch, 60000);
+</script>
 
 </body>
 </html>
