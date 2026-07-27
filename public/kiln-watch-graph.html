@@ -32,11 +32,13 @@
     }
 
     .graph-header {
+      position: relative;
       display: flex;
-      align-items: flex-end;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 24px;
       margin-bottom: 24px;
+      padding-right: 285px;
     }
 
     .graph-heading {
@@ -114,15 +116,17 @@
     }
 
     .graph-header-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
       display: flex;
-      align-items: center;
-      gap: 24px;
-      flex-shrink: 0;
+      align-items: flex-start;
+      gap: 22px;
     }
 
     .pocket-gene {
       display: block;
-      width: clamp(100px, 11vw, 145px);
+      width: 150px;
       height: auto;
       filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.32));
       pointer-events: none;
@@ -274,12 +278,6 @@
           id="firingGraph"
           src="https://claycraze.com/gene/kiln_watch_latest.png"
           alt="Latest GENE kiln firing graph"
-        >
-        <img
-          class="pocket-gene"
-          id="pocketGene"
-          src="https://claycraze.com/gene/kiln_watch_gene.gif"
-          alt="Pocket GENE kiln state"
         >
         <div class="graph-error" id="graphError">
           The firing graph is not available yet.
