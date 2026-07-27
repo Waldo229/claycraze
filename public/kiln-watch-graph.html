@@ -113,19 +113,19 @@
       object-fit: contain;
     }
 
-    .pocket-gene {
-      position: absolute;
-      right: 18px;
-      bottom: 18px;
-      width: clamp(78px, 10vw, 128px);
-      height: auto;
-      z-index: 2;
-      filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.28));
-      pointer-events: none;
+    .graph-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
     }
 
-    .graph-image-wrap {
-      position: relative;
+    .pocket-gene {
+      display: block;
+      width: clamp(100px, 11vw, 145px);
+      height: auto;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.32));
+      pointer-events: none;
     }
 
     .graph-error {
@@ -197,6 +197,15 @@
         flex-direction: column;
       }
 
+      .graph-header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .pocket-gene {
+        width: 105px;
+      }
+
       .graph-meta {
         grid-template-columns: 1fr;
       }
@@ -243,9 +252,18 @@
         </p>
       </div>
 
-      <a class="console-button" href="/kilnwatch.html">
-        Return to Console
-      </a>
+      <div class="graph-header-actions">
+        <img
+          class="pocket-gene"
+          id="pocketGene"
+          src="https://claycraze.com/gene/kiln_watch_gene.gif"
+          alt="Pocket GENE kiln state"
+        >
+
+        <a class="console-button" href="/kilnwatch.html">
+          Return to Console
+        </a>
+      </div>
     </header>
 
     <section class="graph-panel" aria-label="Latest GENE firing graph">
