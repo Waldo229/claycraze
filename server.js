@@ -83,6 +83,7 @@ db.serialize(() => {
       image_path_4 TEXT,
       status TEXT DEFAULT 'available',
       price TEXT,
+      assigned_to TEXT DEFAULT 'studio',
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
@@ -112,6 +113,15 @@ db.serialize(() => {
     )
   `);
 });
+
+db.run(
+  `ALTER TABLE inventory ADD COLUMN assigned_to TEXT DEFAULT 'studio'`,
+  (err) => {
+    if (err && !String(err.message).includes("duplicate column name")) {
+      console.error("Could not add assigned_to column:", err);
+    }
+  }
+);
 
 app.use(express.urlencoded({ extended: true, limit: "80mb" }));
 app.use(express.json({ limit: "80mb" }));
@@ -429,7 +439,8 @@ const PUBLIC_FIELDS = `
   image_path_3,
   image_path_4,
   status,
-  price
+  price,
+  assigned_to
 `;
 
 const PUBLIC_STATUSES = ["available", "held", "acquired"];
@@ -655,6 +666,7 @@ function upsertPiece(piece) {
       image_path_4: cleanText(piece.image_path_4),
       status: normalizeStatus(piece.status),
       price: cleanText(piece.price),
+      assigned_to: cleanText(piece.assigned_to) || "studio",
     };
 
     db.run(
@@ -677,8 +689,9 @@ function upsertPiece(piece) {
         image_path_4,
         status,
         price,
+        assigned_to,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       `,
       [
         finalPiece.id,
@@ -698,6 +711,7 @@ function upsertPiece(piece) {
         finalPiece.image_path_4,
         finalPiece.status,
         finalPiece.price,
+        finalPiece.assigned_to,
       ],
       function (err) {
         if (err) return reject(err);
@@ -947,8 +961,9 @@ async function replaceDbWithPieces(pieces) {
       image_path_3,
       image_path_4,
       status,
-      price
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      price,
+      assigned_to
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   let inserted = 0;
@@ -973,6 +988,7 @@ async function replaceDbWithPieces(pieces) {
         p.image_path_4 || "",
         normalizeStatus(p.status || "available"),
         p.price || "",
+        p.assigned_to || "studio",
         (err) => {
           if (err) return reject(err);
           inserted++;

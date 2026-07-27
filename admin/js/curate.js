@@ -155,6 +155,7 @@ function loadPiece(id) {
 
   setValue("privateNotes", currentPiece.notes || "");
   setValue("status", currentPiece.status || "available");
+  setValue("assignedTo", currentPiece.assigned_to || "studio");
 
   setStructuredDimensions(currentPiece.dimensions || "");
 
@@ -229,6 +230,7 @@ async function saveRecord(event) {
       image_path_4: currentPiece?.image_path_4 || "",
 
       status: getValue("status") || "available",
+      assigned_to: getValue("assignedTo") || "studio",
       price: getValue("price")
     };
 
@@ -254,7 +256,7 @@ async function saveRecord(event) {
       throw new Error(result.error || "Save failed.");
     }
 
-   showStatus(result.message || "Record saved successfully.", "success");
+    showStatus(result.message || "Record saved successfully.", "success");
 
     allPieces = await loadPiecesFresh();
     populatePieceSelect(allPieces);
@@ -277,6 +279,7 @@ async function saveRecord(event) {
     showStatus(error.message || "Save failed.", "error");
   }
 }
+
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     if (!file) return resolve("");
@@ -373,6 +376,7 @@ function clearForm() {
   setValue("price", "");
   setValue("privateNotes", "");
   setValue("status", "available");
+  setValue("assignedTo", "studio");
 
   setStructuredDimensions("");
 
