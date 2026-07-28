@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Peninsula Council of Garden Clubs | Places | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
+
+  <style>
+    /* ==========================================
+       PLACE — PENINSULA COUNCIL OF GARDEN CLUBS
+       ========================================== */
+
+    .place-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 72% 14%,
+          rgba(118, 70, 40, 0.14),
+          transparent 34%
+        ),
+        linear-gradient(180deg, #100b07 0%, #17110c 100%);
+    }
+
+    .place-shell {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: 2rem clamp(1rem, 4vw, 3rem) 5rem;
+    }
+
+    .place-breadcrumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: clamp(2rem, 5vw, 4rem);
+      color: rgba(238, 225, 196, 0.58);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 180ms ease;
+    }
+
+    .place-breadcrumb:hover,
+    .place-breadcrumb:focus-visible {
+      color: rgba(238, 225, 196, 0.95);
+    }
+
+    .place-heading {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: clamp(1.2rem, 3vw, 2.25rem);
+      align-items: start;
+      padding-bottom: clamp(2rem, 5vw, 4rem);
+      border-bottom: 1px solid rgba(220, 207, 179, 0.18);
+    }
+
+    .place-marker-wrap {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      width: 64px;
+      padding-top: 1.15rem;
+    }
+
+    .place-marker {
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(255, 148, 105, 1) 0%,
+          rgba(238, 72, 45, 0.98) 30%,
+          rgba(167, 26, 18, 0.88) 58%,
+          rgba(110, 8, 8, 0.42) 74%,
+          rgba(110, 8, 8, 0) 100%
+        );
+      box-shadow:
+        0 0 7px rgba(255, 112, 72, 0.68),
+        0 0 16px rgba(224, 52, 28, 0.48),
+        0 0 30px rgba(180, 24, 14, 0.28);
+    }
+
+    .place-type {
+      display: block;
+      margin-bottom: 0.75rem;
+      color: rgba(238, 225, 196, 0.58);
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .place-heading h1 {
+      max-width: 980px;
+      margin: 0 0 1rem;
+      color: #f0e2c4;
+      font-size: clamp(2.75rem, 6.5vw, 6.25rem);
+      line-height: 0.98;
+      font-weight: 500;
+    }
+
+    .place-deck {
+      max-width: 850px;
+      margin: 0;
+      color: rgba(238, 225, 196, 0.82);
+      font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+      line-height: 1.65;
+    }
+
+    .place-body {
+      display: grid;
+      grid-template-columns: minmax(170px, 240px) minmax(0, 720px);
+      gap: clamp(2rem, 6vw, 5rem);
+      padding-top: clamp(2.5rem, 6vw, 5rem);
+    }
+
+    .place-aside {
+      color: rgba(238, 225, 196, 0.56);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    .place-aside p {
+      margin: 0 0 1.4rem;
+    }
+
+    .place-aside strong {
+      display: block;
+      color: rgba(238, 225, 196, 0.88);
+      font-weight: 500;
+    }
+
+    .place-narrative {
+      color: rgba(238, 225, 196, 0.84);
+      font-size: clamp(1rem, 1.4vw, 1.12rem);
+      line-height: 1.82;
+    }
+
+    .place-narrative p {
+      margin: 0 0 1.65rem;
+    }
+
+    .place-narrative .opening {
+      color: #f0e2c4;
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      line-height: 1.62;
+    }
+
+    .place-observation {
+      margin: clamp(2.5rem, 5vw, 4rem) 0;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      border-top: 1px solid rgba(220, 207, 179, 0.2);
+      border-bottom: 1px solid rgba(220, 207, 179, 0.2);
+    }
+
+    .place-observation span {
+      display: block;
+      margin-bottom: 0.9rem;
+      color: rgba(238, 225, 196, 0.5);
+      font-size: 0.73rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .place-observation p {
+      margin: 0;
+      color: #f0e2c4;
+      font-size: clamp(1.35rem, 2.7vw, 2.15rem);
+      line-height: 1.45;
+    }
+
+    .place-return {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: 2rem;
+      color: rgba(238, 225, 196, 0.7);
+      text-decoration: none;
+      transition: color 180ms ease, transform 180ms ease;
+    }
+
+    .place-return:hover,
+    .place-return:focus-visible {
+      color: #f0e2c4;
+      transform: translateX(-3px);
+    }
+
+    @media (max-width: 760px) {
+      .place-shell {
+        padding: 1.6rem 0.8rem 3rem;
+      }
+
+      .place-heading {
+        grid-template-columns: 46px minmax(0, 1fr);
+        gap: 1rem;
+      }
+
+      .place-marker-wrap {
+        width: 42px;
+        padding-top: 0.75rem;
+      }
+
+      .place-marker {
+        width: 14px;
+        height: 14px;
+      }
+
+      .place-body {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+      }
+
+      .place-aside {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .place-aside p {
+        margin: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .place-shell {
+        padding-inline: 0.65rem;
+      }
+
+      .place-heading {
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 0.8rem;
+      }
+
+      .place-marker-wrap {
+        width: 32px;
+      }
+
+      .place-heading h1 {
+        font-size: clamp(2.35rem, 12vw, 4rem);
+      }
+
+      .place-aside {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="theory-page place-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="place-shell">
+
+    <a class="place-breadcrumb" href="/places.html">
+      <span aria-hidden="true">&larr;</span>
+      Places
+    </a>
+
+    <section class="place-heading">
+
+      <div class="place-marker-wrap" aria-hidden="true">
+        <span class="place-marker"></span>
+      </div>
+
+      <div>
+        <span class="place-type">Field report</span>
+
+        <h1>Peninsula Council of Garden Clubs</h1>
+
+        <p class="place-deck">
+          Fellowship, horticultural education, civic purpose, fundraising,
+          and scholarship across the Virginia Peninsula.
+        </p>
+      </div>
+
+    </section>
+
+    <section class="place-body">
+
+      <aside class="place-aside" aria-label="Place information">
+        <p>
+          <strong>Founded</strong>
+          1954
+        </p>
+
+        <p>
+          <strong>Founder</strong>
+          Margaret L. Alexander
+        </p>
+
+        <p>
+          <strong>Field</strong>
+          Virginia Peninsula
+        </p>
+
+        <p>
+          <strong>Member clubs</strong>
+          17 in 2022
+        </p>
+
+        <p>
+          <strong>Observed through</strong>
+          GENE
+        </p>
+      </aside>
+
+      <article class="place-narrative">
+
+        <p class="opening">
+          A council does not replace the life of its member clubs. It gives
+          their separate work a larger field in which fellowship, knowledge,
+          civic purpose, and continuity can be held in common.
+        </p>
+
+        <p>
+          The Peninsula Council of Garden Clubs was founded in 1954 by
+          Margaret L. Alexander. Its work has joined garden clubs across the
+          Virginia Peninsula through a shared commitment to beautification,
+          horticultural education, civic responsibility, and care for the
+          environment.
+        </p>
+
+        <p>
+          By 2022, the council included seventeen member clubs. Each retained
+          its own identity and local relationships, while participating in a
+          broader structure capable of sharing knowledge, coordinating public
+          work, and sustaining fellowship across communities.
+        </p>
+
+        <p>
+          The council’s purpose is expressed not only through gardening, but
+          through transmission. Knowledge is passed between members, clubs,
+          generations, and institutions. Public plantings and educational
+          programs carry that knowledge outward into the places the clubs
+          serve.
+        </p>
+
+        <div class="place-observation">
+          <span>GENE registers</span>
+
+          <p>
+            The council’s enduring work is not a single garden. It is the
+            network of attention that allows many gardens, clubs, and people
+            to strengthen one another over time.
+          </p>
+        </div>
+
+        <p>
+          That long arc is visible in the council’s scholarship program. The
+          sale of its former meeting building created a fund that now supports
+          annual scholarships of $2,500 for one or two Virginia Tech students
+          studying plant or environmental sciences.
+        </p>
+
+        <p>
+          A building once used to gather people was converted into support for
+          future knowledge. The physical meeting place changed form, but its
+          purpose continued: fellowship became education, accumulated value
+          became opportunity, and the work of one generation was transmitted
+          to another.
+        </p>
+
+        <p>
+          What survives is therefore larger than an organization or a list of
+          member clubs. It is a civic practice built from repeated acts of
+          cultivation—of plants, places, knowledge, relationships, and future
+          stewards.
+        </p>
+
+        <a class="place-return" href="/places.html">
+          <span aria-hidden="true">&larr;</span>
+          Return to Places
+        </a>
+
+      </article>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
