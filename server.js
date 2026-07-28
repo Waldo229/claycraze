@@ -128,7 +128,7 @@ app.use(express.json({ limit: "80mb" }));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
@@ -443,7 +443,7 @@ const PUBLIC_FIELDS = `
   assigned_to
 `;
 
-const PUBLIC_STATUSES = ["available", "held", "acquired"];
+const PUBLIC_STATUSES = ["available", "donated","held", "acquired"];
 
 function publicStatusPlaceholders() {
   return PUBLIC_STATUSES.map(() => "?").join(", ");
@@ -1428,6 +1428,226 @@ app.get("/api/next-piece-number", async (req, res) => {
     res.status(500).json({
       ok: false,
       error: err.message,
+    });
+  }
+});
+
+
+// ============================================================
+// LIMITED VENDOR POTTERY ADMIN
+// ============================================================
+
+const VENDOR_ALLOWED_STATUSES = new Set([
+  "available",
+  "acquired",
+  "donated",
+  "held",
+]);
+
+function normalizeVendor(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function normalizeVendorStatus(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+app.get("/api/vendor-pots", async (req, res) => {
+  try {
+    const registration = await getRegistrationState();
+
+    if (!registration.registered) {
+      return res.status(409).json({
+        ok: false,
+        error:
+          "Vendor inventory is unavailable because Render is not restored from SiteGround truth.",
+        registration,
+      });
+    }
+
+    const vendor = normalizeVendor(req.query.vendor);
+
+    if (!vendor) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing vendor parameter.",
+      });
+    }
+
+    const sql = `
+      SELECT
+        id,
+        title,
+        category,
+        dimensions,
+        price,
+        status,
+        assigned_to,
+        image_path,
+        image_path_2,
+        image_path_3,
+        image_path_4,
+        updated_at
+      FROM inventory
+      WHERE LOWER(TRIM(COALESCE(assigned_to, 'studio'))) = ?
+      ORDER BY id DESC
+    `;
+
+    db.all(sql, [vendor], (err, rows) => {
+      if (err) {
+        console.error("GET /api/vendor-pots failed:", err);
+
+        return res.status(500).json({
+          ok: false,
+          error: "Failed to load vendor pots.",
+        });
+      }
+
+      res.json(rows || []);
+    });
+  } catch (err) {
+    console.error("GET /api/vendor-pots error:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message || "Failed to load vendor pots.",
+    });
+  }
+});
+
+app.patch("/api/vendor-pots/:id/status", async (req, res) => {
+  try {
+    const registration = await getRegistrationState();
+
+    if (!registration.registered) {
+      return res.status(409).json({
+        ok: false,
+        error:
+          "Status update blocked because Render is not restored from SiteGround truth.",
+        registration,
+      });
+    }
+
+    const pieceId = cleanText(req.params.id).toUpperCase();
+    const vendor = normalizeVendor(req.body.vendor);
+    const status = normalizeVendorStatus(req.body.status);
+
+    if (!pieceId) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing piece ID.",
+      });
+    }
+
+    if (!vendor) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing vendor.",
+      });
+    }
+
+    if (!VENDOR_ALLOWED_STATUSES.has(status)) {
+      return res.status(400).json({
+        ok: false,
+        error:
+          "Invalid status. Allowed values are available, acquired, donated, and held.",
+      });
+    }
+
+    const piece = await new Promise((resolve, reject) => {
+      db.get(
+        `
+        SELECT id, assigned_to
+        FROM inventory
+        WHERE id = ?
+          AND LOWER(TRIM(COALESCE(assigned_to, 'studio'))) = ?
+        LIMIT 1
+        `,
+        [pieceId, vendor],
+        (err, row) => {
+          if (err) return reject(err);
+          resolve(row || null);
+        }
+      );
+    });
+
+    if (!piece) {
+      return res.status(404).json({
+        ok: false,
+        error: "Piece not found for this vendor.",
+      });
+    }
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        `
+        UPDATE inventory
+        SET status = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        `,
+        [status, pieceId],
+        function (err) {
+          if (err) return reject(err);
+
+          if (this.changes !== 1) {
+            return reject(
+              new Error(
+                `Expected to update one record, but updated ${this.changes}.`
+              )
+            );
+          }
+
+          resolve();
+        }
+      );
+    });
+
+    const exported = await exportPiecesJsonPromise();
+
+    const sgPublicHtml =
+      process.env.SG_PUBLIC_HTML ||
+      "/home/customer/www/claycraze.com/public_html";
+
+    await deployToSiteGround([
+      {
+        localPath: exported.outPath,
+        remotePath: `${sgPublicHtml}/data/pieces.json`,
+      },
+    ]);
+
+    const sgPieces = await fetchPiecesJsonViaScp();
+
+    const confirmed = sgPieces.find(
+      (record) =>
+        String(record.id || "").toUpperCase() === pieceId &&
+        normalizeVendorStatus(record.status) === status &&
+        normalizeVendor(record.assigned_to) === vendor
+    );
+
+    if (!confirmed) {
+      throw new Error(
+        `SITEGROUND VERIFY FAILED: ${pieceId} was updated locally but the canonical SiteGround record was not confirmed.`
+      );
+    }
+
+    res.json({
+      ok: true,
+      archived: true,
+      deployed_to_siteground: true,
+      id: pieceId,
+      vendor,
+      status,
+      message: `${pieceId} updated to ${status} and confirmed on SiteGround.`,
+    });
+  } catch (err) {
+    console.error("PATCH /api/vendor-pots/:id/status failed:", err);
+
+    res.status(500).json({
+      ok: false,
+      archived: false,
+      error: err.message || "Failed to update vendor pot status.",
+      stdout: err.stdout || "",
+      stderr: err.stderr || "",
     });
   }
 });

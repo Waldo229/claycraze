@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <title>Assigned Pots | ClaycrazE Admin</title>
+
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --panel: #fffaf2;
+      --line: #d7c8ae;
+      --text: #2f2a24;
+      --muted: #6e6559;
+      --accent: #6f4e37;
+      --accent-2: #8a674b;
+      --ok: #2f6f43;
+      --warn: #8a5a00;
+      --error: #8d2b2b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 48px;
+    }
+
+    .header {
+      margin-bottom: 24px;
+      padding: 18px 20px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .eyebrow {
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      font-weight: normal;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 20px;
+      padding: 14px 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .count-badge {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      padding: 9px 14px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    button.secondary:hover {
+      background: #f8f2ea;
+    }
+
+    .status-message {
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      display: none;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .status-message.show {
+      display: block;
+    }
+
+    .status-message.ok {
+      border-color: #b9d7c2;
+      background: #eef8f1;
+      color: var(--ok);
+    }
+
+    .status-message.error {
+      border-color: #e0b8b8;
+      background: #fdf0f0;
+      color: var(--error);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .card-image-wrap {
+      background: #efe6d7;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .piece-id {
+      font-weight: bold;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .piece-title {
+      font-size: 1.15rem;
+      margin: 0;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta strong {
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .save-note {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .empty {
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .page {
+        padding: 18px 12px 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="header">
+      <div class="eyebrow">ClaycrazE Admin</div>
+      <h1 id="pageTitle">Assigned Pots</h1>
+      <p class="subtitle" id="pageSubtitle">
+        Review pots assigned to this vendor and update only their status.
+      </p>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="count-badge" id="countBadge">0 pots</div>
+      </div>
+
+      <div class="toolbar-right">
+        <button type="button" class="secondary" id="refreshBtn">Refresh</button>
+      </div>
+    </section>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <section id="resultsArea">
+      <div class="empty">Loading assigned pots…</div>
+    </section>
+  </main>
+
+  <script>
+    const ALLOWED_STATUSES = ["available", "acquired", "donated", "held"];
+
+    function getVendorFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get("vendor") || "chris").trim().toLowerCase();
+    }
+
+    function titleCase(value) {
+      return String(value || "")
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, chr => chr.toUpperCase());
+    }
+
+    function formatPrice(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      return `$${value}`;
+    }
+
+    function showMessage(text, kind = "ok") {
+      const box = document.getElementById("statusMessage");
+      box.textContent = text;
+      box.className = `status-message show ${kind}`;
+    }
+
+    function clearMessage() {
+      const box = document.getElementById("statusMessage");
+      box.textContent = "";
+      box.className = "status-message";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function buildCard(piece) {
+      const imageSrc = piece.image_path || piece.image_path_2 || piece.image_path_3 || "";
+      const currentStatus = (piece.status || "available").toLowerCase();
+
+      return `
+        <article class="card" data-piece-id="${escapeHtml(piece.id)}">
+          <div class="card-image-wrap">
+            ${
+              imageSrc
+                ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(piece.title || piece.id)}">`
+                : `<div style="padding: 16px; color: #6e6559;">No image available</div>`
+            }
+          </div>
+
+          <div class="card-body">
+            <div class="piece-id">${escapeHtml(piece.id)}</div>
+            <h2 class="piece-title">${escapeHtml(piece.title || "Untitled Piece")}</h2>
+
+            <div class="meta">
+              <div><strong>Category:</strong> ${escapeHtml(piece.category || "—")}</div>
+              <div><strong>Price:</strong> ${escapeHtml(formatPrice(piece.price))}</div>
+              <div><strong>Dimensions:</strong> ${escapeHtml(piece.dimensions || "—")}</div>
+              <div><strong>Assigned To:</strong> ${escapeHtml(titleCase(piece.assigned_to || ""))}</div>
+            </div>
+
+            <div class="field">
+              <label for="status-${escapeHtml(piece.id)}">Status</label>
+              <select id="status-${escapeHtml(piece.id)}" class="status-select">
+                ${ALLOWED_STATUSES.map(status => `
+                  <option value="${status}" ${status === currentStatus ? "selected" : ""}>
+                    ${titleCase(status)}
+                  </option>
+                `).join("")}
+              </select>
+            </div>
+
+            <div class="card-actions">
+              <button type="button" class="save-btn">Save Status</button>
+              <span class="save-note">Only status can be changed here.</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    async function loadVendorPots() {
+      clearMessage();
+
+      const vendor = getVendorFromQuery();
+      const title = `${titleCase(vendor)} Pots`;
+      document.getElementById("pageTitle").textContent = title;
+      document.getElementById("pageSubtitle").textContent =
+        `Review pots assigned to ${titleCase(vendor)} and update only their status.`;
+
+      const resultsArea = document.getElementById("resultsArea");
+      resultsArea.innerHTML = `<div class="empty">Loading assigned pots…</div>`;
+
+      try {
+        const response = await fetch(`/api/vendor-pots?vendor=${encodeURIComponent(vendor)}`);
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || `Request failed with status ${response.status}`);
+        }
+
+        const pieces = await response.json();
+        document.getElementById("countBadge").textContent =
+          `${pieces.length} pot${pieces.length === 1 ? "" : "s"}`;
+
+        if (!pieces.length) {
+          resultsArea.innerHTML = `
+            <div class="empty">
+              No pots are currently assigned to ${escapeHtml(titleCase(vendor))}.
+            </div>
+          `;
+          return;
+        }
+
+        resultsArea.innerHTML = `
+          <div class="grid">
+            ${pieces.map(buildCard).join("")}
+          </div>
+        `;
+
+        attachCardHandlers(vendor);
+      } catch (error) {
+        resultsArea.innerHTML = `
+          <div class="empty">
+            Unable to load assigned pots.
+          </div>
+        `;
+        showMessage(`Load failed: ${error.message}`, "error");
+      }
+    }
+
+    function attachCardHandlers(vendor) {
+      document.querySelectorAll(".card").forEach(card => {
+        const saveBtn = card.querySelector(".save-btn");
+        const select = card.querySelector(".status-select");
+        const pieceId = card.dataset.pieceId;
+
+        saveBtn.addEventListener("click", async () => {
+          const status = select.value;
+
+          try {
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving…";
+
+            const response = await fetch(`/api/vendor-pots/${encodeURIComponent(pieceId)}/status`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                vendor,
+                status
+              })
+            });
+
+            const payload = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+              throw new Error(payload.error || `Save failed with status ${response.status}`);
+            }
+
+            showMessage(`${pieceId} updated to ${titleCase(status)}.`, "ok");
+          } catch (error) {
+            showMessage(`Save failed for ${pieceId}: ${error.message}`, "error");
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save Status";
+          }
+        });
+      });
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", loadVendorPots);
+
+    loadVendorPots();
+  </script>
+</body>
+</html>
