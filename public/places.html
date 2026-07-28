@@ -6,196 +6,214 @@
 
   <title>Places | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3018">
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
 
   <style>
     /* ==========================================
-       PLACES — UNIFIED CONSOLE PRESENTATION
+       PLACES — REGISTER OF PLACES
        ========================================== */
 
     .places-page {
-      background:
-        linear-gradient(
-          180deg,
-          #100b07 0,
-          #17110c 100%
-        );
+      min-height: 100vh;
+      background: linear-gradient(180deg, #100b07 0%, #17110c 100%);
     }
 
-    .places-page .places-threshold {
-      width: 100%;
-      max-width: none;
-      padding: 1.9rem clamp(1rem, 2vw, 2rem) 4rem;
+    .places-shell {
+      width: min(100%, 1380px);
+      margin: 0 auto;
+      padding: 2rem clamp(1rem, 3vw, 2.5rem) 4.5rem;
     }
 
-    .places-page .threshold-intro {
-      width: min(100%, 1480px);
-      margin: 0 auto 1.1rem;
+    .places-intro {
+      max-width: 940px;
+      margin-bottom: clamp(2rem, 4vw, 3.5rem);
     }
 
-    .places-page .threshold-copy {
-      max-width: 1100px;
-    }
-
-    .places-page .section-label {
+    .places-intro .section-label {
       margin-bottom: 0.8rem;
     }
 
-    .places-page h1 {
-      max-width: 1100px;
-      margin-top: 0;
-      margin-bottom: 0;
-
-      font-size: clamp(3rem, 5.2vw, 5.4rem);
-      line-height: 1.02;
-    }
-
-    /* Unified image-and-text shell */
-
-    .places-page .places-layout {
-      width: min(100%, 1480px);
-      margin: 0 auto;
-
-      display: grid;
-      grid-template-columns:
-        minmax(0, 1.15fr)
-        minmax(340px, 0.85fr);
-      gap: 0;
-
-      padding: 11px;
-      overflow: hidden;
-
-      border: 1px solid rgba(220, 207, 179, 0.22);
-      border-radius: 2rem;
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(18, 25, 28, 0.99),
-          rgba(9, 14, 17, 0.99)
-        );
-
-      box-shadow:
-        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
-        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
-    }
-
-    .places-page .places-feature-image {
-      display: block;
-      width: 100%;
-      height: 100%;
-      min-height: 520px;
-      object-fit: cover;
-
-      margin: 0;
-      border-radius: 1rem 0 0 1rem;
-
-      background: #eee7d9;
-    }
-
-    .places-page .places-copy {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-
-      padding: clamp(1.75rem, 3vw, 3.5rem);
-
-      border-left: 1px solid rgba(220, 207, 179, 0.16);
-    }
-
-    .places-page .places-copy h2 {
+    .places-intro h1 {
       margin: 0 0 1rem;
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: 0.98;
+    }
 
-      font-size: clamp(2rem, 3.4vw, 3.4rem);
+    .places-intro p {
+      max-width: 850px;
+      margin: 0;
+      color: rgba(238, 225, 196, 0.82);
+      font-size: clamp(1rem, 1.4vw, 1.14rem);
+      line-height: 1.7;
+    }
+
+    .places-list {
+      border-top: 1px solid rgba(220, 207, 179, 0.18);
+    }
+
+    .place-row {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) auto;
+      gap: clamp(1rem, 2.5vw, 2rem);
+      align-items: center;
+      padding: clamp(1.6rem, 3vw, 2.6rem) 0;
+      border-bottom: 1px solid rgba(220, 207, 179, 0.18);
+      color: #f0e2c4;
+      text-decoration: none;
+    }
+
+    a.place-row {
+      transition: padding-left 180ms ease, background 180ms ease;
+    }
+
+    a.place-row:hover,
+    a.place-row:focus-visible {
+      padding-left: 0.75rem;
+      background: linear-gradient(
+        90deg,
+        rgba(238, 225, 196, 0.055),
+        transparent 72%
+      );
+    }
+
+    /* GENE glow marker */
+
+    .place-marker-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+    }
+
+    .place-marker {
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(255, 148, 105, 1) 0%,
+          rgba(238, 72, 45, 0.98) 30%,
+          rgba(167, 26, 18, 0.88) 58%,
+          rgba(110, 8, 8, 0.42) 74%,
+          rgba(110, 8, 8, 0) 100%
+        );
+      box-shadow:
+        0 0 7px rgba(255, 112, 72, 0.68),
+        0 0 16px rgba(224, 52, 28, 0.48),
+        0 0 30px rgba(180, 24, 14, 0.28);
+    }
+
+    .place-copy {
+      min-width: 0;
+    }
+
+    .place-state {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: rgba(238, 225, 196, 0.58);
+      font-size: 0.75rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .place-row h2 {
+      margin: 0 0 0.45rem;
+      color: #f0e2c4;
+      font-size: clamp(1.9rem, 3.5vw, 3.35rem);
       line-height: 1.08;
       font-weight: 500;
-
-      color: #eee1c4;
     }
 
-    .places-page .places-copy p {
-      max-width: 620px;
-      margin: 0 0 1.15rem;
-
+    .place-row p {
+      max-width: 900px;
+      margin: 0;
+      color: rgba(238, 225, 196, 0.8);
       font-size: 1rem;
-      line-height: 1.65;
-
-      color: rgba(238, 225, 196, 0.86);
+      line-height: 1.62;
     }
 
-    .places-page .places-copy p:last-child {
-      margin-bottom: 0;
+    .place-arrow {
+      color: rgba(238, 225, 196, 0.42);
+      font-size: 1.7rem;
+      line-height: 1;
+      transition: color 180ms ease, transform 180ms ease;
     }
 
-    @media (max-width: 980px) {
-      .places-page .places-layout {
-        grid-template-columns: 1fr;
-        padding: 8px;
-        border-radius: 1.4rem;
-      }
-
-      .places-page .places-feature-image {
-        min-height: 0;
-        aspect-ratio: 16 / 10;
-        border-radius: 0.9rem 0.9rem 0 0;
-      }
-
-      .places-page .places-copy {
-        padding: 1.8rem 1.5rem 2rem;
-
-        border-left: 0;
-        border-top: 1px solid rgba(220, 207, 179, 0.16);
-      }
+    a.place-row:hover .place-arrow,
+    a.place-row:focus-visible .place-arrow {
+      color: rgba(238, 225, 196, 0.9);
+      transform: translateX(4px);
     }
 
-    @media (max-width: 760px) {
-      .places-page .places-threshold {
-        padding:
-          1.6rem
-          0.8rem
-          2.75rem;
+    .place-row-developing {
+      grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    .place-row-developing .place-marker {
+      opacity: 0.78;
+    }
+
+    @media (max-width: 700px) {
+      .places-shell {
+        padding: 1.6rem 0.8rem 2.75rem;
       }
 
-      .places-page h1 {
+      .places-intro h1 {
         font-size: clamp(2.45rem, 10vw, 4rem);
-        line-height: 1.04;
+      }
+
+      .place-row,
+      .place-row-developing {
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: 1rem;
+      }
+
+      .place-marker-wrap {
+        width: 50px;
+        height: 50px;
+      }
+
+      .place-marker {
+        width: 15px;
+        height: 15px;
+      }
+
+      .place-arrow {
+        display: none;
+      }
+
+      .place-row h2 {
+        font-size: clamp(1.65rem, 7vw, 2.4rem);
       }
     }
 
-    @media (max-width: 540px) {
-      .places-page .places-threshold {
+    @media (max-width: 480px) {
+      .places-shell {
         padding-inline: 0.65rem;
       }
 
-      .places-page .threshold-copy {
-        padding-inline: 0.35rem;
+      .place-row,
+      .place-row-developing {
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 0.85rem;
       }
 
-      .places-page h1 {
-        font-size: clamp(2.15rem, 11vw, 3.25rem);
+      .place-marker-wrap {
+        width: 40px;
+        height: 40px;
       }
 
-      .places-page .places-layout {
-        padding: 7px;
-        border-radius: 1.25rem;
+      .place-marker {
+        width: 13px;
+        height: 13px;
       }
 
-      .places-page .places-feature-image {
-        aspect-ratio: 4 / 3;
-        border-radius: 0.8rem 0.8rem 0 0;
-      }
-
-      .places-page .places-copy {
-        padding: 1.35rem 1rem 1.5rem;
-      }
-
-      .places-page .places-copy h2 {
-        font-size: 1.8rem;
-      }
-
-      .places-page .places-copy p {
-        font-size: 0.96rem;
-        line-height: 1.58;
+      .place-row p {
+        font-size: 0.95rem;
+        line-height: 1.55;
       }
     }
   </style>
@@ -220,61 +238,76 @@
     </div>
   </header>
 
-  <main class="threshold-page places-threshold">
+  <main class="places-shell">
 
-    <section class="threshold-intro">
+    <section class="places-intro">
 
-      <div class="threshold-copy">
+      <div class="section-label">
+        <img
+          src="/images/curated/theory_imgs/han-shan2.jpg"
+          alt="Han Shan"
+          class="room-seal"
+        >
 
-        <div class="section-label">
-          <img
-            src="/images/curated/theory_imgs/han-shan2.jpg"
-            alt="Han Shan"
-            class="room-seal"
-          >
-
-          <span class="threshold-kicker">Theory / Places</span>
-        </div>
-
-        <h1>Clay, commerce, and culture.</h1>
-
+        <span class="threshold-kicker">Theory / Places</span>
       </div>
+
+      <h1>Places.</h1>
+
+      <p>
+        GENE registers the histories, people, materials, relationships,
+        and accumulated attention already present in a place.
+      </p>
 
     </section>
 
     <section
-      class="places-layout"
-      aria-label="Places"
+      class="places-list"
+      aria-label="Places revealed through GENE"
     >
 
-      <img
-        src="/images/jamestown_001s.jpg"
-        alt="The historic James River region"
-        class="places-feature-image"
+      <a
+        class="place-row"
+        href="/place-longwood.html"
       >
 
-      <div class="places-copy">
+        <div class="place-marker-wrap" aria-hidden="true">
+          <span class="place-marker"></span>
+        </div>
 
-        <h2>Places</h2>
+        <div class="place-copy">
+          <span class="place-state">Field report</span>
 
-        <p>
-          Along the James River and beyond &mdash; places that shaped
-          the craft, the trade, and the movement of materials,
-          people, and ideas.
-        </p>
+          <h2>Longwood Gardens</h2>
 
-        <p>
-          Pottery does not emerge in isolation. Geography, rivers, ports,
-          roads, trade networks, workshops, plantations, and weather all
-          shape the visual and material language surrounding the work.
-        </p>
+          <p>
+            Bonsai clubs strengthened through partnership, public engagement,
+            shared visibility, and place.
+          </p>
+        </div>
 
-        <p>
-          The Tidewater region of Virginia remains deeply tied to clay,
-          transport, labor, commerce, and the movement of ideas through time.
-        </p>
+        <span class="place-arrow" aria-hidden="true">&rarr;</span>
 
-      </div>
+      </a>
+
+      <a class="place-row" href="/place-pcgc.html">
+
+        <div class="place-marker-wrap" aria-hidden="true">
+          <span class="place-marker"></span>
+        </div>
+
+        <div class="place-copy">
+          <span class="place-state">Next reveal</span>
+
+          <h2>Peninsula Council of Garden Clubs</h2>
+
+          <p>
+            Fellowship, horticultural education, civic purpose, fundraising,
+            and scholarship across the Virginia Peninsula.
+          </p>
+        </div>
+
+      </article>
 
     </section>
 
