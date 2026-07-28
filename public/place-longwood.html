@@ -6,7 +6,7 @@
 
   <title>Longwood Gardens | Places | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3031">
+  <link rel="stylesheet" href="/css/styles.css?v=3032">
 
   <style>
     /* ==========================================
@@ -40,18 +40,21 @@
       letter-spacing: 0.12em;
       text-decoration: none;
       text-transform: uppercase;
-      transition: color 180ms ease;
+      transition:
+        color 180ms ease,
+        transform 180ms ease;
     }
 
     .place-breadcrumb:hover,
     .place-breadcrumb:focus-visible {
       color: rgba(238, 225, 196, 0.95);
+      transform: translateX(-3px);
     }
 
     .place-heading {
       display: grid;
-      grid-template-columns: 72px minmax(0, 1fr);
-      gap: clamp(1.2rem, 3vw, 2.25rem);
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: clamp(1.25rem, 3vw, 2.5rem);
       align-items: start;
       padding-bottom: clamp(2rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(220, 207, 179, 0.18);
@@ -61,28 +64,18 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      width: 64px;
-      padding-top: 1.15rem;
+      width: 88px;
+      padding-top: 0.45rem;
     }
 
-    .place-marker {
+    .gene-place-marker {
       display: block;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background:
-        radial-gradient(
-          circle at 50% 50%,
-          rgba(255, 148, 105, 1) 0%,
-          rgba(238, 72, 45, 0.98) 30%,
-          rgba(167, 26, 18, 0.88) 58%,
-          rgba(110, 8, 8, 0.42) 74%,
-          rgba(110, 8, 8, 0) 100%
-        );
-      box-shadow:
-        0 0 7px rgba(255, 112, 72, 0.68),
-        0 0 16px rgba(224, 52, 28, 0.48),
-        0 0 30px rgba(180, 24, 14, 0.28);
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 7px 10px rgba(0, 0, 0, 0.26))
+        drop-shadow(0 0 14px rgba(186, 143, 79, 0.12));
     }
 
     .place-type {
@@ -182,7 +175,9 @@
       margin-top: 2rem;
       color: rgba(238, 225, 196, 0.7);
       text-decoration: none;
-      transition: color 180ms ease, transform 180ms ease;
+      transition:
+        color 180ms ease,
+        transform 180ms ease;
     }
 
     .place-return:hover,
@@ -197,18 +192,18 @@
       }
 
       .place-heading {
-        grid-template-columns: 46px minmax(0, 1fr);
+        grid-template-columns: 68px minmax(0, 1fr);
         gap: 1rem;
       }
 
       .place-marker-wrap {
-        width: 42px;
-        padding-top: 0.75rem;
+        width: 62px;
+        padding-top: 0.35rem;
       }
 
-      .place-marker {
-        width: 14px;
-        height: 14px;
+      .gene-place-marker {
+        width: 60px;
+        height: 60px;
       }
 
       .place-body {
@@ -235,12 +230,18 @@
       }
 
       .place-heading {
-        grid-template-columns: 34px minmax(0, 1fr);
-        gap: 0.8rem;
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: 0.75rem;
       }
 
       .place-marker-wrap {
-        width: 32px;
+        width: 48px;
+        padding-top: 0.25rem;
+      }
+
+      .gene-place-marker {
+        width: 46px;
+        height: 46px;
       }
 
       .place-heading h1 {
@@ -282,8 +283,12 @@
 
     <section class="place-heading">
 
-      <div class="place-marker-wrap" aria-hidden="true">
-        <span class="place-marker"></span>
+      <div class="place-marker-wrap">
+        <img
+          class="gene-place-marker"
+          src="/images/gene-pointing-emoji-128.png"
+          alt="GENE points upward"
+        >
       </div>
 
       <div>
@@ -292,8 +297,8 @@
         <h1>Longwood Gardens</h1>
 
         <p class="place-deck">
-          Bonsai clubs strengthened through partnership, public engagement,
-          shared visibility, and place.
+          A model of how place, public engagement, and institutional
+          partnership can strengthen the living culture of bonsai.
         </p>
       </div>
 
@@ -313,60 +318,70 @@
         </p>
 
         <p>
-          <strong>Condition</strong>
-          Partnership
+          <strong>Relationship</strong>
+          Reference and example
         </p>
 
         <p>
-          <strong>Observed through</strong>
-          GENE
+          <strong>Observed by</strong>
+          ClaycrazE and Ironwood Bonsai
         </p>
       </aside>
 
       <article class="place-narrative">
 
         <p class="opening">
-          A place may strengthen a community without becoming the center of it.
-          It can provide ground, visibility, continuity, and an invitation for
-          people to gather around work they already value.
+          For ClaycrazE and Ironwood Bonsai, Longwood Gardens offers a useful
+          example of what becomes possible when an established public
+          institution treats bonsai as a living cultural practice rather than
+          simply as a collection of remarkable trees.
         </p>
 
         <p>
-          Longwood Gardens demonstrates how an established public institution
-          can support bonsai beyond the exhibition of individual trees. Through
-          partnership with bonsai organizations, the garden gives clubs access
-          to audiences, educational opportunities, shared purpose, and a place
-          in which their accumulated knowledge can become publicly visible.
+          Our interest in Longwood lies in the relationship it demonstrates
+          between place, practitioners, and the public. Bonsai organizations
+          carry years of accumulated knowledge, voluntary labor, teaching, and
+          direct experience. A garden can give that knowledge a larger field in
+          which to be encountered and transmitted.
         </p>
 
         <p>
-          The relationship is reciprocal. The institution gains the depth,
-          skill, and living culture carried by experienced practitioners. The
-          clubs gain a larger field in which their work can be encountered,
-          understood, and transmitted.
+          The institution does not replace the community that developed the
+          practice. It gives that community ground, continuity, visibility, and
+          access to people who may never otherwise encounter bonsai as an art
+          form.
+        </p>
+
+        <p>
+          In return, experienced growers, teachers, and club members bring the
+          institution something it cannot manufacture by itself: lived
+          knowledge, material understanding, patient attention, and a culture
+          formed through years of shared practice.
         </p>
 
         <div class="place-observation">
           <span>GENE registers</span>
 
           <p>
-            The strength did not belong to the institution or the clubs alone.
-            It emerged in the relationship between them.
+            The strength did not belong to the garden or the bonsai community
+            alone. It appeared in the relationship between them.
           </p>
         </div>
 
         <p>
-          This is more than sponsorship. It is a structure of mutual
-          reinforcement: public engagement strengthens the clubs, the clubs
-          deepen the institution, and the place gives the relationship enough
-          continuity to become part of a larger cultural memory.
+          This reciprocal structure matters to ClaycrazE and Ironwood Bonsai.
+          Our shared interest is not simply in placing bonsai before a larger
+          audience. It is in creating circumstances where trees, pots,
+          practitioners, institutions, and visitors can participate in the same
+          cultural field.
         </p>
 
         <p>
-          What becomes visible at Longwood is not merely a collection of
-          bonsai. It is the effect of accumulated attention held in common:
-          growers, teachers, volunteers, visitors, institutions, and trees
-          participating in the same field.
+          Longwood therefore serves as more than a destination or institutional
+          example. It helps make visible a path: local knowledge strengthened
+          through partnership, public engagement deepened through experienced
+          practitioners, and an art form given enough continuity to enter a
+          larger public memory.
         </p>
 
         <a class="place-return" href="/places.html">

@@ -6,7 +6,7 @@
 
   <title>Peninsula Council of Garden Clubs | Places | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3031">
+  <link rel="stylesheet" href="/css/styles.css?v=3032">
 
   <style>
     /* ==========================================
@@ -40,18 +40,21 @@
       letter-spacing: 0.12em;
       text-decoration: none;
       text-transform: uppercase;
-      transition: color 180ms ease;
+      transition:
+        color 180ms ease,
+        transform 180ms ease;
     }
 
     .place-breadcrumb:hover,
     .place-breadcrumb:focus-visible {
       color: rgba(238, 225, 196, 0.95);
+      transform: translateX(-3px);
     }
 
     .place-heading {
       display: grid;
-      grid-template-columns: 72px minmax(0, 1fr);
-      gap: clamp(1.2rem, 3vw, 2.25rem);
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: clamp(1.25rem, 3vw, 2.5rem);
       align-items: start;
       padding-bottom: clamp(2rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(220, 207, 179, 0.18);
@@ -61,28 +64,18 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      width: 64px;
-      padding-top: 1.15rem;
+      width: 88px;
+      padding-top: 0.45rem;
     }
 
-    .place-marker {
+    .gene-place-marker {
       display: block;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background:
-        radial-gradient(
-          circle at 50% 50%,
-          rgba(255, 148, 105, 1) 0%,
-          rgba(238, 72, 45, 0.98) 30%,
-          rgba(167, 26, 18, 0.88) 58%,
-          rgba(110, 8, 8, 0.42) 74%,
-          rgba(110, 8, 8, 0) 100%
-        );
-      box-shadow:
-        0 0 7px rgba(255, 112, 72, 0.68),
-        0 0 16px rgba(224, 52, 28, 0.48),
-        0 0 30px rgba(180, 24, 14, 0.28);
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 7px 10px rgba(0, 0, 0, 0.26))
+        drop-shadow(0 0 14px rgba(186, 143, 79, 0.12));
     }
 
     .place-type {
@@ -182,7 +175,9 @@
       margin-top: 2rem;
       color: rgba(238, 225, 196, 0.7);
       text-decoration: none;
-      transition: color 180ms ease, transform 180ms ease;
+      transition:
+        color 180ms ease,
+        transform 180ms ease;
     }
 
     .place-return:hover,
@@ -197,18 +192,18 @@
       }
 
       .place-heading {
-        grid-template-columns: 46px minmax(0, 1fr);
+        grid-template-columns: 68px minmax(0, 1fr);
         gap: 1rem;
       }
 
       .place-marker-wrap {
-        width: 42px;
-        padding-top: 0.75rem;
+        width: 62px;
+        padding-top: 0.35rem;
       }
 
-      .place-marker {
-        width: 14px;
-        height: 14px;
+      .gene-place-marker {
+        width: 60px;
+        height: 60px;
       }
 
       .place-body {
@@ -235,12 +230,18 @@
       }
 
       .place-heading {
-        grid-template-columns: 34px minmax(0, 1fr);
-        gap: 0.8rem;
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: 0.75rem;
       }
 
       .place-marker-wrap {
-        width: 32px;
+        width: 48px;
+        padding-top: 0.25rem;
+      }
+
+      .gene-place-marker {
+        width: 46px;
+        height: 46px;
       }
 
       .place-heading h1 {
@@ -282,8 +283,12 @@
 
     <section class="place-heading">
 
-      <div class="place-marker-wrap" aria-hidden="true">
-        <span class="place-marker"></span>
+      <div class="place-marker-wrap">
+        <img
+          class="gene-place-marker"
+          src="/images/gene-pointing-emoji-128.png"
+          alt="GENE points upward"
+        >
       </div>
 
       <div>
@@ -292,8 +297,8 @@
         <h1>Peninsula Council of Garden Clubs</h1>
 
         <p class="place-deck">
-          Fellowship, horticultural education, civic purpose, fundraising,
-          and scholarship across the Virginia Peninsula.
+          A regional culture of fellowship, horticultural knowledge,
+          civic stewardship, and transmission across generations.
         </p>
       </div>
 
@@ -302,6 +307,11 @@
     <section class="place-body">
 
       <aside class="place-aside" aria-label="Place information">
+        <p>
+          <strong>Place</strong>
+          Virginia Peninsula
+        </p>
+
         <p>
           <strong>Founded</strong>
           1954
@@ -314,81 +324,97 @@
 
         <p>
           <strong>Field</strong>
-          Virginia Peninsula
+          Garden-club community
         </p>
 
         <p>
-          <strong>Member clubs</strong>
-          17 in 2022
+          <strong>Relationship</strong>
+          Shared cultivation
         </p>
 
         <p>
-          <strong>Observed through</strong>
-          GENE
+          <strong>Observed by</strong>
+          ClaycrazE and Ironwood Bonsai
         </p>
       </aside>
 
       <article class="place-narrative">
 
         <p class="opening">
-          A council does not replace the life of its member clubs. It gives
-          their separate work a larger field in which fellowship, knowledge,
-          civic purpose, and continuity can be held in common.
+          For ClaycrazE and Ironwood Bonsai, the Peninsula Council of Garden
+          Clubs represents something larger than an association of separate
+          organizations. It is a regional structure through which knowledge,
+          fellowship, civic work, and long attention can be held in common.
         </p>
 
         <p>
-          The Peninsula Council of Garden Clubs was founded in 1954 by
-          Margaret L. Alexander. Its work has joined garden clubs across the
-          Virginia Peninsula through a shared commitment to beautification,
-          horticultural education, civic responsibility, and care for the
-          environment.
+          Bonsai and garden-club culture begin from related forms of practice.
+          Both depend upon observation, patience, seasonal understanding,
+          material care, and the willingness to cultivate something whose full
+          form may emerge only over time.
         </p>
 
         <p>
-          By 2022, the council included seventeen member clubs. Each retained
-          its own identity and local relationships, while participating in a
-          broader structure capable of sharing knowledge, coordinating public
-          work, and sustaining fellowship across communities.
+          The council gives those practices a wider field. Individual clubs
+          retain their own histories, identities, and local relationships while
+          participating in a larger network capable of sharing knowledge,
+          coordinating public work, and sustaining fellowship across the
+          Virginia Peninsula.
         </p>
 
         <p>
-          The council’s purpose is expressed not only through gardening, but
-          through transmission. Knowledge is passed between members, clubs,
-          generations, and institutions. Public plantings and educational
-          programs carry that knowledge outward into the places the clubs
-          serve.
+          That structure matters to ClaycrazE and Ironwood Bonsai because our
+          work also lives at the crossing of separate disciplines. The tree and
+          the pot remain distinct, yet each becomes more fully legible through
+          its relationship to the other. In a similar way, clubs remain
+          themselves while gaining strength through association.
         </p>
 
         <div class="place-observation">
           <span>GENE registers</span>
 
           <p>
-            The council’s enduring work is not a single garden. It is the
-            network of attention that allows many gardens, clubs, and people
-            to strengthen one another over time.
+            The council’s enduring work is not a single garden or event. It is
+            the field of attention that allows many people, practices, and
+            places to strengthen one another over time.
           </p>
         </div>
 
         <p>
-          That long arc is visible in the council’s scholarship program. The
-          sale of its former meeting building created a fund that now supports
-          annual scholarships of $2,500 for one or two Virginia Tech students
-          studying plant or environmental sciences.
+          The council’s history gives that field continuity. Founded in 1954 by
+          Margaret L. Alexander, it joined garden clubs through shared
+          commitments to horticultural education, civic responsibility,
+          beautification, fellowship, and care for the environment.
         </p>
 
         <p>
-          A building once used to gather people was converted into support for
-          future knowledge. The physical meeting place changed form, but its
-          purpose continued: fellowship became education, accumulated value
-          became opportunity, and the work of one generation was transmitted
-          to another.
+          By 2022, seventeen member clubs participated in that larger
+          structure. The number matters less as a count than as evidence of
+          accumulated relationship: separate groups choosing to place part of
+          their knowledge, labor, and purpose into a common regional life.
         </p>
 
         <p>
-          What survives is therefore larger than an organization or a list of
-          member clubs. It is a civic practice built from repeated acts of
-          cultivation—of plants, places, knowledge, relationships, and future
-          stewards.
+          The scholarship program offers an especially clear example of
+          transmission. Funds created through the sale of the council’s former
+          meeting building now support annual scholarships of $2,500 for one
+          or two Virginia Tech students studying plant or environmental
+          sciences.
+        </p>
+
+        <p>
+          A building once used to gather people was transformed into support
+          for future knowledge. The physical meeting place changed form, but
+          its purpose continued. Fellowship became education, accumulated
+          value became opportunity, and the work of one generation was carried
+          forward by another.
+        </p>
+
+        <p>
+          This is the shared ground ClaycrazE and Ironwood Bonsai recognize in
+          the council: cultivation understood not merely as the care of plants,
+          but as the patient development of knowledge, relationships, places,
+          and future stewards.
         </p>
 
         <a class="place-return" href="/places.html">
