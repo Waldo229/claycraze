@@ -1,4 +1,4 @@
-const express = require("express");
+﻿const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const fs = require("fs");
 const path = require("path");
@@ -134,6 +134,72 @@ app.use((req, res, next) => {
   next();
 });
 
+function requireChrisVendorAuth(req, res, next) {
+  const expectedUser =
+    String(process.env.CHRIS_VENDOR_USER || "chris").trim();
+
+  const expectedPassword =
+    String(process.env.CHRIS_VENDOR_PASSWORD || "");
+
+  if (!expectedPassword) {
+    console.error(
+      "CHRIS VENDOR AUTH BLOCKED: CHRIS_VENDOR_PASSWORD is not configured."
+    );
+
+    return res.status(503).send(
+      "Chris vendor access is not configured."
+    );
+  }
+
+  const authorization = String(req.headers.authorization || "");
+
+  if (!authorization.startsWith("Basic ")) {
+    res.set(
+      "WWW-Authenticate",
+      'Basic realm="ClaycrazE Chris Pots", charset="UTF-8"'
+    );
+
+    return res.status(401).send("Authentication required.");
+  }
+
+  let decoded = "";
+
+  try {
+    decoded = Buffer.from(
+      authorization.slice(6),
+      "base64"
+    ).toString("utf8");
+  } catch (_) {
+    decoded = "";
+  }
+
+  const separator = decoded.indexOf(":");
+
+  const suppliedUser =
+    separator >= 0 ? decoded.slice(0, separator) : "";
+
+  const suppliedPassword =
+    separator >= 0 ? decoded.slice(separator + 1) : "";
+
+  if (
+    suppliedUser !== expectedUser ||
+    suppliedPassword !== expectedPassword
+  ) {
+    res.set(
+      "WWW-Authenticate",
+      'Basic realm="ClaycrazE Chris Pots", charset="UTF-8"'
+    );
+
+    return res.status(401).send("Invalid username or password.");
+  }
+
+  next();
+}
+
+app.use(
+  ["/admin/vendor-pots.html", "/api/vendor-pots"],
+  requireChrisVendorAuth
+);
 app.use(express.static(PUBLIC_DIR));
 app.use("/admin", express.static(ADMIN_DIR));
 app.use("/images", express.static(PUBLIC_IMAGES_DIR));
