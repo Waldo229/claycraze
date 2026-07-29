@@ -289,6 +289,7 @@
 
   <script>
     const ALLOWED_STATUSES = ["available", "acquired", "donated", "held"];
+    const CANONICAL_IMAGE_ORIGIN = "https://claycraze.com";
 
     function getVendorFromQuery() {
       const params = new URLSearchParams(window.location.search);
@@ -327,8 +328,46 @@
         .replace(/'/g, "&#39;");
     }
 
+    function canonicalImageUrl(value) {
+      const raw = String(value || "").trim().replace(/\\/g, "/");
+      if (!raw) return "";
+
+      if (/^https?:\/\//i.test(raw)) {
+        try {
+          const url = new URL(raw);
+
+          if (
+            url.hostname === "claycraze-admin-test.onrender.com" ||
+            url.hostname === "localhost" ||
+            url.hostname === "127.0.0.1"
+          ) {
+            return `${CANONICAL_IMAGE_ORIGIN}${url.pathname}${url.search}`;
+          }
+
+          return raw;
+        } catch {
+          return raw;
+        }
+      }
+
+      const path = raw.startsWith("/")
+        ? raw
+        : `/${raw.replace(/^\.?\/*/, "")}`;
+
+      return `${CANONICAL_IMAGE_ORIGIN}${path}`;
+    }
+
     function buildCard(piece) {
-      const imageSrc = piece.image_path || piece.image_path_2 || piece.image_path_3 || "";
+      const rawImageSrc =
+        piece.image_path ||
+        piece.thumbnail ||
+        piece.top_image ||
+        piece.image_path_2 ||
+        piece.full_top_image ||
+        piece.image_path_3 ||
+        "";
+
+      const imageSrc = canonicalImageUrl(rawImageSrc);
       const currentStatus = (piece.status || "available").toLowerCase();
 
       return `
@@ -336,7 +375,7 @@
           <div class="card-image-wrap">
             ${
               imageSrc
-                ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(piece.title || piece.id)}">`
+                ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(piece.title || piece.id)}" loading="lazy">`
                 : `<div style="padding: 16px; color: #6e6559;">No image available</div>`
             }
           </div>
