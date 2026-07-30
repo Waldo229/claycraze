@@ -134,72 +134,6 @@ app.use((req, res, next) => {
   next();
 });
 
-function requireChrisVendorAuth(req, res, next) {
-  const expectedUser =
-    String(process.env.CHRIS_VENDOR_USER || "chris").trim();
-
-  const expectedPassword =
-    String(process.env.CHRIS_VENDOR_PASSWORD || "");
-
-  if (!expectedPassword) {
-    console.error(
-      "CHRIS VENDOR AUTH BLOCKED: CHRIS_VENDOR_PASSWORD is not configured."
-    );
-
-    return res.status(503).send(
-      "Chris vendor access is not configured."
-    );
-  }
-
-  const authorization = String(req.headers.authorization || "");
-
-  if (!authorization.startsWith("Basic ")) {
-    res.set(
-      "WWW-Authenticate",
-      'Basic realm="ClaycrazE Chris Pots", charset="UTF-8"'
-    );
-
-    return res.status(401).send("Authentication required.");
-  }
-
-  let decoded = "";
-
-  try {
-    decoded = Buffer.from(
-      authorization.slice(6),
-      "base64"
-    ).toString("utf8");
-  } catch (_) {
-    decoded = "";
-  }
-
-  const separator = decoded.indexOf(":");
-
-  const suppliedUser =
-    separator >= 0 ? decoded.slice(0, separator) : "";
-
-  const suppliedPassword =
-    separator >= 0 ? decoded.slice(separator + 1) : "";
-
-  if (
-    suppliedUser !== expectedUser ||
-    suppliedPassword !== expectedPassword
-  ) {
-    res.set(
-      "WWW-Authenticate",
-      'Basic realm="ClaycrazE Chris Pots", charset="UTF-8"'
-    );
-
-    return res.status(401).send("Invalid username or password.");
-  }
-
-  next();
-}
-
-app.use(
-  ["/admin/vendor-pots.html", "/api/vendor-pots"],
-  requireChrisVendorAuth
-);
 app.use(express.static(PUBLIC_DIR));
 app.use("/admin", express.static(ADMIN_DIR));
 app.use("/images", express.static(PUBLIC_IMAGES_DIR));
@@ -423,6 +357,53 @@ async function fetchPiecesJsonViaScp() {
   }
 
   return pieces;
+}
+
+const RENDER_RESTORE_URL =
+  process.env.RENDER_RESTORE_URL ||
+  "https://claycraze-admin-test.onrender.com/admin/restore-from-siteground";
+
+function isRunningOnRender() {
+  return Boolean(
+    process.env.RENDER ||
+    process.env.RENDER_SERVICE_ID ||
+    process.env.RENDER_EXTERNAL_URL
+  );
+}
+
+async function refreshRenderFromSiteGround() {
+  if (isRunningOnRender()) {
+    return {
+      ok: true,
+      skipped: true,
+      message: "Render refresh skipped because this process is already running on Render.",
+    };
+  }
+
+  const separator = RENDER_RESTORE_URL.includes("?") ? "&" : "?";
+  const url = `${RENDER_RESTORE_URL}${separator}v=${Date.now()}`;
+  const raw = await fetchText(url);
+  const result = JSON.parse(raw);
+
+  if (!result || result.ok !== true) {
+    throw new Error(
+      result && result.error
+        ? `Render refresh failed: ${result.error}`
+        : "Render refresh did not return an OK response."
+    );
+  }
+
+  console.log(
+    `RENDER AUTO-REFRESH OK: ${result.restored?.count ?? "unknown"} pottery records restored.`
+  );
+
+  return {
+    ok: true,
+    skipped: false,
+    url: RENDER_RESTORE_URL,
+    restored_count: result.restored?.count ?? null,
+    message: "Render automatically refreshed from SiteGround canonical truth.",
+  };
 }
 
 function fetchText(url) {
@@ -1897,15 +1878,32 @@ app.post("/api/save-curation", async (req, res) => {
       }
     }
 
+    let renderRefresh;
+
+    try {
+      renderRefresh = await refreshRenderFromSiteGround();
+    } catch (refreshErr) {
+      console.error("RENDER AUTO-REFRESH FAILED:", refreshErr);
+
+      renderRefresh = {
+        ok: false,
+        skipped: false,
+        error: refreshErr.message || "Render refresh failed.",
+      };
+    }
+
     res.json({
       ok: true,
       archived: true,
       deployed_to_siteground: true,
-      message:
-        "Truth confirmed: DB saved, pieces.json exported, SiteGround archive updated, and canonical record verified.",
+      render_refreshed: renderRefresh.ok,
+      message: renderRefresh.ok
+        ? "Truth confirmed: DB saved, SiteGround updated and verified, and Render refreshed automatically."
+        : "Truth confirmed on SiteGround, but Render did not refresh automatically. Chris may need the manual restore link once.",
       saved_count: savedPieces.length,
       exported_count: exported.count,
       registration: afterRegistration,
+      render_refresh: renderRefresh,
       pieces: savedPieces,
     });
   } catch (err) {
