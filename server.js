@@ -1190,44 +1190,6 @@ async function restoreTreesFromSiteGround() {
   return TREE_STARTUP_RESTORE;
 }
 
-async function importLocalPiecesJsonIntoDb() {
-  const localPath = path.join(DATA_DIR, "pieces.json");
-
-  if (!fs.existsSync(localPath)) {
-    return {
-      ok: false,
-      source: localPath,
-      imported: 0,
-      message: "Local pieces.json not found.",
-    };
-  }
-
-  const raw = fs.readFileSync(localPath, "utf8");
-  const pieces = JSON.parse(raw);
-
-  if (!Array.isArray(pieces)) {
-    throw new Error("Local pieces.json did not contain an array.");
-  }
-
-  const inserted = await replaceDbWithPieces(pieces);
-
-  STARTUP_RESTORE = {
-    ok: false,
-    source: localPath,
-    count: pieces.length,
-    imported: inserted,
-    message:
-      "Local import completed, but this is not canonical truth. Restore from SiteGround before real saving.",
-    time: new Date().toISOString(),
-  };
-
-  return {
-    ok: true,
-    source: localPath,
-    imported: inserted,
-  };
-}
-
 app.get("/deploy-health", (req, res) => {
   res.json({
     ok: true,
@@ -1819,7 +1781,7 @@ app.post("/api/save-curation", async (req, res) => {
 
       delete piece.top_image_data;
       delete piece.bottom_image_data;
-         savedPieces.push(await upsertPiece(piece));
+      savedPieces.push(await upsertPiece(piece));
     }
 
     const exported = await exportPiecesJsonPromise();
@@ -2161,107 +2123,6 @@ app.get("/admin/restore-from-siteground", async (req, res) => {
   }
 });
 
-app.get("/admin/import-public-json", async (req, res) => {
-  return res.status(410).json({
-    ok: false,
-    error: "DISABLED: Local pieces.json may never replace canonical SiteGround truth."
-  });
-  try {
-    const imported = await importLocalPiecesJsonIntoDb();
-    const exported = await exportPiecesJsonPromise({ allowShrink: true });
-    const registration = await getRegistrationState();
-
-    res.json({
-      ok: true,
-      source: imported.source,
-      imported: imported.imported,
-      exported_count: exported.count,
-      registration,
-      warning:
-        "Local import completed. This is not canonical truth unless it came from SiteGround.",
-      message:
-        "Render SQLite database repopulated from local public/data/pieces.json",
-    });
-  } catch (err) {
-    console.error("IMPORT LOCAL JSON ERROR:", err);
-
-    res.status(500).json({
-      ok: false,
-      error: err.message,
-    });
-  }
-});
-
-app.get("/admin/register-siteground", async (req, res) => {
-  return res.status(410).json({
-    ok: false,
-    error: "DISABLED: Render may not publish its local ledger directly to SiteGround."
-  });
-  try {
-    const registration = await getRegistrationState();
-
-    if (!registration.registered) {
-      return res.status(409).json({
-        ok: false,
-        error:
-          "Refusing to publish to SiteGround because Render is not registered from SiteGround truth.",
-        registration,
-      });
-    }
-
-    const sgPublicHtml =
-      process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
-
-    const exported = await exportPiecesJsonPromise();
-
-    const localPiecesPath = exported.outPath;
-
-    if (!fs.existsSync(localPiecesPath)) {
-      return res.status(404).json({
-        ok: false,
-        error: `Local pieces.json not found at ${localPiecesPath}`,
-      });
-    }
-
-    const raw = fs.readFileSync(localPiecesPath, "utf8");
-    const pieces = JSON.parse(raw);
-
-    if (!Array.isArray(pieces)) {
-      return res.status(400).json({
-        ok: false,
-        error: "Local pieces.json did not contain an array",
-      });
-    }
-
-    await deployToSiteGround([
-      {
-        localPath: localPiecesPath,
-        remotePath: `${sgPublicHtml}/data/pieces.json`,
-      },
-    ]);
-
-    res.json({
-      ok: true,
-      archived: true,
-      registered_with_siteground: true,
-      local_source: localPiecesPath,
-      remote_target: `${sgPublicHtml}/data/pieces.json`,
-      count: pieces.length,
-      registration,
-      message: "SiteGround public data/pieces.json refreshed from Render.",
-    });
-  } catch (err) {
-    console.error("REGISTER SITEGROUND ERROR:", err);
-
-    res.status(500).json({
-      ok: false,
-      archived: false,
-      error: err.message,
-      stdout: err.stdout || "",
-      stderr: err.stderr || "",
-    });
-  }
-});
 app.get("/admin/import-local-trees-json", async (req, res) => {
   try {
     const localPath = path.join(DATA_DIR, "trees.json");
