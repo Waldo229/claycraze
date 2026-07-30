@@ -2162,6 +2162,10 @@ app.get("/admin/restore-from-siteground", async (req, res) => {
 });
 
 app.get("/admin/import-public-json", async (req, res) => {
+  return res.status(410).json({
+    ok: false,
+    error: "DISABLED: Local pieces.json may never replace canonical SiteGround truth."
+  });
   try {
     const imported = await importLocalPiecesJsonIntoDb();
     const exported = await exportPiecesJsonPromise({ allowShrink: true });
@@ -2189,6 +2193,10 @@ app.get("/admin/import-public-json", async (req, res) => {
 });
 
 app.get("/admin/register-siteground", async (req, res) => {
+  return res.status(410).json({
+    ok: false,
+    error: "DISABLED: Render may not publish its local ledger directly to SiteGround."
+  });
   try {
     const registration = await getRegistrationState();
 
