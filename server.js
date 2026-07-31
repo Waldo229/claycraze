@@ -472,6 +472,112 @@ async function fetchPiecesJsonViaScp() {
   return pieces;
 }
 
+
+function readPiecesJsonFile(filepath) {
+  if (!fs.existsSync(filepath)) {
+    throw new Error(`Local pieces.json not found: ${filepath}`);
+  }
+
+  const parsed = JSON.parse(fs.readFileSync(filepath, "utf8"));
+
+  if (!Array.isArray(parsed)) {
+    throw new Error(`Local pieces.json is not a JSON array: ${filepath}`);
+  }
+
+  return parsed;
+}
+
+function normalizePieceIdSet(pieces) {
+  return new Set(
+    (Array.isArray(pieces) ? pieces : [])
+      .map((piece) => String(piece && piece.id ? piece.id : "").trim().toUpperCase())
+      .filter(Boolean)
+  );
+}
+
+async function assertCanonicalPiecesPublishSafe(localPiecesPath, options = {}) {
+  const allowCanonicalShrink = options.allowCanonicalShrink === true;
+  const reason = cleanText(options.reason) || "unspecified pottery publish";
+
+  const proposedPieces = readPiecesJsonFile(localPiecesPath);
+  const canonicalPieces = await fetchPiecesJsonViaScp();
+
+  const proposedIds = normalizePieceIdSet(proposedPieces);
+  const canonicalIds = normalizePieceIdSet(canonicalPieces);
+  const missingCanonicalIds = [...canonicalIds].filter((id) => !proposedIds.has(id));
+
+  if (!allowCanonicalShrink) {
+    if (proposedPieces.length < canonicalPieces.length) {
+      throw new Error(
+        `CANONICAL SHRINK LOCK: Publish blocked during ${reason}. ` +
+        `SiteGround currently has ${canonicalPieces.length} records, but the proposed export has ${proposedPieces.length}. ` +
+        `A normal save may never reduce canonical truth.`
+      );
+    }
+
+    if (missingCanonicalIds.length > 0) {
+      throw new Error(
+        `CANONICAL ID LOCK: Publish blocked during ${reason}. ` +
+        `The proposed export is missing ${missingCanonicalIds.length} SiteGround record(s): ` +
+        `${missingCanonicalIds.slice(0, 12).join(", ")}` +
+        `${missingCanonicalIds.length > 12 ? ", ..." : ""}. ` +
+        `Only an explicit deletion workflow may remove canonical IDs.`
+      );
+    }
+  }
+
+  return {
+    ok: true,
+    allow_canonical_shrink: allowCanonicalShrink,
+    canonical_count: canonicalPieces.length,
+    proposed_count: proposedPieces.length,
+    missing_canonical_ids: missingCanonicalIds,
+    reason,
+  };
+}
+
+async function deployCanonicalPiecesJson(localPiecesPath, options = {}) {
+  const sgPublicHtml =
+    process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
+
+  const safety = await assertCanonicalPiecesPublishSafe(localPiecesPath, options);
+
+  await deployToSiteGround([
+    {
+      localPath: localPiecesPath,
+      remotePath: `${sgPublicHtml}/data/pieces.json`,
+    },
+  ]);
+
+  const confirmedPieces = await fetchPiecesJsonViaScp();
+  const proposedPieces = readPiecesJsonFile(localPiecesPath);
+
+  if (confirmedPieces.length !== proposedPieces.length) {
+    throw new Error(
+      `SITEGROUND VERIFY FAILED: Published pieces.json has ${confirmedPieces.length} records, ` +
+      `but the proposed canonical export has ${proposedPieces.length}.`
+    );
+  }
+
+  const confirmedIds = normalizePieceIdSet(confirmedPieces);
+  const proposedIds = normalizePieceIdSet(proposedPieces);
+  const missingAfterPublish = [...proposedIds].filter((id) => !confirmedIds.has(id));
+
+  if (missingAfterPublish.length > 0) {
+    throw new Error(
+      `SITEGROUND VERIFY FAILED: Canonical publish is missing proposed record(s): ` +
+      `${missingAfterPublish.slice(0, 12).join(", ")}` +
+      `${missingAfterPublish.length > 12 ? ", ..." : ""}.`
+    );
+  }
+
+  return {
+    ...safety,
+    deployed_to_siteground: true,
+    verified_count: confirmedPieces.length,
+  };
+}
+
 const RENDER_RESTORE_URL =
   process.env.RENDER_RESTORE_URL ||
   "https://claycraze-admin-test.onrender.com/admin/restore-from-siteground";
@@ -1726,16 +1832,9 @@ app.patch("/api/vendor-pots/:id/status", async (req, res) => {
 
     const exported = await exportPiecesJsonPromise();
 
-    const sgPublicHtml =
-      process.env.SG_PUBLIC_HTML ||
-      "/home/customer/www/claycraze.com/public_html";
-
-    await deployToSiteGround([
-      {
-        localPath: exported.outPath,
-        remotePath: `${sgPublicHtml}/data/pieces.json`,
-      },
-    ]);
+    const canonicalPublish = await deployCanonicalPiecesJson(exported.outPath, {
+      reason: `vendor status update for ${pieceId}`,
+    });
 
     const sgPieces = await fetchPiecesJsonViaScp();
 
@@ -1756,6 +1855,7 @@ app.patch("/api/vendor-pots/:id/status", async (req, res) => {
       ok: true,
       archived: true,
       deployed_to_siteground: true,
+      canonical_publish: canonicalPublish,
       id: pieceId,
       vendor,
       status,
@@ -1907,13 +2007,16 @@ app.post("/api/save-curation", async (req, res) => {
       );
     }
 
-    filesToDeploy.push({
-      localPath: exported.outPath,
-      remotePath: `${sgPublicHtml}/data/pieces.json`,
-    });
-
     try {
+      // Publish images and other non-ledger artifacts first.
       await deployToSiteGround(filesToDeploy);
+
+      // The canonical pottery ledger receives its own SiteGround preflight lock.
+      // Normal saves may add or update records, but may never remove an existing
+      // SiteGround record or replace the canonical file with a smaller export.
+      await deployCanonicalPiecesJson(exported.outPath, {
+        reason: "curation save",
+      });
     } catch (deployErr) {
       console.error("SITEGROUND DEPLOY FAILURE:", deployErr);
 
