@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const fs = require("fs");
 const path = require("path");
@@ -133,6 +133,119 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
+
+// ============================================================
+// LIMITED VENDOR AUTHENTICATION
+// Credentials are stored in Render environment variables:
+//   CHRIS_VENDOR_USER
+//   CHRIS_VENDOR_PASSWORD
+// This middleware MUST appear before /admin static files and vendor API routes.
+// ============================================================
+
+function secureStringEqual(actual, expected) {
+  const crypto = require("crypto");
+  const actualBuffer = Buffer.from(String(actual || ""), "utf8");
+  const expectedBuffer = Buffer.from(String(expected || ""), "utf8");
+
+  if (actualBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(actualBuffer, expectedBuffer);
+}
+
+function requireVendorAuth(req, res, next) {
+  const expectedUser = String(process.env.CHRIS_VENDOR_USER || "").trim();
+  const expectedPassword = String(
+    process.env.CHRIS_VENDOR_PASSWORD || ""
+  );
+
+  if (!expectedUser || !expectedPassword) {
+    console.error(
+      "VENDOR AUTH CONFIGURATION ERROR: Missing CHRIS_VENDOR_USER or CHRIS_VENDOR_PASSWORD."
+    );
+
+    return res.status(503).send(
+      "Vendor access is temporarily unavailable because authentication is not configured."
+    );
+  }
+
+  const authorization = String(req.headers.authorization || "");
+
+  if (!authorization.startsWith("Basic ")) {
+    res.set("WWW-Authenticate", 'Basic realm="ClaycrazE Vendor Pots"');
+    res.set("Cache-Control", "no-store");
+    return res.status(401).send("Authentication required.");
+  }
+
+  let decoded = "";
+
+  try {
+    decoded = Buffer.from(authorization.slice(6), "base64").toString("utf8");
+  } catch (_) {
+    res.set("WWW-Authenticate", 'Basic realm="ClaycrazE Vendor Pots"');
+    res.set("Cache-Control", "no-store");
+    return res.status(401).send("Invalid authentication header.");
+  }
+
+  const separator = decoded.indexOf(":");
+  const suppliedUser = separator >= 0 ? decoded.slice(0, separator) : "";
+  const suppliedPassword = separator >= 0 ? decoded.slice(separator + 1) : "";
+
+  const userMatches = secureStringEqual(suppliedUser, expectedUser);
+  const passwordMatches = secureStringEqual(suppliedPassword, expectedPassword);
+
+  if (!userMatches || !passwordMatches) {
+    res.set("WWW-Authenticate", 'Basic realm="ClaycrazE Vendor Pots"');
+    res.set("Cache-Control", "no-store");
+    return res.status(401).send("Invalid username or password.");
+  }
+
+  req.authenticatedVendor = expectedUser.toLowerCase();
+  res.set("Cache-Control", "no-store");
+  next();
+}
+
+function enforceAuthenticatedVendor(req, res, next) {
+  const authenticatedVendor = String(req.authenticatedVendor || "")
+    .trim()
+    .toLowerCase();
+
+  const requestedVendor = String(
+    req.method === "GET" ? req.query.vendor : req.body.vendor
+  )
+    .trim()
+    .toLowerCase();
+
+  if (!requestedVendor) {
+    return res.status(400).json({
+      ok: false,
+      error: "Missing vendor parameter.",
+    });
+  }
+
+  if (requestedVendor !== authenticatedVendor) {
+    return res.status(403).json({
+      ok: false,
+      error: "This login may access only its assigned vendor inventory.",
+    });
+  }
+
+  next();
+}
+
+// Protect Chris's page before the general /admin static handler can serve it.
+app.use(
+  "/admin/vendor-pots.html",
+  requireVendorAuth
+);
+
+// Protect both reading and changing vendor records.
+app.use(
+  "/api/vendor-pots",
+  requireVendorAuth,
+  enforceAuthenticatedVendor
+);
 
 app.use(express.static(PUBLIC_DIR));
 app.use("/admin", express.static(ADMIN_DIR));
