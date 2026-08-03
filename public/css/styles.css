@@ -1567,3 +1567,151 @@ a {
   border: 0;
   display: block;
 }
+/* ==========================================
+   GENE Kiln Watch Cards
+   ========================================== */
+
+.kiln-watch-grid {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto 5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.kiln-watch-card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(37, 31, 27, 0.97),
+      rgba(19, 17, 15, 0.98)
+    );
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.kiln-watch-graph-card {
+  padding: 1rem;
+}
+
+.kiln-watch-figure {
+  margin: 0;
+}
+
+.kiln-watch-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.85rem;
+  background: #ffffff;
+}
+
+.kiln-watch-figure figcaption {
+  padding: 0.9rem 0.35rem 0.2rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.kiln-watch-note-card {
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.kiln-watch-note-card .room-copy {
+  max-width: none;
+}
+
+.kiln-watch-note-card h2 {
+  margin-top: 0.4rem;
+}
+
+.gene-kiln-note {
+  width: 100%;
+  max-width: 100%;
+  margin: 1.5rem 0 0;
+  padding: 1.2rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 0;
+  border-radius: 0.85rem;
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.86);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 850px) {
+  .kiln-watch-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .kiln-watch-grid {
+    width: min(100% - 1rem, 1180px);
+    gap: 1rem;
+  }
+
+  .kiln-watch-graph-card {
+    padding: 0.55rem;
+  }
+
+  .kiln-watch-note-card {
+    padding: 1.25rem;
+  }
+
+  .gene-kiln-note {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+}
+/* Final Kiln Watch layout correction */
+
+body .kiln-watch-grid {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto 5rem;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr) !important;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+body .kiln-watch-grid > .kiln-watch-card {
+  display: block;
+  min-width: 0;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  background: rgba(35, 29, 24, 0.96);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(205, 164, 91, 0.22);
+}
+
+body .kiln-watch-grid > .kiln-watch-note-card {
+  padding: 2rem;
+}
+
+body .kiln-watch-grid .kiln-watch-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+body .kiln-watch-grid .room-copy {
+  width: auto;
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  body .kiln-watch-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
