@@ -922,7 +922,54 @@
       }
 
       function extractKilnState(data) {
+        /*
+          Preserve every probe's situated truth, but use the hottest currently
+          reporting probe as the console's single derived summary.
+        */
+        const summaries = Array.isArray(data?.summaries)
+          ? data.summaries
+          : [];
+
+        const candidates = summaries
+          .map((summary) => {
+            const temperature = asFiniteNumber(
+              summary?.latest_temp_f ??
+              summary?.latest_temp ??
+              summary?.latest_temperature ??
+              summary?.temperature_f ??
+              summary?.temperature ??
+              summary?.temp_f ??
+              summary?.temp
+            );
+
+            const ramp = asFiniteNumber(
+              summary?.latest_ramp_f_per_hr ??
+              summary?.latest_ramp ??
+              summary?.ramp_f_per_hr ??
+              summary?.ramp_rate ??
+              summary?.rate_of_rise ??
+              summary?.ramp ??
+              summary?.rate
+            );
+
+            return {
+              name: summary?.name ?? summary?.probe ?? summary?.id ?? "probe",
+              temperature,
+              ramp
+            };
+          })
+          .filter((probe) => probe.temperature !== null);
+
+        if (candidates.length > 0) {
+          return candidates.reduce((hottest, probe) =>
+            probe.temperature > hottest.temperature ? probe : hottest
+          );
+        }
+
+        // Backward-compatible fallback for older or partial payloads.
         const temperature = findNumericByKeys(data, [
+          "hottesttempf",
+          "latesttempf",
           "latesttemp",
           "latesttemperature",
           "temperature",
@@ -932,6 +979,7 @@
         ]);
 
         const ramp = findNumericByKeys(data, [
+          "latestrampfperhr",
           "latestramp",
           "ramprate",
           "rampfperhr",
@@ -940,7 +988,7 @@
           "rate"
         ]);
 
-        return { temperature, ramp };
+        return { name: "derived", temperature, ramp };
       }
 
       function formatDate(unixSeconds) {
@@ -1136,5 +1184,6 @@
 
 </body>
 </html>
+
 
 
