@@ -24,13 +24,8 @@ scp -P $SG_PORT -i $SSH_KEY `
   ".\public\gallery\ovals.html" `
   "${SG_USER}@${SG_HOST}:/home/customer/www/claycraze.com/public_html/gallery/"
 
-scp -P $SG_PORT -i $SSH_KEY `
-  ".\public\data\pieces.json" `
-  "${SG_USER}@${SG_HOST}:/home/customer/www/claycraze.com/public_html/data/"
-
 Write-Host ""
 Write-Host "Deploy complete."
 Write-Host "Test these:"
 Write-Host "https://claycraze.com/js/ovals.js?v=$VERSION"
-Write-Host "https://claycraze.com/data/pieces.json?v=$VERSION"
 Write-Host "https://claycraze.com/gallery/ovals.html?v=$VERSION"
