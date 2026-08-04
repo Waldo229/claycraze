@@ -582,6 +582,55 @@
         text-align: left;
       }
     }
+
+    .gene-credit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      margin: 1rem auto 0;
+      color: rgba(231, 221, 199, 0.62);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .gene-credit-logo {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      object-fit: contain;
+      opacity: 0.82;
+      filter: drop-shadow(0 0 7px rgba(154, 198, 78, 0.18));
+    }
+
+    .gene-credit a {
+      color: rgba(231, 221, 199, 0.86);
+      text-decoration-color: rgba(154, 198, 78, 0.42);
+      text-underline-offset: 0.22em;
+    }
+
+    .gene-credit a:hover,
+    .gene-credit a:focus-visible {
+      color: var(--gene-green);
+      text-decoration-color: rgba(154, 198, 78, 0.92);
+    }
+
+    @media (max-width: 620px) {
+      .gene-credit {
+        align-items: flex-start;
+        font-size: 0.84rem;
+        text-align: left;
+      }
+
+      .gene-credit-logo {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+      }
+    }
+
   </style>
 </head>
 
@@ -744,6 +793,29 @@
         </footer>
       </div>
     </section>
+
+    <p class="gene-credit">
+      <a
+        href="https://www.twuug.org/"
+        target="_blank"
+        rel="noopener"
+        aria-label="Visit the Tidewater Unix User Group website"
+      >
+        <img
+          src="/images/tux.png"
+          alt="Linux penguin"
+          class="gene-credit-logo"
+        >
+      </a>
+
+      <span>
+        With thanks to the
+        <a href="https://www.twuug.org/" target="_blank" rel="noopener">
+          Tidewater Unix User Group
+        </a>,
+        whose members helped GENE find its voice.
+      </span>
+    </p>
   </main>
 
   <script>
