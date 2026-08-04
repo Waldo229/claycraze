@@ -1071,7 +1071,14 @@
         if (temperature !== null) {
           $("temperature").textContent = Math.round(temperature);
           $("heatValue").textContent = `${Math.round(temperature)} \u00B0F`;
-          const [state, note] = kilnLanguage(temperature, ramp);
+          const publishedState = data?.gene_visual?.state;
+
+          const [state, note] = publishedState === "firing"
+            ? ["Firing field active", "Heat is now materially present."]
+            : temperature < 120
+              ? ["The kiln is dark.", "Kiln field nearly still."]
+              : ["Residual warmth", "The kiln is warm, but no firing is inferred."];
+
           $("heatState").textContent = state;
           $("rampNote").textContent = ramp === null
             ? note
