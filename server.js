@@ -840,10 +840,37 @@ function comparePieceCollections(leftPieces, rightPieces) {
 
   const missingFromRight = [...left.keys()].filter((id) => !right.has(id));
   const extraInRight = [...right.keys()].filter((id) => !left.has(id));
-  const changedIds = [...left.keys()].filter((id) => {
-    if (!right.has(id)) return false;
-    return JSON.stringify(left.get(id)) !== JSON.stringify(right.get(id));
-  });
+  const changedRecords = [];
+
+  for (const id of left.keys()) {
+    if (!right.has(id)) continue;
+
+    const leftRecord = left.get(id);
+    const rightRecord = right.get(id);
+    const fields = [];
+
+    for (const field of Object.keys(leftRecord)) {
+      if (JSON.stringify(leftRecord[field]) !== JSON.stringify(rightRecord[field])) {
+        fields.push({
+          field,
+          siteground_value: leftRecord[field],
+          compared_value: rightRecord[field],
+          siteground_type: typeof leftRecord[field],
+          compared_type: typeof rightRecord[field],
+        });
+      }
+    }
+
+    if (fields.length > 0) {
+      changedRecords.push({
+        id,
+        changed_field_count: fields.length,
+        fields,
+      });
+    }
+  }
+
+  const changedIds = changedRecords.map((record) => record.id);
 
   return {
     left_count: left.size,
@@ -851,6 +878,7 @@ function comparePieceCollections(leftPieces, rightPieces) {
     missing_from_right: missingFromRight,
     extra_in_right: extraInRight,
     changed_ids: changedIds,
+    changed_records: changedRecords,
     exact_match:
       missingFromRight.length === 0 &&
       extraInRight.length === 0 &&
