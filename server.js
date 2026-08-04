@@ -45,6 +45,15 @@ let TREE_STARTUP_RESTORE = {
   time: null,
 };
 
+const SURVEILLANCE_INTERVAL_MINUTES = Math.max(
+  1,
+  Number.parseInt(process.env.SURVEILLANCE_INTERVAL_MINUTES || "10", 10) || 10
+);
+
+const SURVEILLANCE_HISTORY_LIMIT = 50;
+const SURVEILLANCE_HISTORY = [];
+let SURVEILLANCE_TIMER = null;
+
 for (const dir of [
   PUBLIC_DIR,
   ADMIN_DIR,
@@ -746,6 +755,165 @@ function getPublicDbCount() {
       }
     );
   });
+}
+
+function getPublicDbPieces() {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT ${PUBLIC_FIELDS}
+      FROM inventory
+      WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+      ORDER BY id ASC
+    `;
+
+    db.all(sql, PUBLIC_STATUSES, (err, rows) => {
+      if (err) return reject(err);
+      resolve(Array.isArray(rows) ? rows : []);
+    });
+  });
+}
+
+function readLocalPiecesJsonSafely() {
+  const localPath = path.join(DATA_DIR, "pieces.json");
+
+  if (!fs.existsSync(localPath)) {
+    return {
+      ok: false,
+      path: localPath,
+      pieces: [],
+      error: "Local pieces.json does not exist.",
+    };
+  }
+
+  try {
+    const pieces = JSON.parse(fs.readFileSync(localPath, "utf8"));
+
+    if (!Array.isArray(pieces)) {
+      throw new Error("Local pieces.json is not a JSON array.");
+    }
+
+    return {
+      ok: true,
+      path: localPath,
+      pieces,
+      error: "",
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      path: localPath,
+      pieces: [],
+      error: err.message,
+    };
+  }
+}
+
+function normalizePieceForComparison(piece) {
+  const normalized = {};
+
+  for (const field of PUBLIC_FIELDS.split(",").map((name) => name.trim()).filter(Boolean)) {
+    normalized[field] = piece && piece[field] != null ? piece[field] : "";
+  }
+
+  normalized.id = String(normalized.id || "").trim().toUpperCase();
+  normalized.shape = String(normalized.shape || "").trim().toUpperCase();
+  normalized.status = String(normalized.status || "").trim().toLowerCase();
+  normalized.assigned_to = String(normalized.assigned_to || "").trim().toLowerCase();
+
+  return normalized;
+}
+
+function mapPiecesById(pieces) {
+  const map = new Map();
+
+  for (const piece of Array.isArray(pieces) ? pieces : []) {
+    const normalized = normalizePieceForComparison(piece);
+    if (normalized.id) map.set(normalized.id, normalized);
+  }
+
+  return map;
+}
+
+function comparePieceCollections(leftPieces, rightPieces) {
+  const left = mapPiecesById(leftPieces);
+  const right = mapPiecesById(rightPieces);
+
+  const missingFromRight = [...left.keys()].filter((id) => !right.has(id));
+  const extraInRight = [...right.keys()].filter((id) => !left.has(id));
+  const changedIds = [...left.keys()].filter((id) => {
+    if (!right.has(id)) return false;
+    return JSON.stringify(left.get(id)) !== JSON.stringify(right.get(id));
+  });
+
+  return {
+    left_count: left.size,
+    right_count: right.size,
+    missing_from_right: missingFromRight,
+    extra_in_right: extraInRight,
+    changed_ids: changedIds,
+    exact_match:
+      missingFromRight.length === 0 &&
+      extraInRight.length === 0 &&
+      changedIds.length === 0,
+  };
+}
+
+async function runSiteGroundSurveillance(trigger = "manual") {
+  const startedAt = new Date().toISOString();
+
+  try {
+    const [siteGroundPieces, renderPieces] = await Promise.all([
+      fetchPiecesJsonViaScp(),
+      getPublicDbPieces(),
+    ]);
+
+    const local = readLocalPiecesJsonSafely();
+
+    const sgVsRender = comparePieceCollections(siteGroundPieces, renderPieces);
+    const sgVsLocal = comparePieceCollections(
+      siteGroundPieces,
+      local.ok ? local.pieces : []
+    );
+
+    const result = {
+      ok: true,
+      read_only: true,
+      trigger,
+      time: startedAt,
+      source: "SiteGround SCP canonical pieces.json",
+      siteground_count: siteGroundPieces.length,
+      render_db_count: renderPieces.length,
+      local_json_count: local.ok ? local.pieces.length : null,
+      local_json_ok: local.ok,
+      local_json_error: local.error,
+      siteground_vs_render: sgVsRender,
+      siteground_vs_local_json: sgVsLocal,
+      action_taken: "NONE",
+    };
+
+    SURVEILLANCE_HISTORY.unshift(result);
+    SURVEILLANCE_HISTORY.splice(SURVEILLANCE_HISTORY_LIMIT);
+
+    console.log("SITEGROUND SURVEILLANCE:", JSON.stringify(result));
+
+    return result;
+  } catch (err) {
+    const result = {
+      ok: false,
+      read_only: true,
+      trigger,
+      time: startedAt,
+      error: err.message,
+      action_taken: "NONE",
+    };
+
+    SURVEILLANCE_HISTORY.unshift(result);
+    SURVEILLANCE_HISTORY.splice(SURVEILLANCE_HISTORY_LIMIT);
+
+    console.error("SITEGROUND SURVEILLANCE FAILED:", err);
+
+    return result;
+  }
 }
 
 async function getRegistrationState() {
@@ -1510,6 +1678,21 @@ app.get("/debug/registration", async (req, res) => {
       error: err.message,
     });
   }
+});
+
+app.get("/debug/siteground-surveillance", async (req, res) => {
+  const result = await runSiteGroundSurveillance("manual-route");
+  res.status(result.ok ? 200 : 500).json(result);
+});
+
+app.get("/debug/siteground-surveillance-history", (req, res) => {
+  res.json({
+    ok: true,
+    read_only: true,
+    interval_minutes: SURVEILLANCE_INTERVAL_MINUTES,
+    checks_retained: SURVEILLANCE_HISTORY.length,
+    history: SURVEILLANCE_HISTORY,
+  });
 });
 
 app.get("/debug/tree-registration", async (req, res) => {
@@ -2430,6 +2613,24 @@ const claycrazeServer = app.listen(PORT, "0.0.0.0", async () => {
       "TRUTH LOCK: Render could not restore from SiteGround. Saves will be blocked."
     );
   }
+
+  // Read-only dragnet: compare SiteGround, Render SQLite, and local pieces.json.
+  // This never restores, writes, exports, or publishes pottery data.
+  await runSiteGroundSurveillance("startup-after-restore");
+
+  SURVEILLANCE_TIMER = setInterval(() => {
+    runSiteGroundSurveillance("scheduled-interval").catch((err) => {
+      console.error("UNEXPECTED SURVEILLANCE TIMER ERROR:", err);
+    });
+  }, SURVEILLANCE_INTERVAL_MINUTES * 60 * 1000);
+
+  if (typeof SURVEILLANCE_TIMER.unref === "function") {
+    SURVEILLANCE_TIMER.unref();
+  }
+
+  console.log(
+    `SiteGround surveillance scheduled every ${SURVEILLANCE_INTERVAL_MINUTES} minute(s).`
+  );
 });
 
 claycrazeServer.on("error", (err) => {
