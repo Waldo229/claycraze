@@ -1058,9 +1058,12 @@
         const geneMascot = $("geneMascot");
         if (geneMascot) {
           const geneState = data?.gene_visual?.state;
-          geneMascot.src = geneState === "firing"
+          const geneImage = geneState === "firing"
             ? "/images/gene-chilli-pepper-hot.png"
             : "/images/gene-kilnwatch-emoji.png";
+
+          geneMascot.src =
+            `${geneImage}?state=${encodeURIComponent(geneState || "watching")}&t=${Date.now()}`;
         }
 
         const { temperature, ramp } = extractKilnState(data);
