@@ -260,7 +260,7 @@
         <img
           class="pocket-gene"
           id="pocketGene"
-          src="https://claycraze.com/gene/kiln_watch_gene.gif"
+          src="/images/gene-kilnwatch-emoji.png"
           alt="Pocket GENE kiln state"
         >
 
@@ -325,7 +325,9 @@
 
       const GRAPH_URL = "https://claycraze.com/gene/kiln_watch_latest.png";
       const NOTE_URL = "https://claycraze.com/gene/kiln_watch_latest.txt";
-      const GENE_URL = "https://claycraze.com/gene/kiln_watch_gene.gif";
+      const STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
+      const NORMAL_GENE_URL = "/images/gene-kilnwatch-emoji.png";
+      const HOT_GENE_URL = "/images/gene-chilli-pepper-hot.png";
       const REFRESH_MS = 5 * 60 * 1000;
 
       const graph = document.getElementById("firingGraph");
@@ -360,7 +362,27 @@
         };
 
         graph.src = cacheBusted(GRAPH_URL);
-        pocketGene.src = cacheBusted(GENE_URL);
+        try {
+          const stateResponse = await fetch(cacheBusted(STATE_URL), {
+            cache: "no-store"
+          });
+
+          if (!stateResponse.ok) {
+            throw new Error(`State returned ${stateResponse.status}`);
+          }
+
+          const stateData = await stateResponse.json();
+          const geneState = stateData?.gene_visual?.state;
+
+          pocketGene.src = cacheBusted(
+            geneState === "firing"
+              ? HOT_GENE_URL
+              : NORMAL_GENE_URL
+          );
+        } catch (stateError) {
+          pocketGene.src = cacheBusted(NORMAL_GENE_URL);
+          console.warn("Could not refresh GENE state:", stateError);
+        }
 
         try {
           const response = await fetch(cacheBusted(NOTE_URL), {

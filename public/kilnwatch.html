@@ -665,7 +665,8 @@
         <div class="gene-mascot-wrap">
           <img
             class="gene-mascot"
-            src="https://claycraze.com/gene/kiln_watch_gene.gif"
+            id="geneMascot"
+            src="/images/gene-kilnwatch-emoji.png"
             alt="GENE clay studio watcher"
             onerror="this.style.display='none'; document.getElementById('mascotError').style.display='block';">
           <div id="mascotError" class="mascot-error">GENE image unavailable</div>
@@ -1054,6 +1055,14 @@
       }
 
       function renderKiln(data) {
+        const geneMascot = $("geneMascot");
+        if (geneMascot) {
+          const geneState = data?.gene_visual?.state;
+          geneMascot.src = geneState === "firing"
+            ? "/images/gene-chilli-pepper-hot.png"
+            : "/images/gene-kilnwatch-emoji.png";
+        }
+
         const { temperature, ramp } = extractKilnState(data);
 
         if (temperature !== null) {
