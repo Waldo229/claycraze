@@ -587,6 +587,220 @@ async function deployCanonicalPiecesJson(localPiecesPath, options = {}) {
   };
 }
 
+// ============================================================
+// CANONICAL POTTERY TRANSACTION
+// SiteGround pieces.json is the durable source of truth.
+// Render SQLite and local pieces.json are disposable working copies.
+// Every normal save reads SiteGround, merges by ID, atomically replaces
+// the canonical file, verifies it, and then refreshes the working copies.
+// ============================================================
+
+let CANONICAL_PIECES_WRITE_CHAIN = Promise.resolve();
+
+function normalizeCanonicalPiece(piece) {
+  const parsed = parsePieceId(piece.id);
+
+  return {
+    id: parsed.id,
+    shape: normalizeShapeCode(piece.shape || parsed.shape),
+    piece_number: piece.piece_number || parsed.piece_number,
+    date_code: piece.date_code || parsed.date_code,
+    title: cleanText(piece.title),
+    category: cleanText(piece.category),
+    description: cleanText(piece.description),
+    clay_body: cleanText(piece.clay_body),
+    glaze: cleanText(piece.glaze),
+    notes: cleanText(piece.notes),
+    dimensions: cleanText(piece.dimensions),
+    image_path: cleanText(piece.image_path),
+    image_path_2: cleanText(piece.image_path_2),
+    image_path_3: cleanText(piece.image_path_3),
+    image_path_4: cleanText(piece.image_path_4),
+    status: normalizeStatus(piece.status),
+    price: cleanText(piece.price),
+    assigned_to: cleanText(piece.assigned_to) || "studio",
+  };
+}
+
+function sortCanonicalPieces(pieces) {
+  return [...pieces].sort((a, b) => {
+    const shapeCompare = String(a.shape || "").localeCompare(
+      String(b.shape || "")
+    );
+
+    if (shapeCompare !== 0) return shapeCompare;
+
+    return Number(b.piece_number || 0) - Number(a.piece_number || 0);
+  });
+}
+
+async function syncWorkingCopiesFromCanonical(pieces) {
+  const localPath = path.join(DATA_DIR, "pieces.json");
+
+  backupExistingPiecesJson();
+  fs.writeFileSync(localPath, JSON.stringify(pieces, null, 2), "utf8");
+
+  const imported = await replaceDbWithPieces(pieces);
+  const dbCount = await getPublicDbCount();
+
+  STARTUP_RESTORE = {
+    ok: true,
+    source: SG_PUBLIC_DATA_URL,
+    count: pieces.length,
+    imported,
+    render_public_db_count: dbCount,
+    message:
+      "Render working copies refreshed from verified SiteGround canonical truth.",
+    time: new Date().toISOString(),
+  };
+
+  return {
+    local_path: localPath,
+    imported,
+    render_public_db_count: dbCount,
+  };
+}
+
+async function performCanonicalPiecesMerge(updates, options = {}) {
+  const reason = cleanText(options.reason) || "pottery save";
+  const updateList = Array.isArray(updates) ? updates : [updates];
+
+  if (updateList.length === 0) {
+    throw new Error("Canonical merge requires at least one pottery record.");
+  }
+
+  const canonicalBefore = await fetchPiecesJsonViaScp();
+  const canonicalBeforeIds = normalizePieceIdSet(canonicalBefore);
+  const mergedById = new Map();
+
+  for (const existing of canonicalBefore) {
+    const id = cleanText(existing && existing.id).toUpperCase();
+    if (id) mergedById.set(id, existing);
+  }
+
+  const normalizedUpdates = updateList.map(normalizeCanonicalPiece);
+
+  for (const update of normalizedUpdates) {
+    if (!PUBLIC_STATUSES.includes(update.status)) {
+      throw new Error(
+        `NORMAL SAVE BLOCKED: ${update.id} has non-public status "${update.status}". ` +
+        `Removing a canonical record requires an explicit archive/delete workflow.`
+      );
+    }
+
+    mergedById.set(update.id, update);
+  }
+
+  const mergedPieces = sortCanonicalPieces([...mergedById.values()]);
+  const mergedIds = normalizePieceIdSet(mergedPieces);
+  const missingOldIds = [...canonicalBeforeIds].filter(
+    (id) => !mergedIds.has(id)
+  );
+
+  if (missingOldIds.length > 0) {
+    throw new Error(
+      `CANONICAL MERGE BLOCKED during ${reason}: existing SiteGround IDs would disappear: ` +
+      `${missingOldIds.slice(0, 12).join(", ")}`
+    );
+  }
+
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } =
+    getSgConfig();
+
+  const keyPath = writeSshKey(SG_CI_KEY);
+  const remote = `${SG_USER}@${SG_HOST}`;
+  const remoteFinal = `${SG_PUBLIC_HTML}/data/pieces.json`;
+  const remoteTemp = `${remoteFinal}.tmp-${process.pid}-${Date.now()}`;
+  const localTemp = path.join(
+    os.tmpdir(),
+    `pieces-merged-${process.pid}-${Date.now()}.json`
+  );
+
+  fs.writeFileSync(localTemp, JSON.stringify(mergedPieces, null, 2), "utf8");
+
+  try {
+    await deployToSiteGround([
+      {
+        localPath: localTemp,
+        remotePath: remoteTemp,
+      },
+    ]);
+
+    await runCommand("ssh", [
+      "-p",
+      SG_PORT,
+      "-i",
+      keyPath,
+      "-o",
+      "StrictHostKeyChecking=no",
+      remote,
+      `mv ${remoteTemp} ${remoteFinal}`,
+    ]);
+
+    const confirmedPieces = await fetchPiecesJsonViaScp();
+    const confirmedIds = normalizePieceIdSet(confirmedPieces);
+
+    if (confirmedPieces.length !== mergedPieces.length) {
+      throw new Error(
+        `SITEGROUND VERIFY FAILED during ${reason}: expected ${mergedPieces.length} records, ` +
+        `but confirmed ${confirmedPieces.length}.`
+      );
+    }
+
+    const missingAfterPublish = [...mergedIds].filter(
+      (id) => !confirmedIds.has(id)
+    );
+
+    if (missingAfterPublish.length > 0) {
+      throw new Error(
+        `SITEGROUND VERIFY FAILED during ${reason}: missing ID(s) after publish: ` +
+        `${missingAfterPublish.slice(0, 12).join(", ")}`
+      );
+    }
+
+    for (const update of normalizedUpdates) {
+      const confirmed = confirmedPieces.find(
+        (piece) => cleanText(piece.id).toUpperCase() === update.id
+      );
+
+      if (!confirmed) {
+        throw new Error(
+          `SITEGROUND VERIFY FAILED during ${reason}: ${update.id} was not confirmed.`
+        );
+      }
+    }
+
+    const workingCopy = await syncWorkingCopiesFromCanonical(confirmedPieces);
+
+    return {
+      ok: true,
+      reason,
+      canonical_count_before: canonicalBefore.length,
+      canonical_count_after: confirmedPieces.length,
+      updated_ids: normalizedUpdates.map((piece) => piece.id),
+      verified_count: confirmedPieces.length,
+      working_copy: workingCopy,
+      confirmed_pieces: confirmedPieces,
+    };
+  } finally {
+    try {
+      fs.unlinkSync(localTemp);
+    } catch (_) {
+      // Ignore temporary-file cleanup errors.
+    }
+  }
+}
+
+function mergeAndPublishCanonicalPieces(updates, options = {}) {
+  const operation = CANONICAL_PIECES_WRITE_CHAIN.then(() =>
+    performCanonicalPiecesMerge(updates, options)
+  );
+
+  CANONICAL_PIECES_WRITE_CHAIN = operation.catch(() => undefined);
+
+  return operation;
+}
+
 const RENDER_RESTORE_URL =
   process.env.RENDER_RESTORE_URL ||
   "https://claycraze-admin-test.onrender.com/admin/restore-from-siteground";
@@ -1996,7 +2210,7 @@ app.patch("/api/vendor-pots/:id/status", async (req, res) => {
     const piece = await new Promise((resolve, reject) => {
       db.get(
         `
-        SELECT id, assigned_to
+        SELECT ${PUBLIC_FIELDS}
         FROM inventory
         WHERE id = ?
           AND LOWER(TRIM(COALESCE(assigned_to, 'studio'))) = ?
@@ -2017,37 +2231,20 @@ app.patch("/api/vendor-pots/:id/status", async (req, res) => {
       });
     }
 
-    await new Promise((resolve, reject) => {
-      db.run(
-        `
-        UPDATE inventory
-        SET status = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-        `,
-        [status, pieceId],
-        function (err) {
-          if (err) return reject(err);
+    const updatedPiece = {
+      ...piece,
+      status,
+      assigned_to: vendor,
+    };
 
-          if (this.changes !== 1) {
-            return reject(
-              new Error(
-                `Expected to update one record, but updated ${this.changes}.`
-              )
-            );
-          }
+    const canonicalPublish = await mergeAndPublishCanonicalPieces(
+      [updatedPiece],
+      {
+        reason: `vendor status update for ${pieceId}`,
+      }
+    );
 
-          resolve();
-        }
-      );
-    });
-
-    const exported = await exportPiecesJsonPromise();
-
-    const canonicalPublish = await deployCanonicalPiecesJson(exported.outPath, {
-      reason: `vendor status update for ${pieceId}`,
-    });
-
-    const sgPieces = await fetchPiecesJsonViaScp();
+    const sgPieces = canonicalPublish.confirmed_pieces;
 
     const confirmed = sgPieces.find(
       (record) =>
@@ -2154,15 +2351,15 @@ app.post("/api/save-curation", async (req, res) => {
     const piece = req.body.piece || req.body;
     const pieces = Array.isArray(req.body.pieces) ? req.body.pieces : null;
 
-    let savedPieces = [];
-    let filesToDeploy = [];
+    const savedPieces = [];
+    const filesToDeploy = [];
 
     const sgPublicHtml =
       process.env.SG_PUBLIC_HTML || "/home/customer/www/claycraze.com/public_html";
 
     if (pieces) {
-      for (const p of pieces) {
-        savedPieces.push(await upsertPiece(p));
+      for (const submittedPiece of pieces) {
+        savedPieces.push(normalizeCanonicalPiece(submittedPiece));
       }
     } else {
       const parsed = parsePieceId(piece.id);
@@ -2174,7 +2371,6 @@ app.post("/api/save-curation", async (req, res) => {
 
       if (piece.top_image_data) {
         saveDataUrlImage(piece.top_image_data, topFullPath);
-
         fs.copyFileSync(topFullPath, topThumbPath);
 
         piece.image_path = `/images/bonsai/thumbs/${id}_top_thumb.jpg`;
@@ -2205,94 +2401,34 @@ app.post("/api/save-curation", async (req, res) => {
 
       delete piece.top_image_data;
       delete piece.bottom_image_data;
-      savedPieces.push(await upsertPiece(piece));
+
+      savedPieces.push(normalizeCanonicalPiece(piece));
     }
 
-    const exported = await exportPiecesJsonPromise();
+    // Images are independent artifacts. Publish them first, then commit the
+    // pottery records through the one canonical SiteGround transaction.
+    await deployToSiteGround(filesToDeploy);
 
-    const afterRegistration = await getRegistrationState();
-
-    if (!afterRegistration.registered) {
-      throw new Error(
-        `POST-SAVE REGISTRATION FAILURE: DB has ${afterRegistration.render_public_db_count}, but pieces.json has ${afterRegistration.local_pieces_json_count}. Save not confirmed.`
-      );
-    }
-
-    try {
-      // Publish images and other non-ledger artifacts first.
-      await deployToSiteGround(filesToDeploy);
-
-      // The canonical pottery ledger receives its own SiteGround preflight lock.
-      // Normal saves may add or update records, but may never remove an existing
-      // SiteGround record or replace the canonical file with a smaller export.
-      await deployCanonicalPiecesJson(exported.outPath, {
-        reason: "curation save",
-      });
-    } catch (deployErr) {
-      console.error("SITEGROUND DEPLOY FAILURE:", deployErr);
-
-      return res.status(500).json({
-        ok: false,
-        archived: false,
-        temporary_render_save_only: true,
-        error:
-          "TEMPORARY SAVE ONLY: Render updated, but SiteGround publish failed. This record is NOT canonical truth yet.",
-        deploy_error: deployErr.message || "",
-        stdout: deployErr.stdout || "",
-        stderr: deployErr.stderr || "",
-        saved_count: savedPieces.length,
-        exported_count: exported.count,
-        registration: afterRegistration,
-        pieces: savedPieces,
-      });
-    }
-
-    let sgPieces;
-
-    try {
-      sgPieces = await fetchPiecesJsonViaScp();
-    } catch (verifyErr) {
-      throw new Error(
-        `SITEGROUND VERIFY FAILED: Could not fetch canonical pieces.json after publish. ${verifyErr.message}`
-      );
-    }
-
-    for (const saved of savedPieces) {
-      const found = sgPieces.find((p) => p.id === saved.id);
-
-      if (!found) {
-        throw new Error(
-          `SITEGROUND VERIFY FAILED: ${saved.id} was saved in Render but not found in SiteGround pieces.json.`
-        );
-      }
-    }
-
-    let renderRefresh;
-
-    try {
-      renderRefresh = await refreshRenderFromSiteGround();
-    } catch (refreshErr) {
-      console.error("RENDER AUTO-REFRESH FAILED:", refreshErr);
-
-      renderRefresh = {
-        ok: false,
-        skipped: false,
-        error: refreshErr.message || "Render refresh failed.",
-      };
-    }
+    const canonicalPublish = await mergeAndPublishCanonicalPieces(savedPieces, {
+      reason: "curation save",
+    });
 
     res.json({
       ok: true,
       archived: true,
       deployed_to_siteground: true,
-      render_refreshed: renderRefresh.ok,
-      message: renderRefresh.ok
-        ? "Truth confirmed: DB saved, SiteGround updated and verified, and Render refreshed automatically."
-        : "Truth confirmed on SiteGround, but Render did not refresh automatically. Chris may need the manual restore link once.",
+      render_refreshed: true,
+      message:
+        "Truth confirmed: SiteGround canonical pottery was merged by ID, atomically published, verified, and copied back into Render.",
       saved_count: savedPieces.length,
-      exported_count: exported.count,
-      registration: afterRegistration,
-      render_refresh: renderRefresh,
+      canonical_count: canonicalPublish.canonical_count_after,
+      canonical_publish: {
+        reason: canonicalPublish.reason,
+        canonical_count_before: canonicalPublish.canonical_count_before,
+        canonical_count_after: canonicalPublish.canonical_count_after,
+        updated_ids: canonicalPublish.updated_ids,
+        verified_count: canonicalPublish.verified_count,
+      },
       pieces: savedPieces,
     });
   } catch (err) {
@@ -2302,6 +2438,8 @@ app.post("/api/save-curation", async (req, res) => {
       ok: false,
       archived: false,
       error: err.message || "Could not save curatorial changes.",
+      stdout: err.stdout || "",
+      stderr: err.stderr || "",
     });
   }
 });
