@@ -318,18 +318,33 @@
       90% { transform: scale(1.12); }
     }
 
-    .observatory {
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
       padding-top: 24px;
     }
 
-    .observatory-heading {
+    .evidence-panel {
+      display: flex;
+      min-height: 284px;
+      flex-direction: column;
+      padding: 22px;
+      border: 1px solid var(--gene-line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.012);
+    }
+
+    .evidence-heading {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--gene-line);
     }
 
-    .observatory-icon {
+    .evidence-icon {
       width: 34px;
       height: 34px;
       flex: 0 0 34px;
@@ -337,7 +352,7 @@
       filter: drop-shadow(0 0 7px rgba(154, 198, 78, 0.25));
     }
 
-    .observatory-title {
+    .evidence-title {
       margin: 0;
       color: var(--gene-cream);
       font-family: Georgia, "Times New Roman", serif;
@@ -346,25 +361,15 @@
       text-transform: uppercase;
     }
 
-    .observatory-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border-top: 1px solid var(--gene-line);
-      border-bottom: 1px solid var(--gene-line);
-    }
-
-    .observatory-note {
-      min-height: 150px;
-      padding: 20px 18px;
-    }
-
     .observatory-note + .observatory-note {
-      border-left: 1px solid var(--gene-line);
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--gene-line);
     }
 
     .observatory-label {
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       color: var(--gene-green);
       font-family: Georgia, "Times New Roman", serif;
       font-size: 0.78rem;
@@ -373,7 +378,8 @@
       text-transform: uppercase;
     }
 
-    .observatory-copy {
+    .observatory-copy,
+    .firing-record-copy {
       margin: 0;
       color: var(--gene-cream);
       font-family: Georgia, "Times New Roman", serif;
@@ -381,14 +387,12 @@
       line-height: 1.55;
     }
 
-    .observatory-copy.muted {
+    .firing-record-copy {
       color: var(--gene-muted);
     }
 
-    .kiln-graph-link-wrap {
-      display: flex;
-      justify-content: center;
-      padding-top: 22px;
+    .firing-record-spacer {
+      flex: 1;
     }
 
     .kiln-graph-button {
@@ -396,7 +400,9 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      min-height: 48px;
+      width: 100%;
+      min-height: 52px;
+      margin-top: 22px;
       padding: 12px 22px;
       border: 1px solid rgba(154, 198, 78, 0.62);
       border-radius: 10px;
@@ -417,9 +423,9 @@
     }
 
     .kiln-graph-icon {
-      width: 22px;
-      height: 22px;
-      flex: 0 0 22px;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
     }
 
 
@@ -502,17 +508,12 @@
         font-size: 3.1rem;
       }
 
-      .observatory-grid {
+      .evidence-grid {
         grid-template-columns: 1fr;
       }
 
-      .observatory-note {
+      .evidence-panel {
         min-height: 0;
-      }
-
-      .observatory-note + .observatory-note {
-        border-left: 0;
-        border-top: 1px solid var(--gene-line);
       }
 
   
@@ -690,16 +691,16 @@
           </div>
         </article>
 
-        <section class="observatory" aria-labelledby="observatoryTitle">
-          <div class="observatory-heading">
-            <svg class="observatory-icon" viewBox="0 0 64 64" aria-hidden="true">
-              <path d="M13 43 31 25m-8-8 9 9m-16 25h28m-19 0 8-17m11 17-8-17M31 25l12-12 8 8-12 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="47" cy="17" r="9" fill="none" stroke="currentColor" stroke-width="4"/>
-            </svg>
-            <h3 class="observatory-title" id="observatoryTitle">Observatory</h3>
-          </div>
+        <div class="evidence-grid">
+          <section class="evidence-panel" aria-labelledby="observatoryTitle">
+            <div class="evidence-heading">
+              <svg class="evidence-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M13 43 31 25m-8-8 9 9m-16 25h28m-19 0 8-17m11 17-8-17M31 25l12-12 8 8-12 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="47" cy="17" r="9" fill="none" stroke="currentColor" stroke-width="4"/>
+              </svg>
+              <h3 class="evidence-title" id="observatoryTitle">Observatory</h3>
+            </div>
 
-          <div class="observatory-grid">
             <article class="observatory-note">
               <span class="observatory-label">Observation</span>
               <p class="observatory-copy" id="observatoryObservation">
@@ -713,27 +714,39 @@
                 No interpretation has been returned yet.
               </p>
             </article>
+          </section>
 
-            <article class="observatory-note">
-              <span class="observatory-label">Material Limit</span>
-              <p class="observatory-copy muted" id="observatoryMaterialLimit">
-                The fired clay, glaze, cones, atmosphere, and ware remain the final material witnesses.
-              </p>
-            </article>
-          </div>
-        </section>
+          <section class="evidence-panel" aria-labelledby="firingRecordTitle">
+            <div class="evidence-heading">
+              <svg class="evidence-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M4 26V6m0 20h24M8 22l6-7 5 4 8-11" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8" cy="22" r="1.8" fill="currentColor"/>
+                <circle cx="14" cy="15" r="1.8" fill="currentColor"/>
+                <circle cx="19" cy="19" r="1.8" fill="currentColor"/>
+                <circle cx="27" cy="8" r="1.8" fill="currentColor"/>
+              </svg>
+              <h3 class="evidence-title" id="firingRecordTitle">Firing Record</h3>
+            </div>
 
-        <div class="kiln-graph-link-wrap">
-          <a class="kiln-graph-button" href="/kiln-watch-graph.html">
-            <svg class="kiln-graph-icon" viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M4 26V6m0 20h24M8 22l6-7 5 4 8-11" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="8" cy="22" r="1.8" fill="currentColor"/>
-              <circle cx="14" cy="15" r="1.8" fill="currentColor"/>
-              <circle cx="19" cy="19" r="1.8" fill="currentColor"/>
-              <circle cx="27" cy="8" r="1.8" fill="currentColor"/>
-            </svg>
-            View Firing Record
-          </a>
+            <p class="firing-record-copy">
+              Follow temperature, rate of rise, probe behavior, and the changing shape of the firing through time.
+            </p>
+
+            <div class="firing-record-spacer"></div>
+
+            <a class="kiln-graph-button" href="/kiln-watch-graph.html">
+              <svg class="kiln-graph-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M4 26V6m0 20h24M8 22l6-7 5 4 8-11" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8" cy="22" r="1.8" fill="currentColor"/>
+                <circle cx="14" cy="15" r="1.8" fill="currentColor"/>
+                <circle cx="19" cy="19" r="1.8" fill="currentColor"/>
+                <circle cx="27" cy="8" r="1.8" fill="currentColor"/>
+              </svg>
+              View Firing Record
+            </a>
+          </section>
+        </div>
+
         </div>
 
         <footer class="gene-footer">
@@ -1031,9 +1044,6 @@
           ? interpretations.join(" ")
           : "No bounded interpretation has been returned.";
 
-        $("observatoryMaterialLimit").textContent =
-          data?.material_limit ||
-          "The fired clay, glaze, cones, atmosphere, and ware remain the final material witnesses.";
       }
 
       function updateSummary(results, generatedUnix) {
