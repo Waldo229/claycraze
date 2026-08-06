@@ -318,12 +318,27 @@
       90% { transform: scale(1.12); }
     }
 
-    .field-inputs {
-      padding-top: 20px;
+    .observatory {
+      padding-top: 24px;
     }
 
-    .field-title {
-      margin: 0 0 14px;
+    .observatory-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .observatory-icon {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      color: var(--gene-green);
+      filter: drop-shadow(0 0 7px rgba(154, 198, 78, 0.25));
+    }
+
+    .observatory-title {
+      margin: 0;
       color: var(--gene-cream);
       font-family: Georgia, "Times New Roman", serif;
       font-size: 1.05rem;
@@ -331,70 +346,44 @@
       text-transform: uppercase;
     }
 
-    .input-grid {
+    .observatory-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       border-top: 1px solid var(--gene-line);
       border-bottom: 1px solid var(--gene-line);
     }
 
-    .input-state {
-      min-height: 112px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      padding: 18px 12px;
+    .observatory-note {
+      min-height: 150px;
+      padding: 20px 18px;
     }
 
-    .input-state + .input-state {
+    .observatory-note + .observatory-note {
       border-left: 1px solid var(--gene-line);
     }
 
-    .input-icon {
-      font-size: 2.25rem;
-      line-height: 1;
-    }
-
-    .input-reading {
-      display: flex;
-      min-width: 92px;
-      flex-direction: column;
-      gap: 5px;
-      text-align: left;
-    }
-
-    .input-reading strong {
-      color: var(--gene-cream);
+    .observatory-label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--gene-green);
       font-family: Georgia, "Times New Roman", serif;
       font-size: 0.78rem;
       font-weight: 500;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .input-reading span {
-      color: var(--gene-green);
+    .observatory-copy {
+      margin: 0;
+      color: var(--gene-cream);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 1rem;
+      font-size: 0.98rem;
+      line-height: 1.55;
     }
 
-    .state-heart {
-      min-width: 36px;
-      color: var(--gene-green);
-      font-size: 2rem;
-      line-height: 1;
-      text-align: center;
-      filter: drop-shadow(0 0 7px rgba(154, 198, 78, 0.5));
-      transition: 180ms ease;
+    .observatory-copy.muted {
+      color: var(--gene-muted);
     }
-
-    .state-heart.off {
-      color: var(--gene-off);
-      filter: none;
-      opacity: 0.75;
-    }
-
 
     .kiln-graph-link-wrap {
       display: flex;
@@ -406,6 +395,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
       min-height: 48px;
       padding: 12px 22px;
       border: 1px solid rgba(154, 198, 78, 0.62);
@@ -426,35 +416,12 @@
       outline: none;
     }
 
-    .kiln-graph-link-wrap {
-      display: flex;
-      justify-content: center;
-      padding-top: 22px;
+    .kiln-graph-icon {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
     }
 
-    .kiln-graph-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-      padding: 12px 22px;
-      border: 1px solid rgba(154, 198, 78, 0.62);
-      border-radius: 10px;
-      color: var(--gene-green);
-      background: rgba(154, 198, 78, 0.045);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.98rem;
-      letter-spacing: 0.08em;
-      text-decoration: none;
-      text-transform: uppercase;
-    }
-
-    .kiln-graph-button:hover,
-    .kiln-graph-button:focus-visible {
-      border-color: rgba(154, 198, 78, 0.95);
-      background: rgba(154, 198, 78, 0.11);
-      outline: none;
-    }
 
     .gene-footer {
       display: flex;
@@ -535,45 +502,20 @@
         font-size: 3.1rem;
       }
 
-      .input-grid {
+      .observatory-grid {
         grid-template-columns: 1fr;
       }
 
-      .input-state + .input-state {
+      .observatory-note {
+        min-height: 0;
+      }
+
+      .observatory-note + .observatory-note {
         border-left: 0;
         border-top: 1px solid var(--gene-line);
       }
 
   
-    .kiln-graph-link-wrap {
-      display: flex;
-      justify-content: center;
-      padding-top: 22px;
-    }
-
-    .kiln-graph-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-      padding: 12px 22px;
-      border: 1px solid rgba(154, 198, 78, 0.62);
-      border-radius: 10px;
-      color: var(--gene-green);
-      background: rgba(154, 198, 78, 0.045);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.98rem;
-      letter-spacing: 0.08em;
-      text-decoration: none;
-      text-transform: uppercase;
-    }
-
-    .kiln-graph-button:hover,
-    .kiln-graph-button:focus-visible {
-      border-color: rgba(154, 198, 78, 0.95);
-      background: rgba(154, 198, 78, 0.11);
-      outline: none;
-    }
     .gene-footer {
         flex-direction: column;
       }
@@ -748,43 +690,49 @@
           </div>
         </article>
 
-        <section class="field-inputs" aria-label="Studio field inputs">
-          <h3 class="field-title">Studio Field Inputs</h3>
+        <section class="observatory" aria-labelledby="observatoryTitle">
+          <div class="observatory-heading">
+            <svg class="observatory-icon" viewBox="0 0 64 64" aria-hidden="true">
+              <path d="M13 43 31 25m-8-8 9 9m-16 25h28m-19 0 8-17m11 17-8-17M31 25l12-12 8 8-12 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="47" cy="17" r="9" fill="none" stroke="currentColor" stroke-width="4"/>
+            </svg>
+            <h3 class="observatory-title" id="observatoryTitle">Observatory</h3>
+          </div>
 
-          <div class="input-grid">
-            <div class="input-state" title="Microphone">
-              <span class="input-icon" aria-hidden="true">&#127897;&#65039;</span>
-              <div class="input-reading">
-                <strong>Microphone</strong>
-                <span id="micValue">--</span>
-              </div>
-              <span class="state-heart off" id="micHeart" aria-label="Microphone quiet">&#9825;</span>
-            </div>
+          <div class="observatory-grid">
+            <article class="observatory-note">
+              <span class="observatory-label">Observation</span>
+              <p class="observatory-copy" id="observatoryObservation">
+                Awaiting the common record.
+              </p>
+            </article>
 
-            <div class="input-state" title="Motion">
-              <span class="input-icon" aria-hidden="true">&#127939;</span>
-              <div class="input-reading">
-                <strong>Motion</strong>
-                <span id="motionValue">--</span>
-              </div>
-              <span class="state-heart off" id="motionHeart" aria-label="Motion quiet">&#9825;</span>
-            </div>
+            <article class="observatory-note">
+              <span class="observatory-label">Interpretation</span>
+              <p class="observatory-copy" id="observatoryInterpretation">
+                No interpretation has been returned yet.
+              </p>
+            </article>
 
-            <div class="input-state" title="Heat">
-              <span class="input-icon" aria-hidden="true">&#9832;&#65039;</span>
-              <div class="input-reading">
-                <strong>Heat</strong>
-                <span id="heatValue">-- &deg;F</span>
-              </div>
-              <span class="state-heart off" id="heatHeart" aria-label="Heat field inactive">&#9825;</span>
-            </div>
+            <article class="observatory-note">
+              <span class="observatory-label">Material Limit</span>
+              <p class="observatory-copy muted" id="observatoryMaterialLimit">
+                The fired clay, glaze, cones, atmosphere, and ware remain the final material witnesses.
+              </p>
+            </article>
           </div>
         </section>
 
-
         <div class="kiln-graph-link-wrap">
           <a class="kiln-graph-button" href="/kiln-watch-graph.html">
-            Open Firing Graph
+            <svg class="kiln-graph-icon" viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M4 26V6m0 20h24M8 22l6-7 5 4 8-11" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="8" cy="22" r="1.8" fill="currentColor"/>
+              <circle cx="14" cy="15" r="1.8" fill="currentColor"/>
+              <circle cx="19" cy="19" r="1.8" fill="currentColor"/>
+              <circle cx="27" cy="8" r="1.8" fill="currentColor"/>
+            </svg>
+            View Firing Record
           </a>
         </div>
 
@@ -825,13 +773,11 @@
 
       const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
       const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
+      const OBSERVATORY_STATE_URL = "https://claycraze.com/gene/observatory_latest.json";
       const REFRESH_MS = 10000;
       const GENE_STALE_AFTER_SECONDS = 120;
 
       // These are display thresholds, not safety thresholds.
-      const MIC_ACTIVE_AT = 0.002;
-      const MOTION_ACTIVE_AT = 0.003;
-      const HEAT_ACTIVE_AT = 200;
 
       const $ = (id) => document.getElementById(id);
 
@@ -848,12 +794,6 @@
         const value = clamp(normalized, 0, 1);
         const degrees = -68 + (136 * value);
         element.style.setProperty("--needle-angle", `${degrees}deg`);
-      }
-
-      function setHeart(element, active, activeLabel, inactiveLabel) {
-        element.textContent = active ? "\u2665" : "\u2661";
-        element.classList.toggle("off", !active);
-        element.setAttribute("aria-label", active ? activeLabel : inactiveLabel);
       }
 
       function arousalLanguage(arousal) {
@@ -1013,9 +953,6 @@
         const mic = asFiniteNumber(data.mic);
         const motion = asFiniteNumber(data.motion);
 
-        $("micValue").textContent = mic === null ? "--" : mic.toFixed(4);
-        $("motionValue").textContent = motion === null ? "--" : motion.toFixed(4);
-
         if (arousal !== null) {
           $("arousal").textContent = arousal.toFixed(2);
           const [state, note] = arousalLanguage(arousal);
@@ -1031,23 +968,6 @@
           const duration = bpm > 0 ? clamp(60 / bpm, 0.48, 3.0) : 2.0;
           $("mainHeart").style.setProperty("--beat-duration", `${duration}s`);
         }
-
-        const micActive = mic !== null && mic >= MIC_ACTIVE_AT;
-        const motionActive = motion !== null && motion >= MOTION_ACTIVE_AT;
-
-        setHeart(
-          $("micHeart"),
-          micActive,
-          "Microphone active",
-          "Microphone quiet"
-        );
-
-        setHeart(
-          $("motionHeart"),
-          motionActive,
-          "Motion active",
-          "Motion quiet"
-        );
 
         $("geneTime").textContent = formatDate(asFiniteNumber(data.generated_unix));
 
@@ -1070,7 +990,6 @@
 
         if (temperature !== null) {
           $("temperature").textContent = Math.round(temperature);
-          $("heatValue").textContent = `${Math.round(temperature)} \u00B0F`;
           const publishedState = data?.gene_visual?.state;
 
           const [state, note] = publishedState === "firing"
@@ -1090,15 +1009,31 @@
             (temperature - 60) / (2400 - 60)
           );
 
-          setHeart(
-            $("heatHeart"),
-            temperature >= HEAT_ACTIVE_AT,
-            "Heat field active",
-            "Heat field inactive"
-          );
         }
 
         return { heatKnown: temperature !== null };
+      }
+
+      function renderObservatory(data) {
+        const observations = Array.isArray(data?.observations)
+          ? data.observations.filter(Boolean)
+          : [];
+
+        const interpretations = Array.isArray(data?.interpretations)
+          ? data.interpretations.filter(Boolean)
+          : [];
+
+        $("observatoryObservation").textContent = observations.length
+          ? observations.join(" ")
+          : "No current observation has been returned.";
+
+        $("observatoryInterpretation").textContent = interpretations.length
+          ? interpretations.join(" ")
+          : "No bounded interpretation has been returned.";
+
+        $("observatoryMaterialLimit").textContent =
+          data?.material_limit ||
+          "The fired clay, glaze, cones, atmosphere, and ware remain the final material witnesses.";
       }
 
       function updateSummary(results, generatedUnix) {
@@ -1156,9 +1091,10 @@
       async function refresh() {
         const warning = $("loadWarning");
 
-        const [geneResult, kilnResult] = await Promise.allSettled([
+        const [geneResult, kilnResult, observatoryResult] = await Promise.allSettled([
           getJson(GENE_STATE_URL),
-          getJson(KILN_STATE_URL)
+          getJson(KILN_STATE_URL),
+          getJson(OBSERVATORY_STATE_URL)
         ]);
 
         let geneStatus = { micKnown: false, motionKnown: false };
@@ -1170,6 +1106,10 @@
 
         if (kilnResult.status === "fulfilled") {
           kilnStatus = renderKiln(kilnResult.value);
+        }
+
+        if (observatoryResult.status === "fulfilled") {
+          renderObservatory(observatoryResult.value);
         }
 
         const generatedUnix =
@@ -1184,14 +1124,16 @@
 
         const failed =
           geneResult.status === "rejected" ||
-          kilnResult.status === "rejected";
+          kilnResult.status === "rejected" ||
+          observatoryResult.status === "rejected";
 
         warning.classList.toggle("show", failed);
 
         if (failed) {
           console.warn("GENE live-card refresh:", {
             gene: geneResult,
-            kiln: kilnResult
+            kiln: kilnResult,
+            observatory: observatoryResult
           });
         }
       }
