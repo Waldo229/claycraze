@@ -182,6 +182,16 @@
       box-shadow: none;
     }
 
+    .gene-motto {
+      margin: 18px 0 0;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1rem;
+      font-style: italic;
+      line-height: 1.4;
+      text-align: center;
+    }
+
     .gene-right {
       display: flex;
       flex-direction: column;
@@ -431,23 +441,13 @@
 
     .gene-footer {
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
+      justify-content: center;
       margin-top: auto;
       padding-top: 22px;
-      color: var(--gene-muted);
+      color: var(--gene-green);
       font-family: Georgia, "Times New Roman", serif;
       font-style: italic;
-    }
-
-    .gene-footer strong {
-      color: var(--gene-cream);
-      font-weight: 500;
-    }
-
-    .gene-footer .transmit {
-      color: var(--gene-green);
-      text-align: right;
+      text-align: center;
     }
 
     .load-warning {
@@ -623,6 +623,8 @@
           <span id="sensorSummary">All sensors reporting</span>
         </div>
 
+        <p class="gene-motto">Witness. Remember. Transmit.</p>
+
         <div class="load-warning" id="loadWarning">
           Live data has not arrived yet. The card will retry automatically.
         </div>
@@ -749,10 +751,6 @@
 
         </div>
 
-        <footer class="gene-footer">
-          <span><strong>GENE</strong> &mdash; Generally Expresses Nothing Extraneous.</span>
-          <span class="transmit">Witness. Remember. Transmit.</span>
-        </footer>
       </div>
     </section>
 
@@ -1158,3 +1156,4 @@
 
 
 
+clea
