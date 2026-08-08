@@ -54,6 +54,36 @@ const SURVEILLANCE_HISTORY_LIMIT = 50;
 const SURVEILLANCE_HISTORY = [];
 let SURVEILLANCE_TIMER = null;
 
+// ============================================================
+// POTTERY FREEZE / TRUST STATE
+// Canonical pottery may grow or change in place, but it may not
+// unexpectedly lose records or IDs. A detected loss freezes all
+// pottery writes until a human explicitly accepts a recovered state.
+// Protection metadata and evidence live privately on SiteGround so
+// they survive Render restarts.
+// ============================================================
+
+const POTTERY_PROTECTION_REMOTE_DIR =
+  process.env.POTTERY_PROTECTION_REMOTE_DIR ||
+  "/home/customer/www/claycraze.com/backups/pottery";
+
+const POTTERY_FREEZE_REMOTE_PATH =
+  `${POTTERY_PROTECTION_REMOTE_DIR}/POTTERY_FREEZE.json`;
+
+const POTTERY_TRUST_REMOTE_PATH =
+  `${POTTERY_PROTECTION_REMOTE_DIR}/POTTERY_TRUST.json`;
+
+let POTTERY_FREEZE_STATE = {
+  frozen: false,
+  reason: "",
+  detected_at: null,
+  trigger: "",
+  evidence_dir: "",
+  missing_ids: [],
+};
+
+let POTTERY_TRUST_STATE = null;
+
 for (const dir of [
   PUBLIC_DIR,
   ADMIN_DIR,
@@ -138,7 +168,7 @@ app.use(express.json({ limit: "80mb" }));
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Pottery-Freeze-Token");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
@@ -396,7 +426,408 @@ function writeSshKey(keyTextOrPath) {
   return keyPath;
 }
 
-async function deployToSiteGround(filesToDeploy) {
+function getSiteGroundSshContext() {
+  const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY } = getSgConfig();
+  const keyPath = writeSshKey(SG_CI_KEY);
+  const remote = `${SG_USER}@${SG_HOST}`;
+
+  const sshArgs = [
+    "-p",
+    SG_PORT,
+    "-i",
+    keyPath,
+    "-o",
+    "StrictHostKeyChecking=no",
+  ];
+
+  return {
+    SG_HOST,
+    SG_PORT,
+    SG_USER,
+    keyPath,
+    remote,
+    sshArgs,
+  };
+}
+
+async function readPrivateJsonFromSiteGround(remotePath) {
+  const { remote, sshArgs } = getSiteGroundSshContext();
+
+  const { stdout } = await runCommand("ssh", [
+    ...sshArgs,
+    remote,
+    `if [ -f "${remotePath}" ]; then cat "${remotePath}"; fi`,
+  ]);
+
+  const raw = String(stdout || "").trim();
+
+  if (!raw) return null;
+
+  return JSON.parse(raw);
+}
+
+async function writePrivateJsonToSiteGround(remotePath, value) {
+  const { SG_PORT, keyPath, remote, sshArgs } = getSiteGroundSshContext();
+  const remoteDir = path.posix.dirname(remotePath);
+  const remoteTemp = `${remotePath}.tmp-${process.pid}-${Date.now()}`;
+  const localTemp = path.join(
+    os.tmpdir(),
+    `claycraze-private-${process.pid}-${Date.now()}-${Math.random()
+      .toString(16)
+      .slice(2)}.json`
+  );
+
+  fs.writeFileSync(localTemp, JSON.stringify(value, null, 2), "utf8");
+
+  try {
+    await runCommand("ssh", [
+      ...sshArgs,
+      remote,
+      `mkdir -p "${remoteDir}"`,
+    ]);
+
+    await runCommand("scp", [
+      "-P",
+      SG_PORT,
+      "-i",
+      keyPath,
+      "-o",
+      "StrictHostKeyChecking=no",
+      localTemp,
+      `${remote}:${remoteTemp}`,
+    ]);
+
+    await runCommand("ssh", [
+      ...sshArgs,
+      remote,
+      `mv "${remoteTemp}" "${remotePath}"`,
+    ]);
+  } finally {
+    try {
+      fs.unlinkSync(localTemp);
+    } catch (_) {
+      // Ignore temporary-file cleanup errors.
+    }
+  }
+}
+
+async function removePrivateSiteGroundFile(remotePath) {
+  const { remote, sshArgs } = getSiteGroundSshContext();
+
+  await runCommand("ssh", [
+    ...sshArgs,
+    remote,
+    `rm -f "${remotePath}"`,
+  ]);
+}
+
+function makeProtectionTimestamp() {
+  return new Date()
+    .toISOString()
+    .replace(/:/g, "-")
+    .replace(/\..+/, "");
+}
+
+function buildPotteryTrustManifest(pieces, source = "verified canonical truth") {
+  const ids = [...normalizePieceIdSet(pieces)].sort();
+
+  return {
+    version: 1,
+    count: Array.isArray(pieces) ? pieces.length : 0,
+    ids,
+    updated_at: new Date().toISOString(),
+    source,
+  };
+}
+
+async function loadPotteryFreezeStateFromSiteGround() {
+  const remoteState = await readPrivateJsonFromSiteGround(
+    POTTERY_FREEZE_REMOTE_PATH
+  );
+
+  if (remoteState && remoteState.frozen === true) {
+    POTTERY_FREEZE_STATE = {
+      frozen: true,
+      reason: cleanText(remoteState.reason),
+      detected_at: remoteState.detected_at || null,
+      trigger: cleanText(remoteState.trigger),
+      evidence_dir: cleanText(remoteState.evidence_dir),
+      missing_ids: Array.isArray(remoteState.missing_ids)
+        ? remoteState.missing_ids
+        : [],
+    };
+  } else {
+    POTTERY_FREEZE_STATE = {
+      frozen: false,
+      reason: "",
+      detected_at: null,
+      trigger: "",
+      evidence_dir: "",
+      missing_ids: [],
+    };
+  }
+
+  return POTTERY_FREEZE_STATE;
+}
+
+async function loadPotteryTrustStateFromSiteGround() {
+  const remoteState = await readPrivateJsonFromSiteGround(
+    POTTERY_TRUST_REMOTE_PATH
+  );
+
+  if (
+    remoteState &&
+    Number.isInteger(remoteState.count) &&
+    Array.isArray(remoteState.ids)
+  ) {
+    POTTERY_TRUST_STATE = remoteState;
+  } else {
+    POTTERY_TRUST_STATE = null;
+  }
+
+  return POTTERY_TRUST_STATE;
+}
+
+async function writePotteryTrustManifest(pieces, source) {
+  const manifest = buildPotteryTrustManifest(pieces, source);
+
+  await writePrivateJsonToSiteGround(
+    POTTERY_TRUST_REMOTE_PATH,
+    manifest
+  );
+
+  POTTERY_TRUST_STATE = manifest;
+  return manifest;
+}
+
+async function getPotteryFreezeState(options = {}) {
+  const refresh = options.refresh !== false;
+
+  if (refresh) {
+    try {
+      await loadPotteryFreezeStateFromSiteGround();
+    } catch (err) {
+      console.error("POTTERY FREEZE STATE READ FAILED:", err.message);
+      // Fail closed if we cannot confirm that the remote freeze marker is clear.
+      POTTERY_FREEZE_STATE = {
+        frozen: true,
+        reason:
+          "Protection state could not be read from SiteGround. Pottery writes are frozen until coherence is restored.",
+        detected_at: new Date().toISOString(),
+        trigger: "freeze-state-read-failure",
+        evidence_dir: "",
+        missing_ids: [],
+      };
+    }
+  }
+
+  return { ...POTTERY_FREEZE_STATE };
+}
+
+async function assertPotteryWritable(reason = "pottery write") {
+  const freeze = await getPotteryFreezeState({ refresh: true });
+
+  if (freeze.frozen) {
+    const err = new Error(
+      `POTTERY FREEZE: ${reason} blocked. ${freeze.reason || "Canonical pottery truth is frozen pending human review."}`
+    );
+    err.code = "POTTERY_FREEZE";
+    err.freeze = freeze;
+    throw err;
+  }
+
+  return true;
+}
+
+async function requirePotteryWritable(req, res, next) {
+  try {
+    await assertPotteryWritable(`${req.method} ${req.originalUrl || req.url}`);
+    next();
+  } catch (err) {
+    res.status(423).json({
+      ok: false,
+      frozen: true,
+      error: err.message,
+      pottery_freeze: err.freeze || POTTERY_FREEZE_STATE,
+    });
+  }
+}
+
+async function freezePottery(options = {}) {
+  const existing = await getPotteryFreezeState({ refresh: true });
+
+  if (existing.frozen) {
+    return existing;
+  }
+
+  const detectedAt = new Date().toISOString();
+  const stamp = makeProtectionTimestamp();
+  const evidenceDir =
+    `${POTTERY_PROTECTION_REMOTE_DIR}/freeze-events/${stamp}`;
+
+  const siteGroundPieces = Array.isArray(options.siteGroundPieces)
+    ? options.siteGroundPieces
+    : [];
+  const renderPieces = Array.isArray(options.renderPieces)
+    ? options.renderPieces
+    : [];
+  const localPieces =
+    options.local && options.local.ok && Array.isArray(options.local.pieces)
+      ? options.local.pieces
+      : null;
+
+  const missingIds = Array.isArray(options.missingIds)
+    ? [...new Set(options.missingIds)].sort()
+    : [];
+
+  const state = {
+    frozen: true,
+    version: 1,
+    reason:
+      cleanText(options.reason) ||
+      "SiteGround canonical pottery unexpectedly lost records or IDs.",
+    detected_at: detectedAt,
+    trigger: cleanText(options.trigger) || "surveillance",
+    evidence_dir: evidenceDir,
+    missing_ids: missingIds,
+    siteground_count: siteGroundPieces.length,
+    render_count: renderPieces.length,
+    local_count: localPieces ? localPieces.length : null,
+    trusted_count:
+      POTTERY_TRUST_STATE && Number.isInteger(POTTERY_TRUST_STATE.count)
+        ? POTTERY_TRUST_STATE.count
+        : null,
+  };
+
+  POTTERY_FREEZE_STATE = {
+    frozen: true,
+    reason: state.reason,
+    detected_at: state.detected_at,
+    trigger: state.trigger,
+    evidence_dir: state.evidence_dir,
+    missing_ids: state.missing_ids,
+  };
+
+  const evidenceWrites = [
+    writePrivateJsonToSiteGround(
+      `${evidenceDir}/siteground-pieces.json`,
+      siteGroundPieces
+    ),
+    writePrivateJsonToSiteGround(
+      `${evidenceDir}/render-db-pieces.json`,
+      renderPieces
+    ),
+    writePrivateJsonToSiteGround(
+      `${evidenceDir}/freeze.json`,
+      state
+    ),
+  ];
+
+  if (localPieces) {
+    evidenceWrites.push(
+      writePrivateJsonToSiteGround(
+        `${evidenceDir}/local-pieces.json`,
+        localPieces
+      )
+    );
+  }
+
+  const evidenceResults = await Promise.allSettled(evidenceWrites);
+  const evidenceErrors = evidenceResults
+    .filter((result) => result.status === "rejected")
+    .map((result) => result.reason?.message || String(result.reason));
+
+  if (evidenceErrors.length > 0) {
+    state.evidence_errors = evidenceErrors;
+    console.error(
+      "POTTERY FREEZE EVIDENCE WRITE ERROR:",
+      evidenceErrors.join(" | ")
+    );
+  }
+
+  await writePrivateJsonToSiteGround(
+    POTTERY_FREEZE_REMOTE_PATH,
+    state
+  );
+
+  console.error("POTTERY FREEZE ENGAGED:", JSON.stringify(state));
+
+  return { ...POTTERY_FREEZE_STATE };
+}
+
+async function initializePotteryProtectionState() {
+  await loadPotteryFreezeStateFromSiteGround();
+
+  let bootstrapped = false;
+
+  try {
+    await loadPotteryTrustStateFromSiteGround();
+  } catch (err) {
+    console.error("POTTERY TRUST STATE READ FAILED:", err.message);
+    POTTERY_TRUST_STATE = null;
+  }
+
+  if (POTTERY_FREEZE_STATE.frozen) {
+    console.error(
+      "POTTERY FREEZE ACTIVE AT STARTUP:",
+      JSON.stringify(POTTERY_FREEZE_STATE)
+    );
+    return {
+      freeze: { ...POTTERY_FREEZE_STATE },
+      trust: POTTERY_TRUST_STATE,
+      bootstrapped,
+    };
+  }
+
+  if (!POTTERY_TRUST_STATE) {
+    const currentPieces = await fetchPiecesJsonViaScp();
+    await writePotteryTrustManifest(
+      currentPieces,
+      "initial protection bootstrap from current SiteGround canonical truth"
+    );
+
+    bootstrapped = true;
+
+    console.log(
+      `POTTERY TRUST BOOTSTRAP: ${currentPieces.length} canonical record(s) registered.`
+    );
+  }
+
+  return {
+    freeze: { ...POTTERY_FREEZE_STATE },
+    trust: POTTERY_TRUST_STATE,
+    bootstrapped,
+  };
+}
+
+function requirePotteryFreezeAdminAuth(req, res, next) {
+  const expected = String(
+    process.env.POTTERY_FREEZE_ADMIN_TOKEN || ""
+  );
+
+  if (!expected) {
+    return res.status(503).json({
+      ok: false,
+      error:
+        "POTTERY_FREEZE_ADMIN_TOKEN is not configured. Freeze clearance is unavailable.",
+    });
+  }
+
+  const supplied =
+    String(req.get("X-Pottery-Freeze-Token") || "") ||
+    String((req.body && req.body.token) || "");
+
+  if (!secureStringEqual(supplied, expected)) {
+    return res.status(403).json({
+      ok: false,
+      error: "Invalid pottery freeze administration token.",
+    });
+  }
+
+  next();
+}
+
+async function deployToSiteGround(filesToDeploy, options = {}) {
   const { SG_HOST, SG_PORT, SG_USER, SG_CI_KEY, SG_PUBLIC_HTML } =
     getSgConfig();
 
@@ -418,9 +849,28 @@ async function deployToSiteGround(filesToDeploy) {
    `mkdir -p ${SG_PUBLIC_HTML}/images/full ${SG_PUBLIC_HTML}/images/thumbs ${SG_PUBLIC_HTML}/images/bonsai/full ${SG_PUBLIC_HTML}/images/bonsai/thumbs ${SG_PUBLIC_HTML}/images/trees ${SG_PUBLIC_HTML}/data`
   ]);
 
+  const canonicalPiecesPath = `${SG_PUBLIC_HTML}/data/pieces.json`;
+  const allowCanonicalPiecesWrite =
+    options.allowCanonicalPiecesWrite === true;
+
   for (const item of filesToDeploy) {
     if (!item || !item.localPath || !item.remotePath) continue;
     if (!fs.existsSync(item.localPath)) continue;
+
+    if (
+      path.posix.normalize(item.remotePath) ===
+        path.posix.normalize(canonicalPiecesPath)
+    ) {
+      if (!allowCanonicalPiecesWrite) {
+        throw new Error(
+          "CANONICAL POTTERY CHOKEPOINT: deployToSiteGround may not write data/pieces.json directly. Use the canonical pottery transaction."
+        );
+      }
+
+      await assertPotteryWritable(
+        cleanText(options.reason) || "direct canonical pottery deploy"
+      );
+    }
 
     const remoteDir = path.posix.dirname(item.remotePath);
 
@@ -508,6 +958,8 @@ async function assertCanonicalPiecesPublishSafe(localPiecesPath, options = {}) {
   const allowCanonicalShrink = options.allowCanonicalShrink === true;
   const reason = cleanText(options.reason) || "unspecified pottery publish";
 
+  await assertPotteryWritable(reason);
+
   const proposedPieces = readPiecesJsonFile(localPiecesPath);
   const canonicalPieces = await fetchPiecesJsonViaScp();
 
@@ -551,12 +1003,18 @@ async function deployCanonicalPiecesJson(localPiecesPath, options = {}) {
 
   const safety = await assertCanonicalPiecesPublishSafe(localPiecesPath, options);
 
-  await deployToSiteGround([
+  await deployToSiteGround(
+    [
+      {
+        localPath: localPiecesPath,
+        remotePath: `${sgPublicHtml}/data/pieces.json`,
+      },
+    ],
     {
-      localPath: localPiecesPath,
-      remotePath: `${sgPublicHtml}/data/pieces.json`,
-    },
-  ]);
+      allowCanonicalPiecesWrite: true,
+      reason: safety.reason,
+    }
+  );
 
   const confirmedPieces = await fetchPiecesJsonViaScp();
   const proposedPieces = readPiecesJsonFile(localPiecesPath);
@@ -665,6 +1123,8 @@ async function performCanonicalPiecesMerge(updates, options = {}) {
   const reason = cleanText(options.reason) || "pottery save";
   const updateList = Array.isArray(updates) ? updates : [updates];
 
+  await assertPotteryWritable(reason);
+
   if (updateList.length === 0) {
     throw new Error("Canonical merge requires at least one pottery record.");
   }
@@ -726,6 +1186,11 @@ async function performCanonicalPiecesMerge(updates, options = {}) {
       },
     ]);
 
+    // Re-check immediately before the atomic canonical replacement so a
+    // surveillance freeze that occurs while this transaction is staging
+    // cannot be raced by the final mv.
+    await assertPotteryWritable(`${reason} final canonical replace`);
+
     await runCommand("ssh", [
       "-p",
       SG_PORT,
@@ -768,6 +1233,27 @@ async function performCanonicalPiecesMerge(updates, options = {}) {
           `SITEGROUND VERIFY FAILED during ${reason}: ${update.id} was not confirmed.`
         );
       }
+    }
+
+    try {
+      await writePotteryTrustManifest(
+        confirmedPieces,
+        `verified canonical publish: ${reason}`
+      );
+    } catch (trustErr) {
+      await freezePottery({
+        reason:
+          `Canonical publish was verified during ${reason}, but the durable trust manifest could not be updated: ${trustErr.message}`,
+        trigger: "trust-manifest-update-failure",
+        siteGroundPieces: confirmedPieces,
+        renderPieces: await getPublicDbPieces(),
+        local: readLocalPiecesJsonSafely(),
+        missingIds: [],
+      });
+
+      throw new Error(
+        `POTTERY FREEZE: Canonical publish verified, but trust state could not be preserved. ${trustErr.message}`
+      );
     }
 
     const workingCopy = await syncWorkingCopiesFromCanonical(confirmedPieces);
@@ -1117,9 +1603,100 @@ async function runSiteGroundSurveillance(trigger = "manual") {
       local.ok ? local.pieces : []
     );
 
+    let trust = POTTERY_TRUST_STATE;
+
+    try {
+      trust = await loadPotteryTrustStateFromSiteGround();
+    } catch (trustErr) {
+      console.error("POTTERY TRUST STATE READ FAILED:", trustErr.message);
+    }
+
+    const siteGroundIds = normalizePieceIdSet(siteGroundPieces);
+    const trustedIds =
+      trust && Array.isArray(trust.ids)
+        ? new Set(
+            trust.ids
+              .map((id) => cleanText(id).toUpperCase())
+              .filter(Boolean)
+          )
+        : new Set();
+
+    const missingTrustedIds = [...trustedIds].filter(
+      (id) => !siteGroundIds.has(id)
+    );
+
+    const trustedShrink =
+      Boolean(trust) &&
+      (
+        siteGroundPieces.length < Number(trust.count || 0) ||
+        missingTrustedIds.length > 0
+      );
+
+    const workingCopyMissingIds = [
+      ...new Set([
+        ...sgVsRender.extra_in_right,
+        ...sgVsLocal.extra_in_right,
+      ]),
+    ].sort();
+
+    const workingCopyShowsLoss =
+      workingCopyMissingIds.length > 0 &&
+      (
+        siteGroundPieces.length < renderPieces.length ||
+        (local.ok && siteGroundPieces.length < local.pieces.length)
+      );
+
+    const missingIds = [
+      ...new Set([
+        ...missingTrustedIds,
+        ...workingCopyMissingIds,
+      ]),
+    ].sort();
+
+    let actionTaken = "NONE";
+    let freezeState = await getPotteryFreezeState({ refresh: true });
+
+    if (!freezeState.frozen && (trustedShrink || workingCopyShowsLoss)) {
+      const reasons = [];
+
+      if (trustedShrink) {
+        reasons.push(
+          `trusted canonical state was ${trust.count} record(s), current SiteGround has ${siteGroundPieces.length}`
+        );
+      }
+
+      if (missingTrustedIds.length > 0) {
+        reasons.push(
+          `trusted ID(s) disappeared: ${missingTrustedIds.slice(0, 12).join(", ")}`
+        );
+      }
+
+      if (workingCopyShowsLoss) {
+        reasons.push(
+          `working copy still contains ID(s) absent from SiteGround: ${workingCopyMissingIds
+            .slice(0, 12)
+            .join(", ")}`
+        );
+      }
+
+      freezeState = await freezePottery({
+        reason:
+          `Unexpected canonical pottery loss detected: ${reasons.join("; ")}.`,
+        trigger,
+        siteGroundPieces,
+        renderPieces,
+        local,
+        missingIds,
+      });
+
+      actionTaken = "POTTERY_FREEZE";
+    } else if (freezeState.frozen) {
+      actionTaken = "ALREADY_FROZEN";
+    }
+
     const result = {
       ok: true,
-      read_only: true,
+      canonical_read_only: true,
       trigger,
       time: startedAt,
       source: "SiteGround SCP canonical pieces.json",
@@ -1128,9 +1705,13 @@ async function runSiteGroundSurveillance(trigger = "manual") {
       local_json_count: local.ok ? local.pieces.length : null,
       local_json_ok: local.ok,
       local_json_error: local.error,
+      trusted_count:
+        trust && Number.isInteger(trust.count) ? trust.count : null,
+      missing_trusted_ids: missingTrustedIds,
       siteground_vs_render: sgVsRender,
       siteground_vs_local_json: sgVsLocal,
-      action_taken: "NONE",
+      pottery_freeze: freezeState,
+      action_taken: actionTaken,
     };
 
     SURVEILLANCE_HISTORY.unshift(result);
@@ -1142,10 +1723,11 @@ async function runSiteGroundSurveillance(trigger = "manual") {
   } catch (err) {
     const result = {
       ok: false,
-      read_only: true,
+      canonical_read_only: true,
       trigger,
       time: startedAt,
       error: err.message,
+      pottery_freeze: { ...POTTERY_FREEZE_STATE },
       action_taken: "NONE",
     };
 
@@ -1764,6 +2346,7 @@ async function replaceDbWithTrees(trees) {
 }
 
 async function restoreFromSiteGround() {
+  await assertPotteryWritable("restore Render working copies from SiteGround");
   const pieces = await fetchPiecesJsonViaScp();
   const localPath = path.join(DATA_DIR, "pieces.json");
 
@@ -1828,6 +2411,8 @@ app.get("/deploy-health", (req, res) => {
     tree_truth_url: SG_PUBLIC_TREES_URL,
     startup_restore: STARTUP_RESTORE,
     tree_startup_restore: TREE_STARTUP_RESTORE,
+    pottery_freeze: POTTERY_FREEZE_STATE,
+    pottery_trust: POTTERY_TRUST_STATE,
     time: new Date().toISOString(),
   });
 });
@@ -1937,6 +2522,80 @@ app.get("/debug/siteground-surveillance-history", (req, res) => {
   });
 });
 
+app.get("/debug/pottery-freeze", async (req, res) => {
+  try {
+    const freeze = await getPotteryFreezeState({ refresh: true });
+    const trust = await loadPotteryTrustStateFromSiteGround();
+
+    res.json({
+      ok: true,
+      pottery_freeze: freeze,
+      pottery_trust: trust,
+      freeze_marker: POTTERY_FREEZE_REMOTE_PATH,
+      trust_manifest: POTTERY_TRUST_REMOTE_PATH,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+      pottery_freeze: { ...POTTERY_FREEZE_STATE },
+    });
+  }
+});
+
+app.post(
+  "/admin/pottery-freeze/clear",
+  requirePotteryFreezeAdminAuth,
+  async (req, res) => {
+    try {
+      const confirmation = cleanText(req.body && req.body.confirm);
+
+      if (confirmation !== "UNFREEZE POTTERY") {
+        return res.status(400).json({
+          ok: false,
+          error:
+            'Explicit confirmation required. Send {"confirm":"UNFREEZE POTTERY"} only after human-approved recovery or acceptance of the current SiteGround canonical ledger.',
+        });
+      }
+
+      const currentPieces = await fetchPiecesJsonViaScp();
+
+      const trust = await writePotteryTrustManifest(
+        currentPieces,
+        "human-approved pottery freeze clearance"
+      );
+
+      await removePrivateSiteGroundFile(POTTERY_FREEZE_REMOTE_PATH);
+
+      POTTERY_FREEZE_STATE = {
+        frozen: false,
+        reason: "",
+        detected_at: null,
+        trigger: "",
+        evidence_dir: "",
+        missing_ids: [],
+      };
+
+      res.json({
+        ok: true,
+        frozen: false,
+        accepted_canonical_count: currentPieces.length,
+        pottery_trust: trust,
+        message:
+          "Pottery freeze cleared by explicit human approval. Current SiteGround canonical pottery is now the trusted baseline. No automatic repair was performed.",
+      });
+    } catch (err) {
+      console.error("POTTERY FREEZE CLEAR FAILED:", err);
+
+      res.status(500).json({
+        ok: false,
+        frozen: true,
+        error: err.message,
+      });
+    }
+  }
+);
+
 app.get("/debug/tree-registration", async (req, res) => {
   try {
     const registration = await getTreeRegistrationState();
@@ -1982,7 +2641,7 @@ function buildPieceId(shape, dateCode, pieceNumber) {
   return `${normalizedShape}-${dateCode}-${String(pieceNumber).padStart(3, "0")}`;
 }
 
-app.get("/api/next-piece-id", async (req, res) => {
+app.get("/api/next-piece-id", requirePotteryWritable, async (req, res) => {
   try {
     const registration = await getRegistrationState();
 
@@ -2025,7 +2684,7 @@ app.get("/api/next-piece-id", async (req, res) => {
   }
 });
 
-app.get("/api/generate-piece-id", async (req, res) => {
+app.get("/api/generate-piece-id", requirePotteryWritable, async (req, res) => {
   try {
     const registration = await getRegistrationState();
 
@@ -2055,7 +2714,7 @@ app.get("/api/generate-piece-id", async (req, res) => {
   }
 });
 
-app.get("/api/next-piece-number", async (req, res) => {
+app.get("/api/next-piece-number", requirePotteryWritable, async (req, res) => {
   try {
     const registration = await getRegistrationState();
 
@@ -2168,7 +2827,7 @@ app.get("/api/vendor-pots", async (req, res) => {
   }
 });
 
-app.patch("/api/vendor-pots/:id/status", async (req, res) => {
+app.patch("/api/vendor-pots/:id/status", requirePotteryWritable, async (req, res) => {
   try {
     const registration = await getRegistrationState();
 
@@ -2338,7 +2997,7 @@ app.get("/gallery-data/all", (req, res) => {
   });
 });
 
-app.post("/api/save-curation", async (req, res) => {
+app.post("/api/save-curation", requirePotteryWritable, async (req, res) => {
   try {
     const beforeRegistration = await getRegistrationState();
 
@@ -2646,6 +3305,7 @@ app.post("/api/save-tree", async (req, res) => {
 
 app.get("/admin/restore-from-siteground", async (req, res) => {
   try {
+    await assertPotteryWritable("manual restore from SiteGround");
     const restored = await restoreFromSiteGround();
     const registration = await getRegistrationState();
     const restoredTrees = await restoreTreesFromSiteGround();
@@ -2741,23 +3401,42 @@ const claycrazeServer = app.listen(PORT, "0.0.0.0", async () => {
   console.log(`SiteGround truth source: ${SG_PUBLIC_DATA_URL}`);
 
   try {
-    const restored = await restoreFromSiteGround();
+    const protection = await initializePotteryProtectionState();
 
-    console.log("STARTUP RESTORE OK:", restored);
+    console.log("POTTERY PROTECTION STATE:", protection);
 
-    const registration = await getRegistrationState();
+    if (!protection.freeze.frozen) {
+      // On the first deployment of this protection, the current SiteGround
+      // ledger is explicitly accepted as the initial trusted baseline.
+      // Thereafter, surveillance runs before restore so a future shrink
+      // cannot overwrite working-copy evidence.
+      const preRestoreSurveillance = protection.bootstrapped
+        ? {
+            pottery_freeze: { frozen: false },
+            action_taken: "TRUST_BOOTSTRAP_ACCEPTED",
+          }
+        : await runSiteGroundSurveillance("startup-before-restore");
 
-    console.log("STARTUP REGISTRATION:", registration);
+      if (!preRestoreSurveillance.pottery_freeze?.frozen) {
+        const restored = await restoreFromSiteGround();
 
-    const restoredTrees = await restoreTreesFromSiteGround();
+        console.log("STARTUP RESTORE OK:", restored);
 
-    console.log("TREE STARTUP RESTORE OK:", restoredTrees);
+        const registration = await getRegistrationState();
 
-    const treeRegistration = await getTreeRegistrationState();
-
-    console.log("TREE STARTUP REGISTRATION:", treeRegistration);
+        console.log("STARTUP REGISTRATION:", registration);
+      } else {
+        console.error(
+          "POTTERY FREEZE: startup restore skipped so local/Render evidence is not overwritten."
+        );
+      }
+    } else {
+      console.error(
+        "POTTERY FREEZE: startup restore skipped because a persistent freeze is active."
+      );
+    }
   } catch (err) {
-    console.error("STARTUP RESTORE FROM SITEGROUND FAILED:", err);
+    console.error("STARTUP POTTERY PROTECTION/RESTORE FAILED:", err);
 
     STARTUP_RESTORE = {
       ok: false,
@@ -2767,6 +3446,33 @@ const claycrazeServer = app.listen(PORT, "0.0.0.0", async () => {
       time: new Date().toISOString(),
     };
 
+    POTTERY_FREEZE_STATE = {
+      frozen: true,
+      reason:
+        `Startup pottery protection could not establish coherence: ${err.message}`,
+      detected_at: new Date().toISOString(),
+      trigger: "startup-protection-failure",
+      evidence_dir: "",
+      missing_ids: [],
+    };
+
+    console.error(
+      "POTTERY FREEZE: saves are blocked because startup protection could not establish coherence."
+    );
+  }
+
+  // Trees are independent of the pottery freeze and may restore normally.
+  try {
+    const restoredTrees = await restoreTreesFromSiteGround();
+
+    console.log("TREE STARTUP RESTORE OK:", restoredTrees);
+
+    const treeRegistration = await getTreeRegistrationState();
+
+    console.log("TREE STARTUP REGISTRATION:", treeRegistration);
+  } catch (err) {
+    console.error("TREE STARTUP RESTORE FROM SITEGROUND FAILED:", err);
+
     TREE_STARTUP_RESTORE = {
       ok: false,
       source: SG_PUBLIC_TREES_URL,
@@ -2774,14 +3480,10 @@ const claycrazeServer = app.listen(PORT, "0.0.0.0", async () => {
       message: err.message,
       time: new Date().toISOString(),
     };
-
-    console.error(
-      "TRUTH LOCK: Render could not restore from SiteGround. Saves will be blocked."
-    );
   }
 
-  // Read-only dragnet: compare SiteGround, Render SQLite, and local pieces.json.
-  // This never restores, writes, exports, or publishes pottery data.
+  // Surveillance never repairs canonical pottery. It may only freeze writes
+  // and preserve evidence when canonical truth unexpectedly loses records.
   await runSiteGroundSurveillance("startup-after-restore");
 
   SURVEILLANCE_TIMER = setInterval(() => {
