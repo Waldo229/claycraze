@@ -15,13 +15,13 @@
     }
 
     .studio-session-page {
-      max-width: 980px;
+      max-width: 1220px;
       margin: 0 auto;
       padding: 48px 24px 72px;
     }
 
     .studio-session-page h1 {
-      margin: 0 0 24px;
+      margin: 0 0 28px;
       font-size: 2.5rem;
       font-weight: normal;
       text-align: center;
@@ -31,19 +31,26 @@
       display: block;
       width: 100%;
       height: auto;
-      margin: 0 auto 28px;
+      margin: 0 auto 34px;
       border-radius: 14px;
     }
 
     .studio-hatteras-note {
-      max-width: 760px;
+      max-width: 1000px;
       margin: 0 auto;
       font-size: 1.1rem;
       line-height: 1.7;
     }
 
-    .studio-hatteras-note p {
-      margin: 0 0 22px;
+    .note-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin: 0 0 24px;
+    }
+
+    .note-line span:last-child {
+      flex: 1;
     }
 
     .studio-hatteras-note a {
@@ -57,9 +64,11 @@
     }
 
     .gene-glow {
+      flex: 0 0 auto;
       display: inline-block;
-      margin-right: 8px;
       color: #ffd36a;
+      line-height: 1.2;
+      margin-top: 0.15em;
       text-shadow:
         0 0 5px #ffd36a,
         0 0 10px #ffd36a,
@@ -67,6 +76,7 @@
     }
 
     .obx-signoff {
+      margin: 6px 0 0 36px;
       letter-spacing: 0.08em;
     }
 
@@ -81,6 +91,14 @@
 
       .studio-hatteras-note {
         font-size: 1rem;
+      }
+
+      .note-line {
+        gap: 10px;
+      }
+
+      .obx-signoff {
+        margin-left: 30px;
       }
     }
   </style>
@@ -100,31 +118,39 @@
 
     <div class="studio-hatteras-note">
 
-      <p>
+      <p class="note-line">
         <span class="gene-glow">&#9679;</span>
-        <strong>GENE says:</strong>
-        Start no studio session without
-        <a
-          href="https://www.radiohatteras.org/listen-live"
-          target="_blank"
-          rel="noopener noreferrer"
-        >Radio Hatteras</a>
-        and a cup of Joe from Alien Java.
+        <span>
+          <strong>GENE says:</strong>
+          Start no studio session without
+          <a
+            href="https://www.radiohatteras.org/listen-live"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Radio Hatteras</a>
+          and a cup of Joe from Alien Java.
+        </span>
       </p>
 
-      <p>
-        And if you&rsquo;re in Buxton, stop by
-        <a
-          href="https://www.surfintheeye.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >Natural Art Surf Shop</a>
-        and buy the Radio Free Hatteras T-shirt.
-        You&rsquo;ll be glad you did.
+      <p class="note-line">
+        <span class="gene-glow">&#9679;</span>
+        <span>
+          And if you&rsquo;re in Buxton, stop by
+          <a
+            href="https://www.surfintheeye.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Natural Art Surf Shop</a>
+          and buy the Radio Free Hatteras T-shirt.
+          You&rsquo;ll be glad you did.
+        </span>
       </p>
 
-      <p>
-        If you see my Jeep on the beach, say hello.
+      <p class="note-line">
+        <span class="gene-glow">&#9679;</span>
+        <span>
+          If you see my Jeep on the beach, say hello.
+        </span>
       </p>
 
       <p class="obx-signoff">
