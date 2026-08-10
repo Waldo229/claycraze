@@ -1701,3 +1701,88 @@ body .kiln-watch-grid .room-copy {
     grid-template-columns: 1fr !important;
   }
 }
+
+.studio-session-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+}
+
+.studio-session-page h1 {
+  text-align: center;
+  margin: 0 0 1.75rem;
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  line-height: 1;
+}
+
+.studio-hatteras-banner {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin: 0 auto 2rem;
+}
+
+.studio-hatteras-note {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.5rem 1.75rem 1.25rem;
+}
+
+.studio-hatteras-note .note-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.studio-hatteras-note .note-line:last-of-type {
+  border-bottom: 0;
+}
+
+.gene-glow {
+  flex: 0 0 auto;
+  margin-top: 0.38rem;
+  font-size: 0.8rem;
+  color: #ffd76a;
+  text-shadow:
+    0 0 6px rgba(255, 215, 106, 0.95),
+    0 0 14px rgba(255, 215, 106, 0.55);
+}
+
+.studio-hatteras-note a {
+  text-underline-offset: 0.18em;
+}
+
+.obx-signoff {
+  margin: 1.25rem 0 0 2rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 700px) {
+  .studio-session-page {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .studio-hatteras-banner {
+    border-radius: 12px;
+  }
+
+  .studio-hatteras-note {
+    padding: 1rem 0;
+  }
+
+  .studio-hatteras-note .note-line {
+    font-size: 1rem;
+  }
+
+  .obx-signoff {
+    margin-left: 1.65rem;
+  }
+}
