@@ -222,6 +222,63 @@
 
     .ack.show { display: block; }
 
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 14px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(231, 221, 199, 0.08);
+      font-family: Consolas, "Courier New", monospace;
+      letter-spacing: 0.03em;
+    }
+
+    .status-row:last-child { border-bottom: 0; }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #596166;
+    }
+
+    .status-row.ok .status-dot { background: var(--gene-green); }
+    .status-row.limit .status-dot { background: var(--gene-amber); }
+    .status-row.block .status-dot { background: var(--gene-red); }
+
+    .check-status {
+      color: var(--gene-muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+    }
+
+    .status-row.ok .check-status { color: var(--gene-green); }
+    .status-row.limit .check-status { color: var(--gene-amber); }
+    .status-row.block .check-status { color: var(--gene-red); }
+
+    .human-authority {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(231, 221, 199, 0.28);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.015);
+    }
+
+    .human-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.06em;
+    }
+
+    .human-check input {
+      accent-color: var(--gene-green);
+      transform: scale(1.12);
+    }
+
     .button-row {
       display: flex;
       flex-wrap: wrap;
@@ -390,31 +447,28 @@
             <div class="status-label">Human authority final</div>
           </div>
 
-          <div class="checklist">
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Mission target defined">
-              <span>Mission target defined</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Planned ignition time entered">
-              <span>Planned ignition time entered</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Kiln-watch data available">
-              <span>Kiln-watch data available</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Observation / recording path available">
-              <span>Observation / recording path available</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Human present and responsible">
-              <span>Human present and responsible</span>
-            </label>
+          <div class="checklist" id="geneChecks">
+            <div class="checkline status-row" data-key="kiln_probe_data">
+              <span class="status-dot"></span><span>KILN / PROBE DATA</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="camera_network">
+              <span class="status-dot"></span><span>CAMERA NETWORK</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="camera_stream">
+              <span class="status-dot"></span><span>CAMERA STREAM</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="audio_stream">
+              <span class="status-dot"></span><span>AUDIO STREAM</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="local_event_storage">
+              <span class="status-dot"></span><span>LOCAL EVENT STORAGE</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="memory_comparison">
+              <span class="status-dot"></span><span>MEMORY / COMPARISON</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="public_transmission">
+              <span class="status-dot"></span><span>PUBLIC TRANSMISSION</span><strong class="check-status">WAIT</strong>
+            </div>
           </div>
 
           <div class="limitations" id="limitations">
@@ -426,6 +480,13 @@
             <input type="checkbox" id="ackLimitations">
             I have seen and accept the stated limitations.
           </label>
+
+          <div class="human-authority">
+            <label class="human-check">
+              <input type="checkbox" id="humanPresent">
+              <span>HUMAN PRESENT AND RESPONSIBLE</span>
+            </label>
+          </div>
 
           <div class="button-row">
             <button class="mc-button secondary" id="evaluateButton" type="button">Run Preflight</button>
@@ -473,9 +534,11 @@
       "use strict";
 
       const $ = (id) => document.getElementById(id);
-      const preflightBoxes = [...document.querySelectorAll(".preflight")];
+      const statusRows = [...document.querySelectorAll(".status-row")];
+      const PREFLIGHT_URL = "http://127.0.0.1:8765/preflight";
 
-      let countdownTimer = null;
+      let geneReadiness = "NOT READY";
+      let geneLimitations = [];
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -483,101 +546,180 @@
 
       function updateCountdown() {
         const raw = $("launchTime").value;
-
         if (!raw) {
           ["days", "hours", "minutes", "seconds"].forEach((id) => $(id).textContent = "00");
           return;
         }
 
-        const target = new Date(raw).getTime();
-        const now = Date.now();
-        const delta = Math.max(0, target - now);
-
+        const delta = Math.max(0, new Date(raw).getTime() - Date.now());
         const totalSeconds = Math.floor(delta / 1000);
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
 
-        $("days").textContent = pad(days);
-        $("hours").textContent = pad(hours);
-        $("minutes").textContent = pad(minutes);
-        $("seconds").textContent = pad(seconds);
-
-        if (delta > 0 && delta <= 60 * 60 * 1000) {
-          $("narration").innerHTML =
-            `<strong>GENE:</strong> The firing has moved from hours into minutes. Mission Control is awake.`;
-        }
+        $("days").textContent = pad(Math.floor(totalSeconds / 86400));
+        $("hours").textContent = pad(Math.floor((totalSeconds % 86400) / 3600));
+        $("minutes").textContent = pad(Math.floor((totalSeconds % 3600) / 60));
+        $("seconds").textContent = pad(totalSeconds % 60);
       }
 
-      function evaluateReadiness() {
+      function setStatus(key, state, label) {
+        const row = statusRows.find((item) => item.dataset.key === key);
+        if (!row) return;
+
+        row.classList.remove("ok", "limit", "block");
+        const normalized = String(state || "").toUpperCase();
+
+        if (normalized === "OK") row.classList.add("ok");
+        if (normalized === "LIMIT") row.classList.add("limit");
+        if (normalized === "BLOCK") row.classList.add("block");
+
+        row.querySelector(".check-status").textContent = label || normalized || "WAIT";
+      }
+
+      function updateLaunchAvailability() {
+        const humanPresent = $("humanPresent").checked;
         const targetDefined = $("missionTarget").value.trim().length > 0;
         const timeDefined = $("launchTime").value.trim().length > 0;
 
-        preflightBoxes[0].checked = targetDefined;
-        preflightBoxes[1].checked = timeDefined;
+        let enabled = humanPresent && targetDefined && timeDefined;
 
-        const results = preflightBoxes.map((box) => ({
-          checked: box.checked,
-          label: box.dataset.label
-        }));
-
-        const unresolved = results.filter((item) => !item.checked);
-        const criticalMissing = !targetDefined || !timeDefined || !preflightBoxes[4].checked;
-
-        $("limitations").classList.remove("show");
-        $("ackBox").classList.remove("show");
-        $("ackLimitations").checked = false;
-
-        if (criticalMissing) {
-          $("readiness").textContent = "NOT READY";
-          $("readiness").style.color = "var(--gene-red)";
-          $("launchButton").disabled = true;
-          $("narration").innerHTML =
-            `<strong>GENE:</strong> Preflight incomplete. I cannot report readiness for this mission.`;
-          return;
+        if (geneReadiness === "READY") {
+          // no extra gate
+        } else if (geneReadiness === "READY WITH LIMITATIONS") {
+          enabled = enabled && $("ackLimitations").checked;
+        } else {
+          enabled = false;
         }
 
-        if (unresolved.length > 0) {
+        $("launchButton").disabled = !enabled;
+      }
+
+      function renderReadiness() {
+        $("limitations").classList.remove("show");
+        $("ackBox").classList.remove("show");
+
+        if (geneReadiness === "READY") {
+          $("readiness").textContent = "READY";
+          $("readiness").style.color = "var(--gene-green)";
+        } else if (geneReadiness === "READY WITH LIMITATIONS") {
           $("readiness").textContent = "READY WITH LIMITATIONS";
           $("readiness").style.color = "var(--gene-amber)";
           $("limitations").classList.add("show");
           $("ackBox").classList.add("show");
-          $("limitationsList").textContent =
-            "Unresolved: " + unresolved.map((item) => item.label).join("; ");
-          $("launchButton").disabled = true;
+          $("limitationsList").textContent = geneLimitations.length
+            ? geneLimitations.join("; ")
+            : "One or more non-critical mission conditions remain unresolved.";
+        } else {
+          $("readiness").textContent = "NOT READY";
+          $("readiness").style.color = "var(--gene-red)";
+        }
+
+        updateLaunchAvailability();
+      }
+
+      function normalizeChecks(payload) {
+        const mapped = {};
+        const checks = Array.isArray(payload.checks) ? payload.checks : [];
+
+        for (const check of checks) {
+          const name = String(check.name || "").toUpperCase();
+          if (name.includes("KILN") || name.includes("PROBE")) mapped.kiln_probe_data = check;
+          else if (name.includes("CAMERA NETWORK")) mapped.camera_network = check;
+          else if (name.includes("CAMERA STREAM")) mapped.camera_stream = check;
+          else if (name.includes("AUDIO")) mapped.audio_stream = check;
+          else if (name.includes("LOCAL EVENT")) mapped.local_event_storage = check;
+          else if (name.includes("MEMORY") || name.includes("COMPARISON")) mapped.memory_comparison = check;
+          else if (name.includes("PUBLIC TRANSMISSION")) mapped.public_transmission = check;
+        }
+
+        return mapped;
+      }
+
+      async function runPreflight() {
+        const target = $("missionTarget").value.trim();
+        const ignition = $("launchTime").value.trim();
+
+        if (!target || !ignition) {
+          geneReadiness = "NOT READY";
+          renderReadiness();
           $("narration").innerHTML =
-            `<strong>GENE:</strong> Mission can proceed, but limitations remain. Human acknowledgment is required.`;
+            `<strong>GENE:</strong> Mission target and planned ignition time are required before preflight.`;
           return;
         }
 
-        $("readiness").textContent = "READY";
-        $("readiness").style.color = "var(--gene-green)";
-        $("launchButton").disabled = false;
-        $("narration").innerHTML =
-          `<strong>GENE:</strong> Preflight complete. I am ready to observe. The launch decision remains yours.`;
+        statusRows.forEach((row) => {
+          row.classList.remove("ok", "limit", "block");
+          row.querySelector(".check-status").textContent = "WAIT";
+        });
+
+        $("readiness").textContent = "CHECKING...";
+        $("readiness").style.color = "var(--gene-muted)";
+        $("launchButton").disabled = true;
+
+        try {
+          const url = new URL(PREFLIGHT_URL);
+          url.searchParams.set("target", target);
+
+          const response = await fetch(url, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const payload = await response.json();
+          const mapped = normalizeChecks(payload);
+
+          for (const row of statusRows) {
+            const check = mapped[row.dataset.key];
+            if (!check) {
+              setStatus(row.dataset.key, "BLOCK", "NO DATA");
+              continue;
+            }
+
+            const state = String(
+              check.status || check.state || (check.ok === true ? "OK" : "BLOCK")
+            ).toUpperCase();
+
+            setStatus(row.dataset.key, state, state);
+          }
+
+          geneReadiness = String(
+            payload.readiness || payload.gene_readiness || "NOT READY"
+          ).toUpperCase();
+
+          geneLimitations = Array.isArray(payload.limitations) ? payload.limitations : [];
+          renderReadiness();
+
+          if (geneReadiness === "READY") {
+            $("narration").innerHTML =
+              `<strong>GENE:</strong> Preflight complete. I am ready to observe. The launch decision remains yours.`;
+          } else if (geneReadiness === "READY WITH LIMITATIONS") {
+            $("narration").innerHTML =
+              `<strong>GENE:</strong> I can observe this mission, but stated limitations remain.`;
+          } else {
+            $("narration").innerHTML =
+              `<strong>GENE:</strong> I am not ready. One or more required witnessing conditions are unavailable.`;
+          }
+        } catch (error) {
+          geneReadiness = "NOT READY";
+          renderReadiness();
+          $("narration").innerHTML =
+            `<strong>GENE:</strong> Mission Control could not reach the local preflight bridge. ${error.message}`;
+        }
       }
 
-      $("ackLimitations").addEventListener("change", (event) => {
-        if ($("readiness").textContent === "READY WITH LIMITATIONS") {
-          $("launchButton").disabled = !event.target.checked;
-        }
+      $("evaluateButton").addEventListener("click", runPreflight);
+      $("ackLimitations").addEventListener("change", updateLaunchAvailability);
+      $("humanPresent").addEventListener("change", updateLaunchAvailability);
+      $("missionTarget").addEventListener("input", updateLaunchAvailability);
+      $("launchTime").addEventListener("change", () => {
+        updateCountdown();
+        updateLaunchAvailability();
       });
-
-      $("evaluateButton").addEventListener("click", evaluateReadiness);
 
       $("launchButton").addEventListener("click", () => {
         $("narration").innerHTML =
           `<strong>GENE:</strong> Observation has begun. I am watching for ignition evidence.`;
       });
 
-      $("launchTime").addEventListener("change", updateCountdown);
-      $("missionTarget").addEventListener("input", () => {
-        preflightBoxes[0].checked = $("missionTarget").value.trim().length > 0;
-      });
-
-      countdownTimer = window.setInterval(updateCountdown, 1000);
+      window.setInterval(updateCountdown, 1000);
       updateCountdown();
+      renderReadiness();
     })();
   </script>
 
