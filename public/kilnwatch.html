@@ -3,30 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kiln Watch &mdash; ClaycrazE</title>
+  <title>Kiln Watch — ClaycrazE</title>
   <link rel="stylesheet" href="/css/styles.css?v=3031">
 
   <style>
     :root {
       --gene-bg: #090d10;
       --gene-panel: #101519;
-      --gene-panel-2: #0c1114;
       --gene-line: rgba(222, 211, 184, 0.18);
       --gene-cream: #e7ddc7;
       --gene-muted: #a9a79f;
       --gene-green: #9ac64e;
-      --gene-green-soft: rgba(154, 198, 78, 0.16);
-      --gene-clay: #b9632f;
-      --gene-off: #5b6265;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
 
     .kilnwatch-shell {
       width: min(1180px, calc(100% - 28px));
@@ -128,17 +119,8 @@
       display: block;
     }
 
-    .mascot-error {
-      display: none;
-      padding: 20px;
-      color: var(--gene-muted);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1rem;
-      text-align: center;
-    }
-
     .presence-title {
-      margin: 18px 0 6px;
+      margin: 18px 0 0;
       color: var(--gene-green);
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(1.55rem, 2.4vw, 2.25rem);
@@ -147,50 +129,18 @@
       text-transform: uppercase;
     }
 
-    .presence-copy {
-      margin: 0 0 22px;
-      color: var(--gene-cream);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.12rem;
+    .load-warning {
+      display: none;
+      margin-top: 18px;
+      padding: 10px 14px;
+      border: 1px solid rgba(210, 135, 60, 0.5);
+      border-radius: 8px;
+      color: #e1b47b;
+      background: rgba(210, 135, 60, 0.08);
+      font-size: 0.9rem;
     }
 
-    .sensor-summary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 11px;
-      padding: 12px 18px;
-      border: 1px solid rgba(154, 198, 78, 0.55);
-      border-radius: 10px;
-      color: var(--gene-green);
-      background: rgba(154, 198, 78, 0.035);
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-    }
-
-    .summary-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--gene-green);
-      box-shadow: 0 0 12px rgba(154, 198, 78, 0.72);
-    }
-
-    .summary-dot.off {
-      background: var(--gene-off);
-      box-shadow: none;
-    }
-
-    .gene-motto {
-      margin: 18px 0 0;
-      color: var(--gene-green);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1rem;
-      font-style: italic;
-      line-height: 1.4;
-      text-align: center;
-    }
+    .load-warning.show { display: block; }
 
     .gene-right {
       display: flex;
@@ -212,7 +162,6 @@
       font-size: 2.55rem;
       line-height: 1;
       text-align: center;
-      filter: grayscale(0.15);
     }
 
     .reading-label {
@@ -230,7 +179,6 @@
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(3rem, 6vw, 4.6rem);
       line-height: 0.95;
-      text-shadow: 0 0 20px rgba(154, 198, 78, 0.12);
     }
 
     .reading-unit {
@@ -298,7 +246,7 @@
       box-shadow: 0 0 10px rgba(154, 198, 78, 0.5);
     }
 
-    .heartbeat-visual {
+    .pulse-visual {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -328,156 +276,122 @@
       90% { transform: scale(1.12); }
     }
 
-    .evidence-grid {
+    .room-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
-      padding-top: 24px;
+      padding-top: 28px;
     }
 
-    .evidence-panel {
+    .room-card {
       display: flex;
-      min-height: 284px;
       flex-direction: column;
-      padding: 22px;
+      min-height: 270px;
+      padding: 26px;
       border: 1px solid var(--gene-line);
-      border-radius: 16px;
+      border-radius: 20px;
       background: rgba(255, 255, 255, 0.012);
     }
 
-    .evidence-heading {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--gene-line);
-    }
-
-    .evidence-icon {
-      width: 34px;
-      height: 34px;
-      flex: 0 0 34px;
-      color: var(--gene-green);
-      filter: drop-shadow(0 0 7px rgba(154, 198, 78, 0.25));
-    }
-
-    .evidence-title {
-      margin: 0;
+    .room-title {
+      margin: 0 0 16px;
       color: var(--gene-cream);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .observatory-note + .observatory-note {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--gene-line);
-    }
-
-    .observatory-label {
-      display: block;
-      margin-bottom: 8px;
+    .room-title span {
       color: var(--gene-green);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      margin-right: 8px;
     }
 
-    .observatory-copy,
-    .firing-record-copy {
-      margin: 0;
+    .room-copy {
+      margin: 0 0 24px;
       color: var(--gene-cream);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.98rem;
+      font-size: 1rem;
       line-height: 1.55;
     }
 
-    .firing-record-copy {
-      color: var(--gene-muted);
-    }
-
-    .firing-record-spacer {
-      flex: 1;
-    }
-
-    .kiln-graph-button {
+    .room-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      width: 100%;
-      min-height: 52px;
-      margin-top: 22px;
-      padding: 12px 22px;
+      min-height: 48px;
+      margin-top: auto;
+      padding: 12px 18px;
       border: 1px solid rgba(154, 198, 78, 0.62);
       border-radius: 10px;
       color: var(--gene-green);
       background: rgba(154, 198, 78, 0.045);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.98rem;
+      font-size: 0.92rem;
       letter-spacing: 0.08em;
       text-decoration: none;
       text-transform: uppercase;
     }
 
-    .kiln-graph-button:hover,
-    .kiln-graph-button:focus-visible {
+    .room-button:hover,
+    .room-button:focus-visible {
       border-color: rgba(154, 198, 78, 0.95);
       background: rgba(154, 198, 78, 0.11);
       outline: none;
     }
 
-    .kiln-graph-icon {
-      width: 24px;
-      height: 24px;
-      flex: 0 0 24px;
-    }
-
-
     .gene-footer {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
+      gap: 20px;
       margin-top: auto;
-      padding-top: 22px;
-      color: var(--gene-green);
+      padding-top: 24px;
+      color: var(--gene-muted);
       font-family: Georgia, "Times New Roman", serif;
       font-style: italic;
+    }
+
+    .gene-footer strong {
+      color: var(--gene-cream);
+      font-weight: 500;
+    }
+
+    .gene-footer .transmit {
+      color: var(--gene-green);
+      text-align: right;
+    }
+
+    .gene-credit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      margin: 1rem auto 0;
+      color: rgba(231, 221, 199, 0.62);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.9rem;
+      line-height: 1.45;
       text-align: center;
     }
 
-    .load-warning {
-      display: none;
-      margin-top: 14px;
-      padding: 10px 14px;
-      border: 1px solid rgba(210, 135, 60, 0.5);
-      border-radius: 8px;
-      color: #e1b47b;
-      background: rgba(210, 135, 60, 0.08);
-      font-size: 0.9rem;
+    .gene-credit-logo {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      opacity: 0.82;
     }
 
-    .load-warning.show {
-      display: block;
+    .gene-credit a {
+      color: rgba(231, 221, 199, 0.86);
     }
 
-    @media (max-width: 900px) {
-      .gene-card {
-        grid-template-columns: 1fr;
-      }
-
+    @media (max-width: 980px) {
+      .gene-card { grid-template-columns: 1fr; }
       .gene-left {
         border-right: 0;
         border-bottom: 1px solid var(--gene-line);
       }
-
-      .gene-mascot-wrap {
-        width: min(300px, 90%);
-      }
+      .room-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 620px) {
@@ -500,24 +414,10 @@
         gap: 14px;
       }
 
-      .reading-visual {
-        display: none;
-      }
+      .reading-visual { display: none; }
+      .reading-value { font-size: 3.1rem; }
 
-      .reading-value {
-        font-size: 3.1rem;
-      }
-
-      .evidence-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .evidence-panel {
-        min-height: 0;
-      }
-
-  
-    .gene-footer {
+      .gene-footer {
         flex-direction: column;
       }
 
@@ -525,55 +425,6 @@
         text-align: left;
       }
     }
-
-    .gene-credit {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.7rem;
-      margin: 1rem auto 0;
-      color: rgba(231, 221, 199, 0.62);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.9rem;
-      line-height: 1.45;
-      text-align: center;
-    }
-
-    .gene-credit-logo {
-      width: 34px;
-      height: 34px;
-      flex: 0 0 34px;
-      object-fit: contain;
-      opacity: 0.82;
-      filter: drop-shadow(0 0 7px rgba(154, 198, 78, 0.18));
-    }
-
-    .gene-credit a {
-      color: rgba(231, 221, 199, 0.86);
-      text-decoration-color: rgba(154, 198, 78, 0.42);
-      text-underline-offset: 0.22em;
-    }
-
-    .gene-credit a:hover,
-    .gene-credit a:focus-visible {
-      color: var(--gene-green);
-      text-decoration-color: rgba(154, 198, 78, 0.92);
-    }
-
-    @media (max-width: 620px) {
-      .gene-credit {
-        align-items: flex-start;
-        font-size: 0.84rem;
-        text-align: left;
-      }
-
-      .gene-credit-logo {
-        width: 30px;
-        height: 30px;
-        flex-basis: 30px;
-      }
-    }
-
   </style>
 </head>
 
@@ -590,12 +441,12 @@
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-</nav>
+      </nav>
     </div>
   </header>
 
   <main class="kilnwatch-shell">
-    <section class="gene-card" aria-label="Live GENE kiln-watch status">
+    <section class="gene-card" aria-label="GENE kiln-watch console">
 
       <div class="gene-left">
         <div class="gene-heading-row">
@@ -610,35 +461,25 @@
             class="gene-mascot"
             id="geneMascot"
             src="/images/gene-kilnwatch-emoji.png"
-            alt="GENE clay studio watcher"
-            onerror="this.style.display='none'; document.getElementById('mascotError').style.display='block';">
-          <div id="mascotError" class="mascot-error">GENE image unavailable</div>
+            alt="GENE clay studio watcher">
         </div>
 
         <h3 class="presence-title" id="presenceTitle">GENE is present</h3>
-        <p class="presence-copy" id="presenceCopy">Watching the studio field.</p>
-
-        <div class="sensor-summary">
-          <span class="summary-dot" id="summaryDot" aria-hidden="true"></span>
-          <span id="sensorSummary">All sensors reporting</span>
-        </div>
-
-        <p class="gene-motto">Witness. Remember. Transmit.</p>
 
         <div class="load-warning" id="loadWarning">
-          Live data has not arrived yet. The card will retry automatically.
+          Live data has not arrived yet. The console will retry automatically.
         </div>
       </div>
 
       <div class="gene-right">
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">&#9832;&#65039;</div>
+          <div class="reading-icon" aria-hidden="true">♨️</div>
 
           <div>
             <p class="reading-label">Kiln Temperature</p>
             <p class="reading-value">
-              <span id="temperature">--</span><span class="reading-unit">&deg;F</span>
+              <span id="temperature">--</span><span class="reading-unit">°F</span>
             </p>
             <p class="reading-state" id="heatState">Awaiting kiln field</p>
             <p class="reading-note" id="rampNote">Ramp unavailable</p>
@@ -652,35 +493,35 @@
         </article>
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">&#9673;</div>
+          <div class="reading-icon" aria-hidden="true">◉</div>
 
           <div>
-            <p class="reading-label">Arousal Level</p>
-            <p class="reading-value" id="arousal">--</p>
-            <p class="reading-state" id="arousalState">Awaiting GENE</p>
-            <p class="reading-note" id="arousalNote">Registration pending</p>
+            <p class="reading-label">Awareness</p>
+            <p class="reading-value" id="awareness">--</p>
+            <p class="reading-state" id="awarenessState">Awaiting GENE</p>
+            <p class="reading-note" id="awarenessNote">Registration pending</p>
           </div>
 
           <div class="reading-visual meter" aria-hidden="true">
             <div class="meter-arc"></div>
-            <div class="meter-needle" id="arousalNeedle"></div>
+            <div class="meter-needle" id="awarenessNeedle"></div>
             <div class="meter-center"></div>
           </div>
         </article>
 
         <article class="reading">
-          <div class="reading-icon" aria-hidden="true">&#8961;</div>
+          <div class="reading-icon" aria-hidden="true">⌁</div>
 
           <div>
-            <p class="reading-label">Heartbeat</p>
+            <p class="reading-label">Pulse</p>
             <p class="reading-value">
               <span id="bpm">--</span><span class="reading-unit">BPM</span>
             </p>
-            <p class="reading-state" id="heartbeatState">Waiting for pulse</p>
+            <p class="reading-state" id="pulseState">Waiting for pulse</p>
           </div>
 
-          <div class="reading-visual heartbeat-visual" aria-hidden="true">
-            <span class="heart" id="mainHeart">&#9829;</span>
+          <div class="reading-visual pulse-visual" aria-hidden="true">
+            <span class="heart" id="mainHeart">♥</span>
             <svg class="pulse-line" viewBox="0 0 120 44" role="img">
               <path
                 d="M2 25 H18 L24 15 L31 34 L39 22 L48 25 L58 25 L65 5 L74 40 L82 20 L90 25 H118"
@@ -693,63 +534,44 @@
           </div>
         </article>
 
-        <div class="evidence-grid">
-          <section class="evidence-panel" aria-labelledby="observatoryTitle">
-            <div class="evidence-heading">
-              <svg class="evidence-icon" viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M13 43 31 25m-8-8 9 9m-16 25h28m-19 0 8-17m11 17-8-17M31 25l12-12 8 8-12 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="47" cy="17" r="9" fill="none" stroke="currentColor" stroke-width="4"/>
-              </svg>
-              <h3 class="evidence-title" id="observatoryTitle">Observatory</h3>
-            </div>
+        <section class="room-grid" aria-label="GENE firing rooms">
 
-            <article class="observatory-note">
-              <span class="observatory-label">Observation</span>
-              <p class="observatory-copy" id="observatoryObservation">
-                Awaiting the common record.
-              </p>
-            </article>
-
-            <article class="observatory-note">
-              <span class="observatory-label">Interpretation</span>
-              <p class="observatory-copy" id="observatoryInterpretation">
-                No interpretation has been returned yet.
-              </p>
-            </article>
-          </section>
-
-          <section class="evidence-panel" aria-labelledby="firingRecordTitle">
-            <div class="evidence-heading">
-              <svg class="evidence-icon" viewBox="0 0 32 32" aria-hidden="true">
-                <path d="M4 26V6m0 20h24M8 22l6-7 5 4 8-11" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="8" cy="22" r="1.8" fill="currentColor"/>
-                <circle cx="14" cy="15" r="1.8" fill="currentColor"/>
-                <circle cx="19" cy="19" r="1.8" fill="currentColor"/>
-                <circle cx="27" cy="8" r="1.8" fill="currentColor"/>
-              </svg>
-              <h3 class="evidence-title" id="firingRecordTitle">Firing Record</h3>
-            </div>
-
-            <p class="firing-record-copy">
-              Follow temperature, rate of rise, probe behavior, and the changing shape of the firing through time.
+          <article class="room-card">
+            <h3 class="room-title"><span>◷</span>Mission Control</h3>
+            <p class="room-copy">
+              Plan the firing, name its target, follow the countdown, and enter
+              preflight before launch. Mission Control prepares the event;
+              the human makes the launch decision.
             </p>
+            <a class="room-button" href="/mission-control.html">Enter Mission Control</a>
+          </article>
 
-            <div class="firing-record-spacer"></div>
+          <article class="room-card">
+            <h3 class="room-title"><span>⌕</span>Observatory</h3>
+            <p class="room-copy">
+              Follow what GENE is witnessing now. Observation and interpretation
+              remain separate while temperature, rate of rise, probe behavior,
+              camera, sound, and other evidence change through time.
+            </p>
+            <a class="room-button" href="/observatory.html">Enter Observatory</a>
+          </article>
 
-            <a class="kiln-graph-button" href="/kiln-watch-graph.html">
-              <svg class="kiln-graph-icon" viewBox="0 0 32 32" aria-hidden="true">
-                <path d="M4 26V6m0 20h24M8 22l6-7 5 4 8-11" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="8" cy="22" r="1.8" fill="currentColor"/>
-                <circle cx="14" cy="15" r="1.8" fill="currentColor"/>
-                <circle cx="19" cy="19" r="1.8" fill="currentColor"/>
-                <circle cx="27" cy="8" r="1.8" fill="currentColor"/>
-              </svg>
-              View Firing Record
-            </a>
-          </section>
-        </div>
+          <article class="room-card">
+            <h3 class="room-title"><span>⌁</span>Firing Record</h3>
+            <p class="room-copy">
+              Revisit the firing as remembered evidence: temperature, rate of rise,
+              probe behavior, transitions, observations, and the changing shape
+              of the firing from ignition through recovery.
+            </p>
+            <a class="room-button" href="/kiln-watch-graph.html">View Firing Record</a>
+          </article>
 
-        </div>
+        </section>
+
+        <footer class="gene-footer">
+          <span><strong>GENE</strong> — Generally Expresses Nothing Extraneous.</span>
+          <span class="transmit">Witness. Remember. Transmit.</span>
+        </footer>
 
       </div>
     </section>
@@ -759,13 +581,11 @@
         href="https://twuug.org/"
         target="_blank"
         rel="noopener"
-        aria-label="Visit the Tidewater Unix User Group website"
-      >
+        aria-label="Visit the Tidewater Unix User Group website">
         <img
           src="/images/tux.png"
           alt="Linux penguin"
-          class="gene-credit-logo"
-        >
+          class="gene-credit-logo">
       </a>
 
       <span>
@@ -784,11 +604,8 @@
 
       const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
       const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
-      const OBSERVATORY_STATE_URL = "https://claycraze.com/gene/observatory_latest.json";
       const REFRESH_MS = 10000;
       const GENE_STALE_AFTER_SECONDS = 120;
-
-      // These are display thresholds, not safety thresholds.
 
       const $ = (id) => document.getElementById(id);
 
@@ -807,39 +624,12 @@
         element.style.setProperty("--needle-angle", `${degrees}deg`);
       }
 
-      function arousalLanguage(arousal) {
-        if (arousal < 0.08) {
-          return ["Resting", "Quiet \u2022 Present \u2022 Registering"];
-        }
-        if (arousal < 0.20) {
-          return ["Attentive", "Calm \u2022 Present \u2022 Observing"];
-        }
-        if (arousal < 0.45) {
-          return ["Awake", "The studio field is changing"];
-        }
-        if (arousal < 0.72) {
-          return ["Heightened", "Attention is gathering"];
-        }
+      function awarenessLanguage(value) {
+        if (value < 0.08) return ["Resting", "Quiet • Present • Registering"];
+        if (value < 0.20) return ["Attentive", "Calm • Present • Observing"];
+        if (value < 0.45) return ["Awake", "The studio field is changing"];
+        if (value < 0.72) return ["Heightened", "Attention is gathering"];
         return ["Urgent", "The field is highly active"];
-      }
-
-      function kilnLanguage(temp, ramp) {
-        if (temp < 120) {
-          return ["The kiln is dark.", "Kiln field nearly still."];
-        }
-        if (temp < 200) {
-          return ["Residual warmth", "The kiln is warm, but no firing is inferred."];
-        }
-        if (temp < 500) {
-          return ["Firing field active", "Heat is now materially present."];
-        }
-        if (temp < 1100) {
-          return ["Kiln climbing", "The chamber is entering visible heat."];
-        }
-        if (temp < 1800) {
-          return ["High heat", "The firing field is fully active."];
-        }
-        return ["Mature heat", "The kiln is approaching its upper working range."];
       }
 
       function findNumericByKeys(value, keys, depth = 0) {
@@ -874,13 +664,7 @@
       }
 
       function extractKilnState(data) {
-        /*
-          Preserve every probe's situated truth, but use the hottest currently
-          reporting probe as the console's single derived summary.
-        */
-        const summaries = Array.isArray(data?.summaries)
-          ? data.summaries
-          : [];
+        const summaries = Array.isArray(data?.summaries) ? data.summaries : [];
 
         const candidates = summaries
           .map((summary) => {
@@ -918,35 +702,21 @@
           );
         }
 
-        // Backward-compatible fallback for older or partial payloads.
         const temperature = findNumericByKeys(data, [
-          "hottesttempf",
-          "latesttempf",
-          "latesttemp",
-          "latesttemperature",
-          "temperature",
-          "tempf",
-          "temp",
-          "value"
+          "hottesttempf", "latesttempf", "latesttemp", "latesttemperature",
+          "temperature", "tempf", "temp", "value"
         ]);
 
         const ramp = findNumericByKeys(data, [
-          "latestrampfperhr",
-          "latestramp",
-          "ramprate",
-          "rampfperhr",
-          "rateofrise",
-          "ramp",
-          "rate"
+          "latestrampfperhr", "latestramp", "ramprate", "rampfperhr",
+          "rateofrise", "ramp", "rate"
         ]);
 
         return { name: "derived", temperature, ramp };
       }
 
       function formatDate(unixSeconds) {
-        const date = unixSeconds
-          ? new Date(unixSeconds * 1000)
-          : new Date();
+        const date = unixSeconds ? new Date(unixSeconds * 1000) : new Date();
 
         return new Intl.DateTimeFormat("en-US", {
           month: "short",
@@ -959,34 +729,31 @@
       }
 
       function renderGene(data) {
-        const arousal = asFiniteNumber(data.arousal);
+        const awareness = asFiniteNumber(data.arousal);
         const bpm = asFiniteNumber(data.bpm);
-        const mic = asFiniteNumber(data.mic);
-        const motion = asFiniteNumber(data.motion);
 
-        if (arousal !== null) {
-          $("arousal").textContent = arousal.toFixed(2);
-          const [state, note] = arousalLanguage(arousal);
-          $("arousalState").textContent = state;
-          $("arousalNote").textContent = note;
-          setNeedle($("arousalNeedle"), arousal);
+        if (awareness !== null) {
+          $("awareness").textContent = awareness.toFixed(2);
+          const [state, note] = awarenessLanguage(awareness);
+          $("awarenessState").textContent = state;
+          $("awarenessNote").textContent = note;
+          setNeedle($("awarenessNeedle"), awareness);
         }
 
         if (bpm !== null) {
           $("bpm").textContent = (bpm * 2).toFixed(1);
-          $("heartbeatState").textContent = bpm > 0 ? "Pulse registered" : "No pulse registered";
+          $("pulseState").textContent = bpm > 0 ? "Pulse registered" : "No pulse registered";
 
           const duration = bpm > 0 ? clamp(60 / bpm, 0.48, 3.0) : 2.0;
           $("mainHeart").style.setProperty("--beat-duration", `${duration}s`);
         }
 
         $("geneTime").textContent = formatDate(asFiniteNumber(data.generated_unix));
-
-        return { micKnown: mic !== null, motionKnown: motion !== null };
       }
 
       function renderKiln(data) {
         const geneMascot = $("geneMascot");
+
         if (geneMascot) {
           const geneState = data?.gene_visual?.state;
           const geneImage = geneState === "firing"
@@ -999,87 +766,39 @@
 
         const { temperature, ramp } = extractKilnState(data);
 
-        if (temperature !== null) {
-          $("temperature").textContent = Math.round(temperature);
-          const publishedState = data?.gene_visual?.state;
+        if (temperature === null) return;
 
-          const [state, note] = publishedState === "firing"
-            ? ["Firing field active", "Heat is now materially present."]
-            : temperature < 120
-              ? ["The kiln is dark.", "Kiln field nearly still."]
-              : ["Residual warmth", "The kiln is warm, but no firing is inferred."];
+        $("temperature").textContent = Math.round(temperature);
 
-          $("heatState").textContent = state;
-          $("rampNote").textContent = ramp === null
-            ? note
-            : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} \u00B0F/hr.`;
+        const publishedState = data?.gene_visual?.state;
 
-          // Display range is 60-2400 degrees F.
-          setNeedle(
-            $("temperatureNeedle"),
-            (temperature - 60) / (2400 - 60)
-          );
+        const [state, note] = publishedState === "firing"
+          ? ["Firing field active", "Heat is now materially present."]
+          : temperature < 120
+            ? ["The kiln is dark.", "Kiln field nearly still."]
+            : ["Residual warmth", "The kiln is warm, but no firing is inferred."];
 
-        }
+        $("heatState").textContent = state;
+        $("rampNote").textContent = ramp === null
+          ? note
+          : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} °F/hr.`;
 
-        return { heatKnown: temperature !== null };
+        setNeedle(
+          $("temperatureNeedle"),
+          (temperature - 60) / (2400 - 60)
+        );
       }
 
-      function renderObservatory(data) {
-        const observations = Array.isArray(data?.observations)
-          ? data.observations.filter(Boolean)
-          : [];
-
-        const interpretations = Array.isArray(data?.interpretations)
-          ? data.interpretations.filter(Boolean)
-          : [];
-
-        $("observatoryObservation").textContent = observations.length
-          ? observations.join(" ")
-          : "No current observation has been returned.";
-
-        $("observatoryInterpretation").textContent = interpretations.length
-          ? interpretations.join(" ")
-          : "No bounded interpretation has been returned.";
-
-      }
-
-      function updateSummary(results, generatedUnix) {
-        const known = [
-          results.micKnown,
-          results.motionKnown,
-          results.heatKnown
-        ];
-
-        const allKnown = known.every(Boolean);
-        const generated = asFiniteNumber(generatedUnix);
+      function updatePresence(geneData) {
+        const generated = asFiniteNumber(geneData?.generated_unix);
         const ageSeconds = generated === null
           ? Infinity
           : (Date.now() / 1000) - generated;
-        const geneFresh = ageSeconds <= GENE_STALE_AFTER_SECONDS;
 
-        if (!geneFresh) {
-          $("sensorSummary").textContent = "GENE signal stale";
-          $("summaryDot").classList.add("off");
-          $("presenceTitle").textContent = "GENE is offline";
-          $("presenceCopy").textContent = generated === null
-            ? "No current studio signal."
-            : `Last signal received ${Math.max(1, Math.round(ageSeconds / 60))} minutes ago.`;
-          return;
-        }
-
-        $("sensorSummary").textContent = allKnown
-          ? "All sensors reporting"
-          : "Partial field reporting";
-
-        $("summaryDot").classList.toggle("off", !allKnown);
-        $("presenceTitle").textContent = allKnown
-          ? "GENE is present"
-          : "GENE is listening";
-
-        $("presenceCopy").textContent = allKnown
-          ? "Watching the studio field."
-          : "Waiting for the remaining field.";
+        $("presenceTitle").textContent =
+          ageSeconds <= GENE_STALE_AFTER_SECONDS
+            ? "GENE is present"
+            : "GENE is offline";
       }
 
       async function getJson(url) {
@@ -1099,49 +818,32 @@
       async function refresh() {
         const warning = $("loadWarning");
 
-        const [geneResult, kilnResult, observatoryResult] = await Promise.allSettled([
+        const [geneResult, kilnResult] = await Promise.allSettled([
           getJson(GENE_STATE_URL),
-          getJson(KILN_STATE_URL),
-          getJson(OBSERVATORY_STATE_URL)
+          getJson(KILN_STATE_URL)
         ]);
 
-        let geneStatus = { micKnown: false, motionKnown: false };
-        let kilnStatus = { heatKnown: false };
-
         if (geneResult.status === "fulfilled") {
-          geneStatus = renderGene(geneResult.value);
+          renderGene(geneResult.value);
+          updatePresence(geneResult.value);
+        } else {
+          $("presenceTitle").textContent = "GENE is offline";
         }
 
         if (kilnResult.status === "fulfilled") {
-          kilnStatus = renderKiln(kilnResult.value);
+          renderKiln(kilnResult.value);
         }
-
-        if (observatoryResult.status === "fulfilled") {
-          renderObservatory(observatoryResult.value);
-        }
-
-        const generatedUnix =
-          geneResult.status === "fulfilled"
-            ? geneResult.value.generated_unix
-            : null;
-
-        updateSummary(
-          { ...geneStatus, ...kilnStatus },
-          generatedUnix
-        );
 
         const failed =
           geneResult.status === "rejected" ||
-          kilnResult.status === "rejected" ||
-          observatoryResult.status === "rejected";
+          kilnResult.status === "rejected";
 
         warning.classList.toggle("show", failed);
 
         if (failed) {
           console.warn("GENE live-card refresh:", {
             gene: geneResult,
-            kiln: kilnResult,
-            observatory: observatoryResult
+            kiln: kilnResult
           });
         }
       }
@@ -1153,7 +855,3 @@
 
 </body>
 </html>
-
-
-
-clea

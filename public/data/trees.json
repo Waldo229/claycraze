@@ -1,5 +1,26 @@
 [
   {
+    "id": "azalea",
+    "title": "Azalea",
+    "species": "Azalea",
+    "cultivar": "",
+    "style": "",
+    "person_slug": "chris-schmuck",
+    "owner_slug": "chris-schmuck",
+    "tree_slug": "azalea",
+    "image_path": "/images/trees/chris-schmuck/azalea.jpg",
+    "page_path": "/trees/chris-schmuck/azalea/",
+    "status": "shown-by-appointment",
+    "owner_credit": "Collection of Chris Schmuck",
+    "pot_credit": "",
+    "display_notes": "",
+    "provenance": "",
+    "description": "Pyrrotechnics",
+    "notes": "",
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
+  },
+  {
     "id": "bare-in-the-forest",
     "title": "Bare in the Forest",
     "species": "Maple",
@@ -17,8 +38,8 @@
     "provenance": "",
     "description": "This tree was exhibited at the Winter Silhouette Bonsai Show at the University of North Carolina Research Campus. Set within an elegant four-story marble-lined atrium, the show is nationally recognized and regarded as one of the premier bonsai exhibitions on the East Coast, drawing exhibitors and vendors from across the country.",
     "notes": "",
-    "created_at": "2026-07-09 15:55:01",
-    "updated_at": "2026-07-09 15:55:01"
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
   },
   {
     "id": "han-shan",
@@ -38,8 +59,8 @@
     "provenance": "",
     "description": "I acquired this tree in 2018 and in 2023 took it to a Jenifer Price workshop sponsored by the Virginia Bonsai Society.  Jenifer observed that the tree was weak and in desperate need of re-potting. She advised that I should wait at least two years, maybe three, before thinking about styling. It was her opinion that the tree is roughly 80 year old. It appears that the tree has become more healthy and vigorous and I look forward to perhaps returning with it when she conducts another session for the club.",
     "notes": "",
-    "created_at": "2026-07-09 15:55:01",
-    "updated_at": "2026-07-09 15:55:01"
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
   },
   {
     "id": "i-hardly-know-yew",
@@ -59,8 +80,8 @@
     "provenance": "",
     "description": "my tree",
     "notes": "",
-    "created_at": "2026-07-09 15:55:01",
-    "updated_at": "2026-07-09 15:55:01"
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
   },
   {
     "id": "tree8",
@@ -80,8 +101,29 @@
     "provenance": "",
     "description": "Currently shown at Longwood Gardens Bonsai Show.",
     "notes": "",
-    "created_at": "2026-07-09 15:55:01",
-    "updated_at": "2026-07-09 15:55:01"
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
+  },
+  {
+    "id": "pitch-pine",
+    "title": "Pitch Pine",
+    "species": "Pitch Pine",
+    "cultivar": "",
+    "style": "",
+    "person_slug": "chris-schmuck",
+    "owner_slug": "chris-schmuck",
+    "tree_slug": "pitch-pine",
+    "image_path": "/images/trees/chris-schmuck/pitch-pine.jpg",
+    "page_path": "/trees/chris-schmuck/pitch-pine/",
+    "status": "shown-by-appointment",
+    "owner_credit": "Collection of Chris Schmuck",
+    "pot_credit": "",
+    "display_notes": "",
+    "provenance": "",
+    "description": "Sporting an aged and character filled presents, this tree has been passed down through multiple owners.  Originally collected in Northern Pennsylvania.",
+    "notes": "",
+    "created_at": "2026-07-09 22:08:39",
+    "updated_at": "2026-07-09 22:08:39"
   },
   {
     "id": "shih-te",
@@ -101,8 +143,8 @@
     "provenance": "",
     "description": "Black pine a big one",
     "notes": "",
-    "created_at": "2026-07-09 15:55:01",
-    "updated_at": "2026-07-09 15:55:01"
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
   },
   {
     "id": "test",
@@ -122,7 +164,7 @@
     "provenance": "",
     "description": "Testing the system",
     "notes": "",
-    "created_at": "2026-07-09 18:00:08",
-    "updated_at": "2026-07-09 18:00:08"
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
   }
 ]
