@@ -84,6 +84,10 @@
       padding: 22px;
     }
 
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
     .panel-title {
       margin: 0 0 16px;
       color: var(--gene-cream);
@@ -93,40 +97,40 @@
       text-transform: uppercase;
     }
 
-    .field {
-      margin-bottom: 16px;
+    .mission-summary {
+      display: grid;
+      gap: 14px;
     }
 
-    .field label {
+    .summary-row {
+      padding: 15px 16px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 12px;
+      background: #0a0f12;
+    }
+
+    .summary-label {
       display: block;
       margin-bottom: 7px;
       color: var(--gene-green);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .field input,
-    .field textarea {
-      width: 100%;
-      border: 1px solid rgba(231, 221, 199, 0.22);
-      border-radius: 10px;
-      background: #0a0f12;
+    .summary-value {
+      display: block;
       color: var(--gene-cream);
-      padding: 12px 13px;
-      font: inherit;
-    }
-
-    .field textarea {
-      min-height: 110px;
-      resize: vertical;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.08rem;
+      line-height: 1.5;
     }
 
     .countdown {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 18px;
     }
 
     .count-box {
@@ -155,11 +159,7 @@
     }
 
     .status-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px 18px;
+      padding: 18px;
       border: 1px solid rgba(154, 198, 78, 0.5);
       border-radius: 12px;
       background: rgba(154, 198, 78, 0.04);
@@ -173,19 +173,28 @@
     }
 
     .status-value {
+      margin-top: 4px;
       color: var(--gene-green);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       letter-spacing: 0.06em;
     }
 
-    .checklist {
+    .mission-state {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--gene-line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .readiness-list {
       display: grid;
       gap: 10px;
       margin-top: 18px;
     }
 
-    .checkline {
+    .readiness-item {
       display: flex;
       gap: 10px;
       align-items: flex-start;
@@ -193,9 +202,15 @@
       line-height: 1.4;
     }
 
-    .checkline input {
-      margin-top: 3px;
-      accent-color: var(--gene-green);
+    .readiness-mark {
+      color: var(--gene-green);
+      width: 1.2rem;
+      flex: 0 0 1.2rem;
+      font-weight: 700;
+    }
+
+    .readiness-mark.off {
+      color: var(--gene-muted);
     }
 
     .limitations {
@@ -206,68 +221,10 @@
       border-radius: 10px;
       background: rgba(211, 165, 88, 0.06);
       color: #e5c38b;
+      line-height: 1.5;
     }
 
     .limitations.show { display: block; }
-
-    .ack {
-      display: none;
-      margin-top: 14px;
-      padding: 12px 14px;
-      border: 1px solid rgba(231, 221, 199, 0.18);
-      border-radius: 10px;
-      color: var(--gene-cream);
-      background: rgba(255,255,255,0.01);
-    }
-
-    .ack.show { display: block; }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .mc-button {
-      min-height: 50px;
-      padding: 12px 20px;
-      border-radius: 10px;
-      border: 1px solid rgba(154, 198, 78, 0.62);
-      background: rgba(154, 198, 78, 0.04);
-      color: var(--gene-green);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .mc-button:hover:not(:disabled),
-    .mc-button:focus-visible:not(:disabled) {
-      background: rgba(154, 198, 78, 0.1);
-      outline: none;
-    }
-
-    .mc-button:disabled {
-      cursor: not-allowed;
-      color: #676f72;
-      border-color: rgba(103,111,114,0.4);
-      background: rgba(103,111,114,0.04);
-    }
-
-    .mc-button.secondary {
-      color: var(--gene-cream);
-      border-color: rgba(231,221,199,0.25);
-    }
-
-    .mission-note {
-      margin: 18px 0 0;
-      color: var(--gene-muted);
-      font-family: Georgia, "Times New Roman", serif;
-      font-style: italic;
-      line-height: 1.5;
-    }
 
     .narration {
       min-height: 180px;
@@ -285,6 +242,30 @@
       font-weight: 500;
     }
 
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .mc-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
     .mc-footer {
       padding: 0 24px 24px;
       text-align: center;
@@ -293,8 +274,22 @@
       font-style: italic;
     }
 
+    .load-warning {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px solid rgba(210, 135, 60, 0.5);
+      border-radius: 8px;
+      color: #e1b47b;
+      background: rgba(210, 135, 60, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .load-warning.show { display: block; }
+
     @media (max-width: 900px) {
       .mc-grid { grid-template-columns: 1fr; }
+      .panel.full { grid-column: auto; }
     }
 
     @media (max-width: 620px) {
@@ -330,8 +325,7 @@
         <p class="mc-kicker">GENE / Firing Mission</p>
         <h1 class="mc-title">Mission Control</h1>
         <p class="mc-subtitle">
-          Define the target. Set the time. Verify readiness. GENE reports its own condition;
-          the human alone decides launch or hold.
+          Follow the planned firing, countdown, readiness, and GENE's narration as the mission approaches ignition.
         </p>
       </header>
 
@@ -340,19 +334,23 @@
         <section class="panel">
           <h2 class="panel-title">Mission Plan</h2>
 
-          <div class="field">
-            <label for="missionName">Mission name</label>
-            <input id="missionName" type="text" placeholder="Example: August reduction firing">
-          </div>
+          <div class="mission-summary">
+            <div class="summary-row">
+              <span class="summary-label">Mission name</span>
+              <span class="summary-value" id="missionName">No mission announced.</span>
+            </div>
 
-          <div class="field">
-            <label for="missionTarget">Target / purpose</label>
-            <textarea id="missionTarget" placeholder="What is this firing intended to test, reveal, or accomplish?"></textarea>
-          </div>
+            <div class="summary-row">
+              <span class="summary-label">Target / purpose</span>
+              <span class="summary-value" id="missionTarget">
+                No target has been published for this firing.
+              </span>
+            </div>
 
-          <div class="field">
-            <label for="launchTime">Planned ignition time</label>
-            <input id="launchTime" type="datetime-local">
+            <div class="summary-row">
+              <span class="summary-label">Planned ignition</span>
+              <span class="summary-value" id="launchDisplay">Not yet scheduled.</span>
+            </div>
           </div>
 
           <div class="countdown" aria-label="Countdown">
@@ -373,89 +371,45 @@
               <span class="count-label">Seconds</span>
             </div>
           </div>
-
-          <p class="mission-note">
-            Countdown is presentation and planning only. Ignition remains a human action.
-          </p>
         </section>
 
         <section class="panel">
           <h2 class="panel-title">Preflight Readiness</h2>
 
           <div class="status-box">
-            <div>
-              <div class="status-label">GENE status</div>
-              <div class="status-value" id="readiness">NOT READY</div>
+            <div class="status-label">GENE status</div>
+            <div class="status-value" id="readiness">AWAITING MISSION</div>
+          </div>
+
+          <div class="mission-state">
+            <div class="status-label">Mission status</div>
+            <div class="status-value" id="missionStatus">PLANNED</div>
+          </div>
+
+          <div class="readiness-list" id="readinessList">
+            <div class="readiness-item">
+              <span class="readiness-mark off">•</span>
+              <span>No preflight record has been published.</span>
             </div>
-            <div class="status-label">Human authority final</div>
           </div>
 
-          <div class="checklist">
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Mission target defined">
-              <span>Mission target defined</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Planned ignition time entered">
-              <span>Planned ignition time entered</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Kiln-watch data available">
-              <span>Kiln-watch data available</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Observation / recording path available">
-              <span>Observation / recording path available</span>
-            </label>
-
-            <label class="checkline">
-              <input type="checkbox" class="preflight" data-label="Human present and responsible">
-              <span>Human present and responsible</span>
-            </label>
-          </div>
-
-          <div class="limitations" id="limitations">
-            <strong>READY WITH LIMITATIONS</strong>
-            <div id="limitationsList">One or more non-critical mission conditions remain unresolved.</div>
-          </div>
-
-          <label class="ack" id="ackBox">
-            <input type="checkbox" id="ackLimitations">
-            I have seen and accept the stated limitations.
-          </label>
-
-          <div class="button-row">
-            <button class="mc-button secondary" id="evaluateButton" type="button">Run Preflight</button>
-            <button class="mc-button" id="launchButton" type="button" disabled>Launch Observation</button>
-          </div>
+          <div class="limitations" id="limitations"></div>
         </section>
 
-        <section class="panel">
+        <section class="panel full">
           <h2 class="panel-title">GENE Narration</h2>
           <div class="narration" id="narration">
             <strong>GENE:</strong> Mission Control is quiet. No firing has been called.
           </div>
-        </section>
-
-        <section class="panel">
-          <h2 class="panel-title">Mission Sequence</h2>
-          <div class="narration">
-            <strong>1.</strong> Mission target named.<br>
-            <strong>2.</strong> Countdown begins.<br>
-            <strong>3.</strong> GENE performs preflight and reports readiness.<br>
-            <strong>4.</strong> Human decides LAUNCH or HOLD.<br>
-            <strong>5.</strong> Human ignites kiln.<br>
-            <strong>6.</strong> GENE confirms ignition from evidence.<br>
-            <strong>7.</strong> Firing states and narration unfold through the mission.<br>
-            <strong>8.</strong> Recovery and debrief close the record.
-          </div>
 
           <div class="button-row">
-            <a class="mc-button secondary" href="/kilnwatch.html" style="text-decoration:none; display:inline-flex; align-items:center;">Return to GENE</a>
-            <a class="mc-button secondary" href="/observatory.html" style="text-decoration:none; display:inline-flex; align-items:center;">Enter Observatory</a>
+            <a class="mc-button" href="/kilnwatch.html">Return to GENE</a>
+            <a class="mc-button" href="/observatory.html">Enter Observatory</a>
+            <a class="mc-button" href="/kiln-watch-graph.html">Firing Record</a>
+          </div>
+
+          <div class="load-warning" id="loadWarning">
+            No current mission record is available. Mission Control will retry automatically.
           </div>
         </section>
 
@@ -472,112 +426,157 @@
     (() => {
       "use strict";
 
-      const $ = (id) => document.getElementById(id);
-      const preflightBoxes = [...document.querySelectorAll(".preflight")];
+      const MISSION_URL = "https://claycraze.com/gene/mission_control_latest.json";
+      const REFRESH_MS = 10000;
 
-      let countdownTimer = null;
+      const $ = (id) => document.getElementById(id);
+
+      let plannedIgnition = null;
 
       function pad(value) {
         return String(value).padStart(2, "0");
       }
 
-      function updateCountdown() {
-        const raw = $("launchTime").value;
+      function formatDate(value) {
+        if (!value) return "Not yet scheduled.";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return String(value);
 
-        if (!raw) {
+        return new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }).format(date);
+      }
+
+      function updateCountdown() {
+        if (!plannedIgnition) {
           ["days", "hours", "minutes", "seconds"].forEach((id) => $(id).textContent = "00");
           return;
         }
 
-        const target = new Date(raw).getTime();
-        const now = Date.now();
-        const delta = Math.max(0, target - now);
+        const target = new Date(plannedIgnition).getTime();
+        if (Number.isNaN(target)) return;
 
+        const delta = Math.max(0, target - Date.now());
         const totalSeconds = Math.floor(delta / 1000);
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
 
-        $("days").textContent = pad(days);
-        $("hours").textContent = pad(hours);
-        $("minutes").textContent = pad(minutes);
-        $("seconds").textContent = pad(seconds);
-
-        if (delta > 0 && delta <= 60 * 60 * 1000) {
-          $("narration").innerHTML =
-            `<strong>GENE:</strong> The firing has moved from hours into minutes. Mission Control is awake.`;
-        }
+        $("days").textContent = pad(Math.floor(totalSeconds / 86400));
+        $("hours").textContent = pad(Math.floor((totalSeconds % 86400) / 3600));
+        $("minutes").textContent = pad(Math.floor((totalSeconds % 3600) / 60));
+        $("seconds").textContent = pad(totalSeconds % 60);
       }
 
-      function evaluateReadiness() {
-        const targetDefined = $("missionTarget").value.trim().length > 0;
-        const timeDefined = $("launchTime").value.trim().length > 0;
-
-        preflightBoxes[0].checked = targetDefined;
-        preflightBoxes[1].checked = timeDefined;
-
-        const results = preflightBoxes.map((box) => ({
-          checked: box.checked,
-          label: box.dataset.label
-        }));
-
-        const unresolved = results.filter((item) => !item.checked);
-        const criticalMissing = !targetDefined || !timeDefined || !preflightBoxes[4].checked;
-
-        $("limitations").classList.remove("show");
-        $("ackBox").classList.remove("show");
-        $("ackLimitations").checked = false;
-
-        if (criticalMissing) {
-          $("readiness").textContent = "NOT READY";
-          $("readiness").style.color = "var(--gene-red)";
-          $("launchButton").disabled = true;
-          $("narration").innerHTML =
-            `<strong>GENE:</strong> Preflight incomplete. I cannot report readiness for this mission.`;
+      function renderReadiness(items) {
+        if (!Array.isArray(items) || items.length === 0) {
+          $("readinessList").innerHTML = `
+            <div class="readiness-item">
+              <span class="readiness-mark off">•</span>
+              <span>No preflight record has been published.</span>
+            </div>
+          `;
           return;
         }
 
-        if (unresolved.length > 0) {
-          $("readiness").textContent = "READY WITH LIMITATIONS";
-          $("readiness").style.color = "var(--gene-amber)";
+        $("readinessList").innerHTML = items.map((item) => {
+          const ok = Boolean(item?.ok ?? item?.ready ?? item?.passed);
+          const label = item?.label ?? item?.name ?? item?.text ?? "Preflight condition";
+          return `
+            <div class="readiness-item">
+              <span class="readiness-mark ${ok ? "" : "off"}">${ok ? "✓" : "•"}</span>
+              <span>${String(label)}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderMission(data) {
+        $("missionName").textContent =
+          data?.mission_name ?? data?.name ?? "No mission announced.";
+
+        $("missionTarget").textContent =
+          data?.target ??
+          data?.purpose ??
+          "No target has been published for this firing.";
+
+        plannedIgnition =
+          data?.planned_ignition ??
+          data?.planned_ignition_time ??
+          data?.launch_time ??
+          null;
+
+        $("launchDisplay").textContent = formatDate(plannedIgnition);
+
+        $("readiness").textContent =
+          data?.readiness ??
+          data?.gene_status ??
+          "AWAITING MISSION";
+
+        $("missionStatus").textContent =
+          data?.mission_status ??
+          data?.status ??
+          "PLANNED";
+
+        renderReadiness(data?.preflight ?? data?.readiness_items ?? []);
+
+        const limitations = Array.isArray(data?.limitations)
+          ? data.limitations.filter(Boolean)
+          : [];
+
+        if (limitations.length) {
           $("limitations").classList.add("show");
-          $("ackBox").classList.add("show");
-          $("limitationsList").textContent =
-            "Unresolved: " + unresolved.map((item) => item.label).join("; ");
-          $("launchButton").disabled = true;
-          $("narration").innerHTML =
-            `<strong>GENE:</strong> Mission can proceed, but limitations remain. Human acknowledgment is required.`;
-          return;
+          $("limitations").innerHTML =
+            `<strong>Limitations:</strong> ${limitations.join("; ")}`;
+        } else {
+          $("limitations").classList.remove("show");
+          $("limitations").textContent = "";
         }
 
-        $("readiness").textContent = "READY";
-        $("readiness").style.color = "var(--gene-green)";
-        $("launchButton").disabled = false;
-        $("narration").innerHTML =
-          `<strong>GENE:</strong> Preflight complete. I am ready to observe. The launch decision remains yours.`;
+        const narration =
+          data?.narration ??
+          data?.gene_narration ??
+          data?.message ??
+          null;
+
+        if (narration) {
+          $("narration").innerHTML = `<strong>GENE:</strong> ${String(narration)}`;
+        }
+
+        updateCountdown();
       }
 
-      $("ackLimitations").addEventListener("change", (event) => {
-        if ($("readiness").textContent === "READY WITH LIMITATIONS") {
-          $("launchButton").disabled = !event.target.checked;
+      async function getJson(url) {
+        const separator = url.includes("?") ? "&" : "?";
+        const response = await fetch(
+          `${url}${separator}t=${Date.now()}`,
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(`${url} returned ${response.status}`);
         }
-      });
 
-      $("evaluateButton").addEventListener("click", evaluateReadiness);
+        return response.json();
+      }
 
-      $("launchButton").addEventListener("click", () => {
-        $("narration").innerHTML =
-          `<strong>GENE:</strong> Observation has begun. I am watching for ignition evidence.`;
-      });
+      async function refresh() {
+        const warning = $("loadWarning");
 
-      $("launchTime").addEventListener("change", updateCountdown);
-      $("missionTarget").addEventListener("input", () => {
-        preflightBoxes[0].checked = $("missionTarget").value.trim().length > 0;
-      });
+        try {
+          const data = await getJson(MISSION_URL);
+          renderMission(data);
+          warning.classList.remove("show");
+        } catch (error) {
+          warning.classList.add("show");
+          console.warn("GENE Mission Control refresh:", error);
+        }
+      }
 
-      countdownTimer = window.setInterval(updateCountdown, 1000);
-      updateCountdown();
+      refresh();
+      window.setInterval(refresh, REFRESH_MS);
+      window.setInterval(updateCountdown, 1000);
     })();
   </script>
 
