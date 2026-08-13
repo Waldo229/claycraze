@@ -122,6 +122,201 @@
       resize: vertical;
     }
 
+    .field select {
+      width: 100%;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 10px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      padding: 12px 13px;
+      font: inherit;
+    }
+
+    .mission-subsection {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(231, 221, 199, 0.12);
+    }
+
+    .mission-subsection-title {
+      margin: 0 0 13px;
+      color: var(--gene-muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px 13px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 10px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      line-height: 1.35;
+      cursor: pointer;
+    }
+
+    .choice-card input {
+      margin-top: 3px;
+      accent-color: var(--gene-green);
+    }
+
+    .choice-card strong {
+      display: block;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+    }
+
+    .choice-card small {
+      display: block;
+      margin-top: 2px;
+      color: var(--gene-muted);
+      font-size: 0.78rem;
+    }
+
+    .conditional-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid rgba(211, 165, 88, 0.28);
+      border-radius: 10px;
+      background: rgba(211, 165, 88, 0.035);
+    }
+
+    .conditional-box.show {
+      display: block;
+    }
+
+    .inline-note {
+      margin: 7px 0 0;
+      color: var(--gene-muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .validation-note {
+      display: none;
+      margin-top: 12px;
+      padding: 11px 13px;
+      border: 1px solid rgba(200, 97, 85, 0.45);
+      border-radius: 9px;
+      color: #e5a49b;
+      background: rgba(200, 97, 85, 0.055);
+      line-height: 1.45;
+    }
+
+    .validation-note.show {
+      display: block;
+    }
+
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-panel {
+      padding: 13px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 10px;
+      background: #0a0f12;
+    }
+
+    .mini-panel label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gene-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mini-panel input,
+    .mini-panel select {
+      width: 100%;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 8px;
+      background: #080c0f;
+      color: var(--gene-cream);
+      padding: 10px 11px;
+      font: inherit;
+    }
+
+    .heatwork-board {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .heatwork-card {
+      padding: 15px;
+      border: 1px solid rgba(154, 198, 78, 0.24);
+      border-radius: 12px;
+      background: rgba(154, 198, 78, 0.025);
+    }
+
+    .heatwork-card h3 {
+      margin: 0 0 10px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(231, 221, 199, 0.08);
+      color: var(--gene-muted);
+      font-size: 0.86rem;
+    }
+
+    .metric-row:last-child {
+      border-bottom: 0;
+    }
+
+    .metric-row strong {
+      color: var(--gene-cream);
+      font-weight: 500;
+    }
+
+    .heatwork-estimate {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(154, 198, 78, 0.2);
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 760px) {
+      .mini-grid,
+      .heatwork-board {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .choice-grid { grid-template-columns: 1fr; }
+    }
+
     .countdown {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -399,7 +594,7 @@
 
           <div class="field">
             <label for="missionName">Mission name</label>
-            <input id="missionName" type="text" placeholder="Example: August reduction firing">
+            <input id="missionName" type="text" placeholder="Example: Poor Boy / Richie heat-work comparison">
           </div>
 
           <div class="field">
@@ -407,10 +602,208 @@
             <textarea id="missionTarget" placeholder="What is this firing intended to test, reveal, or accomplish?"></textarea>
           </div>
 
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Firing profile</p>
+
+            <div class="field">
+              <label for="firingType">Firing type</label>
+              <select id="firingType">
+                <option value="">Select firing type</option>
+                <option value="Bisque">Bisque</option>
+                <option value="Cone 6">Cone 6</option>
+                <option value="Cone 10">Cone 10</option>
+                <option value="Custom">Custom / research firing</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="targetHeatwork">Target heat-work</label>
+              <input id="targetHeatwork" type="text" placeholder="Example: Cone 10 equivalent heat-work">
+              <p class="inline-note">Record the ceramic target as heat-work, not merely peak temperature.</p>
+            </div>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Kiln assignment</p>
+
+            <div class="choice-grid">
+              <label class="choice-card">
+                <input id="kilnRichie" type="checkbox">
+                <span>
+                  <strong>Richie — Electric</strong>
+                  <small>Oxidation atmosphere</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input id="kilnPoorBoy" type="checkbox">
+                <span>
+                  <strong>Poor Boy — Gas</strong>
+                  <small>Oxidation or reduction; one atmosphere per firing</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="conditional-box" id="poorBoyAtmosphereBox">
+              <p class="mission-subsection-title">Poor Boy atmosphere</p>
+              <div class="choice-grid">
+                <label class="choice-card">
+                  <input type="radio" name="poorBoyAtmosphere" value="Oxidation">
+                  <span><strong>Oxidation</strong></span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="poorBoyAtmosphere" value="Reduction">
+                  <span><strong>Reduction</strong></span>
+                </label>
+              </div>
+              <p class="inline-note">Mutually exclusive by design: Poor Boy fires in one atmosphere or the other, never both simultaneously.</p>
+            </div>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Observation plan</p>
+
+            <div class="field">
+              <label for="observationGoal">Observation goal</label>
+              <select id="observationGoal">
+                <option value="">Select primary observation</option>
+                <option value="Heat-work equivalence">Heat-work equivalence</option>
+                <option value="Vertical heat-work distribution">Vertical heat-work distribution</option>
+                <option value="Expand Poor Boy sweet spot">Expand Poor Boy sweet spot</option>
+                <option value="Damper effect on heat distribution">Damper effect on heat distribution</option>
+                <option value="Kiln comparison">Kiln comparison</option>
+                <option value="Production firing">Production firing</option>
+                <option value="Other">Other / open inquiry</option>
+              </select>
+            </div>
+
+            <div class="choice-grid">
+              <label class="choice-card">
+                <input id="trackDamper" type="checkbox">
+                <span>
+                  <strong>Track Poor Boy damper position</strong>
+                  <small>Record position changes against heat-work distribution</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input id="witnessCones" type="checkbox">
+                <span>
+                  <strong>Witness cones planned</strong>
+                  <small>Use physical cone evidence to check the estimate after firing</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="conditional-box" id="poorBoyStudyBox">
+              <p class="mission-subsection-title">Poor Boy heat-work map</p>
+
+              <div class="mini-grid">
+                <div class="mini-panel">
+                  <label for="poorBoyTopCone">Top witness cone</label>
+                  <input id="poorBoyTopCone" type="text" placeholder="Example: 8 / 9 / 10">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="poorBoyMidCone">Middle witness cone</label>
+                  <input id="poorBoyMidCone" type="text" placeholder="Reference sweet spot">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="poorBoyBottomCone">Bottom witness cone</label>
+                  <input id="poorBoyBottomCone" type="text" placeholder="Example: 10 / 11">
+                </div>
+              </div>
+
+              <div class="mini-grid" style="margin-top:10px;">
+                <div class="mini-panel">
+                  <label for="poorBoyTopProbe">Top probe / zone</label>
+                  <input id="poorBoyTopProbe" type="text" placeholder="Optional identifier">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="poorBoyMidProbe">Middle probe / zone</label>
+                  <input id="poorBoyMidProbe" type="text" placeholder="Example: GREEN_0">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="poorBoyBottomProbe">Bottom probe / zone</label>
+                  <input id="poorBoyBottomProbe" type="text" placeholder="Example: RED_1">
+                </div>
+              </div>
+
+              <div class="field" style="margin-top:14px;">
+                <label for="damperScale">Damper reference</label>
+                <input id="damperScale" type="text" placeholder="Example: 0–100% open, or physical mark positions">
+                <p class="inline-note">Use a repeatable reference so later firings can compare damper position with vertical heat-work spread.</p>
+              </div>
+            </div>
+
+            <div class="conditional-box" id="richieStudyBox">
+              <p class="mission-subsection-title">Richie heat-work reference</p>
+
+              <div class="mini-grid">
+                <div class="mini-panel">
+                  <label for="richieWitnessCone">Witness cone</label>
+                  <input id="richieWitnessCone" type="text" placeholder="Example: Cone 10">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="richieProbe">Probe / zone</label>
+                  <input id="richieProbe" type="text" placeholder="Optional identifier">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="richieReference">Reference role</label>
+                  <input id="richieReference" type="text" placeholder="Example: comparison standard">
+                </div>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+              <label for="knownCondition">Known condition / hypothesis</label>
+              <textarea id="knownCondition" placeholder="Example: Poor Boy's middle is the known sweet spot; upper shelves tend to lag in accumulated heat-work."></textarea>
+            </div>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Estimated HEAT-WORK</p>
+            <p class="inline-note">
+              Provisional live estimate based on temperature and rate of rise. Witness cones remain the physical check after firing.
+            </p>
+
+            <div class="heatwork-board">
+              <div class="heatwork-card">
+                <h3>Poor Boy</h3>
+                <div class="metric-row"><span>Temperature</span><strong id="poorBoyHwTemp">—</strong></div>
+                <div class="metric-row"><span>Rate of rise</span><strong id="poorBoyHwRate">—</strong></div>
+                <div class="metric-row"><span>Atmosphere</span><strong id="poorBoyHwAtmosphere">—</strong></div>
+                <div class="heatwork-estimate">Estimated HEAT-WORK: <span id="poorBoyHwEstimate">Awaiting firing data</span></div>
+              </div>
+
+              <div class="heatwork-card">
+                <h3>Richie</h3>
+                <div class="metric-row"><span>Temperature</span><strong id="richieHwTemp">—</strong></div>
+                <div class="metric-row"><span>Rate of rise</span><strong id="richieHwRate">—</strong></div>
+                <div class="metric-row"><span>Atmosphere</span><strong>Oxidation</strong></div>
+                <div class="heatwork-estimate">Estimated HEAT-WORK: <span id="richieHwEstimate">Awaiting firing data</span></div>
+              </div>
+            </div>
+
+            <div class="mini-panel" style="margin-top:12px;">
+              <label>Comparative heat-work</label>
+              <div class="metric-row"><span>Richie / Poor Boy delta</span><strong id="heatworkDelta">Awaiting firing data</strong></div>
+              <div class="metric-row"><span>Poor Boy vertical spread</span><strong id="poorBoySpread">Awaiting cone / zone data</strong></div>
+            </div>
+          </div>
+
           <div class="field">
             <label for="launchTime">Planned ignition time</label>
             <input id="launchTime" type="datetime-local">
           </div>
+
+          <div class="validation-note" id="missionValidation"></div>
 
           <div class="countdown" aria-label="Countdown">
             <div class="count-box">
@@ -574,15 +967,142 @@
         row.querySelector(".check-status").textContent = label || normalized || "WAIT";
       }
 
+      function selectedPoorBoyAtmosphere() {
+        const selected = document.querySelector('input[name="poorBoyAtmosphere"]:checked');
+        return selected ? selected.value : "";
+      }
+
+      function syncKilnLogic() {
+        const poorBoySelected = $("kilnPoorBoy").checked;
+        const richieSelected = $("kilnRichie").checked;
+
+        $("poorBoyAtmosphereBox").classList.toggle("show", poorBoySelected);
+        $("poorBoyStudyBox").classList.toggle("show", poorBoySelected);
+        $("richieStudyBox").classList.toggle("show", richieSelected);
+
+        $("poorBoyHwAtmosphere").textContent =
+          poorBoySelected ? (selectedPoorBoyAtmosphere() || "Select atmosphere") : "Not selected";
+
+        if (!poorBoySelected) {
+          document.querySelectorAll('input[name="poorBoyAtmosphere"]').forEach((radio) => {
+            radio.checked = false;
+          });
+          $("trackDamper").checked = false;
+        }
+      }
+
+      function missionValidationErrors() {
+        const errors = [];
+
+        if (!$("missionTarget").value.trim()) errors.push("Mission target / purpose is required.");
+        if (!$("launchTime").value.trim()) errors.push("Planned ignition time is required.");
+        if (!$("firingType").value) errors.push("Firing type is required.");
+        if (!$("targetHeatwork").value.trim()) errors.push("Target heat-work is required.");
+
+        const richie = $("kilnRichie").checked;
+        const poorBoy = $("kilnPoorBoy").checked;
+
+        if (!richie && !poorBoy) {
+          errors.push("Select at least one kiln: Richie and/or Poor Boy.");
+        }
+
+        if (poorBoy && !selectedPoorBoyAtmosphere()) {
+          errors.push("Poor Boy requires one atmosphere: oxidation or reduction.");
+        }
+
+        return errors;
+      }
+
+      function renderMissionValidation(errors) {
+        const box = $("missionValidation");
+
+        if (!errors.length) {
+          box.classList.remove("show");
+          box.textContent = "";
+          return;
+        }
+
+        box.classList.add("show");
+        box.textContent = errors.join(" ");
+      }
+
+      function buildPreflightTarget() {
+        const parts = [
+          $("missionTarget").value.trim(),
+          `Firing type: ${$("firingType").value}`,
+          `Target heat-work: ${$("targetHeatwork").value.trim()}`
+        ];
+
+        const kilns = [];
+        if ($("kilnRichie").checked) kilns.push("Richie — Electric — Oxidation");
+        if ($("kilnPoorBoy").checked) {
+          kilns.push(`Poor Boy — Gas — ${selectedPoorBoyAtmosphere()}`);
+        }
+
+        if (kilns.length) parts.push(`Kiln assignment: ${kilns.join("; ")}`);
+
+        if ($("observationGoal").value) {
+          parts.push(`Observation goal: ${$("observationGoal").value}`);
+        }
+
+        if ($("trackDamper").checked) {
+          parts.push("Poor Boy damper position will be tracked.");
+        }
+
+        if ($("witnessCones").checked) {
+          parts.push("Witness cones are planned.");
+        }
+
+        if ($("knownCondition").value.trim()) {
+          parts.push(`Known condition / hypothesis: ${$("knownCondition").value.trim()}`);
+        }
+
+        if ($("kilnPoorBoy").checked) {
+          const pbZonePlan = [
+            $("poorBoyTopProbe").value.trim() ? `top=${$("poorBoyTopProbe").value.trim()}` : "",
+            $("poorBoyMidProbe").value.trim() ? `middle=${$("poorBoyMidProbe").value.trim()}` : "",
+            $("poorBoyBottomProbe").value.trim() ? `bottom=${$("poorBoyBottomProbe").value.trim()}` : ""
+          ].filter(Boolean);
+
+          if (pbZonePlan.length) {
+            parts.push(`Poor Boy zone plan: ${pbZonePlan.join(", ")}`);
+          }
+
+          if ($("damperScale").value.trim()) {
+            parts.push(`Damper reference: ${$("damperScale").value.trim()}`);
+          }
+
+          const pbCones = [
+            $("poorBoyTopCone").value.trim() ? `top=${$("poorBoyTopCone").value.trim()}` : "",
+            $("poorBoyMidCone").value.trim() ? `middle=${$("poorBoyMidCone").value.trim()}` : "",
+            $("poorBoyBottomCone").value.trim() ? `bottom=${$("poorBoyBottomCone").value.trim()}` : ""
+          ].filter(Boolean);
+
+          if (pbCones.length) {
+            parts.push(`Poor Boy witness cone plan: ${pbCones.join(", ")}`);
+          }
+        }
+
+        if ($("kilnRichie").checked) {
+          if ($("richieWitnessCone").value.trim()) {
+            parts.push(`Richie witness cone: ${$("richieWitnessCone").value.trim()}`);
+          }
+          if ($("richieReference").value.trim()) {
+            parts.push(`Richie reference role: ${$("richieReference").value.trim()}`);
+          }
+        }
+
+        return parts.join(" | ");
+      }
+
       function updateLaunchAvailability() {
         const humanPresent = $("humanPresent").checked;
-        const targetDefined = $("missionTarget").value.trim().length > 0;
-        const timeDefined = $("launchTime").value.trim().length > 0;
+        const missionValid = missionValidationErrors().length === 0;
 
-        let enabled = humanPresent && targetDefined && timeDefined;
+        let enabled = humanPresent && missionValid;
 
         if (geneReadiness === "READY") {
-          // no extra gate
+          // no extra GENE gate
         } else if (geneReadiness === "READY WITH LIMITATIONS") {
           enabled = enabled && $("ackLimitations").checked;
         } else {
@@ -634,16 +1154,20 @@
       }
 
       async function runPreflight() {
-        const target = $("missionTarget").value.trim();
-        const ignition = $("launchTime").value.trim();
+        syncKilnLogic();
 
-        if (!target || !ignition) {
+        const errors = missionValidationErrors();
+        renderMissionValidation(errors);
+
+        if (errors.length) {
           geneReadiness = "NOT READY";
           renderReadiness();
           $("narration").innerHTML =
-            `<strong>GENE:</strong> Mission target and planned ignition time are required before preflight.`;
+            `<strong>GENE:</strong> Mission definition is incomplete. Mission Control requires the firing profile and kiln assignment before preflight.`;
           return;
         }
+
+        const target = buildPreflightTarget();
 
         statusRows.forEach((row) => {
           row.classList.remove("ok", "limit", "block");
@@ -706,9 +1230,62 @@
       $("evaluateButton").addEventListener("click", runPreflight);
       $("ackLimitations").addEventListener("change", updateLaunchAvailability);
       $("humanPresent").addEventListener("change", updateLaunchAvailability);
-      $("missionTarget").addEventListener("input", updateLaunchAvailability);
+
+      [
+        "missionTarget",
+        "firingType",
+        "targetHeatwork",
+        "kilnRichie",
+        "kilnPoorBoy",
+        "observationGoal",
+        "trackDamper",
+        "witnessCones",
+        "poorBoyTopCone",
+        "poorBoyMidCone",
+        "poorBoyBottomCone",
+        "poorBoyTopProbe",
+        "poorBoyMidProbe",
+        "poorBoyBottomProbe",
+        "damperScale",
+        "richieWitnessCone",
+        "richieProbe",
+        "richieReference",
+        "knownCondition"
+      ].forEach((id) => {
+        $(id).addEventListener("input", () => {
+          syncKilnLogic();
+          renderMissionValidation([]);
+          updateLaunchAvailability();
+        });
+        $(id).addEventListener("change", () => {
+          syncKilnLogic();
+          renderMissionValidation([]);
+          updateLaunchAvailability();
+        });
+      });
+
+      document.querySelectorAll('input[name="poorBoyAtmosphere"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          renderMissionValidation([]);
+          updateLaunchAvailability();
+        });
+      });
+
+      $("firingType").addEventListener("change", () => {
+        if (!$("targetHeatwork").value.trim()) {
+          const defaults = {
+            "Bisque": "Bisque heat-work",
+            "Cone 6": "Cone 6 equivalent heat-work",
+            "Cone 10": "Cone 10 equivalent heat-work"
+          };
+          $("targetHeatwork").value = defaults[$("firingType").value] || "";
+        }
+        updateLaunchAvailability();
+      });
+
       $("launchTime").addEventListener("change", () => {
         updateCountdown();
+        renderMissionValidation([]);
         updateLaunchAvailability();
       });
 
@@ -718,6 +1295,7 @@
       });
 
       window.setInterval(updateCountdown, 1000);
+      syncKilnLogic();
       updateCountdown();
       renderReadiness();
     })();
