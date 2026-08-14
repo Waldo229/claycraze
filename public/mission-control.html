@@ -548,11 +548,9 @@
       }
 
       async function getJson(url) {
-        const separator = url.includes("?") ? "&" : "?";
-        const response = await fetch(
-          `${url}${separator}t=${Date.now()}`,
-          { cache: "no-store" }
-        );
+        const response = await fetch(url, {
+          cache: "no-store"
+        });
 
         if (!response.ok) {
           throw new Error(`${url} returned ${response.status}`);
