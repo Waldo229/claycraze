@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClaycrazE Admin</title>
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
+  <style>
+    :root{--bg:#0c1114;--panel:#11181c;--line:rgba(231,221,199,.18);--cream:#e7ddc7;--muted:#aaa79e;--green:#9ac64e}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--cream)}
+    .admin-shell{width:min(1100px,calc(100% - 28px));margin:48px auto 72px}
+    .admin-card{padding:34px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(145deg,var(--panel),var(--bg));box-shadow:0 24px 60px rgba(0,0,0,.34)}
+    h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:500;letter-spacing:.06em}
+    .admin-intro{margin:12px 0 30px;color:var(--muted);font-family:Georgia,"Times New Roman",serif;font-size:1.05rem}
+    .admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .admin-door{display:flex;flex-direction:column;min-height:180px;padding:24px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.015);color:var(--cream);text-decoration:none}
+    .admin-door:hover,.admin-door:focus-visible{border-color:rgba(154,198,78,.72);background:rgba(154,198,78,.05);outline:none}
+    .door-title{margin:0 0 10px;color:var(--green);font-family:Georgia,"Times New Roman",serif;font-size:1.25rem}
+    .door-copy{margin:0;color:var(--muted);font-family:Georgia,"Times New Roman",serif;line-height:1.5}
+    .admin-footer{margin-top:28px;color:var(--green);font-family:Georgia,"Times New Roman",serif;font-style:italic;text-align:center}
+    @media(max-width:720px){.admin-grid{grid-template-columns:1fr}.admin-card{padding:24px 18px}}
+  </style>
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="admin-card">
+      <h1>ClaycrazE Admin</h1>
+      <p class="admin-intro">One doorway to the studio's working rooms.</p>
+
+      <div class="admin-grid">
+        <a class="admin-door" href="apprentice-intake.html">
+          <h2 class="door-title">Apprentice Intake</h2>
+          <p class="door-copy">Record a new piece before curation.</p>
+        </a>
+
+        <a class="admin-door" href="curate.html">
+          <h2 class="door-title">Curate</h2>
+          <p class="door-copy">Add meaning, presentation, and public-facing interpretation.</p>
+        </a>
+
+        <a class="admin-door" href="trees-admin.html">
+          <h2 class="door-title">Trees Admin</h2>
+          <p class="door-copy">Add and maintain tree records.</p>
+        </a>
+
+        <a class="admin-door" href="vendor-pots.html">
+          <h2 class="door-title">Vendor Pots</h2>
+          <p class="door-copy">Manage pottery assigned to vendors and outside locations.</p>
+        </a>
+
+        <a class="admin-door" href="chris-tree.html">
+          <h2 class="door-title">Chris Tree</h2>
+          <p class="door-copy">Open Chris's limited tree administration room.</p>
+        </a>
+
+        <a class="admin-door" href="mission_control_green_room.html">
+          <h2 class="door-title">🚀 Mission Control</h2>
+          <p class="door-copy">Prepare the next firing mission, target, countdown, and preflight record.</p>
+        </a>
+      </div>
+
+      <div class="admin-footer">Witness. Remember. Transmit.</div>
+    </section>
+  </main>
+</body>
+</html>
