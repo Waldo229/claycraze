@@ -171,6 +171,74 @@
       color: #eee1c4;
     }
 
+    /* Local event hold policy a quiet, text-only public policy */
+
+    .local-holds-card {
+      width: min(100%, 780px);
+      margin: 2.25rem auto 0;
+      padding: clamp(1.4rem, 3vw, 2.25rem);
+
+      border: 1px solid rgba(220, 207, 179, 0.24);
+      border-radius: 1.5rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(25, 22, 18, 0.98),
+          rgba(14, 13, 11, 0.98)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.05),
+        0 1.2rem 3rem rgba(0, 0, 0, 0.22);
+    }
+
+    .local-holds-card .holds-kicker {
+      margin: 0 0 0.45rem;
+
+      font-size: 0.78rem;
+      line-height: 1.2;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+
+      color: rgba(229, 220, 200, 0.68);
+    }
+
+    .local-holds-card h2 {
+      margin: 0 0 0.8rem;
+
+      font-size: clamp(1.75rem, 3vw, 2.4rem);
+      line-height: 1.1;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    .local-holds-card .holds-intro {
+      margin: 0 0 1rem;
+      max-width: 660px;
+
+      font-size: 1rem;
+      line-height: 1.55;
+
+      color: rgba(238, 225, 196, 0.88);
+    }
+
+    .local-holds-card ul {
+      margin: 0;
+      padding-left: 1.3rem;
+
+      color: rgba(238, 225, 196, 0.82);
+    }
+
+    .local-holds-card li {
+      margin: 0.48rem 0;
+      padding-left: 0.2rem;
+
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
     /* Tablet: three chambers, then two */
 
     @media (max-width: 1100px) {
@@ -325,6 +393,11 @@
       .practice-threshold .archive-card-text p {
         font-size: 0.75rem;
       }
+
+      .local-holds-card {
+        margin-top: 1.4rem;
+        border-radius: 1.15rem;
+      }
     }
   </style>
 </head>
@@ -440,6 +513,40 @@
         </div>
       </a>
 
+    </section>
+
+    <section
+      class="local-holds-card"
+      id="local-event-holds"
+      aria-labelledby="local-event-holds-title"
+    >
+      <p class="holds-kicker">Local acquisition</p>
+
+      <h2 id="local-event-holds-title">Hold a pot for an event</h2>
+
+      <p class="holds-intro">
+        ClaycrazE pottery may be held for viewing and pickup at an
+        upcoming local event.
+      </p>
+
+      <ul>
+        <li>Holds are first come, first served.</li>
+        <li>Holds are limited to three pieces per customer.</li>
+        <li>
+          There is no obligation to purchase and no penalty for declining
+          after seeing the work.
+        </li>
+        <li>
+          Payment is made at pickup. Cash, check, and Square credit-card
+          payments are accepted.
+        </li>
+        <li>Holds expire at the end of the event.</li>
+        <li>
+          If you cannot attend, please call or text to request another
+          arrangement.
+        </li>
+        <li>Shipping is not currently offered.</li>
+      </ul>
     </section>
 
   </main>
