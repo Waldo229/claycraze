@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GENE Mission Control — ClaycrazE</title>
+  <title>GENE Mission Control - ClaycrazE</title>
   <link rel="stylesheet" href="/css/styles.css?v=3031">
 
   <style>
@@ -254,6 +254,72 @@
       font: inherit;
     }
 
+    .mini-panel textarea {
+      width: 100%;
+      min-height: 84px;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 8px;
+      background: #080c0f;
+      color: var(--gene-cream);
+      padding: 10px 11px;
+      font: inherit;
+      resize: vertical;
+    }
+
+    .mini-panel input[type="file"] {
+      padding: 8px;
+    }
+
+    .zone-heading {
+      margin: 0 0 10px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .damper-log-panel {
+      margin-top: 12px;
+      padding: 13px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 10px;
+      background: #0a0f12;
+    }
+
+    .damper-log-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .damper-log-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .damper-log-entry {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(231, 221, 199, 0.08);
+      color: var(--gene-muted);
+      font-size: 0.82rem;
+    }
+
+    .damper-log-entry:last-child {
+      border-bottom: 0;
+    }
+
+    .damper-log-entry strong {
+      color: var(--gene-cream);
+      font-weight: 500;
+    }
+
     .heatwork-board {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -308,7 +374,8 @@
 
     @media (max-width: 760px) {
       .mini-grid,
-      .heatwork-board {
+      .heatwork-board,
+      .damper-log-controls {
         grid-template-columns: 1fr;
       }
     }
@@ -630,7 +697,7 @@
               <label class="choice-card">
                 <input id="kilnRichie" type="checkbox">
                 <span>
-                  <strong>Richie — Electric</strong>
+                  <strong>Richie - Electric</strong>
                   <small>Oxidation atmosphere</small>
                 </span>
               </label>
@@ -638,7 +705,7 @@
               <label class="choice-card">
                 <input id="kilnPoorBoy" type="checkbox">
                 <span>
-                  <strong>Poor Boy — Gas</strong>
+                  <strong>Poor Boy - Gas</strong>
                   <small>Oxidation or reduction; one atmosphere per firing</small>
                 </span>
               </label>
@@ -698,45 +765,81 @@
 
             <div class="conditional-box" id="poorBoyStudyBox">
               <p class="mission-subsection-title">Poor Boy heat-work map</p>
+              <p class="inline-note">
+                Treat top, middle, and bottom as separate evidence zones. Plan the cone pack before firing;
+                photograph the fired cone pack and interpret it during debrief.
+              </p>
 
-              <div class="mini-grid">
+              <div class="mini-grid" style="margin-top:12px;">
                 <div class="mini-panel">
-                  <label for="poorBoyTopCone">Top witness cone</label>
-                  <input id="poorBoyTopCone" type="text" placeholder="Example: 8 / 9 / 10">
-                </div>
+                  <h3 class="zone-heading">Top zone</h3>
 
-                <div class="mini-panel">
-                  <label for="poorBoyMidCone">Middle witness cone</label>
-                  <input id="poorBoyMidCone" type="text" placeholder="Reference sweet spot">
-                </div>
+                  <label for="poorBoyTopCone">Planned cone pack</label>
+                  <input id="poorBoyTopCone" type="text" placeholder="Example: 10 / 8 / 6">
 
-                <div class="mini-panel">
-                  <label for="poorBoyBottomCone">Bottom witness cone</label>
-                  <input id="poorBoyBottomCone" type="text" placeholder="Example: 10 / 11">
-                </div>
-              </div>
-
-              <div class="mini-grid" style="margin-top:10px;">
-                <div class="mini-panel">
-                  <label for="poorBoyTopProbe">Top probe / zone</label>
+                  <label for="poorBoyTopProbe" style="margin-top:10px;">Probe / zone</label>
                   <input id="poorBoyTopProbe" type="text" placeholder="Optional identifier">
+
+                  <label for="poorBoyTopConePhoto" style="margin-top:10px;">Post-fire cone-pack photo</label>
+                  <input id="poorBoyTopConePhoto" type="file" accept="image/*" capture="environment">
+
+                  <label for="poorBoyTopConeNote" style="margin-top:10px;">Post-fire interpretation</label>
+                  <textarea id="poorBoyTopConeNote" placeholder="What did the cone pack physically show?"></textarea>
                 </div>
 
                 <div class="mini-panel">
-                  <label for="poorBoyMidProbe">Middle probe / zone</label>
+                  <h3 class="zone-heading">Middle zone</h3>
+
+                  <label for="poorBoyMidCone">Planned cone pack</label>
+                  <input id="poorBoyMidCone" type="text" placeholder="Example: 10 / 8 / 6">
+
+                  <label for="poorBoyMidProbe" style="margin-top:10px;">Probe / zone</label>
                   <input id="poorBoyMidProbe" type="text" placeholder="Example: GREEN_0">
+
+                  <label for="poorBoyMidConePhoto" style="margin-top:10px;">Post-fire cone-pack photo</label>
+                  <input id="poorBoyMidConePhoto" type="file" accept="image/*" capture="environment">
+
+                  <label for="poorBoyMidConeNote" style="margin-top:10px;">Post-fire interpretation</label>
+                  <textarea id="poorBoyMidConeNote" placeholder="What did the cone pack physically show?"></textarea>
                 </div>
 
                 <div class="mini-panel">
-                  <label for="poorBoyBottomProbe">Bottom probe / zone</label>
+                  <h3 class="zone-heading">Bottom zone</h3>
+
+                  <label for="poorBoyBottomCone">Planned cone pack</label>
+                  <input id="poorBoyBottomCone" type="text" placeholder="Example: 10 / 8 / 6">
+
+                  <label for="poorBoyBottomProbe" style="margin-top:10px;">Probe / zone</label>
                   <input id="poorBoyBottomProbe" type="text" placeholder="Example: RED_1">
+
+                  <label for="poorBoyBottomConePhoto" style="margin-top:10px;">Post-fire cone-pack photo</label>
+                  <input id="poorBoyBottomConePhoto" type="file" accept="image/*" capture="environment">
+
+                  <label for="poorBoyBottomConeNote" style="margin-top:10px;">Post-fire interpretation</label>
+                  <textarea id="poorBoyBottomConeNote" placeholder="What did the cone pack physically show?"></textarea>
                 </div>
               </div>
 
               <div class="field" style="margin-top:14px;">
                 <label for="damperScale">Damper reference</label>
-                <input id="damperScale" type="text" placeholder="Example: 0–100% open, or physical mark positions">
-                <p class="inline-note">Use a repeatable reference so later firings can compare damper position with vertical heat-work spread.</p>
+                <input id="damperScale" type="text" placeholder="Example: 0-100% open, or physical mark positions">
+                <p class="inline-note">
+                  Define a repeatable scale before firing, then log each meaningful position change during the firing.
+                </p>
+              </div>
+
+              <div class="damper-log-panel">
+                <div class="damper-log-controls">
+                  <div class="field" style="margin-bottom:0;">
+                    <label for="damperPosition">Current damper position</label>
+                    <input id="damperPosition" type="text" placeholder="Example: 65% open or Mark 3">
+                  </div>
+                  <button class="mc-button secondary" id="logDamperButton" type="button">Log damper position</button>
+                </div>
+
+                <div class="damper-log-list" id="damperLogList">
+                  <p class="inline-note">No damper changes logged yet.</p>
+                </div>
               </div>
             </div>
 
@@ -776,16 +879,16 @@
             <div class="heatwork-board">
               <div class="heatwork-card">
                 <h3>Poor Boy</h3>
-                <div class="metric-row"><span>Temperature</span><strong id="poorBoyHwTemp">—</strong></div>
-                <div class="metric-row"><span>Rate of rise</span><strong id="poorBoyHwRate">—</strong></div>
-                <div class="metric-row"><span>Atmosphere</span><strong id="poorBoyHwAtmosphere">—</strong></div>
+                <div class="metric-row"><span>Temperature</span><strong id="poorBoyHwTemp">-</strong></div>
+                <div class="metric-row"><span>Rate of rise</span><strong id="poorBoyHwRate">-</strong></div>
+                <div class="metric-row"><span>Atmosphere</span><strong id="poorBoyHwAtmosphere">-</strong></div>
                 <div class="heatwork-estimate">Estimated HEAT-WORK: <span id="poorBoyHwEstimate">Awaiting firing data</span></div>
               </div>
 
               <div class="heatwork-card">
                 <h3>Richie</h3>
-                <div class="metric-row"><span>Temperature</span><strong id="richieHwTemp">—</strong></div>
-                <div class="metric-row"><span>Rate of rise</span><strong id="richieHwRate">—</strong></div>
+                <div class="metric-row"><span>Temperature</span><strong id="richieHwTemp">-</strong></div>
+                <div class="metric-row"><span>Rate of rise</span><strong id="richieHwRate">-</strong></div>
                 <div class="metric-row"><span>Atmosphere</span><strong>Oxidation</strong></div>
                 <div class="heatwork-estimate">Estimated HEAT-WORK: <span id="richieHwEstimate">Awaiting firing data</span></div>
               </div>
@@ -929,9 +1032,12 @@
       const $ = (id) => document.getElementById(id);
       const statusRows = [...document.querySelectorAll(".status-row")];
       const PREFLIGHT_URL = "http://127.0.0.1:8765/preflight";
+      const MISSION_PUBLISH_URL = "http://127.0.0.1:8765/mission-publish";
 
       let geneReadiness = "NOT READY";
       let geneLimitations = [];
+      let lastPreflightPayload = null;
+      let publicMissionStatus = "PLANNED";
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -970,6 +1076,59 @@
       function selectedPoorBoyAtmosphere() {
         const selected = document.querySelector('input[name="poorBoyAtmosphere"]:checked');
         return selected ? selected.value : "";
+      }
+
+      const DAMPER_LOG_KEY = "genePoorBoyDamperLog";
+
+      function readDamperLog() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(DAMPER_LOG_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function writeDamperLog(entries) {
+        localStorage.setItem(DAMPER_LOG_KEY, JSON.stringify(entries));
+      }
+
+      function renderDamperLog() {
+        const list = $("damperLogList");
+        if (!list) return;
+
+        const entries = readDamperLog();
+
+        if (!entries.length) {
+          list.innerHTML = '<p class="inline-note">No damper changes logged yet.</p>';
+          return;
+        }
+
+        list.innerHTML = entries
+          .slice()
+          .reverse()
+          .map((entry) => {
+            const when = new Date(entry.time).toLocaleString();
+            return `<div class="damper-log-entry"><span>${when}</span><strong>${entry.position}</strong></div>`;
+          })
+          .join("");
+      }
+
+      function logDamperPosition() {
+        const input = $("damperPosition");
+        const position = input ? input.value.trim() : "";
+
+        if (!position) return;
+
+        const entries = readDamperLog();
+        entries.push({
+          time: new Date().toISOString(),
+          position
+        });
+
+        writeDamperLog(entries);
+        input.value = "";
+        renderDamperLog();
       }
 
       function syncKilnLogic() {
@@ -1034,9 +1193,9 @@
         ];
 
         const kilns = [];
-        if ($("kilnRichie").checked) kilns.push("Richie — Electric — Oxidation");
+        if ($("kilnRichie").checked) kilns.push("Richie - Electric - Oxidation");
         if ($("kilnPoorBoy").checked) {
-          kilns.push(`Poor Boy — Gas — ${selectedPoorBoyAtmosphere()}`);
+          kilns.push(`Poor Boy - Gas - ${selectedPoorBoyAtmosphere()}`);
         }
 
         if (kilns.length) parts.push(`Kiln assignment: ${kilns.join("; ")}`);
@@ -1093,6 +1252,70 @@
         }
 
         return parts.join(" | ");
+      }
+
+      function publicPreflightItems(payload) {
+        const checks = Array.isArray(payload?.checks) ? payload.checks : [];
+
+        return checks.map((check) => {
+          const status = String(check?.status ?? check?.state ?? "").toUpperCase();
+          const ok = check?.ok === true || status === "OK";
+
+          return {
+            name: String(check?.name ?? "Preflight condition"),
+            label: String(check?.name ?? "Preflight condition"),
+            ok
+          };
+        });
+      }
+
+      function buildPublicMissionRecord(status, narration) {
+        const rawLaunch = $("launchTime").value.trim();
+        let plannedIgnition = rawLaunch || null;
+
+        if (rawLaunch) {
+          const parsed = new Date(rawLaunch);
+          if (!Number.isNaN(parsed.getTime())) {
+            plannedIgnition = parsed.toISOString();
+          }
+        }
+
+        return {
+          mission_name: $("missionName").value.trim() || "Unnamed firing mission",
+          target: $("missionTarget").value.trim(),
+          planned_ignition: plannedIgnition,
+          readiness: geneReadiness,
+          mission_status: status || publicMissionStatus || "PLANNED",
+          preflight: publicPreflightItems(lastPreflightPayload),
+          limitations: Array.isArray(geneLimitations) ? geneLimitations : [],
+          narration: narration || "Mission Control is quiet. No firing has been called."
+        };
+      }
+
+      async function publishPublicMission(status, narration) {
+        const record = buildPublicMissionRecord(status, narration);
+
+        const response = await fetch(MISSION_PUBLISH_URL, {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(record)
+        });
+
+        let result = {};
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = {};
+        }
+
+        if (!response.ok || result?.ok !== true) {
+          throw new Error(result?.error || `Mission publish returned HTTP ${response.status}`);
+        }
+
+        return result;
       }
 
       function updateLaunchAvailability() {
@@ -1186,6 +1409,7 @@
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
           const payload = await response.json();
+          lastPreflightPayload = payload;
           const mapped = normalizeChecks(payload);
 
           for (const row of statusRows) {
@@ -1209,15 +1433,27 @@
           geneLimitations = Array.isArray(payload.limitations) ? payload.limitations : [];
           renderReadiness();
 
+          let publicNarration = "";
+
           if (geneReadiness === "READY") {
-            $("narration").innerHTML =
-              `<strong>GENE:</strong> Preflight complete. I am ready to observe. The launch decision remains yours.`;
+            publicNarration = "Preflight complete. I am ready to observe. The launch decision remains yours.";
           } else if (geneReadiness === "READY WITH LIMITATIONS") {
-            $("narration").innerHTML =
-              `<strong>GENE:</strong> I can observe this mission, but stated limitations remain.`;
+            publicNarration = "I can observe this mission, but stated limitations remain.";
           } else {
-            $("narration").innerHTML =
-              `<strong>GENE:</strong> I am not ready. One or more required witnessing conditions are unavailable.`;
+            publicNarration = "I am not ready. One or more required witnessing conditions are unavailable.";
+          }
+
+          $("narration").innerHTML = `<strong>GENE:</strong> ${publicNarration}`;
+
+          publicMissionStatus = "PLANNED";
+
+          try {
+            const published = await publishPublicMission(publicMissionStatus, publicNarration);
+            $("narration").innerHTML +=
+              `<br><br><span style="color:var(--gene-green);">Public mission record transmitted and verified.</span>`;
+          } catch (publishError) {
+            $("narration").innerHTML +=
+              `<br><br><span style="color:var(--gene-amber);">Public transmission failed: ${publishError.message}</span>`;
           }
         } catch (error) {
           geneReadiness = "NOT READY";
@@ -1230,6 +1466,9 @@
       $("evaluateButton").addEventListener("click", runPreflight);
       $("ackLimitations").addEventListener("change", updateLaunchAvailability);
       $("humanPresent").addEventListener("change", updateLaunchAvailability);
+
+      $("logDamperButton").addEventListener("click", logDamperPosition);
+      renderDamperLog();
 
       [
         "missionTarget",
@@ -1246,7 +1485,11 @@
         "poorBoyTopProbe",
         "poorBoyMidProbe",
         "poorBoyBottomProbe",
+        "poorBoyTopConeNote",
+        "poorBoyMidConeNote",
+        "poorBoyBottomConeNote",
         "damperScale",
+        "damperPosition",
         "richieWitnessCone",
         "richieProbe",
         "richieReference",
@@ -1289,9 +1532,21 @@
         updateLaunchAvailability();
       });
 
-      $("launchButton").addEventListener("click", () => {
+      $("launchButton").addEventListener("click", async () => {
+        const publicNarration = "Observation has begun. I am watching for ignition evidence.";
+        publicMissionStatus = "OBSERVING";
+
         $("narration").innerHTML =
-          `<strong>GENE:</strong> Observation has begun. I am watching for ignition evidence.`;
+          `<strong>GENE:</strong> ${publicNarration}`;
+
+        try {
+          await publishPublicMission(publicMissionStatus, publicNarration);
+          $("narration").innerHTML +=
+            `<br><br><span style="color:var(--gene-green);">Observation state transmitted and verified.</span>`;
+        } catch (publishError) {
+          $("narration").innerHTML +=
+            `<br><br><span style="color:var(--gene-amber);">Public transmission failed: ${publishError.message}</span>`;
+        }
       });
 
       window.setInterval(updateCountdown, 1000);
