@@ -84,11 +84,4 @@ jobs:
             public/images/system/ \
             "$SG_USER@$SG_HOST:$SG_TARGET/images/system/"
 
-          echo "Syncing gallery metadata..."
-
-          rsync -avz \
-            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
-            public/data/pieces.json \
-            "$SG_USER@$SG_HOST:$SG_TARGET/data/pieces.json"
-
-          echo "Deploy complete. Public site updated; Render-owned image folders were not touched."
+          echo "Deploy complete. Public site files updated; canonical data and Render-owned image folders were not touched."
