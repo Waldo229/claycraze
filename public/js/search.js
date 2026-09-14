@@ -9,7 +9,7 @@ async function initializeSiteSearch() {
   if (!input || !results) return;
 
   try {
-    const response = await fetch(`/gallery-data/ovals?v=${Date.now()}`, {
+    const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
 
@@ -17,14 +17,20 @@ async function initializeSiteSearch() {
       throw new Error("Could not load archive.");
     }
 
-    searchablePieces = await response.json();
+    const pieces = await response.json();
+    if (!Array.isArray(pieces)) {
+      throw new Error("Could not read the pottery archive.");
+    }
+    searchablePieces = pieces.filter(piece =>
+      String(piece.category || "").toLowerCase() === "bonsai"
+    );
 
     input.addEventListener("input", () => {
       runSearch(input.value);
     });
 
   } catch (error) {
-    results.textContent = "Search is temporarily unavailable.";
+    results.textContent = "Bonsai search is temporarily unavailable.";
   }
 }
 
@@ -33,7 +39,7 @@ function runSearch(query) {
   const cleanQuery = query.trim().toLowerCase();
 
   if (!cleanQuery) {
-    results.textContent = "Type to search available pieces.";
+    results.textContent = "Type to search bonsai containers.";
     return;
   }
 
@@ -64,7 +70,7 @@ function runSearch(query) {
 
   results.innerHTML = matches.slice(0, 8).map(piece => {
     const image = piece.image_path || piece.image_path_2 || "";
-    const href = `/gallery/viewer.html?id=${encodeURIComponent(piece.id)}`;
+    const href = `/gallery/piece.html?id=${encodeURIComponent(piece.id)}`;
 
     return `
       <a class="site-search-result" href="${href}">
