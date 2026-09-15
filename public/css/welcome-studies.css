@@ -367,3 +367,91 @@ body {
     outline-color: Highlight;
   }
 }
+
+/* Study 1: whole outside panels from the Jakugen triptych. */
+.welcome-jakugen {
+  background: var(--study-charcoal);
+}
+
+.welcome-jakugen .welcome-study {
+  max-width: 80rem;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 1.15fr) minmax(0, 1fr);
+  padding-bottom: 2rem;
+}
+
+.welcome-jakugen .welcome-center {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.welcome-jakugen .theory-path {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.welcome-jakugen .practice-path {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.welcome-jakugen .monk-figure img {
+  height: min(72vh, 48rem);
+  filter: none;
+  opacity: 1;
+  transition: none;
+}
+
+.welcome-jakugen .welcome-center h1 {
+  max-width: 12ch;
+  font-size: clamp(2rem, 3.6vw, 3.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.welcome-jakugen .study-attribution a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.welcome-jakugen .study-attribution a:focus-visible {
+  outline: 2px solid var(--study-green);
+  outline-offset: 3px;
+}
+
+@media (max-width: 54rem) {
+  .welcome-jakugen .welcome-study {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .welcome-jakugen .welcome-center {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding: 1rem 0;
+  }
+
+  .welcome-jakugen .theory-path {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .welcome-jakugen .practice-path {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .welcome-jakugen .monk-figure img {
+    height: min(70vh, 40rem);
+  }
+}
+
+@media (max-width: 36rem) {
+  .welcome-jakugen .welcome-center {
+    align-self: center;
+  }
+
+  .welcome-jakugen .monk-figure img {
+    width: auto;
+    height: auto;
+    max-width: min(100%, 16rem);
+  }
+}
