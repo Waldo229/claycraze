@@ -736,18 +736,6 @@ a {
   color: var(--muted);
 }
 
-.welcome-guide {
-  width: 150px;
-  margin: 0 auto 1.5rem;
-}
-
-.welcome-guide img {
-  width: 100%;
-  height: auto;
-  border-radius: 50%;
-  opacity: 0.9;
-}
-
 .welcome-doors {
   display: grid;
   grid-template-columns: repeat(2, minmax(260px, 1fr));
@@ -829,28 +817,6 @@ a {
   border-radius: 12px;
   object-fit: cover;
   opacity: 0.88;
-}
-
-.room-seal-panel {
-  width: 64px;
-  height: 88px;
-  border-radius: 2px;
-}
-
-.museum-attribution {
-  display: block;
-  max-width: 44rem;
-  margin-top: 0.35rem;
-  color: rgba(234, 223, 200, 0.54);
-  font-size: 0.7rem;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
-}
-
-.welcome-attribution {
-  margin: 1rem auto 0;
-  text-align: center;
 }
 
 .section-label .threshold-kicker {
