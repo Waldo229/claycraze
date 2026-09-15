@@ -17,6 +17,10 @@ Commons identifies this reproduction as public domain (PD-Japan and PD-old; Publ
 
 ## Derived web images
 
+Deployment location: `public/images/curated/welcome-studies/`. The existing workflow synchronizes this directory through `public/images/curated/`.
+
+The original and review screenshots are archived here outside `public/` and are not web dependencies.
+
 Pillow rectangle crops, coordinates measured from the original top-left, right/bottom exclusive:
 
 - ueno-jakugen-hanshan-theory.webp: (26, 26, 562, 1428), 536 x 1402 pixels.
