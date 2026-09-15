@@ -10,11 +10,12 @@ async function loadShapeGallery() {
   installGalleryImageTweaks();
 
   const galleryGrid = document.getElementById("galleryGrid");
+  const category = normalizeCategory(window.CLAYCRAZE_GALLERY_CATEGORY);
   const shapeCode = String(window.CLAYCRAZE_GALLERY_SHAPE || "").toUpperCase();
 
   if (!galleryGrid) return;
 
-  if (!shapeCode) {
+  if (!category || !shapeCode) {
     galleryGrid.innerHTML = `<div class="empty-state">Gallery shape not set.</div>`;
     return;
   }
@@ -37,7 +38,10 @@ async function loadShapeGallery() {
     }
 
     const filtered = pieces
-      .filter(piece => matchesShape(piece, shapeCode))
+      .filter(piece =>
+        normalizeCategory(piece.category) === category &&
+        matchesShape(piece, shapeCode)
+      )
       .sort(sortNewestFirst);
 
     if (!filtered.length) {
@@ -90,6 +94,10 @@ function matchesShape(piece, shapeCode) {
   const shape = normalizeShape(clean(piece.shape));
 
   return shape === shapeCode || id.startsWith(`${shapeCode}-`);
+}
+
+function normalizeCategory(value) {
+  return clean(value).toLowerCase();
 }
 
 function normalizeShape(value) {

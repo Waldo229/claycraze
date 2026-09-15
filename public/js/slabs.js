@@ -2,7 +2,7 @@ const galleryGrid = document.getElementById("galleryGrid");
 
 async function loadSlabs() {
   try {
-    const response = await fetch(`/gallery-data/slabs?v=${Date.now()}`, {
+    const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
 
@@ -10,9 +10,18 @@ async function loadSlabs() {
       throw new Error(`Server returned ${response.status}`);
     }
 
-    const pieces = await response.json();
+    const allPieces = await response.json();
 
-    if (!Array.isArray(pieces) || pieces.length === 0) {
+    if (!Array.isArray(allPieces)) {
+      throw new Error("pieces.json did not return an array.");
+    }
+
+    const pieces = allPieces.filter(piece =>
+      String(piece.category || "").trim().toLowerCase() === "bonsai" &&
+      String(piece.shape || "").trim().toUpperCase() === "SL"
+    );
+
+    if (pieces.length === 0) {
       galleryGrid.innerHTML = `
         <div class="empty-state">
           No slab pieces are currently available for display.
