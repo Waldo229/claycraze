@@ -260,10 +260,11 @@
         <img
           class="pocket-gene"
           id="pocketGene"
-          src="/images/gene-kilnwatch-emoji.png"
-          alt="Pocket GENE kiln state"
+          hidden style="display:none"
+          alt="GENE temperature unavailable"
         >
 
+        <span id="geneTemperatureState" role="status">Temperature unavailable</span>
         <a class="console-button" href="/kilnwatch.html">
           Return to Console
         </a>
@@ -319,6 +320,7 @@
 
   </main>
 
+  <script src="/js/gene-temperature.js"></script>
   <script>
     (() => {
       "use strict";
@@ -326,8 +328,8 @@
       const GRAPH_URL = "https://claycraze.com/gene/kiln_watch_latest.png";
       const NOTE_URL = "https://claycraze.com/gene/kiln_watch_latest.txt";
       const STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
-      const NORMAL_GENE_URL = "/images/gene-kilnwatch-emoji.png";
-      const HOT_GENE_URL = "/images/gene-chilli-pepper-hot.png";
+      let kilnEvidence = null;
+      const renderState = () => GeneTemperature.render(pocketGene, document.getElementById("geneTemperatureState"), GeneTemperature.evaluate(kilnEvidence));
       const REFRESH_MS = 5 * 60 * 1000;
 
       const graph = document.getElementById("firingGraph");
@@ -339,6 +341,25 @@
       function cacheBusted(url) {
         const separator = url.includes("?") ? "&" : "?";
         return `${url}${separator}t=${Date.now()}`;
+      }
+
+      async function refreshState() {
+        try {
+          const stateResponse = await fetch(cacheBusted(STATE_URL), {
+            cache: "no-store", signal: AbortSignal.timeout(8000)
+          });
+
+          if (!stateResponse.ok) {
+            throw new Error(`State returned ${stateResponse.status}`);
+          }
+
+          kilnEvidence = await stateResponse.json();
+          renderState();
+        } catch (stateError) {
+          kilnEvidence = null;
+          renderState();
+          console.warn("Could not refresh GENE state:", stateError);
+        }
       }
 
       async function refreshGraph() {
@@ -362,27 +383,6 @@
         };
 
         graph.src = cacheBusted(GRAPH_URL);
-        try {
-          const stateResponse = await fetch(cacheBusted(STATE_URL), {
-            cache: "no-store"
-          });
-
-          if (!stateResponse.ok) {
-            throw new Error(`State returned ${stateResponse.status}`);
-          }
-
-          const stateData = await stateResponse.json();
-          const geneState = stateData?.gene_visual?.state;
-
-          pocketGene.src = cacheBusted(
-            geneState === "firing"
-              ? HOT_GENE_URL
-              : NORMAL_GENE_URL
-          );
-        } catch (stateError) {
-          pocketGene.src = cacheBusted(NORMAL_GENE_URL);
-          console.warn("Could not refresh GENE state:", stateError);
-        }
 
         try {
           const response = await fetch(cacheBusted(NOTE_URL), {
@@ -400,6 +400,10 @@
         }
       }
 
+      renderState();
+      refreshState();
+      window.setInterval(refreshState, 10000);
+      window.setInterval(renderState, 1000);
       refreshGraph();
       window.setInterval(refreshGraph, REFRESH_MS);
     })();

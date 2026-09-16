@@ -460,10 +460,11 @@
           <img
             class="gene-mascot"
             id="geneMascot"
-            src="/images/gene-kilnwatch-emoji.png"
-            alt="GENE clay studio watcher">
+            hidden style="display:none"
+            alt="GENE temperature unavailable">
         </div>
 
+        <p id="geneTemperatureState" role="status">Temperature unavailable</p>
         <p class="gene-motto">Witness. Remember. Transmit.</p>
 
         <div class="gene-credit">
@@ -596,6 +597,7 @@
 
   </main>
 
+  <script src="/js/gene-temperature.js"></script>
   <script>
     (() => {
       "use strict";
@@ -628,89 +630,6 @@
         if (value < 0.45) return ["Awake", "The studio field is changing"];
         if (value < 0.72) return ["Heightened", "Attention is gathering"];
         return ["Urgent", "The field is highly active"];
-      }
-
-      function findNumericByKeys(value, keys, depth = 0) {
-        if (depth > 6 || value == null) return null;
-
-        if (Array.isArray(value)) {
-          for (let index = value.length - 1; index >= 0; index -= 1) {
-            const found = findNumericByKeys(value[index], keys, depth + 1);
-            if (found !== null) return found;
-          }
-          return null;
-        }
-
-        if (typeof value !== "object") return null;
-
-        const entries = Object.entries(value);
-
-        for (const [key, raw] of entries) {
-          const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, "");
-          if (keys.includes(normalized)) {
-            const number = asFiniteNumber(raw);
-            if (number !== null) return number;
-          }
-        }
-
-        for (const [, child] of entries) {
-          const found = findNumericByKeys(child, keys, depth + 1);
-          if (found !== null) return found;
-        }
-
-        return null;
-      }
-
-      function extractKilnState(data) {
-        const summaries = Array.isArray(data?.summaries) ? data.summaries : [];
-
-        const candidates = summaries
-          .map((summary) => {
-            const temperature = asFiniteNumber(
-              summary?.latest_temp_f ??
-              summary?.latest_temp ??
-              summary?.latest_temperature ??
-              summary?.temperature_f ??
-              summary?.temperature ??
-              summary?.temp_f ??
-              summary?.temp
-            );
-
-            const ramp = asFiniteNumber(
-              summary?.latest_ramp_f_per_hr ??
-              summary?.latest_ramp ??
-              summary?.ramp_f_per_hr ??
-              summary?.ramp_rate ??
-              summary?.rate_of_rise ??
-              summary?.ramp ??
-              summary?.rate
-            );
-
-            return {
-              name: summary?.name ?? summary?.probe ?? summary?.id ?? "probe",
-              temperature,
-              ramp
-            };
-          })
-          .filter((probe) => probe.temperature !== null);
-
-        if (candidates.length > 0) {
-          return candidates.reduce((hottest, probe) =>
-            probe.temperature > hottest.temperature ? probe : hottest
-          );
-        }
-
-        const temperature = findNumericByKeys(data, [
-          "hottesttempf", "latesttempf", "latesttemp", "latesttemperature",
-          "temperature", "tempf", "temp", "value"
-        ]);
-
-        const ramp = findNumericByKeys(data, [
-          "latestrampfperhr", "latestramp", "ramprate", "rampfperhr",
-          "rateofrise", "ramp", "rate"
-        ]);
-
-        return { name: "derived", temperature, ramp };
       }
 
       function formatDate(unixSeconds) {
@@ -749,42 +668,18 @@
         $("geneTime").textContent = formatDate(asFiniteNumber(data.generated_unix));
       }
 
+      let kilnEvidence = null;
       function renderKiln(data) {
-        const geneMascot = $("geneMascot");
-
-        if (geneMascot) {
-          const geneState = data?.gene_visual?.state;
-          const geneImage = geneState === "firing"
-            ? "/images/gene-chilli-pepper-hot.png"
-            : "/images/gene-kilnwatch-emoji.png";
-
-          geneMascot.src =
-            `${geneImage}?state=${encodeURIComponent(geneState || "watching")}&t=${Date.now()}`;
-        }
-
-        const { temperature, ramp } = extractKilnState(data);
-
-        if (temperature === null) return;
-
-        $("temperature").textContent = Math.round(temperature);
-
-        const publishedState = data?.gene_visual?.state;
-
-        const [state, note] = publishedState === "firing"
-          ? ["Firing field active", "Heat is now materially present."]
-          : temperature < 120
-            ? ["The kiln is dark.", "Kiln field nearly still."]
-            : ["Residual warmth", "The kiln is warm, but no firing is inferred."];
-
-        $("heatState").textContent = state;
-        $("rampNote").textContent = ramp === null
-          ? note
-          : `${note} Ramp ${ramp >= 0 ? "+" : ""}${Math.round(ramp)} °F/hr.`;
-
-        setNeedle(
-          $("temperatureNeedle"),
-          (temperature - 60) / (2400 - 60)
-        );
+        const result = GeneTemperature.evaluate(data);
+        GeneTemperature.render($("geneMascot"), $("geneTemperatureState"), result);
+        const { temperature, ramp } = result;
+        $("temperature").textContent = temperature === null ? "--" : Math.floor(temperature);
+        $("heatState").textContent = temperature === null ? "Temperature unavailable" : result.state;
+        $("rampNote").textContent = temperature === null
+          ? "Current temperature evidence is unavailable."
+          : ramp === null ? "Current kiln temperature." : `Ramp ${Math.round(ramp)} ?F/hr.`;
+        $("temperatureNeedle").style.visibility = temperature === null ? "hidden" : "visible";
+        if (temperature !== null) setNeedle($("temperatureNeedle"), (temperature - 60) / (2400 - 60));
       }
 
       function updatePresence(geneData) {
@@ -803,7 +698,7 @@
         const separator = url.includes("?") ? "&" : "?";
         const response = await fetch(
           `${url}${separator}t=${Date.now()}`,
-          { cache: "no-store" }
+          { cache: "no-store", signal: AbortSignal.timeout(8000) }
         );
 
         if (!response.ok) {
@@ -828,9 +723,8 @@
           $("presenceTitle").textContent = "GENE is offline";
         }
 
-        if (kilnResult.status === "fulfilled") {
-          renderKiln(kilnResult.value);
-        }
+        kilnEvidence = kilnResult.status === "fulfilled" ? kilnResult.value : null;
+        renderKiln(kilnEvidence);
 
         const failed =
           geneResult.status === "rejected" ||
@@ -846,7 +740,9 @@
         }
       }
 
+      renderKiln(null);
       refresh();
+      window.setInterval(() => renderKiln(kilnEvidence), 1000);
       window.setInterval(refresh, REFRESH_MS);
     })();
   </script>
