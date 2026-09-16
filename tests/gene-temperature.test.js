@@ -38,6 +38,16 @@ test('freshness boundaries and studio timezone', () => {
   assert.equal(gene.evidenceTime('2026-09-16 10:00:00'), now);
   assert.equal(gene.evidenceTime('2026-01-16 10:00:00'), Date.parse('2026-01-16T15:00:00Z'));
 });
+test('evidence badge shares freshness cutoff and prioritizes invalidity over age', () => {
+  assert.equal(gene.evaluate(evidence(2000), now + 120000).evidenceStatus, 'LIVE');
+  const stale = gene.evaluate(evidence(2000), now + 120001);
+  assert.equal(stale.evidenceStatus, 'STALE');
+  assert.equal(stale.image, null);
+  for (const data of [null, {}, evidence(null), evidence('invalid'), evidence(2000, {source_status:'unavailable'}), evidence(2000, {gene_visual:{state:'unavailable'}}), evidence(2000, {evidence_generated_at:null}), evidence(2000, {summaries:[]})]) {
+    assert.equal(gene.evaluate(data, now + 120001).evidenceStatus, 'UNAVAILABLE');
+  }
+  assert.equal(gene.evaluate(evidence(2000), now - 1).evidenceStatus, 'UNAVAILABLE');
+});
 test('hottest current probe and numeric strings', () => {
   assert.equal(gene.evaluate(evidence(20, {summaries: [{latest_temp: 20}, {latest_temp: '1801'}]}), now).state, 'atomic_Gene2');
 });
@@ -58,10 +68,11 @@ for (const page of ['kilnwatch.html', 'kiln-watch-graph.html']) {
       return elements.get(id);
     }
     let current = evidence(2000), fail = false;
+    let clockNow = now;
     current.summaries[0].latest_rate = 0;
     let noteText = 'Ramp 0 ?F/hr.';
     const intervals = [];
-    const context = { GeneTemperature: {...gene, evaluate: data => gene.evaluate(data, now)},
+    const context = { GeneTemperature: {...gene, evaluate: data => gene.evaluate(data, clockNow)},
       document: {getElementById: element}, window: {setInterval(fn, ms) {intervals.push({fn,ms});}},
       Date, Intl, AbortSignal, console: {warn() {}},
       fetch: async url => {
@@ -72,6 +83,8 @@ for (const page of ['kilnwatch.html', 'kiln-watch-graph.html']) {
     for (const [, script] of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInNewContext(script, context);
     const flush = () => new Promise(resolve => setImmediate(resolve));
     await flush();
+    assert.equal(element('evidenceBadge').textContent, 'LIVE');
+    assert.equal(element('evidenceBadge')['aria-label'], 'Temperature evidence: LIVE');
     assert.equal(element(page === 'kilnwatch.html' ? 'rampNote' : 'firingNote').textContent, 'Ramp 0 \u00B0F/hr.');
     if (page === 'kiln-watch-graph.html') {
       const refreshNote = intervals.find(item => item.ms === 300000).fn;
@@ -86,14 +99,31 @@ for (const page of ['kilnwatch.html', 'kiln-watch-graph.html']) {
     const refresh = intervals.find(item => item.ms === 10000).fn;
     for (const temp of [0,200,800,1001,1801,2000]) {
       current = evidence(temp); await refresh();
-      assert.equal(label.textContent, gene.classify(temp).state);
+      assert.equal(label.textContent, gene.displayName(gene.classify(temp).state));
       assert.equal(mascot.src, gene.classify(temp).image);
+      if (temp === 1001) {
+        assert.equal(label.textContent, 'Atomic GENE I');
+        assert.equal(mascot.alt, 'Atomic GENE I');
+        if (page === 'kilnwatch.html') assert.equal(element('heatState').textContent, 'Atomic GENE I');
+      }
+      assert.equal(element('evidenceBadge').textContent, 'LIVE');
     }
+    const tick = intervals.find(item => item.ms === 1000).fn;
+    clockNow = now + 120000; tick();
+    assert.equal(element('evidenceBadge').textContent, 'LIVE');
+    clockNow = now + 120001; tick();
+    assert.equal(element('evidenceBadge').textContent, 'STALE');
+    assert.equal(mascot.src, undefined);
+    clockNow = now; await refresh();
+    assert.equal(element('evidenceBadge').textContent, 'LIVE');
     fail = true; await refresh();
+    assert.equal(element('evidenceBadge').textContent, 'UNAVAILABLE');
     assert.equal(label.textContent, 'Temperature unavailable'); assert.equal(mascot.src, undefined); assert.equal(mascot.hidden, true);
     fail = false; current = evidence(1801); await refresh(); assert.equal(mascot.hidden, false);
+    assert.equal(element('evidenceBadge').textContent, 'LIVE');
     current.evidence_generated_at = new Date(now - 120001).toISOString();
     intervals.find(item => item.ms === 1000).fn();
     assert.equal(label.textContent, 'Temperature unavailable'); assert.equal(mascot.src, undefined);
+    assert.equal(element('evidenceBadge').textContent, 'STALE');
   });
 }

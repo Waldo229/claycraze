@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kiln Watch — ClaycrazE</title>
   <link rel="stylesheet" href="/css/styles.css?v=3031">
+  <link rel="stylesheet" href="/css/gene-evidence.css">
 
   <style>
     :root {
@@ -88,6 +89,10 @@
       color: var(--gene-muted);
       font-size: 0.9rem;
       white-space: nowrap;
+    }
+
+    @media (max-width: 360px) {
+      .gene-time { font-size: 0.75rem; line-height: 1.6; }
     }
 
     .gene-rule {
@@ -410,6 +415,7 @@
       .gene-heading-row {
         align-items: flex-start;
         flex-direction: column;
+        margin-bottom: 11px;
       }
 
       .reading {
@@ -454,7 +460,10 @@
       <div class="gene-left">
         <div class="gene-heading-row">
           <h2 class="gene-title">GENE Status</h2>
-          <time class="gene-time" id="geneTime">Awaiting signal</time>
+          <span class="evidence-stamp">
+            <time class="gene-time" id="geneTime">Awaiting signal</time>
+            <span class="evidence-badge" id="evidenceBadge" data-status="UNAVAILABLE" role="status" aria-label="Temperature evidence: UNAVAILABLE">UNAVAILABLE</span>
+          </span>
         </div>
 
         <div class="gene-rule"></div>
@@ -674,10 +683,11 @@
       let kilnEvidence = null;
       function renderKiln(data) {
         const result = GeneTemperature.evaluate(data);
+        GeneTemperature.renderEvidenceBadge($("evidenceBadge"), result);
         GeneTemperature.render($("geneMascot"), $("geneTemperatureState"), result);
         const { temperature, ramp } = result;
         $("temperature").textContent = temperature === null ? "--" : Math.floor(temperature);
-        $("heatState").textContent = temperature === null ? "Temperature unavailable" : result.state;
+        $("heatState").textContent = temperature === null ? "Temperature unavailable" : GeneTemperature.displayName(result.state);
         $("rampNote").textContent = temperature === null
           ? "Current temperature evidence is unavailable."
           : ramp === null ? "Current kiln temperature." : `Ramp ${Math.round(ramp)} \u00B0F/hr.`;

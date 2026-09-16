@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GENE temperature ladder — local preview</title>
+<link rel="stylesheet" href="../public/css/gene-evidence.css">
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; background: #151719; color: #f4eee2; font: 16px/1.5 system-ui, sans-serif; }
@@ -30,12 +31,12 @@
     <h2>Try a boundary or unavailable evidence</h2>
     <label>Temperature °F <input id="temperature" type="number" step="any" value="2000"></label>
     <label>Evidence <select id="evidence">
-      <option value="current">Current</option><option value="stale">Stale (121 seconds)</option>
+      <option value="current">Current</option><option value="boundary">Exactly 120 seconds</option><option value="stale">Stale (120.001 seconds)</option>
       <option value="missing">Missing temperature</option><option value="invalid">Invalid temperature</option>
       <option value="unavailable">Source unavailable</option><option value="failed">Request failed</option>
     </select></label>
     <div id="interactive" aria-live="polite"></div>
-    <p>Evidence is accepted through 120 seconds; older or future-dated evidence is unavailable. Unavailable evidence removes the previous image.</p>
+    <p>LIVE through 120 seconds; STALE above 120 seconds; UNAVAILABLE for missing, invalid, future-dated, or failed evidence. Both STALE and UNAVAILABLE remove the previous image.</p>
   </section>
 </main>
 <script src="../public/js/gene-temperature.js"></script>
@@ -43,13 +44,14 @@
   const makeEvidence = temperature => ({source_status:'current', evidence_generated_at:new Date().toISOString(), summaries:[{latest_temp:temperature}]});
   function card(parent) {
     const article = document.createElement('article');
-    article.innerHTML = '<div class="art"><img hidden alt=""></div><h2></h2><div class="range"></div><code></code>';
+    article.innerHTML = '<div class="art"><img hidden alt=""></div><h2></h2><span class="evidence-badge" role="status"></span><div class="range"></div><code></code>';
     parent.append(article);
     return article;
   }
   function draw(article, result) {
     const img = article.querySelector('img');
     GeneTemperature.render(img, article.querySelector('h2'), result);
+    GeneTemperature.renderEvidenceBadge(article.querySelector('.evidence-badge'), result);
     if(result.image) img.src = '../public' + result.image;
     article.querySelector('code').textContent = result.image || 'No temperature-state image displayed';
   }
@@ -60,14 +62,17 @@
   }
   const interactive = card(document.getElementById('interactive'));
   function update() {
+    const now = Date.now();
     let data = makeEvidence(document.getElementById('temperature').value);
+    data.evidence_generated_at = new Date(now).toISOString();
     const mode = document.getElementById('evidence').value;
-    if(mode === 'stale') data.evidence_generated_at = new Date(Date.now()-121000).toISOString();
+    if(mode === 'boundary') data.evidence_generated_at = new Date(now-120000).toISOString();
+    if(mode === 'stale') data.evidence_generated_at = new Date(now-120001).toISOString();
     if(mode === 'missing') data.summaries = [{}];
     if(mode === 'invalid') data.summaries[0].latest_temp = 'invalid';
     if(mode === 'unavailable') data.source_status = 'unavailable';
     if(mode === 'failed') data = null;
-    draw(interactive, GeneTemperature.evaluate(data));
+    draw(interactive, GeneTemperature.evaluate(data, now));
   }
   document.getElementById('temperature').addEventListener('input', update);
   document.getElementById('evidence').addEventListener('change', update);

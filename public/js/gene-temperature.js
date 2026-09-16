@@ -9,7 +9,7 @@
     [2000, "atomic_Gene2", "/images/2Atomic.jpg"],
     [Infinity, "ultimate_gene", "/images/ultimate_gene.jpg"]
   ];
-  const unavailable = () => ({ state: "unavailable", image: null, temperature: null, ramp: null });
+  const unavailable = (evidenceStatus = "UNAVAILABLE") => ({ state: "unavailable", image: null, temperature: null, ramp: null, evidenceStatus });
   function number(value) {
     if (typeof value !== "number" && typeof value !== "string") return null;
     if (typeof value === "string" && !value.trim()) return null;
@@ -46,7 +46,7 @@
     if (!data || data.source_status !== "current" || data.gene_visual?.state === "unavailable") return unavailable();
     const timestamp = evidenceTime(data.evidence_generated_at);
     const age = now - timestamp;
-    if (!Number.isFinite(age) || age < 0 || age > MAX_AGE_MS) return unavailable();
+    if (!Number.isFinite(age) || age < 0) return unavailable();
     if (!Array.isArray(data.summaries) || !data.summaries.length) return unavailable();
     const probes = data.summaries.map(summary => {
       const result = classify(summary?.latest_temp_f ?? summary?.latest_temp);
@@ -55,17 +55,27 @@
     });
     // An invalid present probe makes the hottest current temperature unknown.
     if (probes.some(probe => probe.state === "unavailable")) return unavailable();
-    return probes.reduce((a, b) => a.temperature >= b.temperature ? a : b);
+    if (age > MAX_AGE_MS) return unavailable("STALE");
+    return { ...probes.reduce((a, b) => a.temperature >= b.temperature ? a : b), evidenceStatus: "LIVE" };
+  }
+  function renderEvidenceBadge(badge, result) {
+    if (badge.textContent === result.evidenceStatus && badge.getAttribute?.("data-status") === result.evidenceStatus) return;
+    badge.textContent = result.evidenceStatus;
+    badge.setAttribute("data-status", result.evidenceStatus);
+    badge.setAttribute("aria-label", `Temperature evidence: ${result.evidenceStatus}`);
+  }
+  function displayName(state) {
+    return state === "atomic_gene1" ? "Atomic GENE I" : state;
   }
   function render(image, label, result) {
     image.hidden = !result.image;
     image.style.display = result.image ? "" : "none";
     if (result.image) image.setAttribute("src", result.image);
     else image.removeAttribute("src");
-    image.alt = result.state === "unavailable" ? "GENE temperature unavailable" : result.state;
-    label.textContent = result.state === "unavailable" ? "Temperature unavailable" : result.state;
+    image.alt = result.state === "unavailable" ? "GENE temperature unavailable" : displayName(result.state);
+    label.textContent = result.state === "unavailable" ? "Temperature unavailable" : displayName(result.state);
   }
-  const api = { MAX_AGE_MS, classify, evaluate, render, evidenceTime };
+  const api = { MAX_AGE_MS, classify, evaluate, render, renderEvidenceBadge, evidenceTime, displayName };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.GeneTemperature = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

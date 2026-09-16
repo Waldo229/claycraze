@@ -7,6 +7,7 @@
   <title>Firing Graph | ClaycrazE</title>
 
   <link rel="stylesheet" href="/css/styles.css?v=3032">
+  <link rel="stylesheet" href="/css/gene-evidence.css">
 
   <style>
     :root {
@@ -190,6 +191,22 @@
       font-weight: 500;
     }
 
+    .graph-status-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .graph-status-heading h2 {
+      margin: 0;
+    }
+
+    @media (max-width: 360px) {
+      .graph-status-heading h2 { font-size: 0.8rem; letter-spacing: 0.04em; }
+    }
+
     .archive-link {
       display: inline-block;
       margin-top: 12px;
@@ -296,10 +313,13 @@
         </section>
 
         <aside class="graph-status">
-          <h2>Graph Status</h2>
+          <div class="graph-status-heading">
+            <h2>Graph Status</h2>
+            <span class="evidence-badge" id="evidenceBadge" data-status="UNAVAILABLE" role="status" aria-label="Temperature evidence: UNAVAILABLE">UNAVAILABLE</span>
+          </div>
           <p class="status-line">
             Updated:
-            <strong id="graphUpdated">CheckingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</strong>
+              <strong id="graphUpdated">CheckingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</strong>
           </p>
           <p class="status-line">
             Display refresh:
@@ -332,7 +352,11 @@
       const NOTE_URL = "https://claycraze.com/gene/kiln_watch_latest.txt";
       const STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
       let kilnEvidence = null;
-      const renderState = () => GeneTemperature.render(pocketGene, document.getElementById("geneTemperatureState"), GeneTemperature.evaluate(kilnEvidence));
+      const renderState = () => {
+        const result = GeneTemperature.evaluate(kilnEvidence);
+        GeneTemperature.render(pocketGene, document.getElementById("geneTemperatureState"), result);
+        GeneTemperature.renderEvidenceBadge(document.getElementById("evidenceBadge"), result);
+      };
       const REFRESH_MS = 5 * 60 * 1000;
 
       const graph = document.getElementById("firingGraph");
