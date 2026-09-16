@@ -1,0 +1,2732 @@
+[
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "stale",
+    "pass": true,
+    "text": "STALE",
+    "aria": "Temperature evidence: STALE",
+    "font": "13px",
+    "color": "rgb(244, 215, 166)",
+    "background": "rgb(41, 33, 22)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "missing",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "invalid",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "unavailable",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "failed",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 366.578125,
+    "right": 474.578125,
+    "viewport": 1440,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 122.5,
+        "y": 170.375,
+        "width": 1180,
+        "height": 1061.6875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 123.5,
+        "y": 171.375,
+        "width": 424.078125,
+        "height": 1059.6875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 547.578125,
+        "y": 171.375,
+        "width": 753.921875,
+        "height": 1059.6875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2233.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 717
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.375,
+        "width": 372,
+        "height": 1514.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2233.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 716.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.125,
+        "width": 372,
+        "height": 1514.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "stale",
+    "pass": true,
+    "text": "STALE",
+    "aria": "Temperature evidence: STALE",
+    "font": "13px",
+    "color": "rgb(244, 215, 166)",
+    "background": "rgb(41, 33, 22)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 717
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.375,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 716.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.125,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "missing",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 717
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.375,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 716.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.125,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "invalid",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 717
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.375,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 716.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.125,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "unavailable",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 717
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.375,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2254.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 716.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.125,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "failed",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2332.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 795
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 1028.375,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2332.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 794.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 1028.125,
+        "width": 372,
+        "height": 1535.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 193.640625,
+    "right": 301.640625,
+    "viewport": 390,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2233.765625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 717
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.375,
+        "width": 372,
+        "height": 1514.765625
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 232.375,
+        "width": 374,
+        "height": 2233.515625
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 233.375,
+        "width": 372,
+        "height": 716.75
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 950.125,
+        "width": 372,
+        "height": 1514.765625
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2384.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.25,
+        "width": 302,
+        "height": 1714.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2384.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.1875,
+        "width": 302,
+        "height": 1714.546875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "stale",
+    "pass": true,
+    "text": "STALE",
+    "aria": "Temperature evidence: STALE",
+    "font": "13px",
+    "color": "rgb(244, 215, 166)",
+    "background": "rgb(41, 33, 22)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.25,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.1875,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "missing",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.25,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.1875,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "invalid",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.25,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.1875,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "unavailable",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.25,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2426.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.1875,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "failed",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2504.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 745.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 996.25,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2504.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 745.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 996.1875,
+        "width": 302,
+        "height": 1756.546875
+      }
+    ]
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 166.859375,
+    "right": 274.859375,
+    "viewport": 320,
+    "clip": false,
+    "beside": true,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2384.421875
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.875
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.25,
+        "width": 302,
+        "height": 1714.546875
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".gene-card",
+        "x": 8,
+        "y": 249.375,
+        "width": 304,
+        "height": 2384.359375
+      },
+      {
+        "selector": ".gene-left",
+        "x": 9,
+        "y": 250.375,
+        "width": 302,
+        "height": 667.8125
+      },
+      {
+        "selector": ".gene-right",
+        "x": 9,
+        "y": 918.1875,
+        "width": 302,
+        "height": 1714.546875
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "stale",
+    "pass": true,
+    "text": "STALE",
+    "aria": "Temperature evidence: STALE",
+    "font": "13px",
+    "color": "rgb(244, 215, 166)",
+    "background": "rgb(41, 33, 22)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "missing",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "invalid",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "unavailable",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "failed",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 1184.484375,
+    "right": 1292.484375,
+    "viewport": 1440,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 92.5,
+        "y": 361.65625,
+        "width": 1240,
+        "height": 899
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 111.5,
+        "y": 1052.65625,
+        "width": 1202,
+        "height": 189
+      },
+      {
+        "selector": ".graph-status",
+        "x": 938.671875,
+        "y": 1052.65625,
+        "width": 374.8125,
+        "height": 189
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 443,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "stale",
+    "pass": true,
+    "text": "STALE",
+    "aria": "Temperature evidence: STALE",
+    "font": "13px",
+    "color": "rgb(244, 215, 166)",
+    "background": "rgb(41, 33, 22)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 390,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "missing",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 390,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "invalid",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 390,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "unavailable",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 390,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "failed",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 390,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 235,
+    "right": 343,
+    "viewport": 443,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 764.703125,
+        "width": 362,
+        "height": 686
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1056.703125,
+        "width": 338,
+        "height": 382
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1230.703125,
+        "width": 338,
+        "height": 208
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 443,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "stale",
+    "pass": true,
+    "text": "STALE",
+    "aria": "Temperature evidence: STALE",
+    "font": "13px",
+    "color": "rgb(244, 215, 166)",
+    "background": "rgb(41, 33, 22)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 356,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "missing",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 356,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "invalid",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 356,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "unavailable",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 356,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "failed",
+    "pass": true,
+    "text": "UNAVAILABLE",
+    "aria": "Temperature evidence: UNAVAILABLE",
+    "font": "13px",
+    "color": "rgb(237, 240, 242)",
+    "background": "rgb(21, 28, 33)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 356,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 108,
+    "mode": "current",
+    "pass": true,
+    "text": "LIVE",
+    "aria": "Temperature evidence: LIVE",
+    "font": "13px",
+    "color": "rgb(216, 237, 189)",
+    "background": "rgb(23, 34, 25)",
+    "height": 26.25,
+    "left": 165,
+    "right": 273,
+    "viewport": 443,
+    "clip": false,
+    "beside": false,
+    "headingAligned": true,
+    "timestampBelow": true,
+    "withBadge": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724.25
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420.25
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246.25
+      }
+    ],
+    "baseline": [
+      {
+        "selector": ".graph-panel",
+        "x": 14,
+        "y": 781.703125,
+        "width": 292,
+        "height": 724
+      },
+      {
+        "selector": ".graph-meta",
+        "x": 26,
+        "y": 1073.703125,
+        "width": 268,
+        "height": 420
+      },
+      {
+        "selector": ".graph-status",
+        "x": 26,
+        "y": 1247.703125,
+        "width": 268,
+        "height": 246
+      }
+    ]
+  }
+]

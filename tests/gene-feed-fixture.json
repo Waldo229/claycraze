@@ -1,0 +1,80 @@
+{
+    "source":  "local-simulator",
+    "source_status":  "current",
+    "status_message":  "Local simulated fresh 2000 F evidence; held for visual confirmation.",
+    "attempted_at":  "2026-09-16 10:50:17",
+    "generated_at":  "2026-09-16 10:50:17",
+    "evidence_generated_at":  "2026-09-16 10:50:17",
+    "last_success_at":  "2026-09-16 10:50:17",
+    "field_color_description":  "The kiln is dark.",
+    "summaries":  [
+                      {
+                          "name":  "GREEN_0",
+                          "index":  0,
+                          "raw_latest_temp":  2000.0,
+                          "latest_temp":  1001,
+                          "raw_min_temp":  2000.0,
+                          "raw_max_temp":  2000.0,
+                          "latest_rate":  0.0,
+                          "temp_count":  35,
+                          "ramp_count":  34,
+                          "min_temp":  2000.0,
+                          "max_temp":  2000.0,
+                          "temp_span":  0.0,
+                          "min_rate":  0.0,
+                          "max_rate":  0.0,
+                          "behavior":  "flat signal",
+                          "behavior_note":  "Local simulator holding at 2000 F.",
+                          "color_description":  "The kiln is dark."
+                      }
+                  ],
+    "last_known_summaries":  [
+                                 {
+                                     "name":  "GREEN_0",
+                                     "index":  0,
+                                     "raw_latest_temp":  2000.0,
+                                     "latest_temp":  1001,
+                                     "raw_min_temp":  2000.0,
+                                     "raw_max_temp":  2000.0,
+                                     "latest_rate":  0.0,
+                                     "temp_count":  35,
+                                     "ramp_count":  34,
+                                     "min_temp":  2000.0,
+                                     "max_temp":  2000.0,
+                                     "temp_span":  0.0,
+                                     "min_rate":  0.0,
+                                     "max_rate":  0.0,
+                                     "behavior":  "flat signal",
+                                     "behavior_note":  "Local simulator holding at 2000 F.",
+                                     "color_description":  "The kiln is dark."
+                                 }
+                             ],
+    "absent_prior_voices":  [
+
+                            ],
+    "interpretations":  [
+                            "Local simulated reading: 2000 F."
+                        ],
+    "absent_interpretations":  [
+
+                               ],
+    "gene_visual":  {
+                        "state":  "watching",
+                        "start_temp_f":  175.0,
+                        "start_rate_f_per_hr":  50.0,
+                        "start_required_samples":  3,
+                        "finish_temp_f":  200.0,
+                        "finish_max_rate_f_per_hr":  0.0,
+                        "finish_required_samples":  10,
+                        "finish_confirmation_count":  0,
+                        "hottest_temp_f":  1001,
+                        "start_evidence":  [
+
+                                           ],
+                        "finish_evidence":  [
+
+                                            ],
+                        "asset":  "kiln_watch_gene.gif",
+                        "animated":  false
+                    }
+}
