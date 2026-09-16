@@ -1,65 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Ovals</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>Ovals | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3004" >
+  <link rel="stylesheet" href="/css/gallery.css?v=3004" >
 </head>
+
 <body class="practice-page">
 
   <header class="site-header">
     <div class="header-shell">
+
       <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-        
+        <a class="active" href="/gallery/bonsai.html">Back</a>
       </nav>
+
     </div>
   </header>
 
-  <main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/gallery/bonsai.html">Bonsai</a>
-      <a href="/gallery/ovals.html" class="active">Ovals</a>
-      <a href="/gallery/rectangles.html">Rectangles</a>
-      <a href="/gallery/freestyle.html">Freestyle</a>
-      <a href="/gallery/rounds.html">Rounds</a>
-      <a href="/gallery/ikebana.html">Ikebana</a>
-      <a href="/gallery/sculpture.html">Sculpture</a>
-      <a href="/gallery/facejugs.html">Face Jugs</a>
-    </nav>
+  <main class="gallery-page unified-gallery-page">
 
-    <section class="gallery-intro">
-      <h2>Ovals</h2>
-      <p>Elongated bonsai forms with lateral movement and quiet pull.</p>
+    <section class="gallery-hero">
+      <p class="gallery-kicker">Practice / Bonsai</p>
+
+      <h1>Ovals</h1>
+
+      <p>
+        Soft-edged bonsai containers for quiet, balanced compositions
+        and calm visual movement.
+      </p>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading oval bonsai forms...</div>
+    <section
+      id="galleryGrid"
+      class="gallery-grid"
+      aria-label="Oval bonsai containers"
+      aria-live="polite"
+    >
+      <div class="loading">Loading oval forms...</div>
     </section>
+
   </main>
 
-  <script src="/js/nav.js"></script>
-  <script src="/js/ovals.js?v=6"></script>
+  <script>
+    window.CLAYCRAZE_GALLERY_CATEGORY = "bonsai";
+    window.CLAYCRAZE_GALLERY_SHAPE = "OV";
+  </script>
+
+  <script src="/js/shape-gallery.js?v=1019"></script>
+
 </body>
 </html>

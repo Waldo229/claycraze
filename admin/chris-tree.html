@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>ClaycrazE Tree Submission | Chris Schmuck</title>
+
+  <link rel="stylesheet" href="/css/admin.css?v=3001" >
+</head>
+
+<body>
+
+  <main class="admin-shell">
+
+    <section class="admin-card">
+
+      <h1>ClaycrazE Tree Submission</h1>
+
+      <p class="admin-intro">
+        Submit a tree for the ClaycrazE gallery archive. Curation comes later.
+      </p>
+
+      <form id="chrisTreeForm">
+
+        <label>
+          Tree Image *
+          <input type="file" id="treeImage" accept="image/jpeg" required >
+        </label>
+
+        <label>
+          Tree Title *
+          <input type="text" id="title" placeholder="Japanese Black Pine" required >
+        </label>
+
+        <label>
+          Species
+          <input type="text" id="species" placeholder="Pine / Maple / Juniper" >
+        </label>
+
+        <label>
+          Availability *
+          <select id="status" required>
+            <option value="shown-by-appointment">Shown by appointment</option>
+            <option value="nfs">NFS</option>
+            <option value="in-development">In development</option>
+            <option value="private-collection">Private collection</option>
+          </select>
+        </label>
+
+        <label>
+          Notes
+          <textarea id="description" rows="6" placeholder="A tree in training."></textarea>
+        </label>
+
+        <button type="submit" id="submitButton">
+          Submit Tree
+        </button>
+
+      </form>
+
+      <div id="statusBox" class="status-box"></div>
+
+    </section>
+
+  </main>
+
+  <script src="/admin/js/chris-tree.js?v=3001"></script>
+
+</body>
+</html>

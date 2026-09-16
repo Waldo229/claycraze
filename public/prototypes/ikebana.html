@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ikebana | ClaycrazE</title>
+  <link rel="stylesheet" href="theme-v2.css">
+</head>
+<body class="family-collection">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/index.html">
+        <span class="brand-name">ClaycrazE</span>
+        <span class="brand-note">Theory &amp; Practice</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html" aria-current="location">Practice</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="shell" tabindex="-1">
+    <a class="back-link" href="/practice.html">&larr; Back to Practice</a>
+    <section class="page-intro" aria-labelledby="ikebana-title">
+      <p class="kicker">Practice / Ikebana</p>
+      <h1 id="ikebana-title">Ikebana</h1>
+      <p class="lede">Vessels for arranged flowers, quiet placement,
+        seasonal attention, and balanced negative space.</p>
+    </section>
+    <p id="gallery-state" class="state" role="status" aria-live="polite" hidden></p>
+    <section id="catalogue" class="catalogue" aria-label="Ikebana vessel gallery" aria-busy="true"></section>
+    <noscript><p class="state state-error">Could not load gallery data.</p></noscript>
+  </main>
+  <script>
+"use strict";
+const catalogue = document.getElementById("catalogue");
+const state = document.getElementById("gallery-state");
+
+// Exact canonical fields, no aliases, prefix fallback, or sorting.
+function selectIkebana(records) {
+  return records.filter(record =>
+    record !== null && typeof record === "object" &&
+    record.category === "ceramic" && record.shape === "IKE"
+  );
+}
+function present(value) {
+  return value !== null && value !== undefined && String(value).trim() !== "";
+}
+function textElement(tag, text, className) {
+  const element = document.createElement(tag);
+  element.textContent = text;
+  if (className) element.className = className;
+  return element;
+}
+function imagePath(record) {
+  // Use stored paths as supplied; resolve relative paths from the public root.
+  const candidates = [record.image_path, record.thumbnail, record.top_image,
+    record.image_path_2, record.full_top_image, record.image_path_3];
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string" || !candidate.trim()) continue;
+    try {
+      const url = new URL(candidate, window.location.origin + "/");
+      if (url.protocol === "https:" || url.protocol === "http:") return url.href;
+    } catch { /* Show the explicit missing-image state if no path is usable. */ }
+  }
+  return "";
+}
+function buildEntry(record) {
+  const article = document.createElement("article");
+  article.className = "catalogue-entry";
+  const figure = document.createElement("figure");
+  const link = document.createElement("a");
+  link.className = "artwork-link";
+  link.href = "/gallery/piece.html?id=" + encodeURIComponent(String(record.id ?? ""));
+  const imageFrame = document.createElement("div");
+  imageFrame.className = "artwork-image";
+  const missing = textElement("p", "No image available", "image-missing");
+  const src = imagePath(record);
+  if (src) {
+    const image = document.createElement("img");
+    image.alt = String(record.title || record.id || "Ikebana");
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.addEventListener("error", () => imageFrame.replaceChildren(missing), { once: true });
+    image.src = src;
+    imageFrame.append(image);
+  } else {
+    imageFrame.append(missing);
+  }
+  const caption = document.createElement("figcaption");
+  caption.append(textElement("h2", String(record.title || record.id || "Ikebana")));
+  figure.append(imageFrame, caption);
+  link.append(figure);
+  const facts = document.createElement("dl");
+  facts.className = "catalogue-facts";
+  // Do not format away zeros, change status capitalization, or recalculate dimensions.
+  for (const [label, value] of [
+    ["ID", record.id], ["Dimensions", record.dimensions],
+    ["Price", record.price], ["Status", record.status]
+  ]) {
+    if (!present(value)) continue;
+    const row = document.createElement("div");
+    row.append(textElement("dt", label), textElement("dd", String(value)));
+    facts.append(row);
+  }
+  article.append(link, facts);
+  return article;
+}
+async function loadGallery() {
+  catalogue.setAttribute("aria-busy", "true");
+  state.hidden = false;
+  state.className = "state";
+  state.textContent = "Loading ikebana vessels...";
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch("/data/pieces.json", {
+      cache: "no-store", signal: controller.signal
+    });
+    if (!response.ok) throw new Error("Gallery request failed.");
+    const records = await response.json();
+    if (!Array.isArray(records)) throw new Error("Invalid gallery data.");
+    const pieces = selectIkebana(records);
+    catalogue.replaceChildren(...pieces.map(buildEntry));
+    if (pieces.length) {
+      state.textContent = "";
+      state.hidden = true;
+    } else {
+      state.textContent = "No pieces are currently available.";
+    }
+  } catch {
+    catalogue.replaceChildren();
+    state.className = "state state-error";
+    state.textContent = "Could not load gallery data.";
+  } finally {
+    window.clearTimeout(timeout);
+    catalogue.setAttribute("aria-busy", "false");
+  }
+}
+loadGallery();
+  </script>
+</body>
+</html>

@@ -1,0 +1,621 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GENE Observatory — ClaycrazE</title>
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
+
+  <style>
+    :root {
+      --gene-bg: #090d10;
+      --gene-panel: #101519;
+      --gene-line: rgba(222, 211, 184, 0.18);
+      --gene-cream: #e7ddc7;
+      --gene-muted: #a9a79f;
+      --gene-green: #9ac64e;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+
+    .obs-shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 34px auto 64px;
+    }
+
+    .obs-card {
+      color: var(--gene-cream);
+      background:
+        radial-gradient(circle at 20% 18%, rgba(154, 198, 78, 0.07), transparent 30%),
+        linear-gradient(145deg, #101519, #090d10);
+      border: 1px solid rgba(231, 221, 199, 0.24);
+      border-radius: 28px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.38),
+        inset 0 0 0 8px rgba(255, 255, 255, 0.018);
+      overflow: hidden;
+    }
+
+    .obs-top {
+      padding: 30px 34px 26px;
+      border-bottom: 1px solid var(--gene-line);
+    }
+
+    .obs-kicker {
+      margin: 0 0 8px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .obs-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .obs-subtitle {
+      margin: 12px 0 0;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .obs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      padding: 24px;
+    }
+
+    .panel {
+      border: 1px solid var(--gene-line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.012);
+      padding: 22px;
+    }
+
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
+    .panel-title {
+      margin: 0 0 16px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .signal {
+      min-height: 128px;
+      padding: 16px;
+      border: 1px solid rgba(154, 198, 78, 0.22);
+      border-radius: 14px;
+      background: rgba(154, 198, 78, 0.025);
+    }
+
+    .signal-label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--gene-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-value {
+      display: block;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      line-height: 1;
+    }
+
+    .signal-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--gene-muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .note-block + .note-block {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gene-line);
+    }
+
+    .note-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .note-copy {
+      margin: 0;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .note-copy.muted {
+      color: var(--gene-muted);
+    }
+
+    .memory-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .memory-item {
+      padding: 14px 16px;
+      border: 1px solid var(--gene-line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .memory-time {
+      color: var(--gene-muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .memory-text {
+      margin: 7px 0 0;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .obs-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .obs-button:hover,
+    .obs-button:focus-visible {
+      border-color: rgba(154, 198, 78, 0.95);
+      background: rgba(154, 198, 78, 0.11);
+      outline: none;
+    }
+
+    .obs-footer {
+      padding: 0 24px 24px;
+      text-align: center;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
+    .load-warning {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px solid rgba(210, 135, 60, 0.5);
+      border-radius: 8px;
+      color: #e1b47b;
+      background: rgba(210, 135, 60, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .load-warning.show { display: block; }
+
+    @media (max-width: 900px) {
+      .obs-grid { grid-template-columns: 1fr; }
+      .panel.full { grid-column: auto; }
+    }
+
+    @media (max-width: 700px) {
+      .signal-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .obs-shell { width: min(100% - 16px, 1180px); }
+      .obs-top { padding: 24px 20px; }
+      .obs-grid { padding: 16px; }
+    }
+  </style>
+</head>
+
+<body class="practice-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="obs-shell">
+    <section class="obs-card">
+
+      <header class="obs-top">
+        <p class="obs-kicker">GENE / Present Field</p>
+        <h1 class="obs-title">Observatory</h1>
+        <p class="obs-subtitle">
+          The Observatory shows what GENE is registering now. Observation is kept separate from interpretation;
+          the record remains visible even when meaning is not yet clear.
+        </p>
+      </header>
+
+      <div class="obs-grid">
+
+        <section class="panel full">
+          <h2 class="panel-title">Current Field</h2>
+
+          <div class="signal-grid">
+            <div class="signal">
+              <span class="signal-label">Kiln temperature</span>
+              <span class="signal-value" id="temperature">-- °F</span>
+              <span class="signal-note" id="temperatureNote">Awaiting kiln signal</span>
+            </div>
+
+            <div class="signal">
+              <span class="signal-label">Rate of rise</span>
+              <span class="signal-value" id="ramp">--</span>
+              <span class="signal-note">°F per hour</span>
+            </div>
+
+            <div class="signal">
+              <span class="signal-label">Awareness</span>
+              <span class="signal-value" id="awareness">--</span>
+              <span class="signal-note" id="awarenessNote">Awaiting GENE state</span>
+            </div>
+          </div>
+
+          <div class="load-warning" id="loadWarning">
+            One or more live signals have not arrived yet. The Observatory will retry automatically.
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Observation</h2>
+
+          <div class="note-block">
+            <span class="note-label">What is registered</span>
+            <p class="note-copy" id="observationText">
+              Awaiting the common record.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="note-label">What is absent</span>
+            <p class="note-copy muted" id="absenceText">
+              No omission has been identified.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Interpretation</h2>
+
+          <div class="note-block">
+            <span class="note-label">Bounded interpretation</span>
+            <p class="note-copy" id="interpretationText">
+              No interpretation has been returned yet.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="note-label">Confidence</span>
+            <p class="note-copy muted" id="confidenceText">
+              No confidence statement available.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel full">
+          <h2 class="panel-title">Recent Registered Changes</h2>
+
+          <div class="memory-list" id="memoryList">
+            <article class="memory-item">
+              <div class="memory-time">Awaiting record</div>
+              <p class="memory-text">
+                No recent observation has been returned.
+              </p>
+            </article>
+          </div>
+
+          <div class="button-row">
+            <a class="obs-button" href="/kilnwatch.html">Return to GENE</a>
+            <a class="obs-button" href="/mission-control.html">Mission Control</a>
+            <a class="obs-button" href="/kiln-watch-graph.html">Firing Record</a>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="obs-footer">
+        Witness. Remember. Transmit.
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
+      const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
+      const OBSERVATORY_STATE_URL = "https://claycraze.com/gene/observatory_latest.json";
+      const REFRESH_MS = 10000;
+
+      const $ = (id) => document.getElementById(id);
+
+      function asFiniteNumber(value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number : null;
+      }
+
+      function findNumericByKeys(value, keys, depth = 0) {
+        if (depth > 6 || value == null) return null;
+
+        if (Array.isArray(value)) {
+          for (let index = value.length - 1; index >= 0; index -= 1) {
+            const found = findNumericByKeys(value[index], keys, depth + 1);
+            if (found !== null) return found;
+          }
+          return null;
+        }
+
+        if (typeof value !== "object") return null;
+
+        const entries = Object.entries(value);
+
+        for (const [key, raw] of entries) {
+          const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+          if (keys.includes(normalized)) {
+            const number = asFiniteNumber(raw);
+            if (number !== null) return number;
+          }
+        }
+
+        for (const [, child] of entries) {
+          const found = findNumericByKeys(child, keys, depth + 1);
+          if (found !== null) return found;
+        }
+
+        return null;
+      }
+
+      function extractKilnState(data) {
+        const summaries = Array.isArray(data?.summaries) ? data.summaries : [];
+
+        const candidates = summaries
+          .map((summary) => ({
+            temperature: asFiniteNumber(
+              summary?.latest_temp_f ??
+              summary?.latest_temp ??
+              summary?.latest_temperature ??
+              summary?.temperature_f ??
+              summary?.temperature ??
+              summary?.temp_f ??
+              summary?.temp
+            ),
+            ramp: asFiniteNumber(
+              summary?.latest_ramp_f_per_hr ??
+              summary?.latest_ramp ??
+              summary?.ramp_f_per_hr ??
+              summary?.ramp_rate ??
+              summary?.rate_of_rise ??
+              summary?.ramp ??
+              summary?.rate
+            )
+          }))
+          .filter((probe) => probe.temperature !== null);
+
+        if (candidates.length > 0) {
+          return candidates.reduce((hottest, probe) =>
+            probe.temperature > hottest.temperature ? probe : hottest
+          );
+        }
+
+        return {
+          temperature: findNumericByKeys(data, [
+            "hottesttempf", "latesttempf", "latesttemp", "latesttemperature",
+            "temperature", "tempf", "temp", "value"
+          ]),
+          ramp: findNumericByKeys(data, [
+            "latestrampfperhr", "latestramp", "ramprate", "rampfperhr",
+            "rateofrise", "ramp", "rate"
+          ])
+        };
+      }
+
+      function awarenessLanguage(value) {
+        if (value < 0.08) return "Resting";
+        if (value < 0.20) return "Attentive";
+        if (value < 0.45) return "Awake";
+        if (value < 0.72) return "Heightened";
+        return "Urgent";
+      }
+
+      function renderGene(data) {
+        const awareness = asFiniteNumber(data?.arousal);
+
+        if (awareness !== null) {
+          $("awareness").textContent = awareness.toFixed(2);
+          $("awarenessNote").textContent = awarenessLanguage(awareness);
+        }
+      }
+
+      function renderKiln(data) {
+        const { temperature, ramp } = extractKilnState(data);
+
+        if (temperature !== null) {
+          $("temperature").textContent = `${Math.round(temperature)} °F`;
+          $("temperatureNote").textContent =
+            data?.gene_visual?.state === "firing"
+              ? "Firing field active"
+              : "Kiln field registered";
+        }
+
+        if (ramp !== null) {
+          $("ramp").textContent = `${ramp >= 0 ? "+" : ""}${Math.round(ramp)}`;
+        }
+      }
+
+      function renderObservatory(data) {
+        const observations = Array.isArray(data?.observations)
+          ? data.observations.filter(Boolean)
+          : [];
+
+        const interpretations = Array.isArray(data?.interpretations)
+          ? data.interpretations.filter(Boolean)
+          : [];
+
+        const absences = Array.isArray(data?.absences)
+          ? data.absences.filter(Boolean)
+          : [];
+
+        $("observationText").textContent = observations.length
+          ? observations.join(" ")
+          : "No current observation has been returned.";
+
+        $("interpretationText").textContent = interpretations.length
+          ? interpretations.join(" ")
+          : "No bounded interpretation has been returned.";
+
+        $("absenceText").textContent = absences.length
+          ? absences.join(" ")
+          : "No omission has been identified.";
+
+        if (data?.confidence != null) {
+          $("confidenceText").textContent = String(data.confidence);
+        }
+
+        const events =
+          Array.isArray(data?.recent_changes) ? data.recent_changes :
+          Array.isArray(data?.events) ? data.events :
+          [];
+
+        if (events.length) {
+          $("memoryList").innerHTML = events.slice(-6).reverse().map((event) => {
+            const time =
+              event?.time ??
+              event?.timestamp ??
+              event?.generated_at ??
+              "Registered change";
+
+            const text =
+              event?.text ??
+              event?.observation ??
+              event?.message ??
+              JSON.stringify(event);
+
+            return `
+              <article class="memory-item">
+                <div class="memory-time">${String(time)}</div>
+                <p class="memory-text">${String(text)}</p>
+              </article>
+            `;
+          }).join("");
+        }
+      }
+
+      async function getJson(url) {
+        const separator = url.includes("?") ? "&" : "?";
+        const response = await fetch(`${url}${separator}t=${Date.now()}`, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`${url} returned ${response.status}`);
+        }
+
+        return response.json();
+      }
+
+      async function refresh() {
+        const warning = $("loadWarning");
+
+        const [geneResult, kilnResult, observatoryResult] = await Promise.allSettled([
+          getJson(GENE_STATE_URL),
+          getJson(KILN_STATE_URL),
+          getJson(OBSERVATORY_STATE_URL)
+        ]);
+
+        if (geneResult.status === "fulfilled") {
+          renderGene(geneResult.value);
+        }
+
+        if (kilnResult.status === "fulfilled") {
+          renderKiln(kilnResult.value);
+        }
+
+        if (observatoryResult.status === "fulfilled") {
+          renderObservatory(observatoryResult.value);
+        }
+
+        const failed =
+          geneResult.status === "rejected" ||
+          kilnResult.status === "rejected" ||
+          observatoryResult.status === "rejected";
+
+        warning.classList.toggle("show", failed);
+
+        if (failed) {
+          console.warn("GENE Observatory refresh:", {
+            gene: geneResult,
+            kiln: kilnResult,
+            observatory: observatoryResult
+          });
+        }
+      }
+
+      refresh();
+      window.setInterval(refresh, REFRESH_MS);
+    })();
+  </script>
+
+</body>
+</html>

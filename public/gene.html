@@ -1,126 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | GENE Project</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GENE | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3012">
 </head>
-<body class="theory-page">
+
+<body class="theory-page gene-page">
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html">Theory</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-       
       </nav>
+
     </div>
   </header>
 
-  <main class="theory-main">
-    <nav class="category-nav" aria-label="Theory sections">
-      <a href="/studio.html">Studio</a>
-      <a href="/materials.html">Materials</a>
-      <a href="/processes.html">Processes</a>
-      <a href="/places.html">Places</a>
-      <a href="/kiln.html">Kiln</a>
-      <a href="/gene.html" class="active">GENE Project</a>
-      
-    </nav>
+  <main class="threshold-page">
 
-    <div class="theory-intro">
-      <h2>GENE Project</h2>
-      <p><em>The kiln watcher.</em></p>
-      <p>
-        GENE is not a controller, but a presence within the studio. It observes
-        conditions — sound, pressure, time, and temperature — and inhabits them
-        as a changing internal state.
-      </p>
-      <p>
-        Rather than issuing commands, GENE registers tension. It reflects how a
-        situation feels as it unfolds, allowing the potter to remain the final
-        authority. Meaning emerges through observation, not instruction.
-      </p>
-    </div>
+    <section class="theory-room">
 
-    <div class="theory-grid" aria-label="GENE project sections">
-      <article class="theory-card">
-        <div class="theory-card-link">
-          <img src="/images/gene_node_s.jpg" alt="GENE node enclosure" />
-          <h3>System Node</h3>
-          <p>
-            Environmental node enclosure — active within the studio field.
-          </p>
-          <p>
-            Raspberry Pi / ESP32 system with audio and environmental sensing for
-            real-time kiln observation.
-          </p>
-        </div>
-      </article>
+      <div class="theory-room-copy">
 
-      <article class="theory-card">
-        <div class="theory-card-link">
-          <img src="/images/gene_003s.png" alt="GENE observing the Skutt kiln" />
-          <h3>Skutt Observation</h3>
-          <p>
-            GENE observing the Skutt 1027 and registering conditions during firing.
-          </p>
-        </div>
-      </article>
+        <a
+          href="/practice.html"
+          class="threshold-symbol"
+          aria-label="Go to Practice"
+        >
+          <img
+            src="/images/curated/theory_imgs/han-shan2.jpg"
+            alt="Han Shan"
+            class="theory-room-stamp"
+          >
+        </a>
 
-      <article class="theory-card">
-        <div class="theory-card-link">
-          <img src="/images/gene_nightowl3.jpg" alt="GENE watching a night firing" />
-          <h3>PoorBoy at Night</h3>
-          <p>
-            GENE watching the “Poor Boy” firing at night.
-          </p>
-        </div>
-      </article>
-    </div>
+        <p class="threshold-kicker">Theory / GENE</p>
 
-    <div class="theory-card" style="margin-top: 1.5rem;">
-      <div class="theory-card-link">
-        <h3>System Behavior</h3>
+        <h1>Observation, timing, atmosphere, and firing.</h1>
+
         <p>
-          GENE does not report events directly. Instead, it expresses a condition
-          of arousal derived from sensed change. As tension increases, its presence
-          becomes more legible through light, timing, and occasional sound.
+          GENE explores the emotional and perceptual dimensions
+          of the ceramic studio through light, rhythm, sound,
+          pacing, memory, and attention.
         </p>
-        <p>
-          It may suggest that a firing is proceeding with greater or lesser fidelity
-          to expectation, but it never prescribes action. The system remains
-          interpretive, not authoritative.
-        </p>
-        <p>
-          GENE is a work in progress, continuously evolving. Over time, it may come
-          to register not only the state of the kiln, but the broader atmosphere of
-          the studio itself.
-        </p>
+
       </div>
-    </div>
+
+      <img
+        src="/images/curated/theory_imgs/cc_work_001s.jpg"
+        alt="ClaycrazE Studio"
+        class="theory-room-image"
+      >
+
+    </section>
+
+    <section
+      class="archive-grid theory-grid"
+      aria-label="GENE project paths"
+    >
+
+      <a class="archive-card" href="/gene-project.html">
+
+        <img
+          src="/images/curated/theory_imgs/gene_nightowl3.jpg"
+          alt="GENE night watch"
+        >
+
+        <div class="archive-card-text">
+          <p>Watcher</p>
+          <h2>Night Watch</h2>
+        </div>
+
+      </a>
+
+      <a class="archive-card" href="/gene-project.html">
+
+        <img
+          src="/images/gene_node_s.jpg"
+          alt="GENE capsule"
+        >
+
+        <div class="archive-card-text">
+          <p>Presence</p>
+          <h2>The GENE Project</h2>
+        </div>
+
+      </a>
+
+    </section>
+
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>

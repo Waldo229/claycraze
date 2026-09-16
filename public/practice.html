@@ -1,96 +1,561 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Practice</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>Practice | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3033" >
+
+  <style>
+    /* ==========================================
+       PRACTICE — UNIFIED CONSOLE PRESENTATION
+       Page-specific test styles
+       ========================================== */
+
+    .practice-page {
+      background:
+        linear-gradient(
+          180deg,
+          #100b07 0,
+          #17110c 100%
+        );
+    }
+
+    .practice-threshold {
+      width: 100%;
+      max-width: none;
+      padding: 1.9rem clamp(1rem, 2vw, 2rem) 4rem;
+    }
+
+    /* Compact introduction */
+
+    .practice-threshold .threshold-intro {
+      width: min(100%, 1480px);
+      margin: 0 auto 1.1rem;
+    }
+
+    .practice-threshold .threshold-copy {
+      max-width: 980px;
+    }
+
+    .practice-threshold .section-label {
+      margin-bottom: 0.8rem;
+    }
+
+    .practice-threshold h1 {
+      max-width: 980px;
+      margin-top: 0;
+      margin-bottom: 0.55rem;
+
+      font-size: clamp(3rem, 5.2vw, 5.4rem);
+      line-height: 1.02;
+    }
+
+    .practice-threshold .threshold-copy > p {
+      max-width: 760px;
+      margin-top: 0;
+      margin-bottom: 0;
+
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    /* Five rooms inside one shared console */
+
+    .practice-threshold .practice-grid {
+      width: min(100%, 1480px);
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+
+      padding: 11px;
+      overflow: hidden;
+
+      border: 1px solid rgba(220, 207, 179, 0.22);
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 25, 28, 0.99),
+          rgba(9, 14, 17, 0.99)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
+        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
+    }
+
+    /* Existing archive cards become console chambers */
+
+    .practice-threshold .practice-grid .archive-card {
+      position: relative;
+      min-width: 0;
+      margin: 0;
+      padding: 1rem;
+
+      display: flex;
+      flex-direction: column;
+
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+
+      color: inherit;
+      text-decoration: none;
+
+      transition:
+        background-color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .practice-threshold
+    .practice-grid
+    .archive-card + .archive-card {
+      border-left: 1px solid rgba(220, 207, 179, 0.16);
+    }
+
+    .practice-threshold .practice-grid .archive-card:hover,
+    .practice-threshold .practice-grid .archive-card:focus-visible {
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .practice-threshold .practice-grid .archive-card:focus-visible {
+      outline: 2px solid rgba(151, 205, 63, 0.8);
+      outline-offset: -3px;
+    }
+
+    /* Images */
+
+    .practice-threshold .practice-grid .archive-card > img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+
+      margin: 0;
+      border-radius: 1rem;
+
+      background: #eee7d9;
+    }
+
+    /* Titles and labels */
+
+    .practice-threshold .archive-card-text {
+      padding: 1rem 0.15rem 0.35rem;
+    }
+
+    .practice-threshold .archive-card-text p {
+      margin: 0 0 0.35rem;
+
+      font-size: 0.78rem;
+      line-height: 1.2;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+
+      color: rgba(229, 220, 200, 0.68);
+    }
+
+    .practice-threshold .archive-card-text h2 {
+      margin: 0;
+
+      font-size: clamp(1.25rem, 1.55vw, 1.7rem);
+      line-height: 1.08;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    /* Local event hold policy a quiet, text-only public policy */
+
+    .local-holds-card {
+      width: min(100%, 780px);
+      margin: 2.25rem auto 0;
+      padding: clamp(1.4rem, 3vw, 2.25rem);
+
+      border: 1px solid rgba(220, 207, 179, 0.24);
+      border-radius: 1.5rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(25, 22, 18, 0.98),
+          rgba(14, 13, 11, 0.98)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.05),
+        0 1.2rem 3rem rgba(0, 0, 0, 0.22);
+    }
+
+    .local-holds-card .holds-kicker {
+      margin: 0 0 0.45rem;
+
+      font-size: 0.78rem;
+      line-height: 1.2;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+
+      color: rgba(229, 220, 200, 0.68);
+    }
+
+    .local-holds-card h2 {
+      margin: 0 0 0.8rem;
+
+      font-size: clamp(1.75rem, 3vw, 2.4rem);
+      line-height: 1.1;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    .local-holds-card .holds-intro {
+      margin: 0 0 1rem;
+      max-width: 660px;
+
+      font-size: 1rem;
+      line-height: 1.55;
+
+      color: rgba(238, 225, 196, 0.88);
+    }
+
+    .local-holds-card ul {
+      margin: 0;
+      padding-left: 1.3rem;
+
+      color: rgba(238, 225, 196, 0.82);
+    }
+
+    .local-holds-card li {
+      margin: 0.48rem 0;
+      padding-left: 0.2rem;
+
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Tablet: three chambers, then two */
+
+    @media (max-width: 1100px) {
+      .practice-threshold .practice-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card + .archive-card {
+        border-left: 0;
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(2),
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(3),
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(5) {
+        border-left: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(n + 4) {
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .practice-threshold .practice-grid .archive-card > img {
+        aspect-ratio: 4 / 3;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .practice-threshold {
+        padding:
+          1.6rem
+          0.8rem
+          2.75rem;
+      }
+
+      .practice-threshold .threshold-intro {
+        margin-bottom: 1.2rem;
+      }
+
+      .practice-threshold h1 {
+        font-size: clamp(2.45rem, 10vw, 4rem);
+        line-height: 1.04;
+      }
+
+      .practice-threshold .practice-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 8px;
+        border-radius: 1.4rem;
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card,
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(2),
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(3),
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(5) {
+        border-left: 0;
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(even) {
+        border-left: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(n + 3) {
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+    }
+
+    /* Phone: one clear vertical sequence */
+
+    @media (max-width: 540px) {
+      .practice-threshold {
+        padding-inline: 0.65rem;
+      }
+
+      .practice-threshold .threshold-copy {
+        padding-inline: 0.35rem;
+      }
+
+      .practice-threshold h1 {
+        font-size: clamp(2.15rem, 11vw, 3.25rem);
+      }
+
+      .practice-threshold .threshold-copy > p {
+        font-size: 0.96rem;
+        line-height: 1.5;
+      }
+
+      .practice-threshold .practice-grid {
+        grid-template-columns: 1fr;
+        padding: 7px;
+        border-radius: 1.25rem;
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card,
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(even),
+      .practice-threshold
+      .practice-grid
+      .archive-card:nth-child(n + 3) {
+        border-left: 0;
+      }
+
+      .practice-threshold
+      .practice-grid
+      .archive-card + .archive-card {
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .practice-threshold .practice-grid .archive-card {
+        padding: 0.8rem;
+      }
+
+      .practice-threshold .practice-grid .archive-card > img {
+        aspect-ratio: 16 / 10;
+        border-radius: 0.8rem;
+      }
+
+      .practice-threshold .archive-card-text {
+        padding:
+          0.85rem
+          0.25rem
+          0.5rem;
+      }
+
+      .practice-threshold .archive-card-text h2 {
+        font-size: 1.45rem;
+      }
+
+      .practice-threshold .archive-card-text p {
+        font-size: 0.75rem;
+      }
+
+      .local-holds-card {
+        margin-top: 1.4rem;
+        border-radius: 1.15rem;
+      }
+    }
+  </style>
 </head>
+
 <body class="practice-page">
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
-        <a href="/practice.html" class="active">Practice</a>
+        <a class="active" href="/practice.html">Practice</a>
       </nav>
+
     </div>
   </header>
 
-  <main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice sections">
-      <a href="/gallery/bonsai">Bonsai</a>
-      <a href="/gallery/ikebana">Ikebana</a>
-      <a href="/gallery/sculpture">Sculpture</a>
-      <a href="/gallery/facejugs">Face Jugs</a>
-    </nav>
+  <main class="threshold-page practice-threshold">
 
-    <section class="gallery-intro">
-      <h2>Practice</h2>
-      <p>
-        The made work lives here. These are the doors into the gallery:
-        bonsai, ikebana, sculpture, and face jugs.
+    <section class="threshold-intro">
+
+      <div class="threshold-copy">
+
+        <div class="section-label">
+          <img
+            src="/images/curated/guides/ueno-jakugen-shide.jpg"
+            alt="Shide holding a broom"
+            class="room-seal room-seal-panel"
+          >
+          <span>
+            <span class="threshold-kicker">Practice</span>
+            <small class="museum-attribution">
+              Shide, detail from <cite>Fenggan, Hanshan, and Shide</cite>,
+              Ueno Jakugen, Japan, 18th century. Public domain.
+            </small>
+          </span>
+        </div>
+
+        <h1>Pots, firing, tools, trees, and daily work.</h1>
+
+        <p>
+          The Practice side gathers the made objects and the working life
+          around them: vessels, firing, trees, tools, labor, repetition,
+          and the quiet discipline of making.
+        </p>
+
+      </div>
+
+    </section>
+
+    <section
+      class="archive-grid practice-grid"
+      aria-label="Practice rooms"
+    >
+
+      <a class="archive-card" href="/gallery/bonsai.html">
+        <img
+          src="/images/curated/practice_imgs/bonsai_001s.png"
+          alt="Bonsai"
+        >
+
+        <div class="archive-card-text">
+          <p>Vessels</p>
+          <h2>Bonsai</h2>
+        </div>
+      </a>
+
+      <a class="archive-card" href="/gallery/facejugs.html">
+        <img
+          src="/images/curated/practice_imgs/facejug_001s.jpg"
+          alt="Face Jugs"
+        >
+
+        <div class="archive-card-text">
+          <p>Folk Forms</p>
+          <h2>Face Jugs</h2>
+        </div>
+      </a>
+
+      <a class="archive-card" href="/gallery/ikebana.html">
+        <img
+          src="/images/curated/practice_imgs/ikebana_001s.png"
+          alt="Ikebana"
+        >
+
+        <div class="archive-card-text">
+          <p>Flowers</p>
+          <h2>Ikebana</h2>
+        </div>
+      </a>
+
+      <a class="archive-card" href="/gallery/sculpture.html">
+        <img
+          src="/images/curated/practice_imgs/sculpture_001s.png"
+          alt="Sculpture"
+        >
+
+        <div class="archive-card-text">
+          <p>Objects</p>
+          <h2>Sculpture</h2>
+        </div>
+      </a>
+
+      <a class="archive-card" href="/trees/">
+        <img
+          src="/images/curated/practice_imgs/tree.jpg"
+          alt="Trees"
+        >
+
+        <div class="archive-card-text">
+          <p>Living Material</p>
+          <h2>Trees</h2>
+        </div>
+      </a>
+
+    </section>
+
+    <section
+      class="local-holds-card"
+      id="local-event-holds"
+      aria-labelledby="local-event-holds-title"
+    >
+      <p class="holds-kicker">Local acquisition</p>
+
+      <h2 id="local-event-holds-title">Hold a pot for an event</h2>
+
+      <p class="holds-intro">
+        ClaycrazE pottery may be held for viewing and pickup at an
+        upcoming local event.
       </p>
+
+      <ul>
+        <li>Holds are first come, first served.</li>
+        <li>Holds are limited to three pieces per customer.</li>
+        <li>
+          There is no obligation to purchase and no penalty for declining
+          after seeing the work.
+        </li>
+        <li>
+          Payment is made at pickup. Cash, check, and Square credit-card
+          payments are accepted.
+        </li>
+        <li>Holds expire at the end of the event.</li>
+        <li>
+          If you cannot attend, please call or text to request another
+          arrangement.
+        </li>
+        <li>Shipping is not currently offered.</li>
+      </ul>
     </section>
 
-    <section class="gallery-grid" aria-label="Practice galleries">
-      <article class="gallery-card">
-        <a class="gallery-card-link" href="/gallery/bonsai">
-          <h3>Bonsai</h3>
-          <p>
-            Containers and related work for the bonsai world.
-          </p>
-        </a>
-      </article>
-
-      <article class="gallery-card">
-        <a class="gallery-card-link" href="/gallery/ikebana">
-          <h3>Ikebana</h3>
-          <p>
-            Vessels and forms made for flower arrangement and quiet display.
-          </p>
-        </a>
-      </article>
-
-      <article class="gallery-card">
-        <a class="gallery-card-link" href="/gallery/sculpture">
-          <h3>Sculpture</h3>
-          <p>
-            Sculptural work shaped outside the strict boundaries of utility.
-          </p>
-        </a>
-      </article>
-
-      <article class="gallery-card">
-        <a class="gallery-card-link" href="/gallery/facejugs">
-          <h3>Face Jugs</h3>
-          <p>
-            Face jugs and character pieces with their own strong presence.
-          </p>
-        </a>
-      </article>
-    </section>
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>

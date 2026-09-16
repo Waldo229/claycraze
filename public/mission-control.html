@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GENE Mission Control — ClaycrazE</title>
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
+
+  <style>
+    :root {
+      --gene-bg: #090d10;
+      --gene-panel: #101519;
+      --gene-line: rgba(222, 211, 184, 0.18);
+      --gene-cream: #e7ddc7;
+      --gene-muted: #a9a79f;
+      --gene-green: #9ac64e;
+      --gene-amber: #d3a558;
+      --gene-red: #c86155;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+
+    .mc-shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 34px auto 64px;
+    }
+
+    .mc-card {
+      color: var(--gene-cream);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(154, 198, 78, 0.07), transparent 30%),
+        linear-gradient(145deg, #101519, #090d10);
+      border: 1px solid rgba(231, 221, 199, 0.24);
+      border-radius: 28px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.38),
+        inset 0 0 0 8px rgba(255, 255, 255, 0.018);
+      overflow: hidden;
+    }
+
+    .mc-top {
+      padding: 30px 34px 26px;
+      border-bottom: 1px solid var(--gene-line);
+    }
+
+    .mc-kicker {
+      margin: 0 0 8px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .mc-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mc-subtitle {
+      margin: 12px 0 0;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .mc-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      padding: 24px;
+    }
+
+    .panel {
+      border: 1px solid var(--gene-line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.012);
+      padding: 22px;
+    }
+
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
+    .panel-title {
+      margin: 0 0 16px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .mission-summary {
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-row {
+      padding: 15px 16px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 12px;
+      background: #0a0f12;
+    }
+
+    .summary-label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gene-green);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .summary-value {
+      display: block;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.08rem;
+      line-height: 1.5;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .count-box {
+      padding: 18px 10px;
+      border: 1px solid rgba(154, 198, 78, 0.28);
+      border-radius: 14px;
+      text-align: center;
+      background: rgba(154, 198, 78, 0.03);
+    }
+
+    .count-value {
+      display: block;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      line-height: 1;
+    }
+
+    .count-label {
+      display: block;
+      margin-top: 8px;
+      color: var(--gene-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-box {
+      padding: 18px;
+      border: 1px solid rgba(154, 198, 78, 0.5);
+      border-radius: 12px;
+      background: rgba(154, 198, 78, 0.04);
+    }
+
+    .status-label {
+      color: var(--gene-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-value {
+      margin-top: 4px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+    }
+
+    .mission-state {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--gene-line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .readiness-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .readiness-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--gene-cream);
+      line-height: 1.4;
+    }
+
+    .readiness-mark {
+      color: var(--gene-green);
+      width: 1.2rem;
+      flex: 0 0 1.2rem;
+      font-weight: 700;
+    }
+
+    .readiness-mark.off {
+      color: var(--gene-muted);
+    }
+
+    .limitations {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid rgba(211, 165, 88, 0.5);
+      border-radius: 10px;
+      background: rgba(211, 165, 88, 0.06);
+      color: #e5c38b;
+      line-height: 1.5;
+    }
+
+    .limitations.show { display: block; }
+
+    .narration {
+      min-height: 180px;
+      border: 1px solid var(--gene-line);
+      border-radius: 14px;
+      padding: 18px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+    }
+
+    .narration strong {
+      color: var(--gene-green);
+      font-weight: 500;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .mc-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .mc-footer {
+      padding: 0 24px 24px;
+      text-align: center;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
+    .load-warning {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px solid rgba(210, 135, 60, 0.5);
+      border-radius: 8px;
+      color: #e1b47b;
+      background: rgba(210, 135, 60, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .load-warning.show { display: block; }
+
+    @media (max-width: 900px) {
+      .mc-grid { grid-template-columns: 1fr; }
+      .panel.full { grid-column: auto; }
+    }
+
+    @media (max-width: 620px) {
+      .mc-shell { width: min(100% - 16px, 1180px); }
+      .mc-top { padding: 24px 20px; }
+      .mc-grid { padding: 16px; }
+      .countdown { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+
+<body class="practice-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mc-shell">
+    <section class="mc-card">
+
+      <header class="mc-top">
+        <p class="mc-kicker">GENE / Firing Mission</p>
+        <h1 class="mc-title">Mission Control</h1>
+        <p class="mc-subtitle">
+          Follow the planned firing, countdown, readiness, and GENE's narration as the mission approaches ignition.
+        </p>
+      </header>
+
+      <div class="mc-grid">
+
+        <section class="panel">
+          <h2 class="panel-title">Mission Plan</h2>
+
+          <div class="mission-summary">
+            <div class="summary-row">
+              <span class="summary-label">Mission name</span>
+              <span class="summary-value" id="missionName">No mission announced.</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Target / purpose</span>
+              <span class="summary-value" id="missionTarget">
+                No target has been published for this firing.
+              </span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Planned ignition</span>
+              <span class="summary-value" id="launchDisplay">Not yet scheduled.</span>
+            </div>
+          </div>
+
+          <div class="countdown" aria-label="Countdown">
+            <div class="count-box">
+              <span class="count-value" id="days">00</span>
+              <span class="count-label">Days</span>
+            </div>
+            <div class="count-box">
+              <span class="count-value" id="hours">00</span>
+              <span class="count-label">Hours</span>
+            </div>
+            <div class="count-box">
+              <span class="count-value" id="minutes">00</span>
+              <span class="count-label">Minutes</span>
+            </div>
+            <div class="count-box">
+              <span class="count-value" id="seconds">00</span>
+              <span class="count-label">Seconds</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Preflight Readiness</h2>
+
+          <div class="status-box">
+            <div class="status-label">GENE status</div>
+            <div class="status-value" id="readiness">AWAITING MISSION</div>
+          </div>
+
+          <div class="mission-state">
+            <div class="status-label">Mission status</div>
+            <div class="status-value" id="missionStatus">PLANNED</div>
+          </div>
+
+          <div class="readiness-list" id="readinessList">
+            <div class="readiness-item">
+              <span class="readiness-mark off">•</span>
+              <span>No preflight record has been published.</span>
+            </div>
+          </div>
+
+          <div class="limitations" id="limitations"></div>
+        </section>
+
+        <section class="panel full">
+          <h2 class="panel-title">GENE Narration</h2>
+          <div class="narration" id="narration">
+            <strong>GENE:</strong> Mission Control is quiet. No firing has been called.
+          </div>
+
+          <div class="button-row">
+            <a class="mc-button" href="/kilnwatch.html">Return to GENE</a>
+            <a class="mc-button" href="/observatory.html">Enter Observatory</a>
+            <a class="mc-button" href="/kiln-watch-graph.html">Firing Record</a>
+          </div>
+
+          <div class="load-warning" id="loadWarning">
+            No current mission record is available. Mission Control will retry automatically.
+          </div>
+        </section>
+
+      </div>
+
+      <div class="mc-footer">
+        Witness. Remember. Transmit.
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const MISSION_URL = "https://claycraze.com/gene/mission_control_latest.json";
+      const REFRESH_MS = 10000;
+
+      const $ = (id) => document.getElementById(id);
+
+      let plannedIgnition = null;
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function formatDate(value) {
+        if (!value) return "Not yet scheduled.";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return String(value);
+
+        return new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }).format(date);
+      }
+
+      function updateCountdown() {
+        if (!plannedIgnition) {
+          ["days", "hours", "minutes", "seconds"].forEach((id) => $(id).textContent = "00");
+          return;
+        }
+
+        const target = new Date(plannedIgnition).getTime();
+        if (Number.isNaN(target)) return;
+
+        const delta = Math.max(0, target - Date.now());
+        const totalSeconds = Math.floor(delta / 1000);
+
+        $("days").textContent = pad(Math.floor(totalSeconds / 86400));
+        $("hours").textContent = pad(Math.floor((totalSeconds % 86400) / 3600));
+        $("minutes").textContent = pad(Math.floor((totalSeconds % 3600) / 60));
+        $("seconds").textContent = pad(totalSeconds % 60);
+      }
+
+      function renderReadiness(items) {
+        if (!Array.isArray(items) || items.length === 0) {
+          $("readinessList").innerHTML = `
+            <div class="readiness-item">
+              <span class="readiness-mark off">•</span>
+              <span>No preflight record has been published.</span>
+            </div>
+          `;
+          return;
+        }
+
+        $("readinessList").innerHTML = items.map((item) => {
+          const ok = Boolean(item?.ok ?? item?.ready ?? item?.passed);
+          const label = item?.label ?? item?.name ?? item?.text ?? "Preflight condition";
+          return `
+            <div class="readiness-item">
+              <span class="readiness-mark ${ok ? "" : "off"}">${ok ? "✓" : "•"}</span>
+              <span>${String(label)}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderMission(data) {
+        $("missionName").textContent =
+          data?.mission_name ?? data?.name ?? "No mission announced.";
+
+        $("missionTarget").textContent =
+          data?.target ??
+          data?.purpose ??
+          "No target has been published for this firing.";
+
+        plannedIgnition =
+          data?.planned_ignition ??
+          data?.planned_ignition_time ??
+          data?.launch_time ??
+          null;
+
+        $("launchDisplay").textContent = formatDate(plannedIgnition);
+
+        $("readiness").textContent =
+          data?.readiness ??
+          data?.gene_status ??
+          "AWAITING MISSION";
+
+        $("missionStatus").textContent =
+          data?.mission_status ??
+          data?.status ??
+          "PLANNED";
+
+        renderReadiness(data?.preflight ?? data?.readiness_items ?? []);
+
+        const limitations = Array.isArray(data?.limitations)
+          ? data.limitations.filter(Boolean)
+          : [];
+
+        if (limitations.length) {
+          $("limitations").classList.add("show");
+          $("limitations").innerHTML =
+            `<strong>Limitations:</strong> ${limitations.join("; ")}`;
+        } else {
+          $("limitations").classList.remove("show");
+          $("limitations").textContent = "";
+        }
+
+        const narration =
+          data?.narration ??
+          data?.gene_narration ??
+          data?.message ??
+          null;
+
+        if (narration) {
+          $("narration").innerHTML = `<strong>GENE:</strong> ${String(narration)}`;
+        }
+
+        updateCountdown();
+      }
+
+      async function getJson(url) {
+        const response = await fetch(url, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`${url} returned ${response.status}`);
+        }
+
+        return response.json();
+      }
+
+      async function refresh() {
+        const warning = $("loadWarning");
+
+        try {
+          const data = await getJson(MISSION_URL);
+          renderMission(data);
+          warning.classList.remove("show");
+        } catch (error) {
+          warning.classList.add("show");
+          console.warn("GENE Mission Control refresh:", error);
+        }
+      }
+
+      refresh();
+      window.setInterval(refresh, REFRESH_MS);
+      window.setInterval(updateCountdown, 1000);
+    })();
+  </script>
+
+</body>
+</html>

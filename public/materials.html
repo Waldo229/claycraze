@@ -1,84 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Materials</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Materials | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3018">
+
+  <style>
+    /* ==========================================
+       MATERIALS — UNIFIED CONSOLE PRESENTATION
+       ========================================== */
+
+    .materials-page {
+      background:
+        linear-gradient(
+          180deg,
+          #100b07 0,
+          #17110c 100%
+        );
+    }
+
+    .materials-page .threshold-page {
+      width: 100%;
+      max-width: none;
+      padding: 1.9rem clamp(1rem, 2vw, 2rem) 4rem;
+    }
+
+    /* Compact introduction */
+
+    .materials-page .threshold-intro {
+      width: min(100%, 1480px);
+      margin: 0 auto 1.1rem;
+    }
+
+    .materials-page .threshold-copy {
+      max-width: 1100px;
+    }
+
+    .materials-page .section-label {
+      margin-bottom: 0.8rem;
+    }
+
+    .materials-page h1 {
+      max-width: 1100px;
+      margin-top: 0;
+      margin-bottom: 0;
+
+      font-size: clamp(3rem, 5.2vw, 5.4rem);
+      line-height: 1.02;
+    }
+
+    /* Unified image-and-text console */
+
+    .materials-page .materials-layout {
+      width: min(100%, 1480px);
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.15fr)
+        minmax(340px, 0.85fr);
+      gap: 0;
+
+      padding: 11px;
+      overflow: hidden;
+
+      border: 1px solid rgba(220, 207, 179, 0.22);
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 25, 28, 0.99),
+          rgba(9, 14, 17, 0.99)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
+        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
+    }
+
+    .materials-page .materials-feature-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      object-fit: cover;
+
+      margin: 0;
+      border-radius: 1rem 0 0 1rem;
+
+      background: #eee7d9;
+    }
+
+    .materials-page .materials-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      padding: clamp(1.75rem, 3vw, 3.5rem);
+
+      border-left: 1px solid rgba(220, 207, 179, 0.16);
+    }
+
+    .materials-page .materials-copy h2 {
+      margin: 0 0 1rem;
+
+      font-size: clamp(2rem, 3.4vw, 3.4rem);
+      line-height: 1.08;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    .materials-page .materials-copy p {
+      max-width: 620px;
+      margin: 0 0 1.15rem;
+
+      font-size: 1rem;
+      line-height: 1.65;
+
+      color: rgba(238, 225, 196, 0.86);
+    }
+
+    .materials-page .materials-copy p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Tablet */
+
+    @media (max-width: 980px) {
+      .materials-page .materials-layout {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        border-radius: 1.4rem;
+      }
+
+      .materials-page .materials-feature-image {
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+        border-radius: 0.9rem 0.9rem 0 0;
+      }
+
+      .materials-page .materials-copy {
+        padding: 1.8rem 1.5rem 2rem;
+
+        border-left: 0;
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .materials-page .threshold-page {
+        padding:
+          1.6rem
+          0.8rem
+          2.75rem;
+      }
+
+      .materials-page h1 {
+        font-size: clamp(2.45rem, 10vw, 4rem);
+        line-height: 1.04;
+      }
+    }
+
+    /* Phone */
+
+    @media (max-width: 540px) {
+      .materials-page .threshold-page {
+        padding-inline: 0.65rem;
+      }
+
+      .materials-page .threshold-copy {
+        padding-inline: 0.35rem;
+      }
+
+      .materials-page h1 {
+        font-size: clamp(2.15rem, 11vw, 3.25rem);
+      }
+
+      .materials-page .materials-layout {
+        padding: 7px;
+        border-radius: 1.25rem;
+      }
+
+      .materials-page .materials-feature-image {
+        aspect-ratio: 4 / 3;
+        border-radius: 0.8rem 0.8rem 0 0;
+      }
+
+      .materials-page .materials-copy {
+        padding: 1.35rem 1rem 1.5rem;
+      }
+
+      .materials-page .materials-copy h2 {
+        font-size: 1.8rem;
+      }
+
+      .materials-page .materials-copy p {
+        font-size: 0.96rem;
+        line-height: 1.58;
+      }
+    }
+  </style>
 </head>
-<body class="theory-page">
+
+<body class="theory-page materials-page">
 
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html" class="active">Theory</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
       </nav>
+
     </div>
   </header>
 
-  <main class="theory-main">
-    <nav class="category-nav" aria-label="Theory sections">
-      <a href="/studio.html">Studio</a>
-      <a href="/materials.html" class="active">Materials</a>
-      <a href="/processes.html">Processes</a>
-      <a href="/places.html">Places</a>
-      <a href="/kiln.html">Kiln</a>
-      <a href="/gene.html">GENE Project</a>
-    </nav>
+  <main class="threshold-page">
 
-    <div class="theory-intro">
-      <h2>Materials</h2>
-      <p>Clay, glaze, slip, surface, and sourcing.</p>
-    </div>
+    <section class="threshold-intro">
 
-    <div class="theory-card">
-      <div class="theory-card-link">
-        <img src="/images/materials_001s.png" alt="ClaycrazE studio materials" />
+      <div class="threshold-copy">
 
-        <h3>Clay</h3>
-        <p>
-          I work in high-temperature stoneware to produce bonsai containers that
-          can better withstand the demands of nature and the elements. I use
-          different clays for different purposes, sometimes including locally
-          sourced “wild” clay from Virginia’s historic triangle for its color,
-          texture, and unusual interaction with my glazes.
-        </p>
+        <div class="section-label">
+          <img
+            src="/images/curated/theory_imgs/han-shan2.jpg"
+            alt="Han Shan"
+            class="room-seal"
+          >
 
-        <h3>Glazes</h3>
-        <p>
-          I mix my own glazes and rely on simple, traditional, mostly iron-based
-          or ash glazes.
-        </p>
+          <span class="threshold-kicker">Theory / Materials</span>
+        </div>
 
-        <h3>Slips</h3>
-        <p>
-          I recommend Phil Rogers’ excellent book, <em>Ash Glazes</em>, as a
-          sourcebook for both slips and glazes.
-        </p>
+        <h1>The physical vocabulary of the studio.</h1>
+
       </div>
-    </div>
+
+    </section>
+
+    <section
+      class="materials-layout"
+      aria-label="Materials"
+    >
+
+      <img
+        src="/images/curated/theory_imgs/materials_001s.jpg"
+        alt="Ceramic materials in the ClaycrazE studio"
+        class="materials-feature-image"
+      >
+
+      <div class="materials-copy">
+
+        <h2>Materials</h2>
+
+        <p>
+          Pottery begins with materials: clay bodies, glaze ingredients,
+          oxides, ash, stone, and the geological history carried inside them.
+        </p>
+
+        <p>
+          Different materials behave differently under heat. Some encourage
+          movement and gloss, while others produce quiet, dry, restrained
+          surfaces. Understanding these tendencies becomes part chemistry,
+          part observation, and part accumulated studio memory.
+        </p>
+
+        <p>
+          Much of my interest centers around historical materials, local
+          geology, atmospheric firing, and the subtle behavior that emerges
+          when materials interact slowly through time and heat.
+        </p>
+
+      </div>
+
+    </section>
+
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>

@@ -1,61 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Ikebana</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ikebana | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3004">
+  <link rel="stylesheet" href="/css/gallery.css?v=3004">
 </head>
+
 <body class="practice-page">
 
   <header class="site-header">
     <div class="header-shell">
+
       <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-       
       </nav>
+
     </div>
   </header>
 
-  <main class="gallery-page"><main class="gallery-page">
-    <nav class="category-nav" aria-label="Practice galleries">
-      <a href="/practice.html">Back</a>
-      <a href="/gallery/ikebana.html" class="active">Ikebana</a>
-    </nav>
+  <main class="gallery-page unified-gallery-page">
 
-   
+    <a class="gallery-back-link" href="/practice.html">
+      &larr; Back to Practice
+    </a>
 
-    <section class="gallery-intro">
-      <h2>Ikebana</h2>
-      <p>Vessels for spatial and floral composition.</p>
+    <section class="gallery-hero">
+      <p class="gallery-kicker">Practice / Ikebana</p>
+
+      <h1>Ikebana</h1>
+
+      <p>
+        Vessels for arranged flowers, quiet placement,
+        seasonal attention, and balanced negative space.
+      </p>
     </section>
 
-    <section id="galleryGrid" class="gallery-grid" aria-live="polite">
-      <div class="loading">Loading ikebana work...</div>
+    <section
+      id="galleryGrid"
+      class="gallery-grid"
+      aria-label="Ikebana vessel gallery"
+      aria-live="polite"
+    >
+      <div class="loading">Loading ikebana vessels...</div>
     </section>
+
   </main>
 
-  <script src="/js/nav.js"></script>
-  <script src="/js/ikebana.js?v=6"></script>
+  <script>
+    window.CLAYCRAZE_GALLERY_CATEGORY = "ceramic";
+    window.CLAYCRAZE_GALLERY_SHAPE = "IKE";
+  </script>
+
+  <script src="/js/shape-gallery.js?v=1019"></script>
+
 </body>
 </html>

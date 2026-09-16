@@ -1,0 +1,175 @@
+/* ClaycrazE Theme v2: isolated prototype foundations. */
+:root {
+  color-scheme: dark;
+  --soil: #171612;
+  --surface: #211f19;
+  --image-ground: #121310;
+  --ash: #eee8da;
+  --muted: #bbb3a4;
+  --rule: #514c41;
+  --earth: #c7a38d;
+  --heaven: #aebec3;
+  --focus: #e8c5a1;
+  --serif: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --reading: 62ch;
+  --content: 76rem;
+  --wide: 88rem;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--soil); }
+body {
+  margin: 0;
+  background: var(--soil);
+  color: var(--ash);
+  font: 1.125rem/1.65 var(--serif);
+}
+[hidden] { display: none !important; }
+img { display: block; max-width: 100%; height: auto; }
+figure, p, h1, h2, dl, dd { margin: 0; }
+h1, h2 { font-weight: 400; text-wrap: balance; }
+h1 { font-size: clamp(2.5rem, 5.6vw, 5rem); line-height: 1.08; letter-spacing: -.025em; }
+h2 { font-size: clamp(1.75rem, 3.1vw, 2.75rem); line-height: 1.2; }
+p, h1, h2, a, dd { overflow-wrap: anywhere; }
+a { color: inherit; text-underline-offset: .25em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 5px;
+}
+button { font: inherit; }
+.shell { width: min(100%, var(--content)); margin-inline: auto; padding-inline: var(--gutter); }
+.skip-link {
+  position: absolute; top: 1rem; left: var(--gutter); z-index: 10;
+  padding: .75rem 1rem; background: var(--ash); color: var(--soil);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+.site-header { border-bottom: 1px solid var(--rule); }
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem 3rem; padding-block: 1.5rem;
+}
+.brand { display: block; text-decoration: none; }
+.brand-name { display: block; font-size: 1.65rem; line-height: 1.2; }
+.brand-note { display: block; margin-top: .35rem; color: var(--muted); font: .875rem/1.5 var(--sans); }
+.site-nav { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; font: .9375rem/1.5 var(--sans); }
+.site-nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.site-nav a:hover, .site-nav a[aria-current] { text-decoration: underline; text-underline-offset: .45em; }
+main { padding-block: clamp(2.5rem, 6vw, 6rem); }
+.page-intro { max-width: var(--reading); margin-bottom: var(--space-8); }
+.kicker { color: var(--muted); font: .8125rem/1.6 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+.page-intro .kicker { margin-bottom: var(--space-5); }
+.page-intro h1 + p, .prose > * + * { margin-top: var(--space-5); }
+.lede { font-size: clamp(1.125rem, 1.6vw, 1.375rem); line-height: 1.65; color: var(--muted); }
+.prose { max-width: var(--reading); }
+.back-link { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: var(--space-6); font: .9375rem/1.5 var(--sans); color: var(--muted); }
+.site-footer { padding-block: 2rem; border-top: 1px solid var(--rule); color: var(--muted); font: .875rem/1.6 var(--sans); }
+.social-links { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+.social-links a { display: inline-flex; align-items: center; min-height: 44px; }
+figure figcaption { margin-top: var(--space-3); font: .875rem/1.6 var(--sans); color: var(--muted); }
+/* Home threshold: the two old friends are the center of the room.
+   Every rule is scoped to Home; collection and GENE foundations stay unchanged. */
+.family-threshold .header-inner { padding-block: 1rem; }
+.family-threshold .brand-note,
+.family-threshold .site-nav,
+.family-threshold .site-footer { font-family: var(--serif); font-size: 1rem; }
+.family-threshold main { padding-block: 1.5rem 2rem; }
+.family-threshold .threshold-layout { max-width: 48rem; margin-inline: auto; }
+.family-threshold .page-intro { max-width: none; margin: 0 auto 1.25rem; text-align: center; }
+.family-threshold h1 {
+  font-size: clamp(1.75rem, 2.8vw, 2.125rem);
+  line-height: 1.25;
+  letter-spacing: normal;
+}
+.family-threshold .threshold-orientation { margin-top: .5rem; font-size: 1.125rem; line-height: 1.5; }
+.family-threshold .guide-figure { margin: 0 auto; text-align: center; }
+.family-threshold .guide-link { display: block; width: clamp(17.5rem, 25vw, 20rem); max-width: 100%; margin-inline: auto; }
+.family-threshold .guide-figure img { width: 100%; }
+.family-threshold .guide-figure figcaption {
+  margin: .75rem auto 0;
+  font: 1rem/1.5 var(--serif);
+  color: var(--muted);
+  text-wrap: balance;
+}
+.family-threshold .threshold-doors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 4vw, 3rem);
+  margin-top: 1.5rem;
+}
+.family-threshold .door {
+  display: block;
+  min-width: 0;
+  padding-block: .75rem;
+  border-block: 1px solid var(--rule);
+  text-decoration: none;
+}
+.family-threshold .door-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+  font-size: clamp(1.375rem, 2.5vw, 1.75rem);
+  line-height: 1.3;
+}
+.family-threshold .door-note { display: block; margin-top: .375rem; color: var(--muted); font-size: 1rem; line-height: 1.4; }
+.family-threshold .door:hover .door-heading { text-decoration: underline; text-underline-offset: .2em; }
+.family-threshold .door-theory { color: var(--heaven); }
+.family-threshold .door-practice { color: var(--earth); }
+.family-threshold .site-footer { padding-block: 1rem; }
+/* Collection: full objects and subordinate catalogue facts. */
+.family-collection main { max-width: var(--wide); }
+.family-collection .kicker { color: var(--earth); }
+.catalogue { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); }
+.catalogue-entry { min-width: 0; }
+.artwork-link { display: block; text-decoration: none; }
+.artwork-image { aspect-ratio: 4 / 5; display: grid; place-items: center; background: var(--image-ground); }
+.artwork-image img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.image-missing { padding: var(--space-5); color: var(--muted); font: .9375rem/1.6 var(--sans); }
+.catalogue-entry figcaption { margin-top: var(--space-5); }
+.catalogue-entry h2 { font-size: 1.25rem; line-height: 1.4; color: var(--ash); }
+.artwork-link:hover h2 { text-decoration: underline; text-underline-offset: .2em; }
+.catalogue-facts { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--rule); font: .875rem/1.6 var(--sans); color: var(--muted); }
+.catalogue-facts > div { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: var(--space-3); margin-top: .25rem; }
+.catalogue-facts dt { color: var(--muted); }
+.state { padding: var(--space-6); border: 1px solid var(--rule); max-width: var(--reading); color: var(--muted); font: 1rem/1.65 var(--sans); }
+.state-error { border-left: 3px solid var(--earth); }
+.state + .catalogue:not(:empty) { margin-top: var(--space-7); }
+/* GENE: editorial composition; only local labels carry the instrument signal. */
+.family-editorial .page-intro { max-width: none; }
+.guide-label { display: flex; align-items: center; gap: var(--space-5); margin-bottom: var(--space-6); }
+.guide-label img { width: 56px; height: 56px; object-fit: contain; }
+.guide-label .kicker { margin: 0; }
+.gene-introduction { --signal: #b1c498; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; border-top: 1px solid var(--rule); padding-top: var(--space-7); }
+.instrument-figure { background: var(--image-ground); }
+.instrument-figure img { width: 100%; max-height: 42rem; object-fit: contain; }
+.gene-introduction .kicker, .gene-name { color: var(--signal); }
+.gene-name { font: .9375rem/1.6 var(--sans); }
+.gene-introduction .prose h2 { margin-top: var(--space-4); }
+.gene-introduction .prose > p:not(.kicker):not(.gene-name) { color: var(--muted); }
+.text-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--ash); }
+@media (max-width: 64rem) {
+  .catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 48rem) {
+  .gene-introduction { grid-template-columns: minmax(0, 1fr); }
+  .page-intro { margin-bottom: var(--space-7); }
+}
+@media (max-width: 35rem) {
+  .header-inner { align-items: flex-start; flex-direction: column; }
+  .catalogue { grid-template-columns: minmax(0, 1fr); }
+  .state { padding: var(--space-5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

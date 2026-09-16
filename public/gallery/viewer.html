@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>Image Viewer | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=1012" >
+  <link rel="stylesheet" href="/css/gallery.css?v=1012" >
+
+  <style>
+    body.viewer-body {
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(236, 214, 149, 0.08), transparent 34rem),
+        #120b06;
+      color: #eadfc8;
+      font-family: "Palatino Linotype", Palatino, "Book Antiqua", serif;
+    }
+
+    .viewer-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.4rem;
+      background: rgba(12, 8, 5, 0.78);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(242, 230, 201, 0.08);
+    }
+
+    .viewer-nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .viewer-topbar a {
+      color: rgba(244, 231, 198, 0.78);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .viewer-topbar a:hover {
+      color: #fff3d6;
+    }
+
+    .viewer-title {
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      color: rgba(244, 231, 198, 0.84);
+      text-align: right;
+    }
+
+    .viewer-stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .viewer-stage.dragging {
+      cursor: grabbing;
+    }
+
+    #viewerImage {
+      max-width: 88vw;
+      max-height: 82vh;
+      border-radius: 8px;
+      transform-origin: center center;
+      user-select: none;
+      -webkit-user-drag: none;
+      box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.52),
+        0 0 0 1px rgba(242, 230, 201, 0.04);
+    }
+
+    .viewer-help {
+      position: fixed;
+      left: 50%;
+      bottom: 1.2rem;
+      transform: translateX(-50%);
+      z-index: 20;
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(18, 11, 6, 0.72);
+      border: 1px solid rgba(242, 230, 201, 0.06);
+      color: rgba(244, 231, 198, 0.62);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(6px);
+    }
+
+    @media (max-width: 700px) {
+      .viewer-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .viewer-title {
+        text-align: left;
+      }
+
+      #viewerImage {
+        max-width: 94vw;
+        max-height: 78vh;
+      }
+
+      .viewer-help {
+        font-size: 0.72rem;
+        bottom: 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="viewer-body">
+
+  <nav class="viewer-topbar" aria-label="Viewer navigation">
+    <div class="viewer-nav">
+      <a id="backToPiece" href="/gallery/piece.html">← Back to Piece</a>
+      <a href="/gallery/ovals.html">← Back to Ovals</a>
+    </div>
+
+    <div id="viewerTitle" class="viewer-title">
+      ClaycrazE Viewer
+    </div>
+  </nav>
+
+  <main id="viewerStage" class="viewer-stage">
+    <img id="viewerImage" src="" alt="" >
+  </main>
+
+  <div class="viewer-help">
+    Scroll to zoom · drag to pan · double-click to reset
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", loadViewer);
+
+    async function loadViewer() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const view = params.get("view") || "top";
+
+      const image = document.getElementById("viewerImage");
+      const title = document.getElementById("viewerTitle");
+      const backToPiece = document.getElementById("backToPiece");
+
+      if (!id) {
+        title.textContent = "No piece selected";
+        return;
+      }
+
+      backToPiece.href = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+
+      try {
+        const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
+        if (!response.ok) throw new Error("Could not fetch pieces.json");
+
+        const pieces = await response.json();
+
+        const piece = pieces.find(item =>
+          String(item.id || "").trim() === id ||
+          String(item.piece_number || "").trim() === id
+        );
+
+        if (!piece) {
+          title.textContent = "Piece not found";
+          return;
+        }
+
+        const pieceTitle = piece.title || piece.id || "ClaycrazE Vessel";
+
+        let imagePath = "";
+
+        if (view === "bottom") {
+          imagePath = normalizeImagePath(piece.image_path_3 || "");
+        } else if (view === "detail") {
+          imagePath = normalizeImagePath(piece.image_path_4 || "");
+        } else {
+          imagePath = normalizeImagePath(piece.image_path_2 || piece.image_path || "");
+        }
+
+        if (!imagePath) {
+          title.textContent = `No ${view} image found`;
+          return;
+        }
+
+        image.src = imagePath;
+        image.alt = `${pieceTitle} ${view} view`;
+        title.textContent = `${pieceTitle} / ${view}`;
+
+        setupPanZoom();
+
+      } catch (error) {
+        console.error("Viewer error:", error);
+        title.textContent = "Could not load image";
+      }
+    }
+
+    function setupPanZoom() {
+      const stage = document.getElementById("viewerStage");
+      const image = document.getElementById("viewerImage");
+
+      let scale = 1;
+      let x = 0;
+      let y = 0;
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      function applyTransform() {
+        image.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      }
+
+      stage.addEventListener("wheel", event => {
+        event.preventDefault();
+
+        const direction = event.deltaY < 0 ? 1 : -1;
+        scale += direction * 0.15;
+        scale = Math.min(Math.max(scale, 1), 8);
+
+        applyTransform();
+      }, { passive: false });
+
+      image.addEventListener("mousedown", event => {
+        dragging = true;
+        stage.classList.add("dragging");
+
+        startX = event.clientX - x;
+        startY = event.clientY - y;
+      });
+
+      window.addEventListener("mousemove", event => {
+        if (!dragging) return;
+
+        x = event.clientX - startX;
+        y = event.clientY - startY;
+
+        applyTransform();
+      });
+
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+        stage.classList.remove("dragging");
+      });
+
+      stage.addEventListener("dblclick", () => {
+        scale = 1;
+        x = 0;
+        y = 0;
+        applyTransform();
+      });
+
+      applyTransform();
+    }
+
+    function normalizeImagePath(path) {
+      if (!path) return "";
+
+      const clean = String(path).trim().replace(/\\/g, "/");
+
+      if (
+        clean.startsWith("/") ||
+        clean.startsWith("http://") ||
+        clean.startsWith("https://")
+      ) {
+        return clean;
+      }
+
+      return `/${clean.replace(/^\.?\/*/, "")}`;
+    }
+  </script>
+
+</body>
+</html>

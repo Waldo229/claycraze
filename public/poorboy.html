@@ -1,108 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | PoorBoy Kiln</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>The Poor Boy | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3013">
+
+  <style>
+    /*
+      Preserve the intended capitalization on this page.
+      This overrides any global lowercase treatment applied to threshold titles.
+    */
+    .poorboy-title {
+      text-transform: none;
+    }
+  </style>
 </head>
+
 <body class="theory-page">
 
-  <!-- HEADER -->
   <header class="site-header">
     <div class="header-shell">
-      <a class="site-brand" href="/">
+
+      <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
         <span class="site-tag">Theory &amp; Practice</span>
       </a>
 
-      <button
-        class="nav-toggle"
-        id="navToggle"
-        aria-expanded="false"
-        aria-controls="siteNav"
-        aria-label="Open navigation"
-        type="button"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" id="siteNav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/theory.html" class="active">Theory</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
       </nav>
+
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="theory-main">
+  <main class="threshold-page">
 
-    <!-- CATEGORY NAV -->
-    <nav class="category-nav" aria-label="Theory sections">
-      <a href="/studio.html">Studio</a>
-      <a href="/materials.html">Materials</a>
-      <a href="/processes.html">Processes</a>
-      <a href="/places.html">Places</a>
-      <a href="/kiln.html" class="active">Kiln</a>
-      <a href="/gene.html">GENE Project</a>
-    </nav>
+    <section class="threshold-intro">
 
-    <!-- INTRO -->
-    <section class="theory-intro">
-      <h2>PoorBoy Kiln</h2>
-      <p><em>Atmosphere, flame, and risk.</em></p>
-      <p>
-        The PoorBoy kiln is an outdoor gas system — direct, exposed, and responsive.
-        Unlike electric firing, it does not conceal its behavior. It must be watched,
-        listened to, and felt as it moves.
-      </p>
+      <div class="threshold-copy">
+
+        <div class="section-label">
+          <img
+            src="/images/curated/theory_imgs/han-shan2.jpg"
+            alt="Han Shan"
+            class="room-seal"
+          >
+
+          <span class="threshold-kicker">Theory / Kiln</span>
+        </div>
+
+        <h1 class="poorboy-title">Adaptation and Persistence.</h1>
+
+      </div>
+
     </section>
 
-    <!-- ARTICLES -->
-    <div class="theory-grid">
+    <section class="poorboy-layout">
 
-      <!-- ARTICLE 1 -->
-      <article class="theory-card">
-        <div class="theory-card-link">
-          <h3>Structure</h3>
-          <p>
-            A simple updraft system built for flexibility and immediacy. The kiln is
-            not fixed in behavior — it responds to weather, pressure, and fuel
-            conditions.
-          </p>
-        </div>
-      </article>
+      <div class="poorboy-image-column">
+        <img
+          src="/images/cc_poorboy_s.jpg"
+          alt="The Poor Boy kiln"
+          class="poorboy-image"
+        >
+      </div>
 
-      <!-- ARTICLE 2 -->
-      <article class="theory-card">
-        <div class="theory-card-link">
-          <h3>Firing Behavior</h3>
-          <p>
-            Flame movement, reduction, and atmosphere define the results. Timing is
-            not just temperature — it is rhythm, adjustment, and response.
-          </p>
-        </div>
-      </article>
+      <div class="poorboy-copy">
 
-      <!-- ARTICLE 3 -->
-      <article class="theory-card">
-        <div class="theory-card-link">
-          <h3>Observation</h3>
-          <p>
-            The kiln demands attention. Sound, flame color, and pressure shifts all
-            register as signals. This is where GENE begins to participate — not as
-            control, but as presence.
-          </p>
-        </div>
-      </article>
+        <h2>The Poor Boy</h2>
 
-    </div>
+        <h3>A kiln for the resourceful</h3>
+
+        <p>
+          Some of the strongest lessons in ceramics emerge not from abundance,
+          but from limitation. Necessity, they say, is the mother of invention,
+          and so it goes with the Poor Boy.
+        </p>
+
+        <p>
+          Making do with what is available is an honest way to learn about the
+          limits and possibilities of fuel-fired kilns.
+        </p>
+
+        <p>
+          The Poor Boy represents experimentation, constraint, learning,
+          adaptation, and persistence—the practical side of developing a studio
+          practice.
+        </p>
+
+        <p>
+          The Poor Boy is about atmosphere.
+        </p>
+
+      </div>
+
+    </section>
 
   </main>
 
-  <script src="/js/nav.js"></script>
 </body>
 </html>

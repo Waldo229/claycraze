@@ -1,13 +1,14 @@
-name: Deploy to SiteGround (PROD)
+name: Deploy ClaycrazE Site to SiteGround (PROD)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "cc_admin_render" ]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,55 +21,67 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/sg_ci
           chmod 600 ~/.ssh/sg_ci
 
-      - name: Package project
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAR="$RUNNER_TEMP/site.tar.gz"
-
-          # Normalize CRLF in .deployignore if it exists (Windows devs)
-          [ -f .deployignore ] && sed -i 's/\r$//' .deployignore || true
-
-          # Exclude list: --exclude-vcs removes .git; explicitly drop .github; keep your .deployignore
-          EXCLUDES=( --exclude-vcs --exclude='./site.tar.gz' --exclude='./.github' )
-          if [ -f .deployignore ]; then
-            EXCLUDES+=( --exclude-from=.deployignore )
-          fi
-
-          tar -czf "$TAR" "${EXCLUDES[@]}" .
-          mv "$TAR" ./site.tar.gz
-
-          echo "Archive size:"; ls -lh site.tar.gz
-          echo "Sanity check for VCS/CI dirs in archive:"
-          if tar -tzf site.tar.gz | grep -E '^\./(\.git|\.github)/' > /dev/null; then
-            echo "❌ .git/.github found in archive (unexpected)"; tar -tzf site.tar.gz | grep -E '^\./(\.git|\.github)/' | head -n 20
-            exit 1
-          else
-            echo "✅ .git/.github excluded from archive"
-          fi
-
-      - name: Upload & Deploy (PROD)
+      - name: Deploy public site files
         shell: bash
         env:
           SG_HOST: ${{ secrets.SG_HOST }}
           SG_PORT: ${{ secrets.SG_PORT }}
           SG_USER: ${{ secrets.SG_USER }}
+          SG_TARGET: /home/customer/www/claycraze.com/public_html
         run: |
           set -euo pipefail
 
-          scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no site.tar.gz "$SG_USER@$SG_HOST:~/"
+          echo "Preparing SiteGround public folders..."
 
-          # One remote shell; safe replace in place
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "set -euo pipefail; \
-             DOC=\$HOME/public_html; \
-             mkdir -p \"\$DOC\"; \
-             mv -f \"\$HOME/site.tar.gz\" \"\$DOC/\"; \
-             cd \"\$DOC\"; \
-             rm -rf __new; mkdir __new; \
-             tar -xzf site.tar.gz -C __new; \
-             shopt -s dotglob; \
-             find . -mindepth 1 -maxdepth 1 ! -name '__new' -exec rm -rf {} +; \
-             cp -a __new/. ./; \
-             rm -rf __new site.tar.gz; \
-             ls -la | head -n 40"
+            "mkdir -p \
+              $SG_TARGET/css \
+              $SG_TARGET/js \
+              $SG_TARGET/gallery \
+              $SG_TARGET/data \
+              $SG_TARGET/images/curated \
+              $SG_TARGET/images/system"
+
+          echo "Syncing public HTML pages..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/*.html \
+            "$SG_USER@$SG_HOST:$SG_TARGET/"
+
+          echo "Syncing CSS..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/css/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/css/"
+
+          echo "Syncing JavaScript..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/js/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/js/"
+
+          echo "Syncing gallery pages..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/gallery/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/gallery/"
+
+          echo "Syncing curated images..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/images/curated/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/images/curated/"
+
+          echo "Syncing system images..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/images/system/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/images/system/"
+
+          echo "Deploy complete. Public site files updated; canonical data and Render-owned image folders were not touched."

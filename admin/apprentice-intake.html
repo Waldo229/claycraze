@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>ClaycrazE Apprentice Intake</title>
+
+  <link rel="stylesheet" href="/css/admin.css?v=3002" >
+</head>
+
+<body>
+
+  <main class="admin-shell">
+
+    <section class="admin-card">
+
+      <h1>ClaycrazE Apprentice Intake</h1>
+
+      <p class="admin-intro">
+        Intake records the object. Curation comes later.
+      </p>
+
+      <form id="pieceForm">
+
+        <label>
+          Top Image *
+          <input type="file" id="topImage" accept="image/*" required >
+        </label>
+
+        <label>
+          Bottom Image
+          <input type="file" id="bottomImage" accept="image/*" >
+        </label>
+
+        <label>
+          Shape *
+          <select id="shape" required>
+            <option value="">Select shape</option>
+            <option value="OV">Oval</option>
+            <option value="RD">Round</option>
+            <option value="RC">Rectangle</option>
+            <option value="CS">Cascade</option>
+            <option value="FF">Freeform</option>
+            <option value="SL">Slab</option>
+            <option value="IK">Ikebana</option>
+            <option value="SC">Sculpture</option>
+          </select>
+        </label>
+
+        <label>
+          Dimensions *
+          <input
+            type="text"
+            id="dimensions"
+            placeholder="13x9x2"
+            required
+          >
+        </label>
+
+        <label>
+          Color
+          <input
+            type="text"
+            id="color"
+            placeholder="olive ash / iron satin / cream"
+          >
+        </label>
+
+        <button type="submit" id="submitButton">
+          Create Piece
+        </button>
+
+      </form>
+
+      <div id="statusBox" class="status-box"></div>
+
+    </section>
+
+  </main>
+
+  <script src="/admin/js/admin.js?v=3001"></script>
+
+</body>
+</html>

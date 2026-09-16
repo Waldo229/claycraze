@@ -72,7 +72,7 @@ function buildImageHtml(imagePath, altText) {
       alt="${escapeAttribute(altText || "ClaycrazE piece")}"
       loading="lazy"
       onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
-    />
+    >
   `;
 }
 

@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GENE Mission Control - ClaycrazE</title>
+  <link rel="stylesheet" href="/css/styles.css?v=3031">
+
+  <style>
+    :root {
+      --gene-bg: #090d10;
+      --gene-panel: #101519;
+      --gene-line: rgba(222, 211, 184, 0.18);
+      --gene-cream: #e7ddc7;
+      --gene-muted: #a9a79f;
+      --gene-green: #9ac64e;
+      --gene-amber: #d3a558;
+      --gene-red: #c86155;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+
+    .mc-shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 34px auto 64px;
+    }
+
+    .mc-card {
+      color: var(--gene-cream);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(154, 198, 78, 0.07), transparent 30%),
+        linear-gradient(145deg, #101519, #090d10);
+      border: 1px solid rgba(231, 221, 199, 0.24);
+      border-radius: 28px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.38),
+        inset 0 0 0 8px rgba(255, 255, 255, 0.018);
+      overflow: hidden;
+    }
+
+    .mc-top {
+      padding: 30px 34px 26px;
+      border-bottom: 1px solid var(--gene-line);
+    }
+
+    .mc-kicker {
+      margin: 0 0 8px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .mc-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mc-subtitle {
+      margin: 12px 0 0;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .mc-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      padding: 24px;
+    }
+
+    .panel {
+      border: 1px solid var(--gene-line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.012);
+      padding: 22px;
+    }
+
+    .panel-title {
+      margin: 0 0 16px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gene-green);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 10px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      padding: 12px 13px;
+      font: inherit;
+    }
+
+    .field textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .field select {
+      width: 100%;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 10px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      padding: 12px 13px;
+      font: inherit;
+    }
+
+    .mission-subsection {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(231, 221, 199, 0.12);
+    }
+
+    .mission-subsection-title {
+      margin: 0 0 13px;
+      color: var(--gene-muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px 13px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 10px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      line-height: 1.35;
+      cursor: pointer;
+    }
+
+    .choice-card input {
+      margin-top: 3px;
+      accent-color: var(--gene-green);
+    }
+
+    .choice-card strong {
+      display: block;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+    }
+
+    .choice-card small {
+      display: block;
+      margin-top: 2px;
+      color: var(--gene-muted);
+      font-size: 0.78rem;
+    }
+
+    .conditional-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid rgba(211, 165, 88, 0.28);
+      border-radius: 10px;
+      background: rgba(211, 165, 88, 0.035);
+    }
+
+    .conditional-box.show {
+      display: block;
+    }
+
+    .inline-note {
+      margin: 7px 0 0;
+      color: var(--gene-muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .validation-note {
+      display: none;
+      margin-top: 12px;
+      padding: 11px 13px;
+      border: 1px solid rgba(200, 97, 85, 0.45);
+      border-radius: 9px;
+      color: #e5a49b;
+      background: rgba(200, 97, 85, 0.055);
+      line-height: 1.45;
+    }
+
+    .validation-note.show {
+      display: block;
+    }
+
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-panel {
+      padding: 13px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 10px;
+      background: #0a0f12;
+    }
+
+    .mini-panel label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gene-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mini-panel input,
+    .mini-panel select {
+      width: 100%;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 8px;
+      background: #080c0f;
+      color: var(--gene-cream);
+      padding: 10px 11px;
+      font: inherit;
+    }
+
+    .mini-panel textarea {
+      width: 100%;
+      min-height: 84px;
+      border: 1px solid rgba(231, 221, 199, 0.22);
+      border-radius: 8px;
+      background: #080c0f;
+      color: var(--gene-cream);
+      padding: 10px 11px;
+      font: inherit;
+      resize: vertical;
+    }
+
+    .mini-panel input[type="file"] {
+      padding: 8px;
+    }
+
+    .zone-heading {
+      margin: 0 0 10px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .damper-log-panel {
+      margin-top: 12px;
+      padding: 13px;
+      border: 1px solid rgba(231, 221, 199, 0.16);
+      border-radius: 10px;
+      background: #0a0f12;
+    }
+
+    .damper-log-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .damper-log-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .damper-log-entry {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(231, 221, 199, 0.08);
+      color: var(--gene-muted);
+      font-size: 0.82rem;
+    }
+
+    .damper-log-entry:last-child {
+      border-bottom: 0;
+    }
+
+    .damper-log-entry strong {
+      color: var(--gene-cream);
+      font-weight: 500;
+    }
+
+    .heatwork-board {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .heatwork-card {
+      padding: 15px;
+      border: 1px solid rgba(154, 198, 78, 0.24);
+      border-radius: 12px;
+      background: rgba(154, 198, 78, 0.025);
+    }
+
+    .heatwork-card h3 {
+      margin: 0 0 10px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(231, 221, 199, 0.08);
+      color: var(--gene-muted);
+      font-size: 0.86rem;
+    }
+
+    .metric-row:last-child {
+      border-bottom: 0;
+    }
+
+    .metric-row strong {
+      color: var(--gene-cream);
+      font-weight: 500;
+    }
+
+    .heatwork-estimate {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(154, 198, 78, 0.2);
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 760px) {
+      .mini-grid,
+      .heatwork-board,
+      .damper-log-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .choice-grid { grid-template-columns: 1fr; }
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .count-box {
+      padding: 18px 10px;
+      border: 1px solid rgba(154, 198, 78, 0.28);
+      border-radius: 14px;
+      text-align: center;
+      background: rgba(154, 198, 78, 0.03);
+    }
+
+    .count-value {
+      display: block;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      line-height: 1;
+    }
+
+    .count-label {
+      display: block;
+      margin-top: 8px;
+      color: var(--gene-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid rgba(154, 198, 78, 0.5);
+      border-radius: 12px;
+      background: rgba(154, 198, 78, 0.04);
+    }
+
+    .status-label {
+      color: var(--gene-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-value {
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.06em;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .checkline {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--gene-cream);
+      line-height: 1.4;
+    }
+
+    .checkline input {
+      margin-top: 3px;
+      accent-color: var(--gene-green);
+    }
+
+    .limitations {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid rgba(211, 165, 88, 0.5);
+      border-radius: 10px;
+      background: rgba(211, 165, 88, 0.06);
+      color: #e5c38b;
+    }
+
+    .limitations.show { display: block; }
+
+    .ack {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(231, 221, 199, 0.18);
+      border-radius: 10px;
+      color: var(--gene-cream);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .ack.show { display: block; }
+
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 14px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(231, 221, 199, 0.08);
+      font-family: Consolas, "Courier New", monospace;
+      letter-spacing: 0.03em;
+    }
+
+    .status-row:last-child { border-bottom: 0; }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #596166;
+    }
+
+    .status-row.ok .status-dot { background: var(--gene-green); }
+    .status-row.limit .status-dot { background: var(--gene-amber); }
+    .status-row.block .status-dot { background: var(--gene-red); }
+
+    .check-status {
+      color: var(--gene-muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+    }
+
+    .status-row.ok .check-status { color: var(--gene-green); }
+    .status-row.limit .check-status { color: var(--gene-amber); }
+    .status-row.block .check-status { color: var(--gene-red); }
+
+    .human-authority {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(231, 221, 199, 0.28);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.015);
+    }
+
+    .human-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.06em;
+    }
+
+    .human-check input {
+      accent-color: var(--gene-green);
+      transform: scale(1.12);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .mc-button {
+      min-height: 50px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      background: rgba(154, 198, 78, 0.04);
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .mc-button:hover:not(:disabled),
+    .mc-button:focus-visible:not(:disabled) {
+      background: rgba(154, 198, 78, 0.1);
+      outline: none;
+    }
+
+    .mc-button:disabled {
+      cursor: not-allowed;
+      color: #676f72;
+      border-color: rgba(103,111,114,0.4);
+      background: rgba(103,111,114,0.04);
+    }
+
+    .mc-button.secondary {
+      color: var(--gene-cream);
+      border-color: rgba(231,221,199,0.25);
+    }
+
+    .mission-note {
+      margin: 18px 0 0;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .narration {
+      min-height: 180px;
+      border: 1px solid var(--gene-line);
+      border-radius: 14px;
+      padding: 18px;
+      background: #0a0f12;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+    }
+
+    .narration strong {
+      color: var(--gene-green);
+      font-weight: 500;
+    }
+
+    .mc-footer {
+      padding: 0 24px 24px;
+      text-align: center;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
+    @media (max-width: 900px) {
+      .mc-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .mc-shell { width: min(100% - 16px, 1180px); }
+      .mc-top { padding: 24px 20px; }
+      .mc-grid { padding: 16px; }
+      .countdown { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+
+<body class="practice-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mc-shell">
+    <section class="mc-card">
+
+      <header class="mc-top">
+        <p class="mc-kicker">GENE / Firing Mission</p>
+        <h1 class="mc-title">Mission Control</h1>
+        <p class="mc-subtitle">
+          Define the target. Set the time. Verify readiness. GENE reports its own condition;
+          the human alone decides launch or hold.
+        </p>
+      </header>
+
+      <div class="mc-grid">
+
+        <section class="panel">
+          <h2 class="panel-title">Mission Plan</h2>
+
+          <div class="field">
+            <label for="missionName">Mission name</label>
+            <input id="missionName" type="text" placeholder="Example: Poor Boy / Richie heat-work comparison">
+          </div>
+
+          <div class="field">
+            <label for="missionTarget">Target / purpose</label>
+            <textarea id="missionTarget" placeholder="What is this firing intended to test, reveal, or accomplish?"></textarea>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Firing profile</p>
+
+            <div class="field">
+              <label for="firingType">Firing type</label>
+              <select id="firingType">
+                <option value="">Select firing type</option>
+                <option value="Bisque">Bisque</option>
+                <option value="Cone 6">Cone 6</option>
+                <option value="Cone 10">Cone 10</option>
+                <option value="Custom">Custom / research firing</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="targetHeatwork">Target heat-work</label>
+              <input id="targetHeatwork" type="text" placeholder="Example: Cone 10 equivalent heat-work">
+              <p class="inline-note">Record the ceramic target as heat-work, not merely peak temperature.</p>
+            </div>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Kiln assignment</p>
+
+            <div class="choice-grid">
+              <label class="choice-card">
+                <input id="kilnRichie" type="checkbox">
+                <span>
+                  <strong>Richie - Electric</strong>
+                  <small>Oxidation atmosphere</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input id="kilnPoorBoy" type="checkbox">
+                <span>
+                  <strong>Poor Boy - Gas</strong>
+                  <small>Oxidation or reduction; one atmosphere per firing</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="conditional-box" id="poorBoyAtmosphereBox">
+              <p class="mission-subsection-title">Poor Boy atmosphere</p>
+              <div class="choice-grid">
+                <label class="choice-card">
+                  <input type="radio" name="poorBoyAtmosphere" value="Oxidation">
+                  <span><strong>Oxidation</strong></span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="poorBoyAtmosphere" value="Reduction">
+                  <span><strong>Reduction</strong></span>
+                </label>
+              </div>
+              <p class="inline-note">Mutually exclusive by design: Poor Boy fires in one atmosphere or the other, never both simultaneously.</p>
+            </div>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Observation plan</p>
+
+            <div class="field">
+              <label for="observationGoal">Observation goal</label>
+              <select id="observationGoal">
+                <option value="">Select primary observation</option>
+                <option value="Heat-work equivalence">Heat-work equivalence</option>
+                <option value="Vertical heat-work distribution">Vertical heat-work distribution</option>
+                <option value="Expand Poor Boy sweet spot">Expand Poor Boy sweet spot</option>
+                <option value="Damper effect on heat distribution">Damper effect on heat distribution</option>
+                <option value="Kiln comparison">Kiln comparison</option>
+                <option value="Production firing">Production firing</option>
+                <option value="Other">Other / open inquiry</option>
+              </select>
+            </div>
+
+            <div class="choice-grid">
+              <label class="choice-card">
+                <input id="trackDamper" type="checkbox">
+                <span>
+                  <strong>Track Poor Boy damper position</strong>
+                  <small>Record position changes against heat-work distribution</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input id="witnessCones" type="checkbox">
+                <span>
+                  <strong>Witness cones planned</strong>
+                  <small>Use physical cone evidence to check the estimate after firing</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="conditional-box" id="poorBoyStudyBox">
+              <p class="mission-subsection-title">Poor Boy heat-work map</p>
+              <p class="inline-note">
+                Treat top, middle, and bottom as separate evidence zones. Plan the cone pack before firing;
+                photograph the fired cone pack and interpret it during debrief.
+              </p>
+
+              <div class="mini-grid" style="margin-top:12px;">
+                <div class="mini-panel">
+                  <h3 class="zone-heading">Top zone</h3>
+
+                  <label for="poorBoyTopCone">Planned cone pack</label>
+                  <input id="poorBoyTopCone" type="text" placeholder="Example: 10 / 8 / 6">
+
+                  <label for="poorBoyTopProbe" style="margin-top:10px;">Probe / zone</label>
+                  <input id="poorBoyTopProbe" type="text" placeholder="Optional identifier">
+
+                  <label for="poorBoyTopConePhoto" style="margin-top:10px;">Post-fire cone-pack photo</label>
+                  <input id="poorBoyTopConePhoto" type="file" accept="image/*" capture="environment">
+
+                  <label for="poorBoyTopConeNote" style="margin-top:10px;">Post-fire interpretation</label>
+                  <textarea id="poorBoyTopConeNote" placeholder="What did the cone pack physically show?"></textarea>
+                </div>
+
+                <div class="mini-panel">
+                  <h3 class="zone-heading">Middle zone</h3>
+
+                  <label for="poorBoyMidCone">Planned cone pack</label>
+                  <input id="poorBoyMidCone" type="text" placeholder="Example: 10 / 8 / 6">
+
+                  <label for="poorBoyMidProbe" style="margin-top:10px;">Probe / zone</label>
+                  <input id="poorBoyMidProbe" type="text" placeholder="Example: GREEN_0">
+
+                  <label for="poorBoyMidConePhoto" style="margin-top:10px;">Post-fire cone-pack photo</label>
+                  <input id="poorBoyMidConePhoto" type="file" accept="image/*" capture="environment">
+
+                  <label for="poorBoyMidConeNote" style="margin-top:10px;">Post-fire interpretation</label>
+                  <textarea id="poorBoyMidConeNote" placeholder="What did the cone pack physically show?"></textarea>
+                </div>
+
+                <div class="mini-panel">
+                  <h3 class="zone-heading">Bottom zone</h3>
+
+                  <label for="poorBoyBottomCone">Planned cone pack</label>
+                  <input id="poorBoyBottomCone" type="text" placeholder="Example: 10 / 8 / 6">
+
+                  <label for="poorBoyBottomProbe" style="margin-top:10px;">Probe / zone</label>
+                  <input id="poorBoyBottomProbe" type="text" placeholder="Example: RED_1">
+
+                  <label for="poorBoyBottomConePhoto" style="margin-top:10px;">Post-fire cone-pack photo</label>
+                  <input id="poorBoyBottomConePhoto" type="file" accept="image/*" capture="environment">
+
+                  <label for="poorBoyBottomConeNote" style="margin-top:10px;">Post-fire interpretation</label>
+                  <textarea id="poorBoyBottomConeNote" placeholder="What did the cone pack physically show?"></textarea>
+                </div>
+              </div>
+
+              <div class="field" style="margin-top:14px;">
+                <label for="damperScale">Damper reference</label>
+                <input id="damperScale" type="text" placeholder="Example: 0-100% open, or physical mark positions">
+                <p class="inline-note">
+                  Define a repeatable scale before firing, then log each meaningful position change during the firing.
+                </p>
+              </div>
+
+              <div class="damper-log-panel">
+                <div class="damper-log-controls">
+                  <div class="field" style="margin-bottom:0;">
+                    <label for="damperPosition">Current damper position</label>
+                    <input id="damperPosition" type="text" placeholder="Example: 65% open or Mark 3">
+                  </div>
+                  <button class="mc-button secondary" id="logDamperButton" type="button">Log damper position</button>
+                </div>
+
+                <div class="damper-log-list" id="damperLogList">
+                  <p class="inline-note">No damper changes logged yet.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="conditional-box" id="richieStudyBox">
+              <p class="mission-subsection-title">Richie heat-work reference</p>
+
+              <div class="mini-grid">
+                <div class="mini-panel">
+                  <label for="richieWitnessCone">Witness cone</label>
+                  <input id="richieWitnessCone" type="text" placeholder="Example: Cone 10">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="richieProbe">Probe / zone</label>
+                  <input id="richieProbe" type="text" placeholder="Optional identifier">
+                </div>
+
+                <div class="mini-panel">
+                  <label for="richieReference">Reference role</label>
+                  <input id="richieReference" type="text" placeholder="Example: comparison standard">
+                </div>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+              <label for="knownCondition">Known condition / hypothesis</label>
+              <textarea id="knownCondition" placeholder="Example: Poor Boy's middle is the known sweet spot; upper shelves tend to lag in accumulated heat-work."></textarea>
+            </div>
+          </div>
+
+          <div class="mission-subsection">
+            <p class="mission-subsection-title">Estimated HEAT-WORK</p>
+            <p class="inline-note">
+              Provisional live estimate based on temperature and rate of rise. Witness cones remain the physical check after firing.
+            </p>
+
+            <div class="heatwork-board">
+              <div class="heatwork-card">
+                <h3>Poor Boy</h3>
+                <div class="metric-row"><span>Temperature</span><strong id="poorBoyHwTemp">-</strong></div>
+                <div class="metric-row"><span>Rate of rise</span><strong id="poorBoyHwRate">-</strong></div>
+                <div class="metric-row"><span>Atmosphere</span><strong id="poorBoyHwAtmosphere">-</strong></div>
+                <div class="heatwork-estimate">Estimated HEAT-WORK: <span id="poorBoyHwEstimate">Awaiting firing data</span></div>
+              </div>
+
+              <div class="heatwork-card">
+                <h3>Richie</h3>
+                <div class="metric-row"><span>Temperature</span><strong id="richieHwTemp">-</strong></div>
+                <div class="metric-row"><span>Rate of rise</span><strong id="richieHwRate">-</strong></div>
+                <div class="metric-row"><span>Atmosphere</span><strong>Oxidation</strong></div>
+                <div class="heatwork-estimate">Estimated HEAT-WORK: <span id="richieHwEstimate">Awaiting firing data</span></div>
+              </div>
+            </div>
+
+            <div class="mini-panel" style="margin-top:12px;">
+              <label>Comparative heat-work</label>
+              <div class="metric-row"><span>Richie / Poor Boy delta</span><strong id="heatworkDelta">Awaiting firing data</strong></div>
+              <div class="metric-row"><span>Poor Boy vertical spread</span><strong id="poorBoySpread">Awaiting cone / zone data</strong></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="launchTime">Planned ignition time</label>
+            <input id="launchTime" type="datetime-local">
+          </div>
+
+          <div class="validation-note" id="missionValidation"></div>
+
+          <div class="countdown" aria-label="Countdown">
+            <div class="count-box">
+              <span class="count-value" id="days">00</span>
+              <span class="count-label">Days</span>
+            </div>
+            <div class="count-box">
+              <span class="count-value" id="hours">00</span>
+              <span class="count-label">Hours</span>
+            </div>
+            <div class="count-box">
+              <span class="count-value" id="minutes">00</span>
+              <span class="count-label">Minutes</span>
+            </div>
+            <div class="count-box">
+              <span class="count-value" id="seconds">00</span>
+              <span class="count-label">Seconds</span>
+            </div>
+          </div>
+
+          <p class="mission-note">
+            Countdown is presentation and planning only. Ignition remains a human action.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Preflight Readiness</h2>
+
+          <div class="status-box">
+            <div>
+              <div class="status-label">GENE status</div>
+              <div class="status-value" id="readiness">NOT READY</div>
+            </div>
+            <div class="status-label">Human authority final</div>
+          </div>
+
+          <div class="checklist" id="geneChecks">
+            <div class="checkline status-row" data-key="kiln_probe_data">
+              <span class="status-dot"></span><span>KILN / PROBE DATA</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="camera_network">
+              <span class="status-dot"></span><span>CAMERA NETWORK</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="camera_stream">
+              <span class="status-dot"></span><span>CAMERA STREAM</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="audio_stream">
+              <span class="status-dot"></span><span>AUDIO STREAM</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="local_event_storage">
+              <span class="status-dot"></span><span>LOCAL EVENT STORAGE</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="memory_comparison">
+              <span class="status-dot"></span><span>MEMORY / COMPARISON</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="public_transmission">
+              <span class="status-dot"></span><span>PUBLIC TRANSMISSION</span><strong class="check-status">WAIT</strong>
+            </div>
+          </div>
+
+          <div class="limitations" id="limitations">
+            <strong>READY WITH LIMITATIONS</strong>
+            <div id="limitationsList">One or more non-critical mission conditions remain unresolved.</div>
+          </div>
+
+          <label class="ack" id="ackBox">
+            <input type="checkbox" id="ackLimitations">
+            I have seen and accept the stated limitations.
+          </label>
+
+          <div class="human-authority">
+            <label class="human-check">
+              <input type="checkbox" id="humanPresent">
+              <span>HUMAN PRESENT AND RESPONSIBLE</span>
+            </label>
+          </div>
+
+          <div class="button-row">
+            <button class="mc-button secondary" id="evaluateButton" type="button">Run Preflight</button>
+            <button class="mc-button" id="launchButton" type="button" disabled>Launch Observation</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">GENE Narration</h2>
+          <div class="narration" id="narration">
+            <strong>GENE:</strong> Mission Control is quiet. No firing has been called.
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Mission Sequence</h2>
+          <div class="narration">
+            <strong>1.</strong> Mission target named.<br>
+            <strong>2.</strong> Countdown begins.<br>
+            <strong>3.</strong> GENE performs preflight and reports readiness.<br>
+            <strong>4.</strong> Human decides LAUNCH or HOLD.<br>
+            <strong>5.</strong> Human ignites kiln.<br>
+            <strong>6.</strong> GENE confirms ignition from evidence.<br>
+            <strong>7.</strong> Firing states and narration unfold through the mission.<br>
+            <strong>8.</strong> Recovery and debrief close the record.
+          </div>
+
+          <div class="button-row">
+            <a class="mc-button secondary" href="/kilnwatch.html" style="text-decoration:none; display:inline-flex; align-items:center;">Return to GENE</a>
+            <a class="mc-button secondary" href="/observatory.html" style="text-decoration:none; display:inline-flex; align-items:center;">Enter Observatory</a>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="mc-footer">
+        Witness. Remember. Transmit.
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (id) => document.getElementById(id);
+      const statusRows = [...document.querySelectorAll(".status-row")];
+      const PREFLIGHT_URL = "http://127.0.0.1:8765/preflight";
+      const MISSION_PUBLISH_URL = "http://127.0.0.1:8765/mission-publish";
+
+      let geneReadiness = "NOT READY";
+      let geneLimitations = [];
+      let lastPreflightPayload = null;
+      let publicMissionStatus = "PLANNED";
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function updateCountdown() {
+        const raw = $("launchTime").value;
+        if (!raw) {
+          ["days", "hours", "minutes", "seconds"].forEach((id) => $(id).textContent = "00");
+          return;
+        }
+
+        const delta = Math.max(0, new Date(raw).getTime() - Date.now());
+        const totalSeconds = Math.floor(delta / 1000);
+
+        $("days").textContent = pad(Math.floor(totalSeconds / 86400));
+        $("hours").textContent = pad(Math.floor((totalSeconds % 86400) / 3600));
+        $("minutes").textContent = pad(Math.floor((totalSeconds % 3600) / 60));
+        $("seconds").textContent = pad(totalSeconds % 60);
+      }
+
+      function setStatus(key, state, label) {
+        const row = statusRows.find((item) => item.dataset.key === key);
+        if (!row) return;
+
+        row.classList.remove("ok", "limit", "block");
+        const normalized = String(state || "").toUpperCase();
+
+        if (normalized === "OK") row.classList.add("ok");
+        if (normalized === "LIMIT") row.classList.add("limit");
+        if (normalized === "BLOCK") row.classList.add("block");
+
+        row.querySelector(".check-status").textContent = label || normalized || "WAIT";
+      }
+
+      function selectedPoorBoyAtmosphere() {
+        const selected = document.querySelector('input[name="poorBoyAtmosphere"]:checked');
+        return selected ? selected.value : "";
+      }
+
+      const DAMPER_LOG_KEY = "genePoorBoyDamperLog";
+
+      function readDamperLog() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(DAMPER_LOG_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function writeDamperLog(entries) {
+        localStorage.setItem(DAMPER_LOG_KEY, JSON.stringify(entries));
+      }
+
+      function renderDamperLog() {
+        const list = $("damperLogList");
+        if (!list) return;
+
+        const entries = readDamperLog();
+
+        if (!entries.length) {
+          list.innerHTML = '<p class="inline-note">No damper changes logged yet.</p>';
+          return;
+        }
+
+        list.innerHTML = entries
+          .slice()
+          .reverse()
+          .map((entry) => {
+            const when = new Date(entry.time).toLocaleString();
+            return `<div class="damper-log-entry"><span>${when}</span><strong>${entry.position}</strong></div>`;
+          })
+          .join("");
+      }
+
+      function logDamperPosition() {
+        const input = $("damperPosition");
+        const position = input ? input.value.trim() : "";
+
+        if (!position) return;
+
+        const entries = readDamperLog();
+        entries.push({
+          time: new Date().toISOString(),
+          position
+        });
+
+        writeDamperLog(entries);
+        input.value = "";
+        renderDamperLog();
+      }
+
+      function syncKilnLogic() {
+        const poorBoySelected = $("kilnPoorBoy").checked;
+        const richieSelected = $("kilnRichie").checked;
+
+        $("poorBoyAtmosphereBox").classList.toggle("show", poorBoySelected);
+        $("poorBoyStudyBox").classList.toggle("show", poorBoySelected);
+        $("richieStudyBox").classList.toggle("show", richieSelected);
+
+        $("poorBoyHwAtmosphere").textContent =
+          poorBoySelected ? (selectedPoorBoyAtmosphere() || "Select atmosphere") : "Not selected";
+
+        if (!poorBoySelected) {
+          document.querySelectorAll('input[name="poorBoyAtmosphere"]').forEach((radio) => {
+            radio.checked = false;
+          });
+          $("trackDamper").checked = false;
+        }
+      }
+
+      function missionValidationErrors() {
+        const errors = [];
+
+        if (!$("missionTarget").value.trim()) errors.push("Mission target / purpose is required.");
+        if (!$("launchTime").value.trim()) errors.push("Planned ignition time is required.");
+        if (!$("firingType").value) errors.push("Firing type is required.");
+        if (!$("targetHeatwork").value.trim()) errors.push("Target heat-work is required.");
+
+        const richie = $("kilnRichie").checked;
+        const poorBoy = $("kilnPoorBoy").checked;
+
+        if (!richie && !poorBoy) {
+          errors.push("Select at least one kiln: Richie and/or Poor Boy.");
+        }
+
+        if (poorBoy && !selectedPoorBoyAtmosphere()) {
+          errors.push("Poor Boy requires one atmosphere: oxidation or reduction.");
+        }
+
+        return errors;
+      }
+
+      function renderMissionValidation(errors) {
+        const box = $("missionValidation");
+
+        if (!errors.length) {
+          box.classList.remove("show");
+          box.textContent = "";
+          return;
+        }
+
+        box.classList.add("show");
+        box.textContent = errors.join(" ");
+      }
+
+      function buildPreflightTarget() {
+        const parts = [
+          $("missionTarget").value.trim(),
+          `Firing type: ${$("firingType").value}`,
+          `Target heat-work: ${$("targetHeatwork").value.trim()}`
+        ];
+
+        const kilns = [];
+        if ($("kilnRichie").checked) kilns.push("Richie - Electric - Oxidation");
+        if ($("kilnPoorBoy").checked) {
+          kilns.push(`Poor Boy - Gas - ${selectedPoorBoyAtmosphere()}`);
+        }
+
+        if (kilns.length) parts.push(`Kiln assignment: ${kilns.join("; ")}`);
+
+        if ($("observationGoal").value) {
+          parts.push(`Observation goal: ${$("observationGoal").value}`);
+        }
+
+        if ($("trackDamper").checked) {
+          parts.push("Poor Boy damper position will be tracked.");
+        }
+
+        if ($("witnessCones").checked) {
+          parts.push("Witness cones are planned.");
+        }
+
+        if ($("knownCondition").value.trim()) {
+          parts.push(`Known condition / hypothesis: ${$("knownCondition").value.trim()}`);
+        }
+
+        if ($("kilnPoorBoy").checked) {
+          const pbZonePlan = [
+            $("poorBoyTopProbe").value.trim() ? `top=${$("poorBoyTopProbe").value.trim()}` : "",
+            $("poorBoyMidProbe").value.trim() ? `middle=${$("poorBoyMidProbe").value.trim()}` : "",
+            $("poorBoyBottomProbe").value.trim() ? `bottom=${$("poorBoyBottomProbe").value.trim()}` : ""
+          ].filter(Boolean);
+
+          if (pbZonePlan.length) {
+            parts.push(`Poor Boy zone plan: ${pbZonePlan.join(", ")}`);
+          }
+
+          if ($("damperScale").value.trim()) {
+            parts.push(`Damper reference: ${$("damperScale").value.trim()}`);
+          }
+
+          const pbCones = [
+            $("poorBoyTopCone").value.trim() ? `top=${$("poorBoyTopCone").value.trim()}` : "",
+            $("poorBoyMidCone").value.trim() ? `middle=${$("poorBoyMidCone").value.trim()}` : "",
+            $("poorBoyBottomCone").value.trim() ? `bottom=${$("poorBoyBottomCone").value.trim()}` : ""
+          ].filter(Boolean);
+
+          if (pbCones.length) {
+            parts.push(`Poor Boy witness cone plan: ${pbCones.join(", ")}`);
+          }
+        }
+
+        if ($("kilnRichie").checked) {
+          if ($("richieWitnessCone").value.trim()) {
+            parts.push(`Richie witness cone: ${$("richieWitnessCone").value.trim()}`);
+          }
+          if ($("richieReference").value.trim()) {
+            parts.push(`Richie reference role: ${$("richieReference").value.trim()}`);
+          }
+        }
+
+        return parts.join(" | ");
+      }
+
+      function publicPreflightItems(payload) {
+        const checks = Array.isArray(payload?.checks) ? payload.checks : [];
+
+        return checks.map((check) => {
+          const status = String(check?.status ?? check?.state ?? "").toUpperCase();
+          const ok = check?.ok === true || status === "OK";
+
+          return {
+            name: String(check?.name ?? "Preflight condition"),
+            label: String(check?.name ?? "Preflight condition"),
+            ok
+          };
+        });
+      }
+
+      function buildPublicMissionRecord(status, narration) {
+        const rawLaunch = $("launchTime").value.trim();
+        let plannedIgnition = rawLaunch || null;
+
+        if (rawLaunch) {
+          const parsed = new Date(rawLaunch);
+          if (!Number.isNaN(parsed.getTime())) {
+            plannedIgnition = parsed.toISOString();
+          }
+        }
+
+        return {
+          mission_name: $("missionName").value.trim() || "Unnamed firing mission",
+          target: $("missionTarget").value.trim(),
+          planned_ignition: plannedIgnition,
+          readiness: geneReadiness,
+          mission_status: status || publicMissionStatus || "PLANNED",
+          preflight: publicPreflightItems(lastPreflightPayload),
+          limitations: Array.isArray(geneLimitations) ? geneLimitations : [],
+          narration: narration || "Mission Control is quiet. No firing has been called."
+        };
+      }
+
+      async function publishPublicMission(status, narration) {
+        const record = buildPublicMissionRecord(status, narration);
+
+        const response = await fetch(MISSION_PUBLISH_URL, {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(record)
+        });
+
+        let result = {};
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = {};
+        }
+
+        if (!response.ok || result?.ok !== true) {
+          throw new Error(result?.error || `Mission publish returned HTTP ${response.status}`);
+        }
+
+        return result;
+      }
+
+      function updateLaunchAvailability() {
+        const humanPresent = $("humanPresent").checked;
+        const missionValid = missionValidationErrors().length === 0;
+
+        let enabled = humanPresent && missionValid;
+
+        if (geneReadiness === "READY") {
+          // no extra GENE gate
+        } else if (geneReadiness === "READY WITH LIMITATIONS") {
+          enabled = enabled && $("ackLimitations").checked;
+        } else {
+          enabled = false;
+        }
+
+        $("launchButton").disabled = !enabled;
+      }
+
+      function renderReadiness() {
+        $("limitations").classList.remove("show");
+        $("ackBox").classList.remove("show");
+
+        if (geneReadiness === "READY") {
+          $("readiness").textContent = "READY";
+          $("readiness").style.color = "var(--gene-green)";
+        } else if (geneReadiness === "READY WITH LIMITATIONS") {
+          $("readiness").textContent = "READY WITH LIMITATIONS";
+          $("readiness").style.color = "var(--gene-amber)";
+          $("limitations").classList.add("show");
+          $("ackBox").classList.add("show");
+          $("limitationsList").textContent = geneLimitations.length
+            ? geneLimitations.join("; ")
+            : "One or more non-critical mission conditions remain unresolved.";
+        } else {
+          $("readiness").textContent = "NOT READY";
+          $("readiness").style.color = "var(--gene-red)";
+        }
+
+        updateLaunchAvailability();
+      }
+
+      function normalizeChecks(payload) {
+        const mapped = {};
+        const checks = Array.isArray(payload.checks) ? payload.checks : [];
+
+        for (const check of checks) {
+          const name = String(check.name || "").toUpperCase();
+          if (name.includes("KILN") || name.includes("PROBE")) mapped.kiln_probe_data = check;
+          else if (name.includes("CAMERA NETWORK")) mapped.camera_network = check;
+          else if (name.includes("CAMERA STREAM")) mapped.camera_stream = check;
+          else if (name.includes("AUDIO")) mapped.audio_stream = check;
+          else if (name.includes("LOCAL EVENT")) mapped.local_event_storage = check;
+          else if (name.includes("MEMORY") || name.includes("COMPARISON")) mapped.memory_comparison = check;
+          else if (name.includes("PUBLIC TRANSMISSION")) mapped.public_transmission = check;
+        }
+
+        return mapped;
+      }
+
+      async function runPreflight() {
+        syncKilnLogic();
+
+        const errors = missionValidationErrors();
+        renderMissionValidation(errors);
+
+        if (errors.length) {
+          geneReadiness = "NOT READY";
+          renderReadiness();
+          $("narration").innerHTML =
+            `<strong>GENE:</strong> Mission definition is incomplete. Mission Control requires the firing profile and kiln assignment before preflight.`;
+          return;
+        }
+
+        const target = buildPreflightTarget();
+
+        statusRows.forEach((row) => {
+          row.classList.remove("ok", "limit", "block");
+          row.querySelector(".check-status").textContent = "WAIT";
+        });
+
+        $("readiness").textContent = "CHECKING...";
+        $("readiness").style.color = "var(--gene-muted)";
+        $("launchButton").disabled = true;
+
+        try {
+          const url = new URL(PREFLIGHT_URL);
+          url.searchParams.set("target", target);
+
+          const response = await fetch(url, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const payload = await response.json();
+          lastPreflightPayload = payload;
+          const mapped = normalizeChecks(payload);
+
+          for (const row of statusRows) {
+            const check = mapped[row.dataset.key];
+            if (!check) {
+              setStatus(row.dataset.key, "BLOCK", "NO DATA");
+              continue;
+            }
+
+            const state = String(
+              check.status || check.state || (check.ok === true ? "OK" : "BLOCK")
+            ).toUpperCase();
+
+            setStatus(row.dataset.key, state, state);
+          }
+
+          geneReadiness = String(
+            payload.readiness || payload.gene_readiness || "NOT READY"
+          ).toUpperCase();
+
+          geneLimitations = Array.isArray(payload.limitations) ? payload.limitations : [];
+          renderReadiness();
+
+          let publicNarration = "";
+
+          if (geneReadiness === "READY") {
+            publicNarration = "Preflight complete. I am ready to observe. The launch decision remains yours.";
+          } else if (geneReadiness === "READY WITH LIMITATIONS") {
+            publicNarration = "I can observe this mission, but stated limitations remain.";
+          } else {
+            publicNarration = "I am not ready. One or more required witnessing conditions are unavailable.";
+          }
+
+          $("narration").innerHTML = `<strong>GENE:</strong> ${publicNarration}`;
+
+          publicMissionStatus = "PLANNED";
+
+          try {
+            const published = await publishPublicMission(publicMissionStatus, publicNarration);
+            $("narration").innerHTML +=
+              `<br><br><span style="color:var(--gene-green);">Public mission record transmitted and verified.</span>`;
+          } catch (publishError) {
+            $("narration").innerHTML +=
+              `<br><br><span style="color:var(--gene-amber);">Public transmission failed: ${publishError.message}</span>`;
+          }
+        } catch (error) {
+          geneReadiness = "NOT READY";
+          renderReadiness();
+          $("narration").innerHTML =
+            `<strong>GENE:</strong> Mission Control could not reach the local preflight bridge. ${error.message}`;
+        }
+      }
+
+      $("evaluateButton").addEventListener("click", runPreflight);
+      $("ackLimitations").addEventListener("change", updateLaunchAvailability);
+      $("humanPresent").addEventListener("change", updateLaunchAvailability);
+
+      $("logDamperButton").addEventListener("click", logDamperPosition);
+      renderDamperLog();
+
+      [
+        "missionTarget",
+        "firingType",
+        "targetHeatwork",
+        "kilnRichie",
+        "kilnPoorBoy",
+        "observationGoal",
+        "trackDamper",
+        "witnessCones",
+        "poorBoyTopCone",
+        "poorBoyMidCone",
+        "poorBoyBottomCone",
+        "poorBoyTopProbe",
+        "poorBoyMidProbe",
+        "poorBoyBottomProbe",
+        "poorBoyTopConeNote",
+        "poorBoyMidConeNote",
+        "poorBoyBottomConeNote",
+        "damperScale",
+        "damperPosition",
+        "richieWitnessCone",
+        "richieProbe",
+        "richieReference",
+        "knownCondition"
+      ].forEach((id) => {
+        $(id).addEventListener("input", () => {
+          syncKilnLogic();
+          renderMissionValidation([]);
+          updateLaunchAvailability();
+        });
+        $(id).addEventListener("change", () => {
+          syncKilnLogic();
+          renderMissionValidation([]);
+          updateLaunchAvailability();
+        });
+      });
+
+      document.querySelectorAll('input[name="poorBoyAtmosphere"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          renderMissionValidation([]);
+          updateLaunchAvailability();
+        });
+      });
+
+      $("firingType").addEventListener("change", () => {
+        if (!$("targetHeatwork").value.trim()) {
+          const defaults = {
+            "Bisque": "Bisque heat-work",
+            "Cone 6": "Cone 6 equivalent heat-work",
+            "Cone 10": "Cone 10 equivalent heat-work"
+          };
+          $("targetHeatwork").value = defaults[$("firingType").value] || "";
+        }
+        updateLaunchAvailability();
+      });
+
+      $("launchTime").addEventListener("change", () => {
+        updateCountdown();
+        renderMissionValidation([]);
+        updateLaunchAvailability();
+      });
+
+      $("launchButton").addEventListener("click", async () => {
+        const publicNarration = "Observation has begun. I am watching for ignition evidence.";
+        publicMissionStatus = "OBSERVING";
+
+        $("narration").innerHTML =
+          `<strong>GENE:</strong> ${publicNarration}`;
+
+        try {
+          await publishPublicMission(publicMissionStatus, publicNarration);
+          $("narration").innerHTML +=
+            `<br><br><span style="color:var(--gene-green);">Observation state transmitted and verified.</span>`;
+        } catch (publishError) {
+          $("narration").innerHTML +=
+            `<br><br><span style="color:var(--gene-amber);">Public transmission failed: ${publishError.message}</span>`;
+        }
+      });
+
+      window.setInterval(updateCountdown, 1000);
+      syncKilnLogic();
+      updateCountdown();
+      renderReadiness();
+    })();
+  </script>
+
+</body>
+</html>

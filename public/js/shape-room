@@ -1,0 +1,89 @@
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const grid = document.getElementById("shapeGrid");
+
+  if (!grid) return;
+
+  try {
+
+    const response = await fetch("/data/pieces.json");
+
+    console.log("FETCH STATUS:", response.status);
+
+    const pieces = await response.json();
+
+    console.log("PIECES:", pieces);
+
+    const ovals = pieces.filter(piece => {
+
+      return String(piece.shape || "")
+        .trim()
+        .toUpperCase() === "OV";
+
+    });
+
+    console.log("OVALS:", ovals);
+
+    if (!ovals.length) {
+
+      grid.innerHTML = `
+        <p class="shape-empty">
+          No OV pieces found in JSON.
+        </p>
+      `;
+
+      return;
+    }
+
+    grid.innerHTML = ovals.map(piece => {
+
+      console.log("PIECE:", piece);
+
+      const image =
+        piece.thumbnail ||
+        piece.thumb_image ||
+        piece.top_image ||
+        piece.full_top_image;
+
+      return `
+
+        <a
+          class="shape-tile"
+          href="/gallery/piece.html?id=${piece.piece_number}"
+        >
+
+          <div class="shape-image-wrap">
+
+            <img
+              src="${image}"
+              alt="${piece.piece_number}"
+            >
+
+          </div>
+
+          <div class="shape-label">
+
+            <span class="shape-piece-number">
+              ${piece.piece_number}
+            </span>
+
+          </div>
+
+        </a>
+
+      `;
+
+    }).join("");
+
+  } catch (err) {
+
+    console.error(err);
+
+    grid.innerHTML = `
+      <p class="shape-empty">
+        JSON load failure.
+      </p>
+    `;
+  }
+
+});

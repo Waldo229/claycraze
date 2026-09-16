@@ -1,174 +1,319 @@
-(async function () {
-  const pieceLayout = document.getElementById("pieceLayout");
-  if (!pieceLayout) return;
+const pieceRoot = document.getElementById("pieceRoot");
 
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
+document.addEventListener("DOMContentLoaded", loadPiece);
 
-  if (!id) {
-    pieceLayout.innerHTML = `
-      <section class="not-found">
-        <h1>Piece not found</h1>
-        <p>No piece ID was provided.</p>
-      </section>
+async function loadPiece() {
+
+  if (!pieceRoot) return;
+
+  const pieceId = new URLSearchParams(window.location.search).get("id");
+
+  if (!pieceId) {
+    pieceRoot.innerHTML = `
+      <div class="error-state">
+        No piece selected.
+      </div>
     `;
     return;
   }
 
   try {
-    const response = await fetch("/data/pieces.json", { cache: "no-store" });
+
+    const response = await fetch("/data/pieces.json", {
+      cache: "no-store"
+    });
+
     if (!response.ok) {
-      throw new Error("Could not load pieces.json");
+      throw new Error(`Server returned ${response.status}`);
     }
 
     const pieces = await response.json();
-    const piece = Array.isArray(pieces) ? pieces.find((item) => item.id === id) : null;
+
+    const piece = pieces.find(
+      (item) => item.id === pieceId
+    );
 
     if (!piece) {
-      pieceLayout.innerHTML = `
-        <section class="not-found">
-          <h1>Piece not found</h1>
-          <p>The requested piece could not be found in <code>/data/pieces.json</code>.</p>
-        </section>
+      pieceRoot.innerHTML = `
+        <div class="error-state">
+          Piece not found.
+        </div>
       `;
       return;
     }
 
-    const topSrc = `/images/full/${piece.id}_top.jpg`;
-    const bottomSrc = `/images/full/${piece.id}_bottom.jpg`;
+    renderPiece(piece);
 
-    const [hasTop, hasBottom] = await Promise.all([
-      imageExists(topSrc),
-      imageExists(bottomSrc)
-    ]);
+    setupZoomViewer();
 
-    if (!hasTop) {
-      pieceLayout.innerHTML = `
-        <section class="not-found">
-          <h1>${escapeHtml(piece.title || "Piece view unavailable")}</h1>
-          <p>The full top image for <code>${escapeHtml(piece.id)}</code> could not be found.</p>
-          <p>Expected file:</p>
-          <p><code>${topSrc}</code></p>
-        </section>
-      `;
-      return;
-    }
+  } catch (error) {
 
-    pieceLayout.innerHTML = `
-      <section class="viewer-shell">
-        <div class="flip-stage">
-          <div class="flip-card-large">
-            <div class="flip-inner" id="flipInner">
-              <img
-                src="${topSrc}"
-                alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} top view"
-                class="flip-face front"
-              />
-              ${
-                hasBottom
-                  ? `
-              <img
-                src="${bottomSrc}"
-                alt="${escapeHtml(piece.title)} ${escapeHtml(piece.id)} underside"
-                class="flip-face back"
-              />
-              `
-                  : ""
-              }
-            </div>
-          </div>
-        </div>
-
-        <div class="viewer-controls">
-          ${
-            hasBottom
-              ? `<button class="flip-btn" id="flipBtn" type="button">View underside</button>`
-              : ""
-          }
-          <a class="secondary-link" href="/bonsai.html">Back to gallery</a>
-        </div>
-
-        <p class="viewer-note">
-          ${
-            hasBottom
-              ? "The gallery shows the top image only. Here you can inspect the full piece and its underside."
-              : "The gallery shows the top image only. The underside image has not been added yet."
-          }
-        </p>
-      </section>
-
-      <aside class="piece-info">
-        <p class="eyebrow">${escapeHtml(piece.category || "Piece")}</p>
-        <h1>${escapeHtml(piece.title)}</h1>
-        <p class="piece-id">${escapeHtml(piece.id)}</p>
-
-        <p class="piece-description">
-          ${escapeHtml(piece.description || "")}
-        </p>
-
-        <dl class="piece-details">
-          <div>
-            <dt>Clay</dt>
-            <dd>${escapeHtml(piece.clay || "—")}</dd>
-          </div>
-          <div>
-            <dt>Finish</dt>
-            <dd>${escapeHtml(piece.finish || "—")}</dd>
-          </div>
-          <div>
-            <dt>Size</dt>
-            <dd>${escapeHtml(piece.dimensions || "—")}</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd>${escapeHtml(piece.price || "—")}</dd>
-          </div>
-        </dl>
-      </aside>
+    pieceRoot.innerHTML = `
+      <div class="error-state">
+        Could not load piece.
+      </div>
     `;
 
-    const flipBtn = document.getElementById("flipBtn");
-    const flipInner = document.getElementById("flipInner");
+    console.error("Piece load error:", error);
+  }
+}
 
-    if (hasBottom && flipBtn && flipInner) {
-      flipBtn.addEventListener("click", function () {
-        flipInner.classList.toggle("flipped");
-        flipBtn.textContent = flipInner.classList.contains("flipped")
-          ? "View top"
-          : "View underside";
+function renderPiece(piece) {
+
+  const id = piece.id || "";
+
+  const title =
+    piece.title || "Untitled Piece";
+
+  const dimensions =
+    piece.dimensions || "—";
+
+  const price =
+    piece.price || "Available";
+
+  const description =
+    piece.description || "";
+
+  const note =
+    piece.patron_note ||
+    "Better after a second look.";
+
+  const topImage =
+    `/images/full/${id}_top.jpg`;
+
+  const bottomImage =
+    `/images/full/${id}_bottom.jpg`;
+
+  const hasBottom =
+    piece.has_bottom_image === true ||
+    piece.has_bottom_image === "true";
+
+  pieceRoot.innerHTML = `
+    <article class="piece-detail">
+
+      <div class="piece-image-grid">
+
+        <figure class="piece-view-card">
+
+          <button
+            class="zoom-trigger"
+            type="button"
+            data-src="${escapeAttribute(topImage)}"
+            data-alt="${escapeAttribute(title)} top view"
+          >
+
+            <img
+              src="${escapeAttribute(topImage)}"
+              alt="${escapeAttribute(title)} top view"
+            >
+
+          </button>
+
+          <figcaption>
+            Top view
+          </figcaption>
+
+        </figure>
+
+        ${
+          hasBottom
+            ? `
+              <figure class="piece-view-card">
+
+                <button
+                  class="zoom-trigger"
+                  type="button"
+                  data-src="${escapeAttribute(bottomImage)}"
+                  data-alt="${escapeAttribute(title)} underside"
+                >
+
+                  <img
+                    src="${escapeAttribute(bottomImage)}"
+                    alt="${escapeAttribute(title)} underside"
+                  >
+
+                </button>
+
+                <figcaption>
+                  Underside
+                </figcaption>
+
+              </figure>
+            `
+            : ""
+        }
+
+      </div>
+
+      <div class="piece-detail-body">
+
+        <h1>
+          ${escapeHtml(title)}
+        </h1>
+
+        <p>
+          <strong>Dimensions:</strong>
+          ${escapeHtml(dimensions)}
+        </p>
+
+        <p>
+          <strong>Price:</strong>
+          ${escapeHtml(price)}
+        </p>
+
+        ${
+          description
+            ? `
+              <div class="piece-description">
+                ${formatDescription(description)}
+              </div>
+            `
+            : ""
+        }
+
+        <p class="patron-note">
+          ${escapeHtml(note)}
+        </p>
+
+      </div>
+
+    </article>
+
+    <div
+      id="zoomOverlay"
+      class="zoom-overlay"
+      aria-hidden="true"
+    >
+
+      <button
+        id="zoomClose"
+        class="zoom-close"
+        type="button"
+        aria-label="Close magnified image"
+      >
+        ×
+      </button>
+
+      <div class="zoom-scroll">
+
+        <img
+          id="zoomImage"
+          class="zoom-image"
+          src=""
+          alt=""
+        >
+
+      </div>
+
+    </div>
+  `;
+}
+
+function setupZoomViewer() {
+
+  const overlay =
+    document.getElementById("zoomOverlay");
+
+  const zoomImage =
+    document.getElementById("zoomImage");
+
+  const closeButton =
+    document.getElementById("zoomClose");
+
+  document
+    .querySelectorAll(".zoom-trigger")
+    .forEach((button) => {
+
+      button.addEventListener("click", () => {
+
+        zoomImage.src =
+          button.dataset.src;
+
+        zoomImage.alt =
+          button.dataset.alt ||
+          "Magnified piece image";
+
+        overlay.classList.add("is-open");
+
+        overlay.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        document.body.classList.add(
+          "zoom-open"
+        );
       });
-    }
-  } catch {
-    pieceLayout.innerHTML = `
-      <section class="not-found">
-        <h1>Piece view unavailable</h1>
-        <p>Something went wrong while loading the piece data.</p>
-      </section>
-    `;
-  }
-
-  function imageExists(src) {
-    return new Promise((resolve) => {
-      const img = new Image();
-
-      img.onload = function () {
-        resolve(true);
-      };
-
-      img.onerror = function () {
-        resolve(false);
-      };
-
-      img.src = src;
     });
-  }
 
-  function escapeHtml(value) {
-    return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+  closeButton.addEventListener(
+    "click",
+    closeZoom
+  );
+
+  overlay.addEventListener(
+    "click",
+    (event) => {
+
+      if (event.target === overlay) {
+        closeZoom();
+      }
+    }
+  );
+
+  document.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (event.key === "Escape") {
+        closeZoom();
+      }
+    }
+  );
+
+  function closeZoom() {
+
+    overlay.classList.remove("is-open");
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    document.body.classList.remove(
+      "zoom-open"
+    );
+
+    zoomImage.src = "";
+    zoomImage.alt = "";
   }
-})();
+}
+
+function formatDescription(text) {
+
+  return String(text || "")
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map(
+      (p) =>
+        `<p>${
+          escapeHtml(p).replace(/\n/g, "<br>")
+        }</p>`
+    )
+    .join("");
+}
+
+function escapeHtml(value) {
+
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}

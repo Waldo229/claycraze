@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="broom-title">
+  <title id="broom-title">Hand-bound straw broom</title>
+  <g fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M63 12 C58 22 50 34 44 46 M68 14 C62 26 54 38 49 48"/>
+    <path d="M63 12 Q66 10 68 14"/>
+    <path d="M35 45 Q44 48 54 53 L51 60 Q40 58 32 53 Z"/>
+    <path d="M34 49 Q42 54 52 56" stroke-width="2.4"/>
+    <path d="M33 54 C27 61 19 68 12 76 Q29 87 55 83 C55 74 53 65 50 60"/>
+    <path d="M37 56 Q29 68 21 77 M41 58 Q36 72 31 81 M46 59 Q45 72 43 81"/>
+    <path d="M28 62 Q26 70 18 80 M51 70 L58 81" stroke-width="2.4"/>
+  </g>
+</svg>

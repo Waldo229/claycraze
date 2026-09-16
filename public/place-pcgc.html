@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Peninsula Council of Garden Clubs | Places | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3032">
+
+  <style>
+    /* ==========================================
+       PLACE — PENINSULA COUNCIL OF GARDEN CLUBS
+       ========================================== */
+
+    .place-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 72% 14%,
+          rgba(118, 70, 40, 0.14),
+          transparent 34%
+        ),
+        linear-gradient(180deg, #100b07 0%, #17110c 100%);
+    }
+
+    .place-shell {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: 2rem clamp(1rem, 4vw, 3rem) 5rem;
+    }
+
+    .place-breadcrumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: clamp(2rem, 5vw, 4rem);
+      color: rgba(238, 225, 196, 0.58);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition:
+        color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .place-breadcrumb:hover,
+    .place-breadcrumb:focus-visible {
+      color: rgba(238, 225, 196, 0.95);
+      transform: translateX(-3px);
+    }
+
+    .place-heading {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: clamp(1.25rem, 3vw, 2.5rem);
+      align-items: start;
+      padding-bottom: clamp(2rem, 5vw, 4rem);
+      border-bottom: 1px solid rgba(220, 207, 179, 0.18);
+    }
+
+    .place-marker-wrap {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      width: 88px;
+      padding-top: 0.45rem;
+    }
+
+    .gene-place-marker {
+      display: block;
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 7px 10px rgba(0, 0, 0, 0.26))
+        drop-shadow(0 0 14px rgba(186, 143, 79, 0.12));
+    }
+
+    .place-type {
+      display: block;
+      margin-bottom: 0.75rem;
+      color: rgba(238, 225, 196, 0.58);
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .place-heading h1 {
+      max-width: 980px;
+      margin: 0 0 1rem;
+      color: #f0e2c4;
+      font-size: clamp(2.75rem, 6.5vw, 6.25rem);
+      line-height: 0.98;
+      font-weight: 500;
+    }
+
+    .place-deck {
+      max-width: 850px;
+      margin: 0;
+      color: rgba(238, 225, 196, 0.82);
+      font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+      line-height: 1.65;
+    }
+
+    .place-body {
+      display: grid;
+      grid-template-columns: minmax(170px, 240px) minmax(0, 720px);
+      gap: clamp(2rem, 6vw, 5rem);
+      padding-top: clamp(2.5rem, 6vw, 5rem);
+    }
+
+    .place-aside {
+      color: rgba(238, 225, 196, 0.56);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    .place-aside p {
+      margin: 0 0 1.4rem;
+    }
+
+    .place-aside strong {
+      display: block;
+      color: rgba(238, 225, 196, 0.88);
+      font-weight: 500;
+    }
+
+    .place-narrative {
+      color: rgba(238, 225, 196, 0.84);
+      font-size: clamp(1rem, 1.4vw, 1.12rem);
+      line-height: 1.82;
+    }
+
+    .place-narrative p {
+      margin: 0 0 1.65rem;
+    }
+
+    .place-narrative .opening {
+      color: #f0e2c4;
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      line-height: 1.62;
+    }
+
+    .place-observation {
+      margin: clamp(2.5rem, 5vw, 4rem) 0;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      border-top: 1px solid rgba(220, 207, 179, 0.2);
+      border-bottom: 1px solid rgba(220, 207, 179, 0.2);
+    }
+
+    .place-observation span {
+      display: block;
+      margin-bottom: 0.9rem;
+      color: rgba(238, 225, 196, 0.5);
+      font-size: 0.73rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .place-observation p {
+      margin: 0;
+      color: #f0e2c4;
+      font-size: clamp(1.35rem, 2.7vw, 2.15rem);
+      line-height: 1.45;
+    }
+
+    .place-return {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: 2rem;
+      color: rgba(238, 225, 196, 0.7);
+      text-decoration: none;
+      transition:
+        color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .place-return:hover,
+    .place-return:focus-visible {
+      color: #f0e2c4;
+      transform: translateX(-3px);
+    }
+
+    @media (max-width: 760px) {
+      .place-shell {
+        padding: 1.6rem 0.8rem 3rem;
+      }
+
+      .place-heading {
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 1rem;
+      }
+
+      .place-marker-wrap {
+        width: 62px;
+        padding-top: 0.35rem;
+      }
+
+      .gene-place-marker {
+        width: 60px;
+        height: 60px;
+      }
+
+      .place-body {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+      }
+
+      .place-aside {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+      .place-aside p {
+        margin: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .place-shell {
+        padding-inline: 0.65rem;
+      }
+
+      .place-heading {
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: 0.75rem;
+      }
+
+      .place-marker-wrap {
+        width: 48px;
+        padding-top: 0.25rem;
+      }
+
+      .gene-place-marker {
+        width: 46px;
+        height: 46px;
+      }
+
+      .place-heading h1 {
+        font-size: clamp(2.35rem, 12vw, 4rem);
+      }
+
+      .place-aside {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="theory-page place-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="place-shell">
+
+    <a class="place-breadcrumb" href="/places.html">
+      <span aria-hidden="true">&larr;</span>
+      Places
+    </a>
+
+    <section class="place-heading">
+
+      <div class="place-marker-wrap">
+        <img
+          class="gene-place-marker"
+          src="/images/gene-pointing-emoji-128.png"
+          alt="GENE points upward"
+        >
+      </div>
+
+      <div>
+        <span class="place-type">Field report</span>
+
+        <h1>Peninsula Council of Garden Clubs</h1>
+
+        <p class="place-deck">
+          A regional culture of fellowship, horticultural knowledge,
+          civic stewardship, and transmission across generations.
+        </p>
+      </div>
+
+    </section>
+
+    <section class="place-body">
+
+      <aside class="place-aside" aria-label="Place information">
+        <p>
+          <strong>Place</strong>
+          Virginia Peninsula
+        </p>
+
+        <p>
+          <strong>Founded</strong>
+          1954
+        </p>
+
+        <p>
+          <strong>Founder</strong>
+          Margaret L. Alexander
+        </p>
+
+        <p>
+          <strong>Field</strong>
+          Garden-club community
+        </p>
+
+        <p>
+          <strong>Relationship</strong>
+          Shared cultivation
+        </p>
+
+        <p>
+          <strong>Observed by</strong>
+          ClaycrazE and Ironwood Bonsai
+        </p>
+      </aside>
+
+      <article class="place-narrative">
+
+        <p class="opening">
+          For ClaycrazE and Ironwood Bonsai, the Peninsula Council of Garden
+          Clubs represents something larger than an association of separate
+          organizations. It is a regional structure through which knowledge,
+          fellowship, civic work, and long attention can be held in common.
+        </p>
+
+        <p>
+          Bonsai and garden-club culture begin from related forms of practice.
+          Both depend upon observation, patience, seasonal understanding,
+          material care, and the willingness to cultivate something whose full
+          form may emerge only over time.
+        </p>
+
+        <p>
+          The council gives those practices a wider field. Individual clubs
+          retain their own histories, identities, and local relationships while
+          participating in a larger network capable of sharing knowledge,
+          coordinating public work, and sustaining fellowship across the
+          Virginia Peninsula.
+        </p>
+
+        <p>
+          That structure matters to ClaycrazE and Ironwood Bonsai because our
+          work also lives at the crossing of separate disciplines. The tree and
+          the pot remain distinct, yet each becomes more fully legible through
+          its relationship to the other. In a similar way, clubs remain
+          themselves while gaining strength through association.
+        </p>
+
+        <div class="place-observation">
+          <span>GENE registers</span>
+
+          <p>
+            The council’s enduring work is not a single garden or event. It is
+            the field of attention that allows many people, practices, and
+            places to strengthen one another over time.
+          </p>
+        </div>
+
+        <p>
+          The council’s history gives that field continuity. Founded in 1954 by
+          Margaret L. Alexander, it joined garden clubs through shared
+          commitments to horticultural education, civic responsibility,
+          beautification, fellowship, and care for the environment.
+        </p>
+
+        <p>
+          By 2022, seventeen member clubs participated in that larger
+          structure. The number matters less as a count than as evidence of
+          accumulated relationship: separate groups choosing to place part of
+          their knowledge, labor, and purpose into a common regional life.
+        </p>
+
+        <p>
+          The scholarship program offers an especially clear example of
+          transmission. Funds created through the sale of the council’s former
+          meeting building now support annual scholarships of $2,500 for one
+          or two Virginia Tech students studying plant or environmental
+          sciences.
+        </p>
+
+        <p>
+          A building once used to gather people was transformed into support
+          for future knowledge. The physical meeting place changed form, but
+          its purpose continued. Fellowship became education, accumulated
+          value became opportunity, and the work of one generation was carried
+          forward by another.
+        </p>
+
+        <p>
+          This is the shared ground ClaycrazE and Ironwood Bonsai recognize in
+          the council: cultivation understood not merely as the care of plants,
+          but as the patient development of knowledge, relationships, places,
+          and future stewards.
+        </p>
+
+        <a class="place-return" href="/places.html">
+          <span aria-hidden="true">&larr;</span>
+          Return to Places
+        </a>
+
+      </article>
+
+    </section>
+
+  </main>
+
+</body>
+</html>

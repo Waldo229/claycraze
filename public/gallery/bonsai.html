@@ -1,41 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaycrazE | Bonsai</title>
-  <link rel="stylesheet" href="/css/gallery.css" />
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+  <title>Bonsai | ClaycrazE</title>
+
+  <link rel="stylesheet" href="/css/styles.css?v=3027" >
 </head>
-<body>
+
+<body class="practice-page bonsai-page">
+
   <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="/index.html">ClaycrazE</a>
-      <nav class="site-nav" aria-label="Primary">
+    <div class="header-shell">
+
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
         <a href="/practice.html">Practice</a>
-        <a href="/gallery/bonsai.html" aria-current="page">Bonsai</a>
+        
       </nav>
+
     </div>
   </header>
 
-  <main class="gallery-page">
-    <section class="gallery-intro">
-      <p class="eyebrow">Practice</p>
-      <h1>Bonsai Forms</h1>
-      <p>
-        A selection of bonsai containers from the studio. The gallery view shows the
-        top image of each piece. Open any piece to inspect the full view and underside.
-      </p>
+ <main class="threshold-page bonsai-threshold">
+
+  <section class="bonsai-intro">
+
+    <p class="threshold-kicker">Theory + Practice / Bonsai</p>
+
+    <h1>Containers organized by form.</h1>
+
+    <p>
+      Bonsai vessels are grouped by family and proportion.
+      Each form carries different visual rhythms, planting
+      possibilities, and relationships to trees.
+    </p>
+
+    <div class="site-search minimalist-search" aria-label="Site search">
+
+      <label class="search-label" for="siteSearchInput">
+        Search bonsai containers
+      </label>
+
+      <input
+        type="search"
+        id="siteSearchInput"
+        placeholder="Search pots, glaze, notes..."
+        autocomplete="off"
+      >
+
+      <div
+        id="siteSearchResults"
+        class="site-search-results"
+        aria-live="polite"
+      ></div>
+
+    </div>
+
+  </section>
+
+ 
+    <section class="bonsai-showcase" aria-label="Bonsai forms">
+
+      <div class="bonsai-unity-panel">
+        <img
+          src="/images/monks_4.jpg?v=1"
+          alt="Han Shan and Shih-te laughing"
+          class="bonsai-unity-image"
+        >
+      </div>
+
+      <div class="bonsai-form-grid">
+
+        <a class="bonsai-form-card" href="/gallery/ovals.html">
+          <img src="/images/bonsai/oval.jpg" alt="Oval bonsai containers" >
+          <div>
+            <p>Form</p>
+            <h2>Oval</h2>
+          </div>
+        </a>
+
+        <a class="bonsai-form-card" href="/gallery/rounds.html">
+          <img src="/images/bonsai/round_250.jpg" alt="Round bonsai containers" >
+          <div>
+            <p>Form</p>
+            <h2>Round</h2>
+          </div>
+        </a>
+
+        <a class="bonsai-form-card" href="/gallery/rectangles.html">
+          <img src="/images/bonsai/rectangles.jpg" alt="Rectangle bonsai containers" >
+          <div>
+            <p>Form</p>
+            <h2>Rectangle</h2>
+          </div>
+        </a>
+
+        <a class="bonsai-form-card" href="/gallery/freeform.html">
+          <img src="/images/bonsai/freestyle.jpg" alt="Freeform bonsai containers" >
+          <div>
+            <p>Form</p>
+            <h2>Freeform</h2>
+          </div>
+        </a>
+
+        <a class="bonsai-form-card" href="/gallery/cascade.html">
+          <img src="/images/bonsai/cascade.png" alt="Cascade bonsai containers" >
+          <div>
+            <p>Form</p>
+            <h2>Cascade</h2>
+          </div>
+        </a>
+
+        <a class="bonsai-form-card" href="/gallery/slabs.html">
+  <img src="/images/bonsai/slab300.jpg?v=1" alt="Slab bonsai containers">
+  <div>
+    <p>Form</p>
+    <h2>Slab</h2>
+  </div>
+</a>
+      </div>
+
     </section>
 
-    <section class="gallery-grid" id="galleryGrid" aria-live="polite"></section>
   </main>
 
-  <footer class="site-footer">
-    <p>&copy; ClaycrazE</p>
-  </footer>
+  <script src="/js/search.js?v=2"></script>
 
-  <script src="/js/bonsai.js"></script>
 </body>
 </html>

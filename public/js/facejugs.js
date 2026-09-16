@@ -2,13 +2,19 @@ const galleryGrid = document.getElementById("galleryGrid");
 
 async function loadFacejugs() {
   try {
-    const response = await fetch("/gallery-data/facejugs");
+    const response = await fetch("/data/pieces.json?v=" + Date.now());
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
     }
 
-    const pieces = await response.json();
+    const allPieces = await response.json();
+
+    const pieces = allPieces.filter(piece =>
+      piece.category === "face-jug" ||
+      piece.category === "facejug" ||
+      piece.shape === "FJ"
+    );
 
     if (!Array.isArray(pieces) || pieces.length === 0) {
       galleryGrid.innerHTML = `
@@ -31,9 +37,9 @@ async function loadFacejugs() {
 }
 
 function buildCardHtml(piece) {
-  const title = piece.description || "Untitled Piece";
+  const title = piece.title || piece.description || "Untitled Piece";
   const id = piece.id || "";
-  const dimensions = formatStandardDimensions(piece);
+  const dimensions = piece.dimensions || formatStandardDimensions(piece);
   const price = formatPrice(piece.price);
   const imageHtml = buildImageHtml(piece.image_path, title);
 
@@ -50,7 +56,7 @@ function buildCardHtml(piece) {
           <p class="card-row"><span class="card-label">Dimensions:</span> ${escapeHtml(dimensions)}</p>
           <p class="card-row"><span class="card-label">Price:</span> ${escapeHtml(price)}</p>
           <p class="card-row">
-            <a class="more-link" href="/piece/${encodeURIComponent(id)}">More</a>
+           <a class="more-link" href="/gallery/facejugs.html">More</a>
           </p>
         </div>
       </div>
@@ -72,7 +78,7 @@ function buildImageHtml(imagePath, altText) {
       alt="${escapeAttribute(altText || "ClaycrazE piece")}"
       loading="lazy"
       onerror="this.outerHTML='<div class=&quot;no-image&quot;>Image not found</div>'"
-    />
+    >
   `;
 }
 

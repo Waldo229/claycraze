@@ -10,20 +10,20 @@
 
 	Filename: cc_about.html
 	-->
-	<meta charset="utf-8" />
-	<meta name="keywords" content="pottery, Williamsburg, Yorktown, Jamestown, ceramics, bonsai, Japan" />
+	<meta charset="utf-8" >
+	<meta name="keywords" content="pottery, Williamsburg, Yorktown, Jamestown, ceramics, bonsai, Japan" >
 
 	<title> Colonial Clay </title>
 	
-	<link href ="../css/cc_reset.css" rel="stylesheet" />
-	<link href="../css/cc_styles1_ccs" rel="stylesheet" />
-	<link href="../css/cc_home.css" rel="stylesheet" />
+	<link href ="../css/cc_reset.css" rel="stylesheet" >
+	<link href="../css/cc_styles1_ccs" rel="stylesheet" >
+	<link href="../css/cc_home.css" rel="stylesheet" >
 	
 </head>
 
 <body>
 	<header>
-		<a href="../html/home.html"><img src="../images/cc_logo3.png" alt="ClayCrazE" /></a>
+		<a href="../html/home.html"><img src="../images/cc_logo3.png" alt="ClayCrazE" ></a>
 		<nav>
 			<ul>	
 				<li><a href="cc_about.html">About ClayCrazE</a></li>
