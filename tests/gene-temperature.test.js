@@ -51,24 +51,36 @@ test('all image paths exist with exact capitalization', () => {
 for (const page of ['kilnwatch.html', 'kiln-watch-graph.html']) {
   test(`${page}: live transitions, failure clears hot image, recovery and expiry`, async () => {
     const html = fs.readFileSync(`public/${page}`, 'utf8');
+    assert.ok(html.includes('<meta charset="UTF-8">'));
     const elements = new Map();
     function element(id) {
       if (!elements.has(id)) elements.set(id, {style: {setProperty() {}}, classList: {toggle() {}}, setAttribute(k,v) {this[k]=v;}, removeAttribute(k) {delete this[k];}});
       return elements.get(id);
     }
     let current = evidence(2000), fail = false;
+    current.summaries[0].latest_rate = 0;
+    let noteText = 'Ramp 0 ?F/hr.';
     const intervals = [];
     const context = { GeneTemperature: {...gene, evaluate: data => gene.evaluate(data, now)},
       document: {getElementById: element}, window: {setInterval(fn, ms) {intervals.push({fn,ms});}},
       Date, Intl, AbortSignal, console: {warn() {}},
       fetch: async url => {
         if (fail && url.includes('kiln_watch_latest.json')) throw Error('offline');
-        return {ok: true, json: async () => url.includes('gene_state') ? {} : current, text: async () => 'note'};
+        return {ok: true, json: async () => url.includes('gene_state') ? {} : current, text: async () => noteText};
       }
     };
     for (const [, script] of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInNewContext(script, context);
     const flush = () => new Promise(resolve => setImmediate(resolve));
     await flush();
+    assert.equal(element(page === 'kilnwatch.html' ? 'rampNote' : 'firingNote').textContent, 'Ramp 0 \u00B0F/hr.');
+    if (page === 'kiln-watch-graph.html') {
+      const refreshNote = intervals.find(item => item.ms === 300000).fn;
+      for (const unit of ['?', '\uFFFD', '\u00C2\u00B0', '\u00B0']) {
+        noteText = `Existing note. Ramp 0 ${unit}F/hr. Keep this wording.`;
+        await refreshNote();
+        assert.equal(element('firingNote').textContent, 'Existing note. Ramp 0 \u00B0F/hr. Keep this wording.');
+      }
+    }
     const mascot = element(page === 'kilnwatch.html' ? 'geneMascot' : 'pocketGene');
     const label = element('geneTemperatureState');
     const refresh = intervals.find(item => item.ms === 10000).fn;
