@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GENE temperature ladder — local preview</title>
+<link rel="stylesheet" href="../public/css/gene-evidence.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #151719; color: #f4eee2; font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 1450px; margin: auto; padding: 32px; }
+  h1 { margin: 0; font-size: 30px; }
+  p { color: #c4c5c6; }
+  .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+  article { background: #222629; padding: 18px; border-radius: 12px; border: 1px solid #40474b; }
+  .art { height: 255px; display: grid; place-items: center; background: #101213; border-radius: 8px; }
+  img { width: 100%; height: 255px; object-fit: contain; }
+  h2 { font-size: 20px; margin: 12px 0 4px; }
+  .range { color: #ffd58c; }
+  code { font-size: 12px; overflow-wrap: anywhere; }
+  .controls { margin-top: 24px; padding: 20px; border: 1px solid #40474b; border-radius: 12px; }
+  input, select { padding: 10px; font: inherit; margin: 8px; max-width: 100%; }
+  #interactive { max-width: 420px; margin-top: 16px; }
+  @media(max-width:850px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media(max-width:550px) { .grid { grid-template-columns:1fr; } main { padding:16px; } }
+</style>
+<main>
+  <h1>GENE temperature ladder</h1>
+  <p>Local demonstration using the live temperature logic and image files. These are simulated readings.</p>
+  <section class="grid" id="states" aria-label="All six temperature states"></section>
+  <section class="controls">
+    <h2>Try a boundary or unavailable evidence</h2>
+    <label>Temperature °F <input id="temperature" type="number" step="any" value="2000"></label>
+    <label>Evidence <select id="evidence">
+      <option value="current">Current</option><option value="boundary">Exactly 120 seconds</option><option value="stale">Stale (120.001 seconds)</option>
+      <option value="missing">Missing temperature</option><option value="invalid">Invalid temperature</option>
+      <option value="unavailable">Source unavailable</option><option value="failed">Request failed</option>
+    </select></label>
+    <div id="interactive" aria-live="polite"></div>
+    <p>LIVE through 120 seconds; STALE above 120 seconds; UNAVAILABLE for missing, invalid, future-dated, or failed evidence. Both STALE and UNAVAILABLE remove the previous image.</p>
+  </section>
+</main>
+<script src="../public/js/gene-temperature.js"></script>
+<script>
+  const makeEvidence = temperature => ({source_status:'current', evidence_generated_at:new Date().toISOString(), summaries:[{latest_temp:temperature}]});
+  function card(parent) {
+    const article = document.createElement('article');
+    article.innerHTML = '<div class="art"><img hidden alt=""></div><h2></h2><span class="evidence-badge" role="status"></span><div class="range"></div><code></code>';
+    parent.append(article);
+    return article;
+  }
+  function draw(article, result) {
+    const img = article.querySelector('img');
+    GeneTemperature.render(img, article.querySelector('h2'), result);
+    GeneTemperature.renderEvidenceBadge(article.querySelector('.evidence-badge'), result);
+    if(result.image) img.src = '../public' + result.image;
+    article.querySelector('code').textContent = result.image || 'No temperature-state image displayed';
+  }
+  for(const [temp, range] of [[199,'Below 200°F'],[200,'200–799°F'],[800,'800–1000°F'],[1001,'1001–1800°F'],[1801,'1801–1999°F'],[2000,'2000°F and above']]) {
+    const article = card(document.getElementById('states'));
+    draw(article, GeneTemperature.evaluate(makeEvidence(temp)));
+    article.querySelector('.range').textContent = `${range} · sample ${temp}°F`;
+  }
+  const interactive = card(document.getElementById('interactive'));
+  function update() {
+    const now = Date.now();
+    let data = makeEvidence(document.getElementById('temperature').value);
+    data.evidence_generated_at = new Date(now).toISOString();
+    const mode = document.getElementById('evidence').value;
+    if(mode === 'boundary') data.evidence_generated_at = new Date(now-120000).toISOString();
+    if(mode === 'stale') data.evidence_generated_at = new Date(now-120001).toISOString();
+    if(mode === 'missing') data.summaries = [{}];
+    if(mode === 'invalid') data.summaries[0].latest_temp = 'invalid';
+    if(mode === 'unavailable') data.source_status = 'unavailable';
+    if(mode === 'failed') data = null;
+    draw(interactive, GeneTemperature.evaluate(data, now));
+  }
+  document.getElementById('temperature').addEventListener('input', update);
+  document.getElementById('evidence').addEventListener('change', update);
+  update();
+</script>
+</html>

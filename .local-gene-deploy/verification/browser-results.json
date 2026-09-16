@@ -1,0 +1,1514 @@
+[
+  {
+    "page": "kilnwatch.html",
+    "kind": "real public feed",
+    "state": "Normal",
+    "temperature": "82",
+    "ramp": "Ramp 7 °F/hr.",
+    "src": "/images/gene-kilnwatch-emoji.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      676,
+      677
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8"
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "real public feed",
+    "state": "Normal",
+    "note": "GENE Kiln Watch Note\n====================\n\nEvidence generated: 2026-09-16 11:50:02\nSource status: current\n\nGENE observes the kiln-watch field:\n\nThe kiln is dark.\n\n- GREEN_0: 82.0 deg F / 27.8 deg C, ramp 7.0 deg F/hr / 3.9 deg C/hr -- rising gently. The kiln is warming, but not aggressively. Signal behavior: active curve. This voice is varying across a range and producing a meaningful trace.\n\nThis is interpreted public evidence generated from local kiln-watch data. The raw ESP32 service remains private on the studio network.",
+    "src": "/images/gene-kilnwatch-emoji.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      676,
+      677
+    ],
+    "imageBox": [
+      150,
+      150.21875
+    ],
+    "frame": [
+      150,
+      150.21875
+    ],
+    "charset": "UTF-8"
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 199,
+    "expected": "Normal",
+    "state": "Normal",
+    "temperature": "199",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/gene-kilnwatch-emoji.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      676,
+      677
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 200,
+    "expected": "Chili",
+    "state": "Chili",
+    "temperature": "200",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 799,
+    "expected": "Chili",
+    "state": "Chili",
+    "temperature": "799",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 800,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "temperature": "800",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 1000,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "temperature": "1000",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 1001,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "temperature": "1001",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 1800,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "temperature": "1800",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 1801,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "temperature": "1801",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 1999,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "temperature": "1999",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 1440,
+    "temp": 2000,
+    "expected": "ultimate_gene",
+    "state": "ultimate_gene",
+    "temperature": "2000",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      355.078125,
+      355.078125
+    ],
+    "frame": [
+      355.078125,
+      355.078125
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 199,
+    "expected": "Normal",
+    "state": "Normal",
+    "temperature": "199",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/gene-kilnwatch-emoji.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      676,
+      677
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 200,
+    "expected": "Chili",
+    "state": "Chili",
+    "temperature": "200",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 799,
+    "expected": "Chili",
+    "state": "Chili",
+    "temperature": "799",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 800,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "temperature": "800",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 1000,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "temperature": "1000",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 1001,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "temperature": "1001",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 1800,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "temperature": "1800",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 1801,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "temperature": "1801",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 1999,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "temperature": "1999",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "width": 390,
+    "temp": 2000,
+    "expected": "ultimate_gene",
+    "state": "ultimate_gene",
+    "temperature": "2000",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "timer expiry",
+    "ageMs": 119999,
+    "state": "ultimate_gene",
+    "temperature": "2000",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "timer expiry",
+    "ageMs": 120000,
+    "state": "ultimate_gene",
+    "temperature": "2000",
+    "ramp": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      332,
+      332
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "timer expiry",
+    "ageMs": 120001,
+    "state": "Temperature unavailable",
+    "temperature": "--",
+    "ramp": "Current temperature evidence is unavailable.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "missing",
+    "state": "Temperature unavailable",
+    "temperature": "--",
+    "ramp": "Current temperature evidence is unavailable.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "invalid",
+    "state": "Temperature unavailable",
+    "temperature": "--",
+    "ramp": "Current temperature evidence is unavailable.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "unavailable",
+    "state": "Temperature unavailable",
+    "temperature": "--",
+    "ramp": "Current temperature evidence is unavailable.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kilnwatch.html",
+    "kind": "failed",
+    "state": "Temperature unavailable",
+    "temperature": "--",
+    "ramp": "Current temperature evidence is unavailable.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      332,
+      332
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 199,
+    "expected": "Normal",
+    "state": "Normal",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/gene-kilnwatch-emoji.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      676,
+      677
+    ],
+    "imageBox": [
+      150,
+      150.21875
+    ],
+    "frame": [
+      150,
+      150.21875
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 200,
+    "expected": "Chili",
+    "state": "Chili",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      150,
+      200
+    ],
+    "frame": [
+      150,
+      200
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 799,
+    "expected": "Chili",
+    "state": "Chili",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      150,
+      200
+    ],
+    "frame": [
+      150,
+      200
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 800,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      150,
+      112.5
+    ],
+    "frame": [
+      150,
+      112.5
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 1000,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      150,
+      112.5
+    ],
+    "frame": [
+      150,
+      112.5
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 1001,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      150,
+      150
+    ],
+    "frame": [
+      150,
+      150
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 1800,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      150,
+      150
+    ],
+    "frame": [
+      150,
+      150
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 1801,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      150,
+      150
+    ],
+    "frame": [
+      150,
+      150
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 1999,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      150,
+      150
+    ],
+    "frame": [
+      150,
+      150
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 1440,
+    "temp": 2000,
+    "expected": "ultimate_gene",
+    "state": "ultimate_gene",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      150,
+      150
+    ],
+    "frame": [
+      150,
+      150
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 199,
+    "expected": "Normal",
+    "state": "Normal",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/gene-kilnwatch-emoji.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      676,
+      677
+    ],
+    "imageBox": [
+      105,
+      105.140625
+    ],
+    "frame": [
+      105,
+      105.140625
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 200,
+    "expected": "Chili",
+    "state": "Chili",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      105,
+      140
+    ],
+    "frame": [
+      105,
+      140
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 799,
+    "expected": "Chili",
+    "state": "Chili",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/gene-chilli-pepper-hot.png",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1086,
+      1448
+    ],
+    "imageBox": [
+      105,
+      140
+    ],
+    "frame": [
+      105,
+      140
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 800,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      105,
+      78.75
+    ],
+    "frame": [
+      105,
+      78.75
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 1000,
+    "expected": "Safety GENE",
+    "state": "Safety GENE",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/safety_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1200
+    ],
+    "imageBox": [
+      105,
+      78.75
+    ],
+    "frame": [
+      105,
+      78.75
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 1001,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 1800,
+    "expected": "atomic_gene1",
+    "state": "atomic_gene1",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/1atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 1801,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 1999,
+    "expected": "atomic_Gene2",
+    "state": "atomic_Gene2",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/2Atomic.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "width": 390,
+    "temp": 2000,
+    "expected": "ultimate_gene",
+    "state": "ultimate_gene",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "timer expiry",
+    "ageMs": 119999,
+    "state": "ultimate_gene",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "timer expiry",
+    "ageMs": 120000,
+    "state": "ultimate_gene",
+    "note": "Ramp 0 °F/hr.",
+    "src": "/images/ultimate_gene.jpg",
+    "hidden": false,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      1600,
+      1600
+    ],
+    "imageBox": [
+      105,
+      105
+    ],
+    "frame": [
+      105,
+      105
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "timer expiry",
+    "ageMs": 120001,
+    "state": "Temperature unavailable",
+    "note": "Ramp 0 °F/hr.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      0,
+      0
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "missing",
+    "state": "Temperature unavailable",
+    "note": "Ramp 0 °F/hr.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      0,
+      0
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "invalid",
+    "state": "Temperature unavailable",
+    "note": "Ramp 0 °F/hr.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      0,
+      0
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "unavailable",
+    "state": "Temperature unavailable",
+    "note": "Ramp 0 °F/hr.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      0,
+      0
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  },
+  {
+    "page": "kiln-watch-graph.html",
+    "kind": "failed",
+    "state": "Temperature unavailable",
+    "note": "Ramp 0 °F/hr.",
+    "src": null,
+    "hidden": true,
+    "fit": "contain",
+    "position": "50% 50%",
+    "background": "rgb(9, 13, 16)",
+    "natural": [
+      0,
+      0
+    ],
+    "imageBox": [
+      0,
+      0
+    ],
+    "frame": [
+      0,
+      0
+    ],
+    "charset": "UTF-8",
+    "pass": true
+  }
+]
