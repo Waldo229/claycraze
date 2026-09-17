@@ -997,9 +997,9 @@ a {
 }
 
 .threshold-directory a {
-  display: flex;
+  display: grid;
+  grid-template-columns: 0.7rem minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   min-height: 5.4rem;
   padding: 1rem 1.25rem;
@@ -1010,6 +1010,19 @@ a {
   transition: color 160ms ease, background-color 160ms ease;
 }
 
+.threshold-directory a::before {
+  content: "";
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+  background: #7a2119;
+  box-shadow:
+    0 0 0 1px rgba(226, 68, 50, 0.22),
+    inset 0 0 0.18rem rgba(255, 188, 148, 0.2);
+  transition: background-color 160ms ease, box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
 .threshold-directory a:nth-child(odd) {
   border-right: 1px solid rgba(242, 230, 201, 0.12);
 }
@@ -1018,6 +1031,16 @@ a {
 .threshold-directory a:focus-visible {
   color: #fff3d6;
   background: rgba(255, 248, 232, 0.055);
+}
+
+.threshold-directory a:hover::before,
+.threshold-directory a:focus-visible::before {
+  background: #e33b2d;
+  box-shadow:
+    0 0 0 1px rgba(255, 111, 86, 0.5),
+    0 0 0.42rem rgba(230, 54, 40, 0.95),
+    0 0 0.9rem rgba(230, 54, 40, 0.48);
+  transform: scale(1.08);
 }
 
 .threshold-directory a:focus-visible {
