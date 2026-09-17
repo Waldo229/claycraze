@@ -1293,7 +1293,7 @@ a {
 .poorboy-copy {
   flex: 1;
   max-width: 520px;
-  text-align: right;
+  text-align: left;
 }
 
 .poorboy-copy h2 {
@@ -2060,4 +2060,313 @@ body .kiln-watch-grid .room-copy {
   .obx-signoff {
     margin-left: 1.65rem;
   }
+}
+
+
+.studio-page { background: linear-gradient(180deg, #100b07 0, #17110c 100%); }
+    /* Two kiln navigation cards below the Studio introduction */
+
+    .studio-page .studio-room-grid {
+      width: 100%;
+      margin: 0 auto 2rem;
+
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+
+      padding: 11px;
+      overflow: hidden;
+
+      border: 1px solid rgba(220, 207, 179, 0.22);
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 25, 28, 0.99),
+          rgba(9, 14, 17, 0.99)
+        );
+
+      box-shadow:
+        inset 0 0 0 1px rgba(220, 207, 179, 0.06),
+        0 1.4rem 4rem rgba(0, 0, 0, 0.25);
+    }
+
+    .studio-page .studio-room-grid .archive-card {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      aspect-ratio: auto;
+      margin: 0;
+      padding: 1rem;
+
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      align-items: center;
+      gap: 1rem;
+
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+
+      color: inherit;
+      text-decoration: none;
+
+      transition:
+        background-color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .studio-page
+    .studio-room-grid
+    .archive-card + .archive-card {
+      border-left: 1px solid rgba(220, 207, 179, 0.16);
+    }
+
+    .studio-page .studio-room-grid .archive-card:hover,
+    .studio-page .studio-room-grid .archive-card:focus-visible {
+      background: rgba(255, 255, 255, 0.035);
+      transform: none;
+    }
+
+    .studio-page .studio-room-grid .archive-card:focus-visible {
+      outline: 2px solid rgba(151, 205, 63, 0.8);
+      outline-offset: -3px;
+    }
+
+    .studio-page .studio-room-grid .archive-card::after { content: none; }
+
+    .studio-page .studio-room-grid .archive-card > img {
+      position: static;
+      padding: 0;
+      height: auto;
+      display: block;
+      width: 100%;
+      aspect-ratio: auto;
+      object-fit: contain;
+
+      margin: 0;
+      border-radius: 1rem;
+
+      background: transparent;
+    }
+
+    .studio-page .archive-card-text {
+      position: static;
+      padding: 0;
+    }
+
+    .studio-page .archive-card-text p {
+      margin: 0 0 0.35rem;
+
+      font-size: 0.78rem;
+      line-height: 1.2;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+
+      color: rgba(229, 220, 200, 0.68);
+    }
+
+    .studio-page .archive-card-text h2 {
+      margin: 0;
+
+      font-size: clamp(1.25rem, 1.55vw, 1.7rem);
+      line-height: 1.08;
+      font-weight: 500;
+
+      color: #eee1c4;
+    }
+
+    /* Reading section */
+
+    .studio-page .studio-copy {
+      width: min(100%, 900px);
+      margin: 0 auto;
+      padding: 1.75rem 0 0;
+    }
+
+    .studio-page .studio-copy h2 {
+      margin: 0 0 0.8rem;
+
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.1;
+    }
+
+    .studio-page .studio-copy p {
+      max-width: 760px;
+      margin: 0 0 1rem;
+
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    @media (max-width: 900px) {
+      .studio-page .studio-room-grid {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        border-radius: 1.4rem;
+      }
+
+      .studio-page
+      .studio-room-grid
+      .archive-card + .archive-card {
+        border-left: 0;
+        border-top: 1px solid rgba(220, 207, 179, 0.16);
+      }
+
+
+    }
+
+
+    @media (max-width: 540px) {
+
+
+
+
+      .studio-page .studio-room-grid {
+        padding: 7px;
+        border-radius: 1.25rem;
+      }
+
+      .studio-page .studio-room-grid .archive-card {
+        padding: 0.8rem;
+      }
+
+      .studio-page .studio-room-grid .archive-card > img {
+        border-radius: 0.8rem;
+      }
+
+      .studio-page .archive-card-text {
+        padding:
+          0.85rem
+          0.25rem
+          0.5rem;
+      }
+
+      .studio-page .archive-card-text h2 {
+        font-size: 1.45rem;
+      }
+
+      .studio-page .archive-card-text p {
+        font-size: 0.75rem;
+      }
+
+      .studio-page .studio-copy {
+        padding:
+          1.35rem
+          0.35rem
+          0;
+      }
+
+      .studio-page .studio-copy p {
+        font-size: 0.96rem;
+        line-height: 1.58;
+      }
+    }
+
+
+/* Internal Theory features: opt-in proportions based on GENE Project.
+   Studio keeps its room navigation; kiln pages use the image/copy split. */
+.theory-feature .theory-feature-shell {
+  width: min(100%, 1180px);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+.theory-feature .theory-feature-intro {
+  width: 100%;
+  margin: 0 0 2rem;
+}
+.theory-feature .theory-feature-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px) minmax(0, 1fr);
+  gap: 4rem;
+  align-items: center;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.theory-feature .theory-feature-image-column { min-width: 0; }
+.theory-feature .theory-feature-image {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  margin: 0;
+}
+.theory-feature .theory-feature-copy {
+  min-width: 0;
+  max-width: 700px;
+  padding: 0;
+  text-align: left;
+  overflow-wrap: break-word;
+}
+.theory-feature .theory-feature-copy .section-label { margin: 0 0 1rem; }
+.theory-feature .theory-feature-copy .threshold-kicker { margin: 0; }
+.theory-feature .theory-feature-copy h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+  line-height: 1.1;
+  font-weight: 400;
+  text-transform: none;
+  color: #f4e8cc;
+}
+.theory-feature .theory-feature-copy h2 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.6rem, 2.5vw, 2.5rem);
+  line-height: 1.12;
+  font-weight: 400;
+}
+.theory-feature .theory-feature-copy h3 {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  line-height: 1.45;
+  font-weight: 400;
+}
+.theory-feature .theory-feature-copy > p {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.theory-feature .studio-room-grid { width: 100%; }
+@media (max-width: 860px) {
+  .theory-feature .theory-feature-shell { padding-top: 2.5rem; }
+  .theory-feature .theory-feature-layout { grid-template-columns: 1fr; gap: 2rem; }
+  .theory-feature .theory-feature-image { max-width: 260px; }
+  .theory-feature .studio-room-grid .archive-card > img {
+    max-width: 260px;
+    height: auto;
+    aspect-ratio: auto;
+  }
+}
+@media (max-width: 540px) {
+  .theory-feature .theory-feature-shell { padding: 2rem 1rem 3rem; }
+  .theory-feature .theory-feature-copy h1 { font-size: clamp(2rem, 9vw, 2.6rem); }
+  .theory-feature .theory-feature-copy > p { font-size: 0.96rem; line-height: 1.58; }
+}
+
+.theory-feature .studio-room-grid .archive-card:hover img { transform: none; }
+
+/* Studio uses the approved GENE heading scale within the shared feature split. */
+.studio-page .studio-intro { margin-bottom: 2rem; }
+.studio-page .studio-intro h1 {
+  font-size: clamp(2.8rem, 4.6vw, 4.6rem);
+  line-height: 1.05;
+}
+@media (max-width: 540px) {
+  .studio-page .studio-intro h1 { font-size: clamp(2.4rem, 12vw, 3.4rem); }
+  .studio-page .studio-room-grid .archive-card {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+  .studio-page .archive-card-text { padding: 0; }
+}
+
+/* Practice is the five-door hub; Bonsai owns the downstream form directory. */
+.practice-hub .paired-intro { align-items: start; }
+.practice-hub .threshold-directory .practice-trees-door {
+  grid-column: 1 / -1;
+  border-right: 0;
+  border-bottom: 0;
 }
