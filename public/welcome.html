@@ -10,20 +10,45 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" >
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" >
 
-  <link rel="stylesheet" href="/css/styles.css?v=3037" >
+  <link rel="stylesheet" href="/css/styles.css?v=welcome-brand-2" >
+
+  <style>
+    .welcome-brand-hero .welcome-subheading {
+      max-width: 760px;
+      margin: 1rem 0 1.2rem;
+      font-size: clamp(1.6rem, 2.5vw, 2.5rem);
+      line-height: 1.12;
+      letter-spacing: 0.08em;
+      color: #eee1c4;
+    }
+  </style>
 </head>
 
-<body>
+<body class="welcome-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="active" href="/index.html" aria-current="page">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
+  </header>
 
   <main class="welcome-threshold">
 
-    <section class="welcome-hero">
-      <h1>Welcome</h1>
-
+    <section class="welcome-brand-hero home-copy" aria-labelledby="welcome-title">
+      <h1 id="welcome-title">Welcome</h1>
+      <p class="welcome-subheading">CLAY &bull; PHILOSOPHY &bull; BONSAI </p>
       <p>
-        GENE is the living signature of ClaycrazE, carrying attention between
-        two rooms: Theory, where Jim&rsquo;s ideas take shape, and Practice,
-        where those ideas become pots.
+        GENE is the spirit of ClaycrazE—a quiet force informed by Zen, expressing
+        both Yin and Yang: both Theory and Practice, both contemplation and making.
       </p>
     </section>
 
