@@ -197,7 +197,7 @@
   <main class="piece-shell">
 
     <div class="piece-topbar">
-      <a href="/gallery/ovals.html">← Back to Ovals</a>
+      <a id="backToGallery" href="/practice.html">← Back to Practice</a>
       <a href="/practice.html">Practice</a>
     </div>
 
@@ -222,6 +222,7 @@
       }
 
       try {
+        const { getGalleryContext, formatDimensions } = await import("/js/gallery-context.js?v=1020");
 
         const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
         const pieces = await response.json();
@@ -234,6 +235,11 @@
           container.innerHTML = `<p>Piece not found.</p>`;
           return;
         }
+
+        const context = getGalleryContext(piece);
+        const backToGallery = document.getElementById("backToGallery");
+        backToGallery.href = context.returnUrl;
+        backToGallery.textContent = `← ${context.returnLabel}`;
 
         const images = [];
 
@@ -258,8 +264,9 @@
           });
         }
 
-        const heroImage = images[0]?.src || "";
-        const heroType = images[0]?.type || "top";
+        const selectedImage = images.find(image => image.type === params.get("view")) || images[0];
+        const heroImage = selectedImage?.src || "";
+        const heroType = selectedImage?.type || "top";
 
         container.innerHTML = `
           <div class="piece-grid">
@@ -279,7 +286,7 @@
                 ${images.map((img, index) => `
 
                   <div
-                    class="piece-thumb ${index === 0 ? "active" : ""}"
+                    class="piece-thumb ${img.type === heroType ? "active" : ""}"
                     data-view="${img.type}"
                     data-src="${img.src}"
                   >
@@ -295,7 +302,7 @@
             <aside class="piece-info">
 
               <div class="piece-kicker">
-                ClaycrazE / Bonsai Container
+                ClaycrazE / ${context.categoryLabel}
               </div>
 
               <h1 class="piece-title">
@@ -311,7 +318,7 @@
                 <div class="piece-meta-row">
                   <div class="piece-meta-label">Dimensions</div>
                   <div class="piece-meta-value">
-                    ${piece.dimensions || "—"}
+                    ${formatDimensions(piece, piece.shape) || "—"}
                   </div>
                 </div>
 
@@ -385,8 +392,10 @@
 
       mainImage.addEventListener("click", () => {
 
-        window.location.href =
-          `/gallery/viewer.html?id=${encodeURIComponent(id)}&view=${encodeURIComponent(currentView)}`;
+        const query = new URLSearchParams(window.location.search);
+        query.set("id", id);
+        query.set("view", currentView);
+        window.location.href = `/gallery/viewer.html?${query}`;
       });
     }
 

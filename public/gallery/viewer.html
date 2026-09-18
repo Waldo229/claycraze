@@ -131,7 +131,7 @@
   <nav class="viewer-topbar" aria-label="Viewer navigation">
     <div class="viewer-nav">
       <a id="backToPiece" href="/gallery/piece.html">← Back to Piece</a>
-      <a href="/gallery/ovals.html">← Back to Ovals</a>
+      <a id="backToGallery" href="/practice.html">← Back to Practice</a>
     </div>
 
     <div id="viewerTitle" class="viewer-title">
@@ -164,9 +164,10 @@
         return;
       }
 
-      backToPiece.href = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+      backToPiece.href = `/gallery/piece.html?${params}`;
 
       try {
+        const { getGalleryContext } = await import("/js/gallery-context.js?v=1020");
         const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
         if (!response.ok) throw new Error("Could not fetch pieces.json");
 
@@ -181,6 +182,14 @@
           title.textContent = "Piece not found";
           return;
         }
+
+        params.set("id", piece.id);
+        params.set("view", view);
+        backToPiece.href = `/gallery/piece.html?${params}`;
+        const context = getGalleryContext(piece);
+        const backToGallery = document.getElementById("backToGallery");
+        backToGallery.href = context.returnUrl;
+        backToGallery.textContent = `← ${context.returnLabel}`;
 
         const pieceTitle = piece.title || piece.id || "ClaycrazE Vessel";
 
