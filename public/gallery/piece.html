@@ -62,6 +62,7 @@
     }
 
     .piece-main-image {
+      display: block;
       width: 100%;
       border-radius: 12px;
       overflow: hidden;
@@ -88,6 +89,12 @@
     }
 
     .piece-thumb {
+      appearance: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
       width: 92px;
       height: 92px;
 
@@ -113,6 +120,16 @@
     }
 
     .piece-thumb:hover {
+      opacity: 1;
+    }
+
+    .piece-thumb:focus-visible,
+    .piece-main-image:focus-visible {
+      outline: 2px solid #f5e8c7;
+      outline-offset: 4px;
+    }
+
+    .piece-thumb:focus-visible {
       opacity: 1;
     }
 
@@ -273,25 +290,27 @@
 
             <div class="piece-hero">
 
-              <div class="piece-main-image">
+              <a id="mainPieceLink" class="piece-main-image">
                 <img
                   id="mainPieceImage"
                   src="${heroImage}"
                   alt="${piece.title || "ClaycrazE Vessel"}"
                 >
-              </div>
+              </a>
 
               <div class="piece-thumbs">
 
-                ${images.map((img, index) => `
+                ${images.map(img => `
 
-                  <div
+                  <button
+                    type="button"
+                    aria-pressed="${img.type === heroType}"
                     class="piece-thumb ${img.type === heroType ? "active" : ""}"
                     data-view="${img.type}"
                     data-src="${img.src}"
                   >
-                    <img src="${img.src}" alt="${img.type}" >
-                  </div>
+                    <img src="${img.src}" alt="" >
+                  </button>
 
                 `).join("")}
 
@@ -371,32 +390,31 @@
     }
 
     function setupGallery(id, initialView) {
-
       const mainImage = document.getElementById("mainPieceImage");
+      const mainLink = document.getElementById("mainPieceLink");
       const thumbs = document.querySelectorAll(".piece-thumb");
 
-      let currentView = initialView;
-
-      thumbs.forEach(thumb => {
-
-        thumb.addEventListener("click", () => {
-
-          thumbs.forEach(t => t.classList.remove("active"));
-          thumb.classList.add("active");
-
-          currentView = thumb.dataset.view;
-
-          mainImage.src = thumb.dataset.src;
-        });
-      });
-
-      mainImage.addEventListener("click", () => {
-
+      function selectView(view, src) {
+        if (src) mainImage.src = src;
         const query = new URLSearchParams(window.location.search);
         query.set("id", id);
-        query.set("view", currentView);
-        window.location.href = `/gallery/viewer.html?${query}`;
+        query.set("view", view);
+        mainLink.href = `/gallery/viewer.html?${query}`;
+        mainLink.setAttribute("aria-label", `Open full-size ${view} view of ${id}`);
+
+        thumbs.forEach(thumb => {
+          const selected = thumb.dataset.view === view;
+          thumb.classList.toggle("active", selected);
+          thumb.setAttribute("aria-pressed", String(selected));
+        });
+      }
+
+      thumbs.forEach(thumb => {
+        thumb.setAttribute("aria-label", `Show ${thumb.dataset.view} view of ${id}`);
+        thumb.addEventListener("click", () => selectView(thumb.dataset.view, thumb.dataset.src));
       });
+
+      selectView(initialView);
     }
 
     function normalizeImagePath(path) {
