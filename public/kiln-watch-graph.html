@@ -215,17 +215,22 @@
       text-underline-offset: 4px;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 900px) {
       .graph-header {
         align-items: flex-start;
         flex-direction: column;
+        padding-right: 0;
       }
 
       .graph-header-actions {
+        position: static;
         width: 100%;
+        flex-wrap: wrap;
         justify-content: space-between;
       }
+    }
 
+    @media (max-width: 760px) {
       .pocket-gene {
         width: 105px;
       }
