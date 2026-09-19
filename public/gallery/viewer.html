@@ -6,7 +6,7 @@
 
   <title>Image Viewer | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=1012" >
+  <link rel="stylesheet" href="/css/styles.css?v=3035" >
   <link rel="stylesheet" href="/css/gallery.css?v=1012" >
 
   <style>
@@ -81,6 +81,7 @@
       transform-origin: center center;
       user-select: none;
       -webkit-user-drag: none;
+      touch-action: pinch-zoom;
       box-shadow:
         0 30px 90px rgba(0, 0, 0, 0.52),
         0 0 0 1px rgba(242, 230, 201, 0.04);
@@ -100,6 +101,75 @@
       font-size: 0.82rem;
       letter-spacing: 0.02em;
       backdrop-filter: blur(6px);
+    }
+
+    .viewer-controls {
+      position: fixed;
+      z-index: 20;
+      left: 50%;
+      bottom: 4.2rem;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      width: max-content;
+      max-width: calc(100vw - 2rem);
+      padding: 0.4rem;
+      background: rgba(18, 11, 6, 0.9);
+      border: 1px solid rgba(242, 230, 201, 0.2);
+      border-radius: 6px;
+      font-size: 0.82rem;
+    }
+
+    .viewer-controls button {
+      appearance: none;
+      margin: 0;
+      padding: 0.4rem 0.55rem;
+      min-height: 32px;
+      border: 1px solid rgba(242, 230, 201, 0.35);
+      border-radius: 3px;
+      background: transparent;
+      color: #eadfc8;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .viewer-controls button:hover {
+      border-color: #f5e8c7;
+    }
+
+    .viewer-controls button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .viewer-controls button:focus-visible,
+    .viewer-stage:focus-visible {
+      outline: 2px solid #f5e8c7;
+      outline-offset: 3px;
+    }
+
+    .viewer-stage:focus-visible {
+      outline-offset: -4px;
+    }
+
+    .viewer-zoom-status {
+      min-width: 5.5em;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .viewer-keyboard-help {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     @media (max-width: 700px) {
@@ -131,7 +201,8 @@
   <nav class="viewer-topbar" aria-label="Viewer navigation">
     <div class="viewer-nav">
       <a id="backToPiece" href="/gallery/piece.html">← Back to Piece</a>
-      <a href="/gallery/ovals.html">← Back to Ovals</a>
+      <a class="active" href="/practice.html" aria-current="location">Practice</a>
+      <a id="backToGallery" href="/practice.html">← Back to Practice</a>
     </div>
 
     <div id="viewerTitle" class="viewer-title">
@@ -139,7 +210,15 @@
     </div>
   </nav>
 
-  <main id="viewerStage" class="viewer-stage">
+  <div class="viewer-controls" role="group" aria-label="Image zoom controls">
+    <button id="zoomIn" type="button" aria-controls="viewerImage" disabled>Zoom in</button>
+    <button id="zoomOut" type="button" aria-controls="viewerImage" disabled>Zoom out</button>
+    <button id="resetView" type="button" aria-controls="viewerImage" disabled>Reset view</button>
+    <span id="zoomStatus" class="viewer-zoom-status" role="status" aria-live="polite" aria-atomic="true">100% zoom</span>
+  </div>
+
+  <main id="viewerStage" class="viewer-stage" tabindex="0" aria-label="Full-size image viewer" aria-describedby="viewerKeyboardHelp">
+    <span id="viewerKeyboardHelp" class="viewer-keyboard-help">Press plus or equals to zoom in, minus to zoom out, and zero to reset. Use arrow keys to pan when zoomed.</span>
     <img id="viewerImage" src="" alt="" >
   </main>
 
@@ -164,9 +243,10 @@
         return;
       }
 
-      backToPiece.href = `/gallery/piece.html?id=${encodeURIComponent(id)}`;
+      backToPiece.href = `/gallery/piece.html?${params}`;
 
       try {
+        const { getGalleryContext } = await import("/js/gallery-context.js?v=1020");
         const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
         if (!response.ok) throw new Error("Could not fetch pieces.json");
 
@@ -181,6 +261,14 @@
           title.textContent = "Piece not found";
           return;
         }
+
+        params.set("id", piece.id);
+        params.set("view", view);
+        backToPiece.href = `/gallery/piece.html?${params}`;
+        const context = getGalleryContext(piece);
+        const backToGallery = document.getElementById("backToGallery");
+        backToGallery.href = context.returnUrl;
+        backToGallery.textContent = `← ${context.returnLabel}`;
 
         const pieceTitle = piece.title || piece.id || "ClaycrazE Vessel";
 
@@ -214,57 +302,105 @@
     function setupPanZoom() {
       const stage = document.getElementById("viewerStage");
       const image = document.getElementById("viewerImage");
-
+      const zoomStatus = document.getElementById("zoomStatus");
       let scale = 1;
       let x = 0;
       let y = 0;
-      let dragging = false;
+      let activePointer = null;
       let startX = 0;
       let startY = 0;
+      let announcementTimer;
 
       function applyTransform() {
         image.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
       }
 
-      stage.addEventListener("wheel", event => {
-        event.preventDefault();
+      function announceZoom() {
+        clearTimeout(announcementTimer);
+        announcementTimer = setTimeout(() => {
+          zoomStatus.textContent = `${Math.round(scale * 100)}% zoom`;
+        }, 150);
+      }
 
-        const direction = event.deltaY < 0 ? 1 : -1;
-        scale += direction * 0.15;
-        scale = Math.min(Math.max(scale, 1), 8);
-
+      function zoom(direction) {
+        scale = Math.min(Math.max(scale + direction * 0.15, 1), 8);
         applyTransform();
-      }, { passive: false });
+        announceZoom();
+      }
 
-      image.addEventListener("mousedown", event => {
-        dragging = true;
-        stage.classList.add("dragging");
-
-        startX = event.clientX - x;
-        startY = event.clientY - y;
-      });
-
-      window.addEventListener("mousemove", event => {
-        if (!dragging) return;
-
-        x = event.clientX - startX;
-        y = event.clientY - startY;
-
-        applyTransform();
-      });
-
-      window.addEventListener("mouseup", () => {
-        dragging = false;
-        stage.classList.remove("dragging");
-      });
-
-      stage.addEventListener("dblclick", () => {
+      function reset() {
         scale = 1;
         x = 0;
         y = 0;
         applyTransform();
+        announceZoom();
+      }
+
+      for (const [id, action] of [
+        ["zoomIn", () => zoom(1)],
+        ["zoomOut", () => zoom(-1)],
+        ["resetView", reset]
+      ]) {
+        const button = document.getElementById(id);
+        button.disabled = false;
+        button.addEventListener("click", action);
+      }
+
+      stage.addEventListener("keydown", event => {
+        if (event.target !== stage || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === "+" || event.key === "=") {
+          event.preventDefault();
+          zoom(1);
+        } else if (event.key === "-") {
+          event.preventDefault();
+          zoom(-1);
+        } else if (event.key === "0") {
+          event.preventDefault();
+          reset();
+        } else if (scale > 1 && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+          event.preventDefault();
+          if (event.key === "ArrowLeft") x -= 40;
+          if (event.key === "ArrowRight") x += 40;
+          if (event.key === "ArrowUp") y -= 40;
+          if (event.key === "ArrowDown") y += 40;
+          applyTransform();
+        }
       });
 
+      stage.addEventListener("wheel", event => {
+        event.preventDefault();
+        zoom(event.deltaY < 0 ? 1 : -1);
+      }, { passive: false });
+
+      image.addEventListener("pointerdown", event => {
+        if (!event.isPrimary || event.button !== 0) return;
+        activePointer = event.pointerId;
+        stage.classList.add("dragging");
+        stage.focus({ preventScroll: true });
+        startX = event.clientX - x;
+        startY = event.clientY - y;
+        image.setPointerCapture(event.pointerId);
+      });
+
+      image.addEventListener("pointermove", event => {
+        if (event.pointerId !== activePointer) return;
+        x = event.clientX - startX;
+        y = event.clientY - startY;
+        applyTransform();
+      });
+
+      function stopDragging(event) {
+        if (event.pointerId !== activePointer) return;
+        activePointer = null;
+        stage.classList.remove("dragging");
+        if (image.hasPointerCapture(event.pointerId)) image.releasePointerCapture(event.pointerId);
+      }
+
+      image.addEventListener("pointerup", stopDragging);
+      image.addEventListener("pointercancel", stopDragging);
+      image.addEventListener("lostpointercapture", stopDragging);
+      image.addEventListener("dragstart", event => event.preventDefault());
+      stage.addEventListener("dblclick", reset);
       applyTransform();
     }
 

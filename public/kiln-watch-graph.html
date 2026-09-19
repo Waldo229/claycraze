@@ -6,7 +6,7 @@
 
   <title>Firing Graph | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3032">
+  <link rel="stylesheet" href="/css/styles.css?v=3035">
   <link rel="stylesheet" href="/css/gene-evidence.css">
 
   <style>
@@ -215,17 +215,22 @@
       text-underline-offset: 4px;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 900px) {
       .graph-header {
         align-items: flex-start;
         flex-direction: column;
+        padding-right: 0;
       }
 
       .graph-header-actions {
+        position: static;
         width: 100%;
+        flex-wrap: wrap;
         justify-content: space-between;
       }
+    }
 
+    @media (max-width: 760px) {
       .pocket-gene {
         width: 105px;
       }
@@ -251,12 +256,12 @@
     <div class="header-shell">
       <a class="site-brand" href="/index.html">
         <span class="site-title">ClaycrazE</span>
-        <span class="site-tag">Theory &amp; Practice</span>
+        <span class="site-tag">The Pottery of Jim Alexander</span>
       </a>
 
       <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
-        <a href="/theory.html">Theory</a>
+        <a class="active" href="/theory.html" aria-current="location">Theory</a>
         <a href="/practice.html">Practice</a>
 
       </nav>
@@ -332,7 +337,7 @@
 
           <a
             class="archive-link"
-            href="/gene/firing_archive/"
+            href="https://claycraze.com/gene/firing_archive/"
           >
             Open firing archive
           </a>

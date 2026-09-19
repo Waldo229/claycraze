@@ -23,6 +23,7 @@ async function loadShapeGallery() {
   galleryGrid.innerHTML = `<div class="loading">Loading gallery...</div>`;
 
   try {
+    const { formatDimensions } = await import("/js/gallery-context.js?v=1020");
     const response = await fetch(`/data/pieces.json?v=${Date.now()}`, {
       cache: "no-store"
     });
@@ -49,7 +50,7 @@ async function loadShapeGallery() {
       return;
     }
 
-    galleryGrid.innerHTML = filtered.map(piece => buildCard(piece, shapeCode)).join("");
+    galleryGrid.innerHTML = filtered.map(piece => buildCard(piece, shapeCode, formatDimensions)).join("");
 
   } catch (error) {
     console.error("Gallery error:", error);
@@ -141,7 +142,7 @@ function sortNewestFirst(a, b) {
   return clean(b.id).localeCompare(clean(a.id));
 }
 
-function buildCard(piece, shapeCode) {
+function buildCard(piece, shapeCode, formatDimensions) {
   const id = clean(piece.id);
   const normalizedShape = normalizeShape(clean(piece.shape)) || shapeCode;
   const dimensions = formatDimensions(piece, normalizedShape);
@@ -255,56 +256,6 @@ function formatPrice(value) {
   }
 
   return raw;
-}
-
-function formatDimensions(piece, shapeCode) {
-  const direct = clean(piece.dimensions);
-
-  if (direct) {
-    return formatDimensionString(direct, shapeCode);
-  }
-
-  const length = clean(piece.length);
-  const width = clean(piece.width);
-  const height = clean(piece.height);
-
-  if (length && width && height) {
-    if (isZero(length)) {
-      return `${width} in. W × ${height} in. H`;
-    }
-
-    return `${length} × ${width} × ${height} in.`;
-  }
-
-  if (width && height) {
-    return `${width} in. W × ${height} in. H`;
-  }
-
-  if (height) {
-    return `${height} in. H`;
-  }
-
-  return "";
-}
-
-function formatDimensionString(value, shapeCode) {
-  const raw = clean(value);
-
-  const parts = raw
-    .replace(/in\.?/gi, "")
-    .split("×")
-    .map(part => clean(part));
-
-  if (parts.length === 3 && isZero(parts[0])) {
-    return `${parts[1]} in. W × ${parts[2]} in. H`;
-  }
-
-  return raw;
-}
-
-function isZero(value) {
-  const raw = clean(value);
-  return raw === "0" || raw === "0.0" || raw === "0.00";
 }
 
 function clean(value) {

@@ -10,28 +10,44 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" >
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" >
 
-  <link rel="stylesheet" href="/css/styles.css?v=3033" >
+  <link rel="stylesheet" href="/css/styles.css?v=welcome-brand-2" >
+
+  <style>
+    .welcome-brand-hero .welcome-subheading {
+      max-width: 760px;
+      margin: 1rem 0 1.2rem;
+      font-size: clamp(1.6rem, 2.5vw, 2.5rem);
+      line-height: 1.12;
+      letter-spacing: 0.08em;
+      color: #eee1c4;
+    }
+  </style>
 </head>
 
-<body>
+<body class="welcome-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">Theory &amp; Practice</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a href="/theory.html">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
+  </header>
 
   <main class="welcome-threshold">
 
-    <figure class="welcome-guide">
-      <img
-        src="https://sandbox.claycraze.com/images/system/coldmountainSQ300.jpg"
-        alt="Han Shan and Shih-te of Cold Mountain"
-        width="300"
-        height="300"
-      >
-    </figure>
-
-    <section class="welcome-hero">
-      <h1>Welcome</h1>
-
+    <section class="welcome-brand-hero home-copy" aria-labelledby="welcome-title">
+      <h1 id="welcome-title">Welcome</h1>
+      <p class="welcome-subheading">CLAY &bull; PHILOSOPHY &bull; BONSAI </p>
       <p>
-        Two old friends: Han Shan and Shih-te — Theory and Practice.
-One dreams; one works. The studio needs them both. Consider them your guides through the studio and gallery.
+        GENE is the spirit of ClaycrazE—the quiet balance between Theory and Practice, contemplation and making.
       </p>
     </section>
 
@@ -39,38 +55,33 @@ One dreams; one works. The studio needs them both. Consider them your guides thr
 
       <a class="welcome-card theory-door" href="/theory.html">
         <img
-          src="/images/curated/guides/ueno-jakugen-hanshan.jpg"
-          alt="Hanshan holding a scroll"
+          src="/images/curated/guides/han-shan-gene-autumn-transparent-v2.png"
+          alt="Han-shan GENE in an autumn crane kimono, holding a scroll"
+          width="1254"
+          height="1254"
         >
-
-     <div class="welcome-card-text">
-  <h2>The Studio</h2>
-  <p>
-   The workshop, the kilns, the ideas, and the GENE project.
-  </p>
-</div>
+        <div class="welcome-card-text">
+          <span class="welcome-card-kicker">Theory</span>
+          <h2>The Studio</h2>
+          <p>The workshop, the kilns, the ideas, and the GENE project.</p>
+        </div>
       </a>
 
       <a class="welcome-card practice-door" href="/practice.html">
         <img
-          src="/images/curated/guides/ueno-jakugen-shide.jpg"
-          alt="Shide holding a broom"
+          src="/images/curated/guides/shih-te-gene-spring-transparent-v2.png"
+          alt="Shih-te GENE in a spring rabbit kimono, holding a broom"
+          width="1254"
+          height="1254"
         >
-
-       <div class="welcome-card-text">
-  <h2>The Gallery</h2>
-  <p>
- The finished work.
-  </p>
-</div>
+        <div class="welcome-card-text">
+          <span class="welcome-card-kicker">Practice</span>
+          <h2>The Gallery</h2>
+          <p>The finished work.</p>
+        </div>
       </a>
 
     </section>
-
-    <p class="museum-attribution welcome-attribution">
-      Hanshan and Shide, outside panels from <cite>Fenggan, Hanshan, and Shide</cite>,
-      Ueno Jakugen, Japan, 18th century. Public domain.
-    </p>
 
   </main>
 

@@ -6,7 +6,7 @@
 
   <title>ClaycrazE | Piece View</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=2001" >
+  <link rel="stylesheet" href="/css/styles.css?v=3035" >
   <link rel="stylesheet" href="/css/gallery.css?v=2001" >
 
   <style>
@@ -62,6 +62,7 @@
     }
 
     .piece-main-image {
+      display: block;
       width: 100%;
       border-radius: 12px;
       overflow: hidden;
@@ -88,6 +89,12 @@
     }
 
     .piece-thumb {
+      appearance: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
       width: 92px;
       height: 92px;
 
@@ -113,6 +120,16 @@
     }
 
     .piece-thumb:hover {
+      opacity: 1;
+    }
+
+    .piece-thumb:focus-visible,
+    .piece-main-image:focus-visible {
+      outline: 2px solid #f5e8c7;
+      outline-offset: 4px;
+    }
+
+    .piece-thumb:focus-visible {
       opacity: 1;
     }
 
@@ -164,7 +181,7 @@
       font-size: 0.75rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: rgba(244,231,198,0.45);
+      color: rgba(244,231,198,0.50);
       margin-bottom: 0.4rem;
     }
 
@@ -177,6 +194,12 @@
       margin-top: 2rem;
       font-size: 1.3rem;
       color: #f5e8c7;
+    }
+
+    @media (max-width: 760px) {
+      body.piece-body {
+        padding-inline: 0;
+      }
     }
 
     @media (max-width: 900px) {
@@ -197,8 +220,8 @@
   <main class="piece-shell">
 
     <div class="piece-topbar">
-      <a href="/gallery/ovals.html">← Back to Ovals</a>
-      <a href="/practice.html">Practice</a>
+      <a id="backToGallery" href="/practice.html">← Back to Practice</a>
+      <a class="active" href="/practice.html" aria-current="location">Practice</a>
     </div>
 
     <section id="pieceContainer"></section>
@@ -222,6 +245,7 @@
       }
 
       try {
+        const { getGalleryContext, formatDimensions } = await import("/js/gallery-context.js?v=1020");
 
         const response = await fetch(`/data/pieces.json?v=${Date.now()}`);
         const pieces = await response.json();
@@ -234,6 +258,11 @@
           container.innerHTML = `<p>Piece not found.</p>`;
           return;
         }
+
+        const context = getGalleryContext(piece);
+        const backToGallery = document.getElementById("backToGallery");
+        backToGallery.href = context.returnUrl;
+        backToGallery.textContent = `← ${context.returnLabel}`;
 
         const images = [];
 
@@ -258,33 +287,36 @@
           });
         }
 
-        const heroImage = images[0]?.src || "";
-        const heroType = images[0]?.type || "top";
+        const selectedImage = images.find(image => image.type === params.get("view")) || images[0];
+        const heroImage = selectedImage?.src || "";
+        const heroType = selectedImage?.type || "top";
 
         container.innerHTML = `
           <div class="piece-grid">
 
             <div class="piece-hero">
 
-              <div class="piece-main-image">
+              <a id="mainPieceLink" class="piece-main-image">
                 <img
                   id="mainPieceImage"
                   src="${heroImage}"
                   alt="${piece.title || "ClaycrazE Vessel"}"
                 >
-              </div>
+              </a>
 
               <div class="piece-thumbs">
 
-                ${images.map((img, index) => `
+                ${images.map(img => `
 
-                  <div
-                    class="piece-thumb ${index === 0 ? "active" : ""}"
+                  <button
+                    type="button"
+                    aria-pressed="${img.type === heroType}"
+                    class="piece-thumb ${img.type === heroType ? "active" : ""}"
                     data-view="${img.type}"
                     data-src="${img.src}"
                   >
-                    <img src="${img.src}" alt="${img.type}" >
-                  </div>
+                    <img src="${img.src}" alt="" >
+                  </button>
 
                 `).join("")}
 
@@ -295,7 +327,7 @@
             <aside class="piece-info">
 
               <div class="piece-kicker">
-                ClaycrazE / Bonsai Container
+                ClaycrazE / ${context.categoryLabel}
               </div>
 
               <h1 class="piece-title">
@@ -311,7 +343,7 @@
                 <div class="piece-meta-row">
                   <div class="piece-meta-label">Dimensions</div>
                   <div class="piece-meta-value">
-                    ${piece.dimensions || "—"}
+                    ${formatDimensions(piece, piece.shape) || "—"}
                   </div>
                 </div>
 
@@ -364,30 +396,31 @@
     }
 
     function setupGallery(id, initialView) {
-
       const mainImage = document.getElementById("mainPieceImage");
+      const mainLink = document.getElementById("mainPieceLink");
       const thumbs = document.querySelectorAll(".piece-thumb");
 
-      let currentView = initialView;
+      function selectView(view, src) {
+        if (src) mainImage.src = src;
+        const query = new URLSearchParams(window.location.search);
+        query.set("id", id);
+        query.set("view", view);
+        mainLink.href = `/gallery/viewer.html?${query}`;
+        mainLink.setAttribute("aria-label", `Open full-size ${view} view of ${id}`);
+
+        thumbs.forEach(thumb => {
+          const selected = thumb.dataset.view === view;
+          thumb.classList.toggle("active", selected);
+          thumb.setAttribute("aria-pressed", String(selected));
+        });
+      }
 
       thumbs.forEach(thumb => {
-
-        thumb.addEventListener("click", () => {
-
-          thumbs.forEach(t => t.classList.remove("active"));
-          thumb.classList.add("active");
-
-          currentView = thumb.dataset.view;
-
-          mainImage.src = thumb.dataset.src;
-        });
+        thumb.setAttribute("aria-label", `Show ${thumb.dataset.view} view of ${id}`);
+        thumb.addEventListener("click", () => selectView(thumb.dataset.view, thumb.dataset.src));
       });
 
-      mainImage.addEventListener("click", () => {
-
-        window.location.href =
-          `/gallery/viewer.html?id=${encodeURIComponent(id)}&view=${encodeURIComponent(currentView)}`;
-      });
+      selectView(initialView);
     }
 
     function normalizeImagePath(path) {

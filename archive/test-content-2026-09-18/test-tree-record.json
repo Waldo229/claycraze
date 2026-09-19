@@ -1,0 +1,23 @@
+[
+  {
+    "id": "test",
+    "title": "Test",
+    "species": "Elm",
+    "cultivar": "",
+    "style": "",
+    "person_slug": "chris-schmuck",
+    "owner_slug": "chris-schmuck",
+    "tree_slug": "test",
+    "image_path": "/images/trees/chris-schmuck/test.jpg",
+    "page_path": "/trees/chris-schmuck/test/",
+    "status": "shown-by-appointment",
+    "owner_credit": "Collection of Chris Schmuck",
+    "pot_credit": "",
+    "display_notes": "",
+    "provenance": "",
+    "description": "Testing the system",
+    "notes": "",
+    "created_at": "2026-07-09 22:05:17",
+    "updated_at": "2026-07-09 22:05:17"
+  }
+]

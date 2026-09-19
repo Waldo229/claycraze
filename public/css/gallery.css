@@ -478,7 +478,7 @@
   border-radius: 24px;
 }
 
-/* monks */
+/* feature image */
 
 .bonsai-unity-image {
   width: 100%;
@@ -690,6 +690,11 @@
     max-width: 100%;
     margin: 0;
     display: block;
+  }
+
+  .trees-page .bonsai-unity-panel,
+  .trees-page .bonsai-form-card {
+    min-height: 0;
   }
 
   .trees-page .bonsai-unity-panel {
