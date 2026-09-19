@@ -396,12 +396,18 @@
         return Number.isFinite(number) ? number : null;
       }
 
-      function findNumericByKeys(value, keys, depth = 0) {
+      function asRateNumber(value) {
+        if (typeof value !== "number" && typeof value !== "string") return null;
+        if (typeof value === "string" && !value.trim()) return null;
+        return asFiniteNumber(value);
+      }
+
+      function findNumericByKeys(value, keys, depth = 0, parseNumber = asFiniteNumber) {
         if (depth > 6 || value == null) return null;
 
         if (Array.isArray(value)) {
           for (let index = value.length - 1; index >= 0; index -= 1) {
-            const found = findNumericByKeys(value[index], keys, depth + 1);
+            const found = findNumericByKeys(value[index], keys, depth + 1, parseNumber);
             if (found !== null) return found;
           }
           return null;
@@ -414,13 +420,13 @@
         for (const [key, raw] of entries) {
           const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, "");
           if (keys.includes(normalized)) {
-            const number = asFiniteNumber(raw);
+            const number = parseNumber(raw);
             if (number !== null) return number;
           }
         }
 
         for (const [, child] of entries) {
-          const found = findNumericByKeys(child, keys, depth + 1);
+          const found = findNumericByKeys(child, keys, depth + 1, parseNumber);
           if (found !== null) return found;
         }
 
@@ -441,14 +447,15 @@
               summary?.temp_f ??
               summary?.temp
             ),
-            ramp: asFiniteNumber(
+            ramp: asRateNumber(
               summary?.latest_ramp_f_per_hr ??
               summary?.latest_ramp ??
               summary?.ramp_f_per_hr ??
               summary?.ramp_rate ??
               summary?.rate_of_rise ??
               summary?.ramp ??
-              summary?.rate
+              summary?.rate ??
+              summary?.latest_rate
             )
           }))
           .filter((probe) => probe.temperature !== null);
@@ -466,8 +473,8 @@
           ]),
           ramp: findNumericByKeys(data, [
             "latestrampfperhr", "latestramp", "ramprate", "rampfperhr",
-            "rateofrise", "ramp", "rate"
-          ])
+            "rateofrise", "ramp", "rate", "latestrate"
+          ], 0, asRateNumber)
         };
       }
 
