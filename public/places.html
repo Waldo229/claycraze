@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Places | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3035">
+  <link rel="stylesheet" href="/css/styles.css?v=3039">
 
   <style>
     /* ==========================================
@@ -132,100 +133,6 @@
       text-decoration-color: rgba(234, 214, 173, 0.95);
     }
 
-    .places-list {
-      border-top: 1px solid rgba(220, 207, 179, 0.18);
-    }
-
-    .place-row {
-      display: grid;
-      grid-template-columns: 72px minmax(0, 1fr) auto;
-      gap: clamp(1rem, 2.5vw, 2rem);
-      align-items: center;
-      padding: clamp(1.6rem, 3vw, 2.6rem) 0;
-      border-bottom: 1px solid rgba(220, 207, 179, 0.18);
-      color: #f0e2c4;
-      text-decoration: none;
-    }
-
-    a.place-row {
-      transition: padding-left 180ms ease, background 180ms ease;
-    }
-
-    a.place-row:hover,
-    a.place-row:focus-visible {
-      padding-left: 0.75rem;
-      background: linear-gradient(
-        90deg,
-        rgba(238, 225, 196, 0.055),
-        transparent 72%
-      );
-    }
-
-    .place-marker-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-    }
-
-    .place-marker {
-      display: block;
-      width: 58px;
-      height: 58px;
-      object-fit: contain;
-    }
-
-    .place-copy {
-      min-width: 0;
-    }
-
-    .place-state {
-      display: block;
-      margin-bottom: 0.45rem;
-      color: rgba(238, 225, 196, 0.58);
-      font-size: 0.75rem;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-    }
-
-    .place-row h2 {
-      margin: 0 0 0.45rem;
-      color: #f0e2c4;
-      font-size: clamp(1.9rem, 3.5vw, 3.35rem);
-      line-height: 1.08;
-      font-weight: 500;
-    }
-
-    .place-row p {
-      max-width: 900px;
-      margin: 0;
-      color: rgba(238, 225, 196, 0.8);
-      font-size: 1rem;
-      line-height: 1.62;
-    }
-
-    .place-arrow {
-      color: rgba(238, 225, 196, 0.42);
-      font-size: 1.7rem;
-      line-height: 1;
-      transition: color 180ms ease, transform 180ms ease;
-    }
-
-    a.place-row:hover .place-arrow,
-    a.place-row:focus-visible .place-arrow {
-      color: rgba(238, 225, 196, 0.9);
-      transform: translateX(4px);
-    }
-
-    .place-row-developing {
-      grid-template-columns: 72px minmax(0, 1fr);
-    }
-
-    .place-row-developing .place-marker {
-      opacity: 0.72;
-    }
-
     @media (max-width: 700px) {
       .places-shell {
         padding: 1.6rem 0.8rem 2.75rem;
@@ -248,56 +155,11 @@
         grid-template-columns: 1fr;
         gap: 0.55rem;
       }
-
-      .place-row,
-      .place-row-developing {
-        grid-template-columns: 52px minmax(0, 1fr);
-        gap: 1rem;
-      }
-
-      .place-marker-wrap {
-        width: 50px;
-        height: 50px;
-      }
-
-      .place-marker {
-        width: 44px;
-        height: 44px;
-      }
-
-      .place-arrow {
-        display: none;
-      }
-
-      .place-row h2 {
-        font-size: clamp(1.65rem, 7vw, 2.4rem);
-      }
     }
 
     @media (max-width: 480px) {
       .places-shell {
         padding-inline: 0.65rem;
-      }
-
-      .place-row,
-      .place-row-developing {
-        grid-template-columns: 42px minmax(0, 1fr);
-        gap: 0.85rem;
-      }
-
-      .place-marker-wrap {
-        width: 40px;
-        height: 40px;
-      }
-
-      .place-marker {
-        width: 36px;
-        height: 36px;
-      }
-
-      .place-row p {
-        font-size: 0.95rem;
-        line-height: 1.55;
       }
     }
   </style>
@@ -325,7 +187,6 @@
   <main class="places-shell">
 
     <section class="places-intro">
-
       <div class="section-label">
         <span class="threshold-kicker">Theory / Places</span>
       </div>
@@ -336,118 +197,41 @@
         GENE registers the histories, people, materials, relationships,
         and accumulated attention already present in a place.
       </p>
-
     </section>
 
     <section class="places-notices" aria-labelledby="current-notices-title">
 
       <div class="notices-heading">
         <h2 id="current-notices-title">Current notices</h2>
-        <p class="notices-checked">Verified August 3, 2026</p>
+        <p class="notices-checked">Verified September 20, 2026</p>
       </div>
 
       <ul class="notice-list">
-
         <li class="notice-item">
-          <div class="notice-place">Northern Virginia Bonsai Society</div>
-          <div class="notice-copy">
-            <h3>Jennifer Price: Deciduous Bonsai &amp; BYOT Workshops</h3>
-            <p>
-              August 8–9 in Burke, Virginia. The Saturday program begins at
-              9:00 a.m. and examines species-specific technique, design,
-              seasonal work, and the movement particular to deciduous trees.
-              Bring-your-own-tree workshops follow. Half-day workshop tickets
-              are $85; full-day tickets are $155, subject to availability.
-              <a href="https://www.nvbsbonsai.org/" target="_blank" rel="noopener">
-                Visit NVBS for current availability and registration.
-              </a>
-            </p>
+
+          <div class="notice-place">
+            Winter Silhouette Bonsai Show
           </div>
-        </li>
 
-        <li class="notice-item">
-          <div class="notice-place">Longwood Gardens</div>
-          <div class="notice-copy">
-            <h3>Ceramic Bonsai Pot Workshop</h3>
-            <p>
-              Saturday, August 22, 9:00 a.m.–5:00 p.m. A hands-on workshop
-              devoted to making one-of-a-kind ceramic bonsai pots. Fee: $209;
-              qualifying member fee: $188. Registration closes August 16.
-              <a href="https://longwoodgardens.org/events-performances/events/ceramic-bonsai-pot-workshop"
-                 target="_blank" rel="noopener">
-                Workshop details and registration.
-              </a>
-            </p>
-          </div>
-        </li>
-
-        <li class="notice-item">
-          <div class="notice-place">National Bonsai &amp; Penjing Museum</div>
-          <div class="notice-copy">
-            <h3>Waiting to Be Discovered: A Viewing Stone Exhibit</h3>
-            <p>
-              Through September 7 in the Exhibits Gallery at the U.S. National
-              Arboretum. Open daily from 10:00 a.m.–4:00 p.m.
-              <a href="https://www.usna.usda.gov/visit/calendar-of-events/waiting-to-be-discovered-a-viewing-stone-exhibit/"
-                 target="_blank" rel="noopener">
-                Exhibition information.
-              </a>
-            </p>
-          </div>
-        </li>
-
-        <li class="notice-item">
-          <div class="notice-place">Japan Information &amp; Culture Center</div>
-          <div class="notice-copy">
-            <h3>Yokai Parade: Supernatural Monsters from Japan</h3>
-            <p>
-              August 10–September 18 at the Embassy of Japan in Washington,
-              D.C. Regular gallery hours are Monday through Friday,
-              9:00 a.m.–5:00 p.m., with extended hours on August 18 from
-              5:00–7:00 p.m.
-              <a href="https://www.us.emb-japan.go.jp/jicc/"
-                 target="_blank" rel="noopener">
-                Exhibition details.
-              </a>
-            </p>
-          </div>
-        </li>
-
-        <li class="notice-item">
-          <div class="notice-place">Norfolk Botanical Garden</div>
-          <div class="notice-copy">
-            <h3>Honey Bee Festival</h3>
-            <p>
-              Saturday, August 15, 10:00 a.m.–4:00 p.m., at the Baker Hall
-              Visitor Center. Presented with the Beekeepers Guild of Southeast
-              Virginia; included with Garden admission.
-              <a href="https://norfolkbotanicalgarden.org/events/honeybee-festival/"
-                 target="_blank" rel="noopener">
-                Festival information.
-              </a>
-            </p>
-          </div>
-        </li>
-
-        <li class="notice-item">
-          <div class="notice-place">Winter Silhouette Bonsai Show</div>
           <div class="notice-copy">
             <h3>14th Winter Silhouette Bonsai Show</h3>
+
             <p>
-              December 5–6 at the North Carolina Research Campus in Kannapolis,
-              North Carolina. Admission to the exhibition, demonstrations, and
-              vendors is free. Public hours are Saturday, 10:00 a.m.–5:00 p.m.,
-              and Sunday, 10:00 a.m.–3:00 p.m. A bonsai auction is planned for
-              Saturday evening, and William Valavanis will lead a Sunday morning
-              critique.
+              December 5–6, 2026, at the North Carolina Research Campus in
+              Kannapolis, North Carolina. Admission to the exhibition,
+              demonstrations, and vendors is free. Public hours are Saturday,
+              10:00 a.m.–5:00 p.m., and Sunday, 10:00 a.m.–3:00 p.m. A bonsai
+              auction is planned for Saturday evening, and William Valavanis
+              will lead a Sunday morning critique.
               <a href="https://www.winterbonsai.net/"
-                 target="_blank" rel="noopener">
+                 target="_blank"
+                 rel="noopener">
                 Show schedule and information.
               </a>
             </p>
           </div>
-        </li>
 
+        </li>
       </ul>
 
     </section>
@@ -455,4 +239,5 @@
   </main>
 
 </body>
+
 </html>
