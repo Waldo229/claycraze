@@ -1,3 +1,31 @@
+## Homepage GENE destinations (2026-09-20)
+
+Separated the homepage image and caption into sibling links in
+public/index.html: the image opens /welcome.html with the accessible name
+Enter the ClaycrazE welcome page; GENE Reveals opens /gene_reveals.html.
+The image source, alt text, and dimensions are unchanged. Stylesheet reference
+advanced from 3039 to 3040. public/css/styles.css positions the caption from
+.home-gene-feature, keeps the image link block-level, preserves its focus
+outline, and gives the caption gold hover/focus color, an underline on
+interaction, and a visible keyboard-focus outline.
+
+Chrome previews at 1440px and 390px passed actual mouse clicks and keyboard
+Enter navigation for both links, visible keyboard focus, caption hover,
+image loading, no horizontal overflow, and no JavaScript exceptions.
+Image, caption, and copy geometry match the previous version exactly;
+resting before/after screenshots are pixel-identical at both widths.
+git diff --check passed. Evidence is in
+.local-gene-review/home-destinations-20260920/.
+
+The completed Places sandbox deployment records were preserved and committed
+separately as 71662e6 (Record Places sandbox deployment).
+Homepage commit scope: public/index.html, public/css/styles.css,
+CURRENT_TASK.md, and CHANGELOG.md. No push or deployment.
+Next safe step: Jim reviews the committed local change before authorizing
+any push or deployment. Older work-record entries remain unchanged.
+
+---
+
 ## Places sandbox deployment (2026-09-20)
 
 Deployed only public/places.html using the established selective SCP connection
