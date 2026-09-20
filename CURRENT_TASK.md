@@ -1,3 +1,26 @@
+# Current Task: GENE Reveals Entry Links (2026-09-20)
+
+Implemented locally on `agent-sandbox`; no commit, push, merge, or deployment.
+The pre-existing tracked edit to `public/gene_reveals.html` was left untouched.
+
+- `public/index.html`: retargeted the existing image link to `/gene_reveals.html`,
+  added its descriptive accessible name and the linked `GENE Reveals` caption,
+  and advanced the stylesheet cache version from 3038 to 3039.
+- `public/css/styles.css`: added narrowly scoped caption positioning and visible
+  keyboard focus. The caption uses existing colors and font family in the existing
+  gap so image/copy geometry and surrounding spacing remain unchanged.
+- `public/gene-project.html`: changed only the button label to `GENE Reveals`.
+- `CURRENT_TASK.md` and `CHANGELOG.md`: recorded this work as required by AGENTS.md.
+
+Chrome previews at 1440px and 390px passed image loading, actual image/caption/button
+clicks, visible keyboard focus, and horizontal-overflow checks. Homepage image and
+copy bounding boxes exactly match the HEAD baseline at both widths. Global navigation,
+image source/alt text, and Theory/Practice structure are unchanged. `git diff --check`
+passed. Screenshots and exact diff are in `.local-gene-review/home-reveals-20260920/`.
+Next step: Jim's visual review; no publishing action is authorized by this task.
+
+---
+
 # Current Task: Production Integration and Deployment Hardening
 
 ## Scope and status

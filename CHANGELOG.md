@@ -2,6 +2,17 @@
 
 Record only verified work. Keep entries short and factual.
 
+## 2026-09-20 - GENE Reveals entry links (local, uncommitted)
+
+- Linked the existing homepage image and a restrained caption to GENE Reveals;
+  preserved useful alt text and added an explicit accessible link name.
+- Relabeled the GENE Project button, preserving its existing destination.
+- Added scoped caption/focus styles and bumped only Home's stylesheet cache version.
+- Verified desktop 1440px and mobile 390px rendering, loaded images, real link clicks,
+  visible keyboard focus, no horizontal overflow, and unchanged homepage geometry.
+- Diff check passed; existing GENE Reveals page edits preserved. No commit, push,
+  merge, or deployment performed.
+
 ## Unreleased - production integration review
 
 ### Deployment coverage
