@@ -140,6 +140,25 @@ a {
   align-items: center;
 }
 
+.home-gene-link {
+  display: block;
+  position: relative;
+}
+
+.home-gene-caption {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.home-gene-link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
 .home-gene-image {
   width: 100%;
   height: auto;
