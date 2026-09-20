@@ -1,3 +1,30 @@
+## Places sandbox deployment (2026-09-20)
+
+Deployed only public/places.html using the established selective SCP connection
+to /home/customer/www/sandbox.claycraze.com/public_html/places.html.
+Preflight: agent-sandbox at 00194e91ef5c9cce719ca188f69b229a5c4ed80c;
+tracked worktree and index clean; page matches approved commit
+edcc40ab5f82a87d0c865143f1379f43cf890027.
+Local, remote-file, cache-busted HTTPS, and ordinary HTTPS SHA-256 all match:
+c860b68b56ccfb0380ebf291e5673d6efde8bfd90809d0571ea77feb5e0f440f
+Ordinary URL was current; no cache purge was needed.
+
+Desktop 1440px and mobile 390px checks and screenshot review confirmed only the
+14th Winter Silhouette notice, Verified September 20, 2026, stylesheet version
+3039 loaded, and no horizontal overflow. The official show link opened on click
+and returned HTTP 200. No JavaScript exceptions observed. Browser console check
+has one limitation: /favicon.ico returns HTTP 404. No extra file was uploaded
+to address it. Status: READY WITH LIMITATIONS.
+
+Evidence: .local-gene-review/places-deploy-20260920.json and
+.local-gene-review/places-live-20260920/ (screenshots and browser results).
+Production was untouched. No commit, push, merge, or rebase was performed.
+Work-record updates remain local and unstaged; they were not uploaded.
+Next safe step: Jim reviews the sandbox and decides whether to authorize a
+separate favicon repair. No further deployment is authorized by this task.
+
+---
+
 # Places notice review (2026-09-20)
 
 Stale Places notices were removed; only the 14th Winter Silhouette Bonsai Show
