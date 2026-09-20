@@ -1,3 +1,34 @@
+## Homepage destinations sandbox deployment (2026-09-20)
+
+Verified agent-sandbox at 8a2b364c7cb38985440e32adb1f15aa0d8ace0d7 with
+clean tracked worktree/index. Normal push succeeded; HEAD, origin/agent-sandbox,
+and the live remote branch SHA matched. Uploaded only public/index.html and
+public/css/styles.css via established SCP to sandbox.claycraze.com/public_html.
+No work records or review artifacts were uploaded. Production was untouched.
+
+Local, remote-file, and cache-busted HTTPS SHA-256 match for each file:
+index.html: c0612cbe19c1a0a6f20c1be6a3b61915e16d981cb45877ddab5a0ccfe58b5010
+css/styles.css: d45e46cbf806d94403a7b3ee1462e790e8e6652aaa4a79a13f3ecba5ff3ad8b5
+Targeted sandbox purges made ordinary /index.html and CSS (including ?v=3040)
+current. LIMITATION: bare / still returns old cached HTML with SHA-256
+ e9b15a76cf0ebda71d38deee5416e11fd015846ebcd49542f2a84c8bbd8b37ec
+without the caption and with stylesheet version 3038. Cache-busted / returns
+the correct new index. Repeated targeted root purges returned OK but did not
+clear that stale response. No broad purge or file cache-bypass edits were made.
+
+Live /index.html checks at 1440px and 390px passed mouse and keyboard Enter
+navigation: image to /welcome.html and caption to /gene_reveals.html. Both
+links have visible focus; CSS 3040 loads; no overflow or JavaScript exceptions.
+Resting screenshots are pixel-identical to the pre-correction baseline.
+Evidence: .local-gene-review/home-destinations-live-20260920/ and
+.local-gene-review/home-destinations-deploy-results.json. Final verification
+JSON reflects the retry; both CSS and index were purged during the first run.
+Status: READY WITH LIMITATIONS. Next safe step: investigate the bare-root
+sandbox cache with SiteGround; do not expand purge scope without authorization.
+These deployment records remain local and unstaged. No additional commit.
+
+---
+
 ## Homepage GENE destinations (2026-09-20)
 
 Separated the homepage image and caption into sibling links in
