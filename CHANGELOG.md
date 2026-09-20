@@ -1,3 +1,20 @@
+## 2026-09-20 - Places notice review
+
+Stale Places notices were removed; only the 14th Winter Silhouette Bonsai Show
+remains. As confirmed by Jim, official event information was verified against
+the official event website on September 20, 2026, before the local review.
+HTML and link corrections were incorporated into the supplied clean copy;
+the local review subsequently confirmed them.
+
+The local review confirmed stylesheet /css/styles.css?v=3039, the displayed
+Verified September 20, 2026 date, valid Winter Bonsai external-link markup,
+balanced and correctly nested HTML, and no Markdown escapes. Python HTMLParser
+validation and git diff --check passed. No further page edits were needed.
+
+Completed Places cleanup commit: edcc40ab5f82a87d0c865143f1379f43cf890027
+(Remove stale Places notices), containing only public/places.html.
+No push or deployment has occurred for this task.
+
 # ClaycrazE / GENE Change Log
 
 Record only verified work. Keep entries short and factual.
