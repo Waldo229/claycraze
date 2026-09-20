@@ -140,9 +140,12 @@ a {
   align-items: center;
 }
 
+.home-gene-feature {
+  position: relative;
+}
+
 .home-gene-link {
   display: block;
-  position: relative;
 }
 
 .home-gene-caption {
@@ -152,9 +155,18 @@ a {
   margin-top: 0.5rem;
   font-size: 0.9rem;
   color: var(--muted);
+  text-decoration: none;
 }
 
-.home-gene-link:focus-visible {
+.home-gene-caption:hover,
+.home-gene-caption:focus-visible {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.home-gene-link:focus-visible,
+.home-gene-caption:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 4px;
 }
