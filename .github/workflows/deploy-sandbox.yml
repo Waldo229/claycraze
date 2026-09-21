@@ -1,0 +1,130 @@
+name: Deploy ClaycrazE Site to SiteGround (SANDBOX)
+
+on:
+  push:
+    branches: [ "agent-sandbox" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate supplemental public sources
+        shell: bash
+        run: python3 .github/deploy/validate-manifest.py
+
+      - name: Set up SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.SG_CI_KEY }}" > ~/.ssh/sg_ci
+          sed -i 's/\r$//' ~/.ssh/sg_ci
+          chmod 600 ~/.ssh/sg_ci
+
+      - name: Deploy public site files
+        shell: bash
+        env:
+          SG_HOST: ${{ secrets.SG_HOST }}
+          SG_PORT: ${{ secrets.SG_PORT }}
+          SG_USER: ${{ secrets.SG_USER }}
+          SG_TARGET: /home/customer/www/sandbox.claycraze.com/public_html
+        run: |
+          set -euo pipefail
+
+          candidate=".trees-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+          [[ "$candidate" =~ ^\.trees-candidate-[0-9]+-[0-9]+\.json$ ]]
+          targets="$(python3 .github/deploy/validate-manifest.py --targets)"
+          echo "Checking remote runtime, paths, permissions, and current Trees data..."
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "command -v python3 >/dev/null && python3 - preflight '$SG_TARGET' '$candidate' '$targets'" \
+            < .github/deploy/guard-trees.py
+
+          cleanup_candidate() {
+            result=$?
+            trap - EXIT
+            if ! ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+              "python3 - cleanup '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py; then
+              echo "Exact candidate cleanup failed; manual review is required." >&2
+              result=1
+            fi
+            exit "$result"
+          }
+          trap cleanup_candidate EXIT
+          trap 'exit 130' INT
+          trap 'exit 143' TERM
+
+          echo "Uploading and validating only the temporary Trees candidate..."
+          scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no \
+            public/data/trees.json "$SG_USER@$SG_HOST:$SG_TARGET/data/$candidate"
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "python3 - validate '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py
+
+          echo "Preparing SiteGround public folders..."
+
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "mkdir -p \
+              $SG_TARGET/css \
+              $SG_TARGET/js \
+              $SG_TARGET/gallery \
+              $SG_TARGET/data \
+              $SG_TARGET/images/curated \
+              $SG_TARGET/images/system"
+
+          echo "Syncing public HTML pages..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/*.html \
+            "$SG_USER@$SG_HOST:$SG_TARGET/"
+
+          echo "Syncing CSS..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/css/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/css/"
+
+          echo "Syncing JavaScript..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/js/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/js/"
+
+          echo "Syncing gallery pages..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/gallery/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/gallery/"
+
+          echo "Syncing curated images..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/images/curated/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/images/curated/"
+
+          echo "Syncing system images..."
+
+          rsync -avz \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/images/system/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/images/system/"
+
+          echo "Syncing approved supplemental files..."
+
+          rsync -avz --relative --files-from=.github/deploy/supplemental-public.txt \
+            -e "ssh -p $SG_PORT -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no" \
+            public/ \
+            "$SG_USER@$SG_HOST:$SG_TARGET/"
+
+          echo "Revalidating and applying the guarded Trees candidate..."
+          ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+            "python3 - apply '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py
+
+          echo "Deploy complete. Approved static files and guarded Trees data updated; other canonical data remains untouched."
