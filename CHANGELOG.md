@@ -162,3 +162,13 @@ Record only verified work. Keep entries short and factual.
 - No whole-site rollback is provided. Publisher races and later I/O failures remain
   possible; connection loss or forced termination can prevent exact-candidate
   cleanup. Any later deployment requires review and publisher coordination.
+## 2026-09-20 - Offering GENE homepage image
+
+- Added public/offering_gene.jpg from images/offering_gene.png, preserving the
+  original dimensions; changed only the image source and alt text in index.html.
+- Preserved existing links, CSS, classes, navigation, and all other page content.
+- Verified 1440px/390px Chrome previews, full composition, aspect ratio, no
+  overflow or homepage console errors, and mouse/keyboard link destinations.
+- git diff --check passed. Review evidence: .local-gene-review/offering-preview-20260920/.
+- Jim approved the preview and authorized the four-file commit and push only to
+  agent-sandbox. No merge or deployment authorized or performed.

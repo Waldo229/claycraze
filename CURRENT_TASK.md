@@ -227,3 +227,27 @@ occurred. Pre-commit checks reconfirmed the intended two parents, exact approved
 staging scope, all 69 payloads covered, inventory protection, syntax and fixture
 checks, and staged/unstaged diff checks. Existing validator limitations remain
 listed above. A production-branch push or deployment requires separate approval.
+## Offering GENE homepage preview (2026-09-20)
+
+Verified claycraze_agent_sandbox on agent-sandbox with clean tracked files before
+editing. Found the supplied image at images/offering_gene.png and converted it
+to public/offering_gene.jpg at its original 1240 x 1269 dimensions (JPEG quality
+95). Changed only the homepage image src and requested alt text in public/index.html.
+Existing welcome and GENE Reveals links, classes, CSS, navigation, and other
+content are preserved. This entry and CHANGELOG.md record the completed review.
+
+Chrome previews at 1440px and 390px passed: complete supplied composition visible
+(eclipse, halo, pot, hands, robe, boots), preserved aspect ratio, no unexpected
+cropping or horizontal overflow, no homepage console errors or JS exceptions.
+Actual mouse clicks and keyboard Tab/Enter reached /welcome.html and
+/gene_reveals.html with visible keyboard focus. Unchanged CSS renders the new
+portrait image slightly taller than the former square image (368.41px desktop,
+266.08px mobile). git diff --check passed.
+
+Evidence: .local-gene-review/offering-preview-20260920/ (screenshots, results,
+and exact.diff). Status: READY. Jim approved the preview and authorized committing
+these four files and pushing only agent-sandbox. Next safe step: complete that
+commit and push, then report the verified commit hash. No merge or deployment
+is authorized or performed.
+
+---
