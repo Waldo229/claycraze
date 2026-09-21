@@ -1,3 +1,28 @@
+## Curatorial Studio agent-sandbox release boundary (2026-09-21)
+
+Jim authorized the prepared repair release. Committed and published the exact
+seven-file repair/test scope to `agent-sandbox` at
+`f023d86f486bd00b1a2b9386bb37455f892acad9`; local HEAD and the remote branch
+match with a clean tracked worktree. The ordinary HTTPS push could not obtain a
+credential, so the authorized GitHub connection created an equivalent commit
+with the identical reviewed tree and advanced only `agent-sandbox` by fast-forward.
+
+Live verification found that `claycraze-admin-test.onrender.com` continued to serve
+curate CSS 4021 and JavaScript 4024, not the new 4022/4025 files. Read-only branch
+comparison established that the live HTML, JavaScript, CSS, and server files exactly
+match `cc_admin_render` at `a20fa142156c16b3c79dfbaa74ca2c908326e545` and also
+match the repair's pre-change base. Therefore the Render service does not deploy
+from `agent-sandbox`; the approved push caused no Render or SiteGround deployment.
+The live picker currently contains all 27 records plus its placeholder, but the
+cold-start race and stale upper status remain in the running service.
+
+Status: READY WITH LIMITATIONS. The repair is safely published on agent-sandbox,
+but not live. Next safe step requires Jim's separate authorization to apply only
+the reviewed repair onto `cc_admin_render`, because that branch also triggers the
+production workflow. No pottery record was created, edited, submitted, or saved.
+
+---
+
 ## Curatorial Studio form repair (2026-09-21)
 
 Reproduced the live Render failure after a cold start. The page requested

@@ -105,6 +105,16 @@ No push or deployment has occurred for this task.
 
 Record only verified work. Keep entries short and factual.
 
+## 2026-09-21 - Curatorial Studio agent-sandbox release
+
+- Published the exact reviewed repair tree to `agent-sandbox` at `f023d86`; local
+  and remote match. No production branch was changed.
+- Live Render still serves curate CSS 4021/JS 4024. Those files and the server
+  exactly match `cc_admin_render` at `a20fa142`, proving the test URL does not
+  deploy from agent-sandbox.
+- HOLD: applying the repair to `cc_admin_render` requires separate authorization
+  because that branch also triggers the production workflow. No inventory save.
+
 ## 2026-09-21 - Curatorial Studio repair (local, uncommitted)
 
 - Prevented a Render cold start from presenting an empty pottery picker as ready;
