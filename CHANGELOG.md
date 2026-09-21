@@ -105,6 +105,19 @@ No push or deployment has occurred for this task.
 
 Record only verified work. Keep entries short and factual.
 
+## 2026-09-21 - Curatorial Studio repair (local, uncommitted)
+
+- Prevented a Render cold start from presenting an empty pottery picker as ready;
+  the server now returns a named readiness response and the form retries it.
+- Synchronized both Save statuses and mode labels, restored clearing/JPEG/preview
+  behavior, completed the missing shape definitions, and made all drafting controls
+  functional. Kept Archive disabled because normal saves may not remove canonical
+  records; added the supported Donated status.
+- Added four regression tests. All 33 Node tests, JavaScript/Python syntax checks,
+  and diff checks passed. Local Express startup remains untested because this
+  workspace has Node 24 rather than the required Node 20 and sqlite3 did not install.
+- No commit, push, deployment, or canonical pottery write performed.
+
 ## 2026-09-20 - GENE Reveals entry links (local, uncommitted)
 
 - Linked the existing homepage image and a restrained caption to GENE Reveals;

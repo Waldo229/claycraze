@@ -2975,26 +2975,51 @@ app.get("/gallery-data/sculpture", (req, res) => {
   getPublicPiecesByShape("SCULP", res);
 });
 
-app.get("/gallery-data/all", (req, res) => {
-  const sql = `
-    SELECT ${PUBLIC_FIELDS}
-    FROM inventory
-    WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
-    ORDER BY id DESC
-  `;
+app.get("/gallery-data/all", async (req, res) => {
+  try {
+    const registration = await getRegistrationState();
 
-  db.all(sql, PUBLIC_STATUSES, (err, rows) => {
-    if (err) {
-      console.error("Could not load all gallery pieces:", err);
+    // Render begins accepting requests before its asynchronous SiteGround
+    // restore is complete. Returning [] during that window made the curator
+    // look ready while permanently leaving its piece picker empty.
+    if (!registration.registered) {
+      res.set("Retry-After", "1");
 
-      return res.status(500).json({
+      return res.status(503).json({
         ok: false,
-        error: err.message,
+        code: "CURATION_DATA_NOT_READY",
+        error: "Pottery records are still being restored. Please wait.",
+        registration,
       });
     }
 
-    res.json(rows || []);
-  });
+    const sql = `
+      SELECT ${PUBLIC_FIELDS}
+      FROM inventory
+      WHERE TRIM(LOWER(status)) IN (${publicStatusPlaceholders()})
+      ORDER BY id DESC
+    `;
+
+    db.all(sql, PUBLIC_STATUSES, (err, rows) => {
+      if (err) {
+        console.error("Could not load all gallery pieces:", err);
+
+        return res.status(500).json({
+          ok: false,
+          error: err.message,
+        });
+      }
+
+      res.json(rows || []);
+    });
+  } catch (err) {
+    console.error("Could not establish curation data readiness:", err);
+
+    res.status(500).json({
+      ok: false,
+      error: err.message,
+    });
+  }
 });
 
 app.post("/api/save-curation", requirePotteryWritable, async (req, res) => {

@@ -1,3 +1,43 @@
+## Curatorial Studio form repair (2026-09-21)
+
+Reproduced the live Render failure after a cold start. The page requested
+`/gallery-data/all` while the asynchronous SiteGround restore was still running;
+the route returned HTTP 200 with an empty array, so the Existing Piece picker
+remained empty even after all 27 records reached Render. The upper status beside
+Save Piece was also never updated. Generate Description and Suggest Price were
+empty functions, while Wine Label and Lao-tzu Line were not bound at all.
+
+Implemented locally on `agent-sandbox` with no commit, push, deployment, or
+canonical pottery write. `/gallery-data/all` now returns a named HTTP 503 readiness
+response with Retry-After until registration is complete. The curator retries that
+specific response for up to 30 seconds and displays the restore progress in both
+status locations. Both Save buttons now share mode labels and disabled-during-save
+state; mode buttons expose their pressed state; successful ID generation is
+reported; clearing the form also clears stale assist fields, dimensions, identifier,
+and preview; JPEG validation and preview alt text were restored. Shape definitions
+now include Face Jug, Ikebana, and Sculpture. All four drafting controls produce
+reviewable output. Donated is available as a normal status; Archive remains visible
+but disabled because the server correctly requires a separate protected workflow.
+CSS/JS cache versions were advanced narrowly.
+
+Verification: live browser reproduction confirmed the cold-start empty-picker race
+and the permanently stale upper status. Four new curator regression tests passed,
+including a 503-then-success restore sequence, synchronized status/mode controls,
+all drafting actions, and the server readiness gate. The full Node test suite passed
+33/33. Client and server JavaScript syntax, deployment Python syntax, and
+`git diff --check` passed. A full local Express/SQLite process test was unavailable:
+the workspace provides Node 24 while the project requires Node 20, and sqlite3's
+native install failed under the mismatched runtime. No repository file was changed
+by that failed install because `node_modules` is ignored.
+
+Status: READY WITH LIMITATIONS. Next safe step: review the local diff, then—only
+with Jim's authorization—commit and push `agent-sandbox` so Render can deploy the
+test service. After deployment, cold-start the Render service and verify that the
+picker waits and then shows all canonical records before testing a non-destructive
+edit. Production is untouched.
+
+---
+
 ## Homepage destinations sandbox deployment (2026-09-20)
 
 Verified agent-sandbox at 8a2b364c7cb38985440e32adb1f15aa0d8ace0d7 with

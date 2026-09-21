@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", initializeCurator);
 
-const APP_VERSION = "260527-clean-no-labels-file";
+const APP_VERSION = "260921-curator-readiness-and-controls";
+const DATA_RETRY_LIMIT = 30;
+const DATA_RETRY_DELAY_MS = 1000;
 
 const FORM_TYPES = {
   OV: { label: "Oval", category: "bonsai", title: "Oval Bonsai Container" },
@@ -9,6 +11,9 @@ const FORM_TYPES = {
   CS: { label: "Cascade", category: "bonsai", title: "Cascade Bonsai Container" },
   FREE: { label: "Freeform", category: "vessel", title: "Freeform Ceramic Piece" },
   SL: { label: "Slab", category: "bonsai", title: "Slab Bonsai Container" },
+  FJ: { label: "Face Jug", category: "face-jug", title: "Face Jug" },
+  IKE: { label: "Ikebana", category: "ikebana", title: "Ikebana Vessel" },
+  SCULP: { label: "Sculpture", category: "sculpture", title: "Ceramic Sculpture" },
 };
 const SHAPE_MAP = FORM_TYPES;
 let allPieces = [];
@@ -16,10 +21,12 @@ let currentPiece = null;
 let formMode = "edit";
 
 async function initializeCurator() {
+  bindEvents();
+
   try {
+    showStatus("Loading pottery records...", "working");
     allPieces = await loadPiecesFresh();
     populatePieceSelect(allPieces);
-    bindEvents();
     setEditMode();
 
     console.log(`ClaycrazE curator loaded: ${APP_VERSION}`);
@@ -30,15 +37,56 @@ async function initializeCurator() {
 }
 
 async function loadPiecesFresh() {
-  const response = await fetch(`/gallery-data/all?v=${Date.now()}`, {
-    cache: "no-store"
-  });
+  for (let attempt = 1; attempt <= DATA_RETRY_LIMIT; attempt += 1) {
+    const response = await fetch(`/gallery-data/all?v=${Date.now()}`, {
+      cache: "no-store"
+    });
 
-  if (!response.ok) {
-    throw new Error(`Could not load all gallery data: ${response.status}`);
+    const result = await readJsonResponse(response);
+
+    if (response.ok) {
+      if (!Array.isArray(result)) {
+        throw new Error("The pottery record response was not a list.");
+      }
+
+      return result;
+    }
+
+    if (
+      response.status === 503 &&
+      result &&
+      result.code === "CURATION_DATA_NOT_READY" &&
+      attempt < DATA_RETRY_LIMIT
+    ) {
+      showStatus(
+        `Render is restoring the pottery records (${attempt}/${DATA_RETRY_LIMIT})...`,
+        "working"
+      );
+      await wait(DATA_RETRY_DELAY_MS);
+      continue;
+    }
+
+    throw new Error(
+      (result && result.error) ||
+      `Could not load pottery records: ${response.status}`
+    );
   }
 
-  return await response.json();
+  throw new Error("Pottery records did not become ready. Reload the page to try again.");
+}
+
+async function readJsonResponse(response) {
+  const text = await response.text();
+
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch (_) {
+    throw new Error(`The server returned an unreadable response (${response.status}).`);
+  }
+}
+
+function wait(milliseconds) {
+  return new Promise(resolve => window.setTimeout(resolve, milliseconds));
 }
 
 function bindEvents() {
@@ -60,6 +108,8 @@ function bindEvents() {
 
   bindOptionalButton("generateDescription", generateDescription);
   bindOptionalButton("suggestPrice", suggestPrice);
+  bindOptionalButton("generateWineLabel", generateWineLabel);
+  bindOptionalButton("generateLaoTzu", generateLaoTzu);
 }
 
 function bindOptionalButton(id, handler) {
@@ -81,13 +131,8 @@ async function setCreateMode() {
   clearForm();
   setValue("status", "available");
 
-  await updateGeneratedId();
-
-  const saveButton = document.getElementById("saveButton");
-
-  if (saveButton) {
-    saveButton.textContent = "Create New Piece";
-  }
+  updateSaveButtonLabels("Create New Piece");
+  setModeButtonState("create");
 
   showPreviewMessage("Choose a shape and top image to create a new piece.");
   showStatus("Create mode. Choose shape, images, and record details.", "working");
@@ -100,12 +145,8 @@ function setEditMode() {
   document.getElementById("shape").disabled = true;
 
   clearForm();
-
-  const saveButton = document.getElementById("saveButton");
-
-  if (saveButton) {
-    saveButton.textContent = "Save Curatorial Changes";
-  }
+  updateSaveButtonLabels("Save Curatorial Changes");
+  setModeButtonState("edit");
 
   showStatus("Edit mode. Select an existing piece.", "working");
 }
@@ -117,7 +158,9 @@ function populatePieceSelect(pieces) {
     String(b.id || "").localeCompare(String(a.id || ""))
   );
 
-  select.innerHTML = '<option value="">Select piece</option>';
+  select.innerHTML = pieces.length
+    ? '<option value="">Select piece</option>'
+    : '<option value="">No pieces available</option>';
 
   sorted.forEach(piece => {
     const option = document.createElement("option");
@@ -134,6 +177,7 @@ function loadPiece(id) {
 
   if (!currentPiece) {
     clearForm();
+    showStatus("Edit mode. Select an existing piece.", "working");
     return;
   }
 
@@ -171,6 +215,7 @@ async function saveRecord(event) {
   event.preventDefault();
 
   try {
+    setSaveButtonsDisabled(true);
     showStatus("Saving record...", "working");
 
     let id = getValue("pieceId");
@@ -250,7 +295,7 @@ async function saveRecord(event) {
       body: JSON.stringify(piece)
     });
 
-    const result = await response.json();
+    const result = await readJsonResponse(response);
 
     if (!response.ok || !result.ok) {
       throw new Error(result.error || "Save failed.");
@@ -277,12 +322,18 @@ async function saveRecord(event) {
   } catch (error) {
     console.error(error);
     showStatus(error.message || "Save failed.", "error");
+  } finally {
+    setSaveButtonsDisabled(false);
   }
 }
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     if (!file) return resolve("");
+
+    if (!/image\/jpe?g/i.test(file.type)) {
+      return reject(new Error("Images must be JPEG files."));
+    }
 
     const reader = new FileReader();
 
@@ -316,13 +367,14 @@ async function updateGeneratedId() {
       { cache: "no-store" }
     );
 
-    const result = await response.json();
+    const result = await readJsonResponse(response);
 
     if (!response.ok || !result.ok) {
       throw new Error(result.error || "Could not generate piece ID.");
     }
 
     setValue("pieceId", result.id);
+    showStatus(`Next piece ID ready: ${result.id}`, "working");
 
     return result.id;
 
@@ -361,6 +413,7 @@ function previewSelectedTopImage() {
   preview.innerHTML = `
     <img
       src="${url}"
+      alt="Selected top image preview"
       style="max-width:100%; border-radius:12px;"
     >
   `;
@@ -374,7 +427,13 @@ function clearForm() {
   setValue("color", "");
   setValue("description", "");
   setValue("price", "");
+  setValue("objectIdentifier", "");
   setValue("privateNotes", "");
+  setValue("surfaceCharacter", "");
+  setValue("mood", "");
+  setValue("suggestedUse", "");
+  setValue("notableFeature", "");
+  setValue("geneOutput", "");
   setValue("status", "available");
   setValue("assignedTo", "studio");
 
@@ -382,6 +441,7 @@ function clearForm() {
 
   clearFileInput("topImageFile");
   clearFileInput("bottomImageFile");
+  showPreviewMessage("Select a piece or create a new one.");
 }
 
 function setStructuredDimensions(dimensions) {
@@ -395,6 +455,10 @@ function setStructuredDimensions(dimensions) {
     setValue("dimHeight", match[1]);
     setValue("dimWidth", match[2]);
     setValue("dimDepth", match[3]);
+  } else {
+    setValue("dimHeight", "");
+    setValue("dimWidth", "");
+    setValue("dimDepth", "");
   }
 }
 
@@ -424,7 +488,10 @@ function updatePreview(piece) {
           >`
         : ""
     }
-    <strong>${piece.id || ""}</strong>
+    <strong>${piece.id || ""}</strong><br>
+    ${piece.title || ""}<br>
+    ${piece.dimensions || ""}<br>
+    ${piece.status ? `<em>${piece.status}</em>` : ""}
   `;
 }
 
@@ -456,11 +523,39 @@ function clearFileInput(id) {
 
 function showStatus(message, type = "working") {
   const box = document.getElementById("statusBox");
+  const topBox = document.getElementById("topStatusBox");
 
   if (box) {
     box.textContent = message;
     box.className = `status-box ${type}`;
   }
+
+  if (topBox) {
+    topBox.textContent = message;
+    topBox.className = `status-inline ${type}`;
+  }
+}
+
+function updateSaveButtonLabels(label) {
+  for (const id of ["saveButton", "topSaveButton"]) {
+    const button = document.getElementById(id);
+    if (button) button.textContent = label;
+  }
+}
+
+function setSaveButtonsDisabled(disabled) {
+  for (const id of ["saveButton", "topSaveButton"]) {
+    const button = document.getElementById(id);
+    if (button) button.disabled = disabled;
+  }
+}
+
+function setModeButtonState(mode) {
+  const createButton = document.getElementById("createModeButton");
+  const editButton = document.getElementById("editModeButton");
+
+  if (createButton) createButton.setAttribute("aria-pressed", String(mode === "create"));
+  if (editButton) editButton.setAttribute("aria-pressed", String(mode === "edit"));
 }
 
 function getCurrentDateCode() {
@@ -506,6 +601,68 @@ function normalizeShapeCode(shape) {
   return raw;
 }
 
-function generateDescription() {}
+function generateDescription() {
+  const shape = normalizeShapeCode(getValue("shape"));
+  const shapeInfo = SHAPE_MAP[shape] || { title: "Ceramic Piece" };
+  const surface = getValue("surfaceCharacter") || getValue("color");
+  const mood = getValue("mood");
+  const use = getValue("suggestedUse");
+  const feature = getValue("notableFeature");
 
-function suggestPrice() {}
+  const draft = [
+    `${shapeInfo.title}.`,
+    surface ? `Surface: ${surface}.` : "",
+    mood ? `Mood: ${mood}.` : "",
+    use ? `Suggested use: ${use}.` : "",
+    feature ? `Notable feature: ${feature}.` : ""
+  ].filter(Boolean).join("\n");
+
+  setValue("geneOutput", draft);
+  showStatus("Description draft prepared. Review it before using it.", "success");
+}
+
+function suggestPrice() {
+  const shape = normalizeShapeCode(getValue("shape"));
+  const ranges = {
+    OV: "85–225",
+    RD: "60–185",
+    RC: "85–225",
+    CS: "95–225",
+    FREE: "50–175",
+    SL: "75–185",
+    FJ: "125–185",
+    IKE: "35–125",
+    SCULP: "75–225"
+  };
+  const range = ranges[shape] || "50–225";
+
+  setValue(
+    "geneOutput",
+    `Suggested price range: $${range}. Adjust for size, finish, presence, and difficulty.`
+  );
+  showStatus("Price range prepared. The final price remains yours.", "success");
+}
+
+function generateWineLabel() {
+  const title = (SHAPE_MAP[normalizeShapeCode(getValue("shape"))] || {
+    title: "Ceramic Piece"
+  }).title;
+  const surface = getValue("surfaceCharacter") || getValue("color");
+  const mood = getValue("mood");
+
+  setValue(
+    "geneOutput",
+    [title, surface, mood].filter(Boolean).join(" — ") || "The kiln has spoken."
+  );
+  showStatus("Short label prepared.", "success");
+}
+
+function generateLaoTzu() {
+  const use = getValue("suggestedUse");
+  const line = use
+    ? `The vessel waits; ${use} gives its emptiness purpose.`
+    : "The vessel is useful because of what it holds open.";
+
+  setValue("geneOutput", line);
+  showStatus("Lao-tzu line prepared for your review.", "success");
+}
