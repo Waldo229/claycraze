@@ -206,3 +206,16 @@ Record only verified work. Keep entries short and factual.
   git diff --check passed. Workflow, destinations, and public content unchanged.
 - Jim approved the four-file commit, including preserved work records, and push
   only to agent-sandbox. No promotion, retry, or deployment authorized or performed.
+
+## 2026-09-20 - Offering GENE production retry
+
+- Promoted only e0a2e95 to a20fa142156c16b3c79dfbaa74ca2c908326e545 and pushed
+  once; production workflow run 35553911695 succeeded. Exact four-file scope.
+- 33 tests passed, one Windows symlink skip; seven workflow fixtures and syntax,
+  manifest, and diff checks passed.
+- New JPEG returns 200 and matches Git/remote bytes. Updated /index.html passes
+  1440px/390px visual, mouse/keyboard navigation, overflow, and console checks.
+- READY WITH LIMITATIONS: bare / still serves old cached HTML after targeted
+  purges; cache-busted root matches new HTML. No broad purge or extra push/retry.
+- Next: SiteGround root-cache investigation. Jim authorized committing and pushing
+  these two work records only to agent-sandbox; no promotion or new deployment.

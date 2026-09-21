@@ -340,3 +340,43 @@ work records and pushing only agent-sandbox. Next safe step: complete that commi
 and push, then report its hash and tracked worktree status. The previously failed
 live deployment remains NOT READY; promotion, retry, and deployment are not
 authorized. Review evidence: .local-gene-review/offering-guard-exact.diff.
+
+## Offering GENE production retry completed with root-cache limitation (2026-09-20)
+
+Verified remote cc_admin_render exactly e27a1ce753a217fef98345de9ba7061e9128be73
+before promotion and immediately before pushing. Applied only e0a2e95 to the
+isolated production checkout, producing a20fa142156c16b3c79dfbaa74ca2c908326e545.
+The earlier two commits were not reapplied. Diff contained exactly guard-trees.py,
+test_guard.py, CURRENT_TASK.md, and CHANGELOG.md; guard/tests matched approval.
+
+All relevant local checks passed: 33 guard/manifest tests and one Windows native
+symlink skip, seven mocked deployment scenarios, YAML/Bash/Python syntax, Python
+3.6 guard grammar, manifest/source validation, and git diff --check. One push to
+cc_admin_render triggered run 35553911695, which completed successfully.
+Production remote tip matches a20fa142156c16b3c79dfbaa74ca2c908326e545.
+
+Remote HTML and JPEG hashes match the production Git blobs. Ordinary JPEG and
+index.html return 200 and match; CSS is unchanged. Initial stale index.html cache
+was cleared by the established targeted SiteGround purge. Bare / remains stale
+with the previous homepage hash despite targeted root purge responses returning
+OK. A ^/$ attempt was normalized by SiteGround to /^/$; the corrected /$ request
+also left root stale. No broad cache purge or page behavior changes were made.
+Cache-busted / returns the correct production HTML. Local checkout HTML uses CRLF;
+Git-blob/remote/HTTPS LF hashes, rather than checkout bytes, are authoritative.
+
+Live /index.html at 1440px and 390px passes: full new image composition, original
+1240:1269 proportions, no overflow, mouse and keyboard links to welcome, GENE
+Reveals, Theory, Practice, and brand/home; clean homepage console and no JS
+exceptions. Bare / was also checked at both widths: old image remains, while its
+links, proportions, overflow, and console checks pass. New root image check fails.
+
+Status: READY WITH LIMITATIONS. Deployment succeeded; bare-root cache still needs
+resolution. Next safe step: investigate the exact root-cache behavior with
+SiteGround before expanding purge scope. No second push or workflow retry made.
+Evidence: .local-gene-review/offering-retry-deployment.json,
+offering-retry-live-hashes.json, offering-retry-cache-results.json,
+offering-production-retry-index-20260920/, and
+offering-production-retry-root-status-20260920/. Jim authorized preserving these
+two work records in a documentation-only commit and push to agent-sandbox.
+No promotion or additional production deployment is authorized; records were not
+uploaded to the website.
