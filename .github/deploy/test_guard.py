@@ -164,6 +164,40 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(before, after)
         self.assertFalse((self.root / "trees/new").exists())
 
+    def test_preflight_accepts_only_exact_offering_root_jpeg_without_mutation(self):
+        self.current.write_text("[]")
+        offering = self.root / "offering_gene.jpg"
+        for exists in (False, True):
+            if exists:
+                offering.write_bytes(b"image fixture")
+            before = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+            with self.subTest(exists=exists), patch.object(Path, "read_bytes", autospec=True,
+                                                         side_effect=Path.read_bytes) as read:
+                guard.preflight(self.root, self.candidate.name, ["index.html", "offering_gene.jpg"])
+                self.assertEqual([call.args[0] for call in read.call_args_list], [self.current])
+            after = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+            self.assertEqual(before, after)
+
+    def test_preflight_rejects_unapproved_root_images_and_protected_targets(self):
+        for name in ["other.jpg", "offering_gene.jpeg", "offering_gene.jpg.bak",
+                     "OFFERING_GENE.JPG", "new/offering_gene.jpg", "../offering_gene.jpg",
+                     "data/offering_gene.jpg", "data/pieces.json", "images/pieces.json"]:
+            with self.subTest(name=name), patch.object(Path, "read_bytes") as read:
+                with self.assertRaises(ValueError):
+                    guard.preflight(self.root, self.candidate.name, [name])
+                read.assert_not_called()
+
+    def test_preflight_offering_still_rejects_directories_and_hardlinks(self):
+        offering = self.root / "offering_gene.jpg"
+        offering.mkdir()
+        with self.assertRaisesRegex(ValueError, "not a regular file"):
+            guard.preflight(self.root, self.candidate.name, ["offering_gene.jpg"])
+        offering.rmdir()
+        self.current.write_text("[]")
+        os.link(self.current, offering)
+        with self.assertRaisesRegex(ValueError, "Hard-linked"):
+            guard.preflight(self.root, self.candidate.name, ["offering_gene.jpg"])
+
     def test_preflight_rejects_missing_root_current_and_bad_json(self):
         with self.assertRaises(ValueError):
             guard.preflight(self.root / "absent", self.candidate.name, ["index.html"])
@@ -269,9 +303,15 @@ class ManifestTests(unittest.TestCase):
         self.assertIn("offering_gene.jpg", result)
         self.assertNotIn("data/trees.json", result)
 
+    def test_all_manifest_sources_pass_remote_preflight(self):
+        (self.root / "public/data/trees.json").write_text("[]")
+        guard.preflight(self.root / "public", ".trees-candidate-1-1.json",
+                        self.module.sources(self.root))
+
     def test_rejects_unsafe_unapproved_duplicate_and_data_entries(self):
         paths = list(self.module.EXPECTED)
-        for name in ["../outside", "images/*", "images/unapproved.jpg", "data/pieces.json", paths[1]]:
+        for name in ["../outside", "images/*", "images/unapproved.jpg", "other.jpg",
+                     "offering_gene.jpeg", "data/pieces.json", paths[1]]:
             self.manifest.write_text("\n".join([name] + paths[1:]) + "\n")
             with self.subTest(name=name), self.assertRaises(ValueError):
                 self.module.sources(self.root)

@@ -183,3 +183,26 @@ Record only verified work. Keep entries short and factual.
   29 existing tests passed, one Windows native-symlink fixture skipped.
 - Jim approved the five-file correction commit and push only to agent-sandbox.
   No merge or deployment authorized or performed.
+
+## 2026-09-20 - Offering GENE production promotion blocked
+
+- Promoted approved commits in order; pushed once to cc_admin_render at
+  e27a1ce753a217fef98345de9ba7061e9128be73 after exact-scope and test checks.
+- Deployment run 35552896254 failed in read-only preflight before uploads.
+  Existing guard rejects the root JPEG; reproduced locally. No repair or retry.
+- Live 1440px/390px checks passed for the existing page and links, with no overflow
+  or homepage console errors. Previous HTML remains live; new JPEG returns 404.
+- NOT READY. Required follow-up: narrowly scoped preflight allowance and regression
+  test for offering_gene.jpg, then separately authorized deployment.
+
+## 2026-09-20 - Exact Offering GENE remote preflight allowance
+
+- Preserved the local production-failure records. Added only the literal root
+  offering_gene.jpg exception to the existing remote preflight target rule.
+- Added exact-file acceptance, rejection, file-safety, and manifest-to-preflight
+  regression tests; retained data, path, symlink, and cleanup protections.
+- 33 tests passed; one Windows native-symlink skip. Seven mocked workflow scenarios,
+  YAML/Bash/Python syntax, Python 3.6 guard grammar, manifest validation, and
+  git diff --check passed. Workflow, destinations, and public content unchanged.
+- Jim approved the four-file commit, including preserved work records, and push
+  only to agent-sandbox. No promotion, retry, or deployment authorized or performed.
