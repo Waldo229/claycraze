@@ -119,3 +119,28 @@ commit and push, then report the verified commit hash. No merge or deployment
 is authorized or performed.
 
 ---
+
+## Offering GENE deployment coverage correction (2026-09-20)
+
+Verified agent-sandbox with clean tracked files before editing. The existing
+production workflow omitted the root JPEG referenced by the approved homepage.
+Added only offering_gene.jpg to .github/deploy/supplemental-public.txt and its
+strict allowlist in validate-manifest.py, updating the approved count to 26.
+Updated the existing manifest test count and asserted coverage of both index.html
+and offering_gene.jpg. Workflow, destinations, exclusions, data guards, and all
+public content are unchanged. CHANGELOG.md records this completed local repair.
+
+Validation: manifest/source validation passed; YAML parsing and bash -n for all
+three workflow run blocks passed; Python validator syntax passed. Existing tests:
+29 passed, one native-symlink fixture skipped for Windows privilege limitations;
+mocked symlink rejection passed. Initial sandbox fixture permissions required
+rerunning the tests outside the sandbox. git diff --check passed.
+
+Both files are covered by the same production deployment job: index.html via
+public/*.html and offering_gene.jpg via the relative supplemental manifest,
+targeting /home/customer/www/claycraze.com/public_html. Existing sequential upload
+behavior is preserved; deployment is not atomic. No protected pottery data read
+or modified. Jim approved this correction and authorized committing these five
+files and pushing only agent-sandbox. Status: READY. Next safe step: complete the
+commit and push, then report the hash and tracked worktree status. No merge or
+deployment is authorized or performed. Evidence: .local-gene-review/offering-coverage.diff.
