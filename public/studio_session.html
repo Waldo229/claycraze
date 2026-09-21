@@ -80,6 +80,11 @@
       letter-spacing: 0.08em;
     }
 
+    .site-footer { border-top: 1px solid rgba(242, 237, 231, 0.18); }
+    .footer-shell { max-width: 1180px; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; color: rgba(242, 237, 231, 0.68); font-size: 0.85rem; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 16px; }
+    .footer-links a { color: inherit; text-underline-offset: 3px; }
+
     @media (max-width: 700px) {
       .studio-session-page {
         padding: 28px 16px 48px;
@@ -162,6 +167,16 @@
 
 
 </div>
-    
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-shell">
+      <small>&copy; 2026 Jim Alexander, ClaycrazE. All rights reserved.</small>
+      <nav class="footer-links" aria-label="Legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/use-copyright.html">Use &amp; Copyright</a>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>
