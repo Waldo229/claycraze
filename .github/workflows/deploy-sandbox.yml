@@ -41,13 +41,13 @@ jobs:
           echo "Checking remote runtime, paths, permissions, and current Trees data..."
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
             "command -v python3 >/dev/null && python3 - preflight '$SG_TARGET' '$candidate' '$targets'" \
-            < .github/deploy/guard-trees.py
+            < .github/deploy/guard-trees-sandbox.py
 
           cleanup_candidate() {
             result=$?
             trap - EXIT
             if ! ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-              "python3 - cleanup '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py; then
+              "python3 - cleanup '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees-sandbox.py; then
               echo "Exact candidate cleanup failed; manual review is required." >&2
               result=1
             fi
@@ -61,7 +61,7 @@ jobs:
           scp -P "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no \
             public/data/trees.json "$SG_USER@$SG_HOST:$SG_TARGET/data/$candidate"
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "python3 - validate '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py
+            "python3 - validate '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees-sandbox.py
 
           echo "Preparing SiteGround public folders..."
 
@@ -125,6 +125,6 @@ jobs:
 
           echo "Revalidating and applying the guarded Trees candidate..."
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
-            "python3 - apply '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py
+            "python3 - apply '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees-sandbox.py
 
           echo "Deploy complete. Approved static files and guarded Trees data updated; other canonical data remains untouched."
