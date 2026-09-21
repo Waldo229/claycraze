@@ -2,6 +2,14 @@
 
 Record only verified work. Keep entries short and factual.
 
+## 2026-09-21 - Curatorial Studio production promotion
+
+- Jim authorized promoting only the reviewed form-readiness repair to
+  `cc_admin_render`; isolated checkout began at production `a20fa142`.
+- Applied the exact five functional/test files from `f023d86`; production work
+  records were updated separately. No pottery data or unrelated payload included.
+- Pre-push and live deployment results follow after verification. Status: HOLD.
+
 ## Unreleased - production integration review
 
 ### Deployment coverage

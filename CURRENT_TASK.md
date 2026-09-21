@@ -1,3 +1,22 @@
+## Curatorial Studio production promotion (2026-09-21)
+
+Jim separately authorized promoting the reviewed Curatorial Studio repair to
+`cc_admin_render` after live verification established that the Render service
+deploys from that branch rather than `agent-sandbox`. The isolated production
+checkout began exactly at `a20fa142156c16b3c79dfbaa74ca2c908326e545`.
+
+Applied only the five functional/test files from agent-sandbox repair `f023d86`:
+`admin/curate.html`, `admin/js/curate.js`, `public/css/curate.css`, `server.js`,
+and `tests/curate.test.js`. The production work records are updated here instead
+of replacing them with agent-sandbox history. No pottery data, images, deployment
+workflow, public gallery content, or unrelated site file is included.
+
+Pre-push verification and the resulting production/Render deployment are recorded
+below when complete. Until then, status is HOLD. No form submission or pottery
+record write is authorized as part of verification.
+
+---
+
 # Current Task: Production Integration and Deployment Hardening
 
 ## Scope and status

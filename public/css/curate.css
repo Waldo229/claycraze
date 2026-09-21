@@ -184,6 +184,22 @@ button:hover {
   color: #efb0a3;
 }
 
+.status-inline.success {
+  color: #d5efbf;
+}
+
+.status-inline.error {
+  color: #efb0a3;
+}
+
+button:disabled,
+select:disabled,
+input:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
 .image-replace-panel {
   margin-top: 1.5rem;
 }
