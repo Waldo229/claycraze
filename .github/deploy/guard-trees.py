@@ -80,6 +80,7 @@ def preflight(root, name, targets):
     for relative in targets:
         if (not isinstance(relative, str) or relative.startswith("data/")
                 or not (("/" not in relative and relative.endswith(".html"))
+                        or relative == "offering_gene.jpg"
                         or relative.startswith(("css/", "js/", "gallery/", "images/", "trees/")))):
             raise ValueError("Invalid static target")
         target = safe_path(root, relative)

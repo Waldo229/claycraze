@@ -144,3 +144,67 @@ or modified. Jim approved this correction and authorized committing these five
 files and pushing only agent-sandbox. Status: READY. Next safe step: complete the
 commit and push, then report the hash and tracked worktree status. No merge or
 deployment is authorized or performed. Evidence: .local-gene-review/offering-coverage.diff.
+
+## Offering GENE production promotion - deployment blocked (2026-09-20)
+
+Jim authorized promoting only 600dcd0 then 6418520. Verified remote production
+cc_admin_render at f1700e0442e062e6089c75cd5a93cbc76033cfa2 and its existing
+production workflow. Applied both commits cleanly in .local-offering-production:
+272452e21c46723863a3d0bf1b4902e22fd3e354 then
+e27a1ce753a217fef98345de9ba7061e9128be73. Exact seven-file diff contained only
+approved HTML, JPEG, manifest, validator, tests, and work records. Payload and
+coverage files matched the approved source; no unrelated content changed.
+
+Pre-push checks: 29 guard/manifest tests passed; one Windows native-symlink skip;
+seven mocked shell fixtures passed; YAML, all three Bash blocks, Python validator
+syntax, manifest/source validation, and git diff --check passed. One normal push
+to cc_admin_render succeeded. Run 35552896254 failed during read-only remote
+preflight, before uploads. No retry, manual upload, or additional push occurred.
+
+Cause: guard-trees.py preflight permits root HTML and named subdirectories but
+rejects offering_gene.jpg as Invalid static target. Reproduced locally against
+the production candidate. Earlier coverage checks missed this separate guard.
+No guard repair was made. Production data was not changed by the failed run.
+
+Live verification at 1440px and 390px: previous Ultimate GENE image still loads
+with correct proportions; welcome, GENE Reveals, Theory, and Practice links pass
+mouse/keyboard checks; no horizontal overflow, homepage console errors, or JS
+exceptions. Root and index.html hashes match prior production; JPEG URL is 404;
+CSS matches production. Offering GENE is NOT deployed. Status: NOT READY.
+
+Next safe step: Jim reviews an exact offering_gene.jpg preflight allowance and
+regression test before a separately authorized repair/redeployment. Evidence:
+.local-gene-review/offering-production.diff, offering-deployment-failure.log,
+offering-live-hashes.json, and offering-production-live-20260920/results.json.
+These task and changelog updates remain local and uncommitted on agent-sandbox.
+
+## Offering GENE exact remote-preflight correction (2026-09-20)
+
+Prepared on agent-sandbox; preserved the uncommitted production-failure records
+above and in CHANGELOG.md. The failing rule in guard-trees.py preflight accepted
+root *.html or existing css/js/gallery/images/trees prefixes, but not the approved
+root JPEG. Added only the exact relative == "offering_gene.jpg" exception. No
+arbitrary JPEG allowance or additional directory access was introduced.
+
+Changed guard-trees.py and its existing test_guard.py suite. Tests cover absent
+and existing root offering_gene.jpg without mutation, reading only fixture Trees
+data; rejection of other.jpg, filename/case variants, new directory paths,
+traversal, and protected pottery-data paths before reading; existing directory
+and hard-link rejection; and passing every validated manifest fixture source
+through the actual remote preflight. Manifest rejection cases now include other
+root JPEGs. Existing path, symlink, cleanup, and data protections remain intact.
+
+Results: 34 guard/manifest tests, 33 passed and one native-symlink skip due to
+Windows privilege limitations; mocked symlink rejection passed. All seven local
+mocked workflow scenarios passed. YAML parsing, all three Bash run-block syntax
+checks, all deployment Python syntax, guard Python 3.6 grammar, 26-file manifest
+validation, and git diff --check passed. Python 3.6 runtime was not exercised.
+Workflow, destinations, manifest, source validator, and public files are unchanged.
+No real production data read or changed; no remote preflight, workflow retry,
+commit, push, or deployment executed for this correction.
+
+Status: READY. Jim approved committing the guard correction, tests, and preserved
+work records and pushing only agent-sandbox. Next safe step: complete that commit
+and push, then report its hash and tracked worktree status. The previously failed
+live deployment remains NOT READY; promotion, retry, and deployment are not
+authorized. Review evidence: .local-gene-review/offering-guard-exact.diff.
