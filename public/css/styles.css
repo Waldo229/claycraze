@@ -2411,3 +2411,21 @@ body .kiln-watch-grid .room-copy {
   letter-spacing: 0.16em;
   color: var(--muted);
 }
+
+
+/* Site footer and plain-language policy pages */
+.site-footer { border-top: 1px solid var(--line); background: rgba(16, 10, 6, 0.42); color: var(--muted); }
+.footer-shell { max-width: 1180px; margin: 0 auto; padding: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; font-size: 0.85rem; line-height: 1.6; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1rem; }
+.footer-links a { color: inherit; text-underline-offset: 0.2em; }
+.footer-links a:hover, .footer-links a:focus-visible { color: #f4e8cc; }
+.legal-page { width: min(100%, 860px); margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+.legal-page h1 { margin: 0 0 1rem; color: #f4e8cc; font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1; font-weight: 400; }
+.legal-page h2 { margin: 2.4rem 0 0.75rem; color: #f4e8cc; font-size: 1.5rem; font-weight: 400; }
+.legal-page p, .legal-page li { color: rgba(244, 232, 204, 0.78); font-size: 1.05rem; line-height: 1.75; }
+.legal-page ul { padding-left: 1.25rem; }
+.legal-updated { margin-bottom: 2rem; color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 600px) {
+  .footer-shell { align-items: flex-start; flex-direction: column; }
+  .legal-page { padding: 2.75rem 1rem 4rem; }
+}
