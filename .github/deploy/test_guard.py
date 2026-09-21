@@ -264,7 +264,9 @@ class ManifestTests(unittest.TestCase):
 
     def test_approved_sources(self):
         result = self.module.sources(self.root)
-        self.assertEqual(len(result), 26)
+        self.assertEqual(len(result), 27)
+        self.assertIn("index.html", result)
+        self.assertIn("offering_gene.jpg", result)
         self.assertNotIn("data/trees.json", result)
 
     def test_rejects_unsafe_unapproved_duplicate_and_data_entries(self):

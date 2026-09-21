@@ -8,6 +8,7 @@ images/brand/scroll_gene.svg
 images/favicon-16.png
 images/favicon-32.png
 images/favicon.svg
+offering_gene.jpg
 trees/chris-schmuck/azalea/index.html
 trees/chris-schmuck/bare-in-the-forest/index.html
 trees/chris-schmuck/chris-tree-8/index.html

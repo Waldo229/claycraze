@@ -172,3 +172,14 @@ Record only verified work. Keep entries short and factual.
 - git diff --check passed. Review evidence: .local-gene-review/offering-preview-20260920/.
 - Jim approved the preview and authorized the four-file commit and push only to
   agent-sandbox. No merge or deployment authorized or performed.
+
+## 2026-09-20 - Offering GENE deployment coverage
+
+- Added the exact root offering_gene.jpg path to the supplemental manifest and
+  strict validator allowlist (26 files); updated the existing coverage test.
+- Workflow and public files unchanged; both landing HTML and JPEG now covered
+  by the existing production job. Destinations and data protections preserved.
+- YAML/Bash/Python syntax, manifest validation, and git diff --check passed;
+  29 existing tests passed, one Windows native-symlink fixture skipped.
+- Jim approved the five-file correction commit and push only to agent-sandbox.
+  No merge or deployment authorized or performed.
