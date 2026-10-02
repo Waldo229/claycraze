@@ -1,3 +1,16 @@
+## 2026-10-02 - Trees in Conversation heading
+
+Jim approved Trees in Conversation as the heading, with UNDER CONSTRUCTION
+beneath it followed by the existing text. Updated the h1 and browser title in
+public/trees/index.html; added the subtitle using the existing threshold-kicker
+class. Exact source comparison confirms only title/subtitle edits. Collaboration
+paragraph, display-only notice and artist cards/links remain unchanged.
+Jim explicitly authorized publication. Deployment/live verification pending;
+next step: check Actions and the live Trees page.
+
+Prior collaboration c422e30 deployed successfully in Actions run 37061197978;
+live verification confirmed the text with a fresh page URL.
+
 ## 2026-10-02 - Trees collaboration introduction
 
 Jim approved the collaboration wording and requested it be written to the site.
