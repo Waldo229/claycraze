@@ -1,3 +1,16 @@
+## 2026-10-02 - Trees collaboration introduction
+
+Jim approved the collaboration wording and requested it be written to the site.
+Added the approved paragraph to public/trees/index.html above the existing
+display-only notice. Under-construction heading, notice, artist cards and links
+remain intact. Exact source comparison confirms only this paragraph was added.
+No Merdi Bonsai reference was found in the current public HTML source.
+No styles, assets, inventory or unrelated public content changed.
+Deployment/live verification pending; next step: check Actions and Trees page.
+
+Homepage heading commit 4e34cc4 deployed successfully in Actions run 37054568403;
+live browser verification confirmed the approved heading.
+
 ## 2026-10-02 - Refine homepage heading
 
 Jim approved replacing the homepage heading with "For trees, flowers, and
