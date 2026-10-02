@@ -1,3 +1,15 @@
+## 2026-10-02 - Refine homepage heading
+
+Jim approved replacing the homepage heading with "For trees, flowers, and
+contemplative rooms." Removed "Quiet pots" from the h1 in public/index.html.
+Verified the source contains the expected old h1 and the edit changes only
+that heading. Approved subtitle and existing layout, images and links remain.
+No CSS, assets, inventory, or unrelated public content changed.
+Deployment/live verification pending; next step: check Actions and homepage.
+
+Subtitle commit 0ddf045 deployed successfully in Actions run 37053495168.
+Live browser verification confirmed the approved two-sentence subtitle.
+
 ## 2026-10-02 - Homepage pottery subtitle
 
 Jim approved the refined homepage wording and requested it be written to the
