@@ -298,9 +298,10 @@ class ManifestTests(unittest.TestCase):
 
     def test_approved_sources(self):
         result = self.module.sources(self.root)
-        self.assertEqual(len(result), 27)
+        self.assertEqual(len(result), 28)
         self.assertIn("index.html", result)
         self.assertIn("offering_gene.jpg", result)
+        self.assertIn("images/gene-kilnwatch-emoji.png", result)
         self.assertNotIn("data/trees.json", result)
 
     def test_all_manifest_sources_pass_remote_preflight(self):

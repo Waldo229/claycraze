@@ -2,6 +2,14 @@
 
 Record only verified work. Keep entries short and factual.
 
+## 2026-10-02 - GENE Kiln Watch image deployment coverage
+
+- Corrected the omitted production image by adding its exact path to the
+  supplemental manifest and validator (27 approved files).
+- Updated the existing coverage assertion; all 34 guard/manifest tests passed.
+- Workflow, remote guard, public payloads and protected inventory unchanged.
+- Production deployment and live-image verification pending this commit.
+
 ## 2026-09-21 - Curatorial Studio production promotion
 
 - Jim authorized promoting only the reviewed form-readiness repair to

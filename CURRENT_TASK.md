@@ -1,3 +1,20 @@
+## 2026-10-02 - GENE Kiln Watch image deployment coverage
+
+Jim requested pushing the replacement gene-kilnwatch-emoji.png to GitHub and
+SiteGround. Image commit 03915a1 reached production branch cc_admin_render, but
+the successful job omitted this file: only images/curated and images/system
+are ordinarily uploaded. The live URL still returned the previous image.
+
+Added exactly images/gene-kilnwatch-emoji.png to the supplemental manifest and
+validator allowlist, increasing the approved count to 27. Updated the existing
+coverage test to require that image. All 34 local guard/manifest tests passed,
+including manifest-to-remote-preflight coverage. Existing workflow and guard
+are unchanged. No public payload or protected inventory changed in this repair.
+
+Next step: deploy this correction through the existing production workflow and
+verify the live image matches the committed Git blob. Deployment verification
+is pending at the time of this commit.
+
 ## Curatorial Studio production promotion (2026-09-21)
 
 Jim separately authorized promoting the reviewed Curatorial Studio repair to

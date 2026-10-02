@@ -17,6 +17,7 @@ EXPECTED = (
     'images/favicon-16.png',
     'images/favicon-32.png',
     'images/favicon.svg',
+    'images/gene-kilnwatch-emoji.png',
     'offering_gene.jpg',
     'trees/chris-schmuck/azalea/index.html',
     'trees/chris-schmuck/bare-in-the-forest/index.html',
@@ -40,8 +41,8 @@ ORDINARY = ("css", "js", "gallery", "images/curated", "images/system")
 def sources(root):
     public = root / "public"
     paths = (root / ".github/deploy/supplemental-public.txt").read_text().splitlines()
-    if len(paths) != 26 or set(paths) != set(EXPECTED):
-        raise ValueError("Manifest must contain exactly the 26 approved static files")
+    if len(paths) != 27 or set(paths) != set(EXPECTED):
+        raise ValueError("Manifest must contain exactly the 27 approved static files")
     all_paths = set(paths)
     all_paths.update(path.relative_to(public).as_posix() for path in public.glob("*.html"))
     for directory in ORDINARY:
@@ -69,6 +70,6 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--targets"]:
         print(base64.b64encode(json.dumps(paths).encode("utf-8")).decode("ascii"))
     elif not sys.argv[1:]:
-        print("Validated 26 supplemental files and existing static sources; inventory excluded.")
+        print("Validated 27 supplemental files and existing static sources; inventory excluded.")
     else:
         raise SystemExit("Unexpected arguments")
