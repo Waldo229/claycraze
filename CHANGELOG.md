@@ -1,3 +1,17 @@
+## 2026-10-02 - Practice sales tax clarification
+
+Jim requested amending the published purchase notice with "Prices do not
+include applicable sales tax." Added that exact sentence before the viewing
+disclaimer in public/practice.html. Existing notice, mailto link and layout
+are preserved. Exact source review confirms the single sentence addition.
+No inventory, prices, payment processing or tax calculation changed.
+Deployment/live verification pending; next step is to check Actions and the
+live Practice notice.
+
+Previous Practice notice commit 3c9a2b0 deployed successfully in Actions run
+37049197323. Live browser verification confirmed viewing by arrangement,
+mailto:jim@claycraze.com, check/Square wording and the no-commitment disclaimer.
+
 ## 2026-10-02 - Practice viewing and payment notice
 
 Jim authorized publishing the prepared Practice subtitle with its disclaimer.
