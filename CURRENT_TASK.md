@@ -1,3 +1,15 @@
+## 2026-10-02 - Complete homepage subtitle sentence
+
+Jim approved updating and publishing the homepage subtitle:
+Jim Alexander designs quiet, high-fired stoneware containers inspired by Asian
+traditions for bonsai enthusiasts, floral designers, and interior decorators.
+Replaced only the introductory paragraph in public/index.html. Exact reversible
+source comparison passed; heading, images, links and layout remain unchanged.
+Deployment/live verification pending; next step: check Actions and homepage.
+
+Asterisk note 19f0ad3 deployed successfully in Actions run 37069206276;
+live browser verified the exact asterisk and display-only sentence.
+
 ## 2026-10-02 - Asterisk on Trees display-only notice
 
 Jim requested the asterisk note: * The current selection of trees is for display
