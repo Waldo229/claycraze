@@ -1,3 +1,19 @@
+## 2026-10-02 - Trees display-only notice
+
+Jim approved committing and deploying the Trees introduction replacement.
+public/trees/index.html now says "Under construction." followed by "The current
+selection of trees is for display only and is not for sale." Existing artist
+cards and links are preserved. Source checks confirmed both replacement texts
+and both artist links; the source blob still matches the reviewed version.
+Only this HTML and work records changed; no Trees or pottery data changed.
+Deployment/live verification pending. Next step: check the production workflow
+and live Trees introduction.
+
+Slab correction follow-up: commit 7e16239 deployed successfully in Actions run
+37042200223. Live browser checks confirmed both slab card links use the shared
+piece.html route, both pots' top/bottom images load, and bottom thumbnail
+selection updates the main image and full-size link.
+
 ## 2026-10-02 - Slab gallery shared renderer correction
 
 Jim authorized committing and deploying this correction. Changed only
