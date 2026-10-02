@@ -1,3 +1,19 @@
+## 2026-10-02 - Practice viewing and payment notice
+
+Jim authorized publishing the prepared Practice subtitle with its disclaimer.
+Replaced only the introduction paragraph in public/practice.html with viewing
+by arrangement, a mailto link for jim@claycraze.com, payment by check or credit
+card (Square), and "Viewing is not a commitment to purchase." The heading,
+Shih-te figure, directory and footer remain unchanged. Source checks confirmed
+only the reviewed paragraph changed and the source blob still matches review.
+Only HTML and work records changed; no pottery or Trees records changed.
+Deployment/live verification pending. Next step: check Actions and the live
+Practice introduction.
+
+Trees notice follow-up: commit 839454d deployed successfully in Actions run
+37046834750. Live browser verification confirmed "Under construction." and
+"The current selection of trees is for display only and is not for sale."
+
 ## 2026-10-02 - Trees display-only notice
 
 Jim approved committing and deploying the Trees introduction replacement.
