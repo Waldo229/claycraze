@@ -1,3 +1,15 @@
+## 2026-10-02 - Asterisk on Trees display-only notice
+
+Jim requested the asterisk note: * The current selection of trees is for display
+only and is not for sale. Replaced only the notice text in public/trees/index.html;
+used the HTML asterisk entity. Exact reversible source comparison passed.
+The heading, subtitle, collaboration paragraph and artist cards remain unchanged.
+Jim explicitly authorized publication. Deployment/live verification pending;
+next step: check Actions and the live notice.
+
+Previous notice 95af834 deployed successfully in Actions run 37067309204;
+live browser verified The trees currently displayed are not for sale.
+
 ## 2026-10-02 - Shorten Trees display-only notice
 
 Jim requested the exact sentence: The trees currently displayed are not for sale.
