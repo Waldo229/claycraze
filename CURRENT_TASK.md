@@ -1,3 +1,18 @@
+## 2026-10-02 - Homepage pottery subtitle
+
+Jim approved the refined homepage wording and requested it be written to the
+site. Replaced only the subtitle paragraph in public/index.html with:
+"Quiet, high-fired stoneware containers inspired by Asian traditions.
+Individually crafted by Jim Alexander for bonsai enthusiasts, floral designers,
+and interior decorators." The heading and GENE image/links remain unchanged.
+Verified an exact paragraph-only replacement against current production source.
+No data, pottery prices, assets, CSS or unrelated public content changed.
+Deployment/live verification pending; next step: check Actions and homepage.
+
+Local pickup notice 25c7f1e deployed successfully in Actions run 37050456978.
+Live browser verification confirmed Hampton Roads, the Historic Triangle,
+Williamsburg/Yorktown/Jamestown and no shipping, with existing notice intact.
+
 ## 2026-10-02 - Practice local viewing and pickup area
 
 Jim requested amending the published Practice notice to specify Hampton Roads
