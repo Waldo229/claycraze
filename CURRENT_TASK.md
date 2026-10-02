@@ -1,3 +1,19 @@
+## 2026-10-02 - Slab gallery shared renderer correction
+
+Jim authorized committing and deploying this correction. Changed only
+public/gallery/slabs.html and these work records. Replaced the standalone
+slabs.js include with shape-gallery.js?v=1020, configured bonsai / SL, and
+matched the practice-page body used by the other form galleries. Slab cards
+now target /gallery/piece.html?id=... rather than /piece/...; the shared detail
+page uses image_path_2 and image_path_3 for top and bottom thumbnails.
+
+Verification: inspected all eight pottery gallery script configurations and
+the shared card/detail source. Confirmed the replacement has the SL filter,
+shared renderer and body, and no slabs.js include. The existing workflow
+uploads public/gallery/ and public/js/. No pottery inventory changes.
+Deployment and live verification are pending. Next step: verify the Actions
+run and live slab links after advancing cc_admin_render.
+
 ## 2026-10-02 - Refresh cached Normal GENE image
 
 Image-coverage deployment 5fa5619 succeeded (Actions run 37018239487).
