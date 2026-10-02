@@ -53,7 +53,7 @@ test('hottest current probe and numeric strings', () => {
 });
 test('all image paths exist with exact capitalization', () => {
   for (const temp of [0,200,800,1001,1801,2000]) {
-    const filename = gene.classify(temp).image.split('/').pop();
+    const filename = gene.classify(temp).image.split('?')[0].split('/').pop();
     assert.ok(fs.readdirSync('public/images').includes(filename), filename);
   }
 });

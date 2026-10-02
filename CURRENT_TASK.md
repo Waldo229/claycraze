@@ -1,3 +1,18 @@
+## 2026-10-02 - Refresh cached Normal GENE image
+
+Image-coverage deployment 5fa5619 succeeded (Actions run 37018239487).
+The live PNG matched Git blob 0504f9e8a64b177ca7edf82c9020e4bea8eea701.
+Jim's screenshot nevertheless showed the previous Normal image after SiteGround
+cache clearing and browser refresh. Versioned the Normal image URL and the shared
+script URL on Kiln Watch and its graph page so existing cached URLs are bypassed.
+Temperature thresholds, freshness checks and other states are unchanged.
+
+Adjusted the existing filename-existence test to ignore URL query parameters.
+All 29 temperature tests passed, including both pages' transitions, failure,
+recovery and expiry. Image filenames were checked against the repository tree;
+local test image files were placeholders. Live deployment verification follows
+this commit. Next step: verify the versioned page, script and PNG on SiteGround.
+
 ## 2026-10-02 - GENE Kiln Watch image deployment coverage
 
 Jim requested pushing the replacement gene-kilnwatch-emoji.png to GitHub and

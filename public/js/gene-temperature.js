@@ -2,7 +2,7 @@
   "use strict";
   const MAX_AGE_MS = 120000;
   const states = [
-    [200, "Normal", "/images/gene-kilnwatch-emoji.png"],
+    [200, "Normal", "/images/gene-kilnwatch-emoji.png?v=0504f9e8"],
     [800, "Chili", "/images/gene-chilli-pepper-hot.png"],
     [1001, "Safety GENE", "/images/safety_gene.jpg"],
     [1801, "atomic_gene1", "/images/1atomic.jpg"],

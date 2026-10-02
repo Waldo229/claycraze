@@ -2,6 +2,14 @@
 
 Record only verified work. Keep entries short and factual.
 
+## 2026-10-02 - Normal GENE image cache refresh
+
+- Verified previous coverage deployment succeeded and live PNG matched GitHub.
+- Versioned the Normal image and both pages' shared script URLs after Jim's
+  screenshot showed the old cached image despite cache clearing.
+- Adjusted filename lookup in existing test; all 29 temperature tests passed.
+- Temperature and evidence behavior unchanged; deployment verification pending.
+
 ## 2026-10-02 - GENE Kiln Watch image deployment coverage
 
 - Corrected the omitted production image by adding its exact path to the
