@@ -1,3 +1,14 @@
+## 2026-10-02 - Shorten Trees display-only notice
+
+Jim requested the exact sentence: The trees currently displayed are not for sale.
+Replaced only the previous display-only sentence in public/trees/index.html.
+Exact reversible source comparison passed. Heading, construction subtitle,
+collaboration copy and artist cards/links remain unchanged. Jim explicitly authorized publication.
+Deployment/live verification pending; next step: check Actions and live notice.
+
+Heading commit 8df3cb7 deployed successfully in Actions run 37065448650;
+live browser verified Trees in Conversation and UNDER CONSTRUCTION.
+
 ## 2026-10-02 - Trees in Conversation heading
 
 Jim approved Trees in Conversation as the heading, with UNDER CONSTRUCTION
