@@ -1,3 +1,16 @@
+## 2026-10-02 - Practice local viewing and pickup area
+
+Jim requested amending the published Practice notice to specify Hampton Roads
+and the Historic Triangle (Williamsburg, Yorktown and Jamestown), with no
+shipping. Replaced only the first purchase-notice sentence with the reviewed
+viewing/pickup wording. Email, payment, tax and no-commitment wording remain.
+Verified the exact one-sentence source replacement. No inventory, data,
+prices, payment processing, or unrelated public content changed.
+Deployment/live verification pending; next step: check Actions and live notice.
+
+Sales-tax amendment f9d5f3a deployed successfully in Actions run 37049618468.
+Live browser verification confirmed the sales-tax sentence and existing notice.
+
 ## 2026-10-02 - Practice sales tax clarification
 
 Jim requested amending the published purchase notice with "Prices do not
