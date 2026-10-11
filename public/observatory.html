@@ -318,6 +318,7 @@
 
         <section class="panel">
           <h2 class="panel-title">Observation</h2>
+          <p class="note-copy" id="reflectionStatus" role="status">Awaiting reflection timestamp.</p>
 
           <div class="note-block">
             <span class="note-label">What is registered</span>
@@ -511,7 +512,41 @@
         }
       }
 
+
+      let lastReflection = null;
+      let reflectionFetchFailed = false;
+
+      function renderReflectionStatus() {
+        const stamp = lastReflection?.generated_at_utc;
+        const generated = typeof stamp === "string" ? Date.parse(stamp) : NaN;
+        if (!Number.isFinite(generated)) {
+          $("reflectionStatus").textContent =
+            "Reflection time unavailable; freshness unknown.";
+          return;
+        }
+        const age = (Date.now() - generated) / 1000;
+        const timeLabel = new Date(generated).toLocaleString();
+        let status;
+        if (reflectionFetchFailed) {
+          status = "Update unavailable; showing the last received record.";
+        } else if (age < -5) {
+          status = "Record time is ahead of this clock; freshness unknown.";
+        } else if (age > 180) {
+          status = "Older record; observation and interpretation are not current.";
+        } else {
+          status = "Recent reflection.";
+        }
+        if (lastReflection.fresh_evidence === false) {
+          status += " Source evidence was unavailable when this was recorded.";
+        }
+        $("reflectionStatus").textContent =
+          "Reflection: " + timeLabel + ". " + status;
+      }
+
       function renderObservatory(data) {
+        lastReflection = data;
+        reflectionFetchFailed = false;
+        renderReflectionStatus();
         const observations = Array.isArray(data?.observations)
           ? data.observations.filter(Boolean)
           : [];
@@ -572,7 +607,7 @@
       async function getJson(url) {
         const separator = url.includes("?") ? "&" : "?";
         const response = await fetch(`${url}${separator}t=${Date.now()}`, {
-          cache: "no-store"
+          cache: "no-store", signal: AbortSignal.timeout(8000)
         });
 
         if (!response.ok) {
@@ -601,6 +636,9 @@
 
         if (observatoryResult.status === "fulfilled") {
           renderObservatory(observatoryResult.value);
+        } else {
+          reflectionFetchFailed = true;
+          renderReflectionStatus();
         }
 
         const failed =
@@ -621,6 +659,7 @@
 
       refresh();
       window.setInterval(refresh, REFRESH_MS);
+      window.setInterval(renderReflectionStatus, 1000);
     })();
   </script>
 
