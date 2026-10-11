@@ -554,6 +554,7 @@
               <span id="bpm">--</span><span class="reading-unit">BPM</span>
             </p>
             <p class="reading-state" id="pulseState">Waiting for pulse</p>
+            <p class="reading-note" id="pulseReason">Awaiting sensor data.</p>
           </div>
 
           <div class="reading-visual pulse-visual" aria-hidden="true">
@@ -657,7 +658,21 @@
         }).format(date);
       }
 
+
+      function renderPulseReason(data) {
+        const generated = data?.generated_unix;
+        const age = typeof generated === "number" && Number.isFinite(generated)
+          ? Date.now() / 1000 - generated : Infinity;
+        const fresh = age >= -5 && age <= GENE_STALE_AFTER_SECONDS;
+        $("pulseReason").textContent = !fresh
+          ? "Sensor data is stale; current conditions unknown."
+          : typeof data.pulse_reason === "string" && data.pulse_reason.trim()
+            ? data.pulse_reason
+            : "Pulse explanation unavailable.";
+      }
+
       function renderGene(data) {
+        renderPulseReason(data);
         const awareness = asFiniteNumber(data.arousal);
         const bpm = asFiniteNumber(data.bpm);
 
@@ -734,6 +749,7 @@
           updatePresence(geneResult.value);
         } else {
           $("presenceTitle").textContent = "GENE is offline";
+          renderPulseReason(null);
         }
 
         kilnEvidence = kilnResult.status === "fulfilled" ? kilnResult.value : null;
