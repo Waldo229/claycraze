@@ -97,7 +97,7 @@
 
     .signal-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
@@ -309,6 +309,11 @@
               <span class="signal-value" id="awareness">--</span>
               <span class="signal-note" id="awarenessNote">Awaiting GENE state</span>
             </div>
+            <div class="signal">
+              <span class="signal-label">Sound level</span>
+              <span class="signal-value" id="soundLevel">--</span>
+              <span class="signal-note" id="soundNote">Awaiting microphone sample</span>
+            </div>
           </div>
 
           <div class="load-warning" id="loadWarning">
@@ -487,7 +492,32 @@
         return "Urgent";
       }
 
+      let latestSoundState = null;
+
+      function renderSound() {
+        const data = latestSoundState;
+        const age = typeof data?.generated_unix === "number"
+          ? Date.now() / 1000 - data.generated_unix : Infinity;
+        const fresh = Number.isFinite(age) && age >= -5 && age <= 120;
+        const available = data?.mic_available === true
+          && typeof data.sound_level === "number"
+          && Number.isFinite(data.sound_level);
+
+        $("soundLevel").textContent = fresh && available
+          ? Math.min(100, Math.max(0, data.sound_level)).toFixed(1)
+          : "--";
+        $("soundNote").textContent = !fresh
+          ? "Sound sample unavailable or out of date"
+          : !available
+            ? "Microphone reading unavailable"
+            : "Relative 0-100; sampled " + Math.max(0, Math.floor(age)) + "s ago";
+      }
+
+      window.setInterval(renderSound, 1000);
+
       function renderGene(data) {
+        latestSoundState = data;
+        renderSound();
         const awareness = asFiniteNumber(data?.arousal);
 
         if (awareness !== null) {
