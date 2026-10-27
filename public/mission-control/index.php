@@ -680,6 +680,17 @@ if (isset($_GET['firing_notes'])) {
     summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
     .security-pending { margin: 12px 16px 0; padding: 12px; border-left: 3px solid var(--gene-amber); color: var(--gene-cream); }
     @media (max-width:620px) { .mc-grid { padding: 10px; } .mc-button { font-size: 1rem; letter-spacing: 0; } }
+
+    [data-mc-page][hidden], .mc-grid[hidden], #mcHomeNote[hidden] { display: none !important; }
+    .mc-grid { grid-template-columns: minmax(0, 1fr); }
+    .mc-title a { color: inherit; text-decoration: none; }
+    .mc-page-nav { display: grid; gap: 0; padding: 12px 24px; }
+    .mc-page-nav a { padding: 16px 8px; color: var(--gene-cream); border-bottom: 1px solid var(--gene-line); text-decoration: none; font: 1.15rem Georgia, serif; }
+    .mc-page-nav a:hover, .mc-page-nav a[aria-current="page"] { color: var(--gene-green); }
+    .mc-page-nav a:focus-visible, .mc-title a:focus-visible { outline: 2px solid var(--gene-green); outline-offset: 3px; }
+    .mc-home-note { padding: 0 32px; color: var(--gene-muted); }
+    .mc-card[data-view="detail"] .mc-page-nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+    .mc-card[data-view="detail"] .mc-page-nav a { font-size: .95rem; padding: 12px 0; }
   </style>
 </head>
 
@@ -705,17 +716,25 @@ if (isset($_GET['firing_notes'])) {
 
       <header class="mc-top">
         <p class="mc-kicker">GENE / Firing Mission</p>
-        <h1 class="mc-title">Mission Control</h1>
+        <h1 class="mc-title"><a href="/mission-control/" data-mc-link>Mission Control</a></h1>
         <p class="mc-subtitle">
           Define the target. Set the time. Verify readiness. GENE reports its own condition;
           the human alone decides launch or hold.
         </p>
       </header>
 
+      <nav class="mc-page-nav" aria-label="Mission Control pages">
+        <a href="/mission-control/?page=firing-plan" data-mc-link data-mc-destination="firing-plan">Firing Plan</a>
+        <a href="/mission-control/?page=preflight-readiness" data-mc-link data-mc-destination="preflight-readiness">Preflight Readiness</a>
+        <a href="/mission-control/?page=firing-notes" data-mc-link data-mc-destination="firing-notes">Firing Notes</a>
+        <a href="/mission-control/?page=gene-narration" data-mc-link data-mc-destination="gene-narration">GENE Narration</a>
+        <a href="/mission-control/?page=mission-status" data-mc-link data-mc-destination="mission-status">Mission Status</a>
+      </nav>
+      <p class="mc-home-note" id="mcHomeNote">Choose a page to plan the firing, check readiness, or follow the record.</p>
       <div class="security-pending" id="clearanceStatus" role="status">Checking operator clearance and the local bridge…</div>
       <div class="mc-grid">
 
-        <section class="panel">
+        <section data-mc-page="firing-plan" class="panel">
           <h2 class="panel-title">Firing plan</h2>
           <div class="field"><label for="missionName">Name</label><input id="missionName" type="text" placeholder="Name this firing"></div>
           <div class="field"><label for="launchTime">Date and planned ignition time</label><input id="launchTime" type="datetime-local"></div>
@@ -756,7 +775,7 @@ if (isset($_GET['firing_notes'])) {
           </p>
         </section>
 
-        <section class="panel">
+        <section data-mc-page="preflight-readiness" class="panel">
           <h2 class="panel-title">Preflight Readiness</h2>
 
           <div class="status-box">
@@ -816,7 +835,7 @@ if (isset($_GET['firing_notes'])) {
           </div>
         </section>
 
-        <section class="panel" style="grid-column:1 / -1">
+        <section data-mc-page="firing-notes" class="panel" style="grid-column:1 / -1">
           <h2 class="panel-title">Firing notes</h2>
           <p class="inline-note">Record damper changes, flame, cone evidence, heat work accomplished, or anything worth revisiting. Each entry is timestamped and kept with this mission.</p>
           <div class="field"><label for="firingNote">Your observation</label><textarea id="firingNote" maxlength="8000" placeholder="Example: Damper closed slightly. Flame softened; temperature rise slowed."></textarea></div>
@@ -826,14 +845,14 @@ if (isset($_GET['firing_notes'])) {
           <div id="firingNotesList"></div>
         </section>
 
-        <section class="panel">
+        <section data-mc-page="gene-narration" class="panel">
           <h2 class="panel-title">GENE Narration</h2>
           <div class="narration" id="narration">
             <strong>GENE:</strong> Mission Control is quiet. No firing has been called.
           </div>
         </section>
 
-        <section class="panel"><h2 class="panel-title">Mission status: <span id="operatorMissionStatus">PLANNED</span></h2>
+        <section data-mc-page="mission-status" class="panel"><h2 class="panel-title">Mission status: <span id="operatorMissionStatus">PLANNED</span></h2>
           <p>GENE reports readiness; the operator decides GO or NO-GO.</p>
           <div class="field"><label for="decisionReason">Decision reason</label><textarea id="decisionReason" maxlength="2000" placeholder="Required for NO-GO, HOLD, SCRUB or ABORT"></textarea></div>
           <div class="button-row" aria-label="Operator mission commands">
@@ -872,6 +891,32 @@ if (isset($_GET['firing_notes'])) {
       "use strict";
 
       const $ = (id) => document.getElementById(id);
+      const mcPages = [...document.querySelectorAll("[data-mc-page]")];
+      const mcLinks = [...document.querySelectorAll("[data-mc-link]")];
+      function showMissionPage(focusHeading = false) {
+        const requested = new URL(window.location.href).searchParams.get("page");
+        const page = mcPages.find(panel => panel.dataset.mcPage === requested);
+        mcPages.forEach(panel => panel.hidden = panel !== page);
+        document.querySelector(".mc-grid").hidden = !page;
+        document.querySelector(".mc-card").dataset.view = page ? "detail" : "home";
+        $("mcHomeNote").hidden = !!page;
+        mcLinks.forEach(link => {
+          if (page && link.dataset.mcDestination === requested) link.setAttribute("aria-current", "page");
+          else link.removeAttribute("aria-current");
+        });
+        const heading = page?.querySelector(".panel-title");
+        document.title = heading ? `${heading.textContent} | GENE Mission Control` : "GENE Mission Control | ClaycrazE";
+        if (focusHeading && heading) { heading.tabIndex = -1; heading.focus(); }
+      }
+      mcLinks.forEach(link => link.addEventListener("click", event => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        window.history.pushState({}, "", link.href);
+        showMissionPage(true);
+      }));
+      window.addEventListener("popstate", () => showMissionPage(true));
+      showMissionPage();
+
       const statusRows = [...document.querySelectorAll(".status-row")];
       const PREFLIGHT_URL = "http://127.0.0.1:8765/preflight";
       const MISSION_PUBLISH_URL = "http://127.0.0.1:8765/mission-publish";
