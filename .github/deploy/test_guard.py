@@ -298,11 +298,20 @@ class ManifestTests(unittest.TestCase):
 
     def test_approved_sources(self):
         result = self.module.sources(self.root)
-        self.assertEqual(len(result), 28)
+        self.assertEqual(len(result), 31)
         self.assertIn("index.html", result)
         self.assertIn("offering_gene.jpg", result)
+        self.assertIn("mission-control/index.php", result)
+        self.assertIn("mission-control/sitter-alert.js", result)
+        self.assertIn("images/ultimate_gene.jpg", result)
         self.assertIn("images/gene-kilnwatch-emoji.png", result)
         self.assertNotIn("data/trees.json", result)
+
+    def test_unapproved_mission_control_targets_rejected(self):
+        (self.root / "public/data/trees.json").write_text("[]")
+        for name in ["mission-control/clearance.php", "mission-control/.htaccess", "mission-control/other.php", "mission-control/sub/index.php"]:
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                guard.preflight(self.root / "public", ".trees-candidate-1-1.json", [name])
 
     def test_all_manifest_sources_pass_remote_preflight(self):
         (self.root / "public/data/trees.json").write_text("[]")
@@ -331,3 +340,4 @@ class ManifestTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+

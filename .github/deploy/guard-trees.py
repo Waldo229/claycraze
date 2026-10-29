@@ -81,6 +81,7 @@ def preflight(root, name, targets):
         if (not isinstance(relative, str) or relative.startswith("data/")
                 or not (("/" not in relative and relative.endswith(".html"))
                         or relative == "offering_gene.jpg"
+                        or relative in ("mission-control/index.php", "mission-control/sitter-alert.js")
                         or relative.startswith(("css/", "js/", "gallery/", "images/", "trees/")))):
             raise ValueError("Invalid static target")
         target = safe_path(root, relative)
@@ -216,3 +217,4 @@ if __name__ == "__main__":
     except Exception:
         # Do not emit feed contents, SSH arguments, credentials, or a traceback.
         raise SystemExit("Deployment guard failed; review runtime, permissions, paths, and Trees records.")
+

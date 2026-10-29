@@ -1,3 +1,26 @@
+## 2026-10-29 - Mission Control sitter deployment coverage
+
+Jim authorized completing the MC sitter integration through Git and SiteGround.
+The Cosmo observer was installed and the live telephoto references recognized
+both raised and dropped positions. The production workflow omitted the entire
+MC folder, so those website files could not reach SiteGround via Git.
+
+Added the existing prepared sitter panel script and retained the October 28
+firing-notes-review page while adding its sitter script include. Approved exactly
+mission-control/index.php, mission-control/sitter-alert.js, and
+images/ultimate_gene.jpg in the supplemental manifest and validators (30 total).
+The remote guard accepts only the two named MC files; clearance.php, .htaccess,
+and arbitrary MC files remain excluded. Existing authentication is retained.
+
+Verification: 35 guard/manifest fixture tests passed, including MC target rejection
+and manifest-to-remote coverage. Sitter JavaScript syntax and existing notes-review
+page checks passed. No PHP runtime was available. Cosmo sound remains a Windows
+live check. The change does not diagnose the disabled preflight button.
+
+Commit/deployment verification pending. Next: monitor the production Actions run,
+verify deployed file hashes through that job, and check anonymous MC access remains
+protected. A signed-in MC check on Cosmo is still needed.
+
 ## 2026-10-02 - Complete homepage subtitle sentence
 
 Jim approved updating and publishing the homepage subtitle:
@@ -279,3 +302,4 @@ Record only verified work. Keep entries short and factual.
   git diff --check passed. Workflow, destinations, and public content unchanged.
 - Jim approved the four-file commit, including preserved work records, and push
   only to agent-sandbox. No promotion, retry, or deployment authorized or performed.
+

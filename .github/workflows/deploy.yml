@@ -123,6 +123,18 @@ jobs:
             public/ \
             "$SG_USER@$SG_HOST:$SG_TARGET/"
 
+          echo "Verifying exact deployed Mission Control files and final image..."
+          for relative in mission-control/index.php mission-control/sitter-alert.js images/ultimate_gene.jpg; do
+            local_digest="$(sha256sum "public/$relative" | awk '{print $1}')"
+            remote_digest="$(ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
+              "sha256sum '$SG_TARGET/$relative'" | awk '{print $1}')"
+            if [[ "$local_digest" != "$remote_digest" ]]; then
+              echo "Deployed file mismatch: $relative" >&2
+              exit 1
+            fi
+            echo "Verified: $relative"
+          done
+
           echo "Revalidating and applying the guarded Trees candidate..."
           ssh -p "$SG_PORT" -i ~/.ssh/sg_ci -o StrictHostKeyChecking=no "$SG_USER@$SG_HOST" \
             "python3 - apply '$SG_TARGET' '$candidate'" < .github/deploy/guard-trees.py

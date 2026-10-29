@@ -25,3 +25,6 @@ trees/jim-alexander/han-shan/index.html
 trees/jim-alexander/i-hardly-know-yew/index.html
 trees/jim-alexander/index.html
 trees/jim-alexander/shih-te/index.html
+mission-control/index.php
+mission-control/sitter-alert.js
+images/ultimate_gene.jpg

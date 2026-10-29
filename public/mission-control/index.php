@@ -78,7 +78,18 @@ if (isset($_GET['firing_notes'])) {
         }
         flock($handle, LOCK_UN); fclose($handle);
     }
-    note_reply(200, ['ok'=>true, 'mission_id'=>$mission, 'notes'=>$entries]);
+    $review = null;
+    $reviewPath = $directory . '/' . hash('sha256', $mission) . '.review.json';
+    $reviewCurrent = false;
+    if (is_file($reviewPath)) {
+        $candidate = json_decode(file_get_contents($reviewPath), true);
+        if (is_array($candidate) && ($candidate['mission_id'] ?? '') === $mission) {
+            $review = $candidate;
+            $reviewCurrent = is_file($path) && ($candidate['source_sha256'] ?? '') === hash_file('sha256', $path);
+        }
+    }
+    note_reply(200, ['ok'=>true, 'mission_id'=>$mission, 'notes'=>$entries,
+                    'review'=>$review, 'review_current'=>$reviewCurrent]);
 }
 ?>
 <!DOCTYPE html>
@@ -837,12 +848,18 @@ if (isset($_GET['firing_notes'])) {
 
         <section data-mc-page="firing-notes" class="panel" style="grid-column:1 / -1">
           <h2 class="panel-title">Firing notes</h2>
-          <p class="inline-note">Record damper changes, flame, cone evidence, heat work accomplished, or anything worth revisiting. Each entry is timestamped and kept with this mission.</p>
+          <p class="inline-note">Record damper changes, flame, cone evidence, heat work accomplished, or anything worth revisiting. Each entry is timestamped and kept with this mission. Use [remember] for a lesson to retain, [question] for an unresolved question, or [test] for a system test.</p>
           <div class="field"><label for="firingNote">Your observation</label><textarea id="firingNote" maxlength="8000" placeholder="Example: Damper closed slightly. Flame softened; temperature rise slowed."></textarea></div>
           <button class="mc-button" id="addNoteButton" type="button" disabled>Add note</button>
           <button class="mc-button secondary" id="refreshNotesButton" type="button" disabled>Refresh notes</button>
           <p class="inline-note" id="notesStatus" role="status">Publish the firing plan through preflight to attach notes to a mission.</p>
           <div id="firingNotesList"></div>
+          <section aria-labelledby="noteReviewHeading" style="margin-top:24px">
+            <h3 id="noteReviewHeading">GENE's review</h3>
+            <p class="inline-note" id="noteReviewStatus" role="status">Awaiting Cosmo's next review.</p>
+            <div id="noteReviewList"></div>
+            <p class="inline-note">Your words remain human observations. GENE's interpretations are separate; selection for recollection does not establish a cause or verify a lesson.</p>
+          </section>
         </section>
 
         <section data-mc-page="gene-narration" class="panel">
@@ -944,9 +961,45 @@ if (isset($_GET['firing_notes'])) {
         if (!response.ok || !result.ok) throw new Error(result.error || "Firing notes unavailable.");
         return result;
       }
+      function renderNoteReview(result) {
+        $("noteReviewList").replaceChildren();
+        const review = result.review;
+        if (!review || review.mission_id !== missionRecord.mission_id) {
+          $("noteReviewStatus").textContent = "Awaiting Cosmo's next review. Your notes remain saved.";
+          return;
+        }
+        if (!result.review_current) {
+          $("noteReviewStatus").textContent = "Notes have changed since the last review. Awaiting Cosmo's next cycle.";
+          return;
+        }
+        $("noteReviewStatus").textContent = "Reviewed " + new Date(review.reviewed_at_utc).toLocaleString() + " — rule-based review; no external AI consulted.";
+        const interpretations = Array.isArray(review.gene_interpretations) ? review.gene_interpretations : [];
+        const memories = Array.isArray(review.recollections) ? review.recollections : [];
+        for (const interpretation of interpretations) {
+          const entry = document.createElement("p");
+          entry.textContent = "GENE interpretation: " + interpretation.statement + " (Note " + interpretation.evidence.note_id + ")";
+          $("noteReviewList").append(entry);
+        }
+        for (const memory of memories) {
+          const entry = document.createElement("p");
+          const label = document.createElement("strong");
+          label.textContent = "Selected recollection — " + memory.kind.replaceAll("_", " ") + ": ";
+          const words = document.createElement("span");
+          words.textContent = memory.human_report;
+          entry.append(label, words);
+          $("noteReviewList").append(entry);
+        }
+        if (!memories.length) {
+          const entry = document.createElement("p");
+          entry.textContent = "No enduring recollection selected. Routine and system-test notes remain in the firing record.";
+          $("noteReviewList").append(entry);
+        }
+      }
       async function refreshNotes() {
         const id = missionRecord.mission_id;
         $("firingNotesList").replaceChildren();
+        $("noteReviewList").replaceChildren();
+        $("noteReviewStatus").textContent = "Awaiting Cosmo's next review.";
         if (!id) {
           $("notesStatus").textContent = "Run preflight to save the plan before adding mission notes.";
           return;
@@ -954,6 +1007,7 @@ if (isset($_GET['firing_notes'])) {
         try {
           const result = await notesRequest("GET", null, id);
           if (missionRecord.mission_id !== id) return;
+          renderNoteReview(result);
           for (const note of result.notes) {
             const entry = document.createElement("article");
             entry.className = "firing-note-entry";
@@ -1413,5 +1467,6 @@ if (isset($_GET['firing_notes'])) {
     })();
   </script>
 
+  <script src="/mission-control/sitter-alert.js?v=1" defer></script>
 </body>
 </html>

@@ -7,6 +7,9 @@ import re
 import sys
 
 EXPECTED = (
+    'mission-control/index.php',
+    'mission-control/sitter-alert.js',
+    'images/ultimate_gene.jpg',
     'images/bonsai/thumbs/IKE-2609-017_top_thumb.jpg',
     'images/bonsai/thumbs/IKE-2609-018_top_thumb.jpg',
     'images/bonsai/thumbs/OV-2608-003_top_thumb.jpg',
@@ -41,8 +44,8 @@ ORDINARY = ("css", "js", "gallery", "images/curated", "images/system")
 def sources(root):
     public = root / "public"
     paths = (root / ".github/deploy/supplemental-public.txt").read_text().splitlines()
-    if len(paths) != 27 or set(paths) != set(EXPECTED):
-        raise ValueError("Manifest must contain exactly the 27 approved static files")
+    if len(paths) != 30 or set(paths) != set(EXPECTED):
+        raise ValueError("Manifest must contain exactly the 30 approved static files")
     all_paths = set(paths)
     all_paths.update(path.relative_to(public).as_posix() for path in public.glob("*.html"))
     for directory in ORDINARY:
@@ -70,6 +73,7 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--targets"]:
         print(base64.b64encode(json.dumps(paths).encode("utf-8")).decode("ascii"))
     elif not sys.argv[1:]:
-        print("Validated 27 supplemental files and existing static sources; inventory excluded.")
+        print("Validated 30 supplemental files and existing static sources; inventory excluded.")
     else:
         raise SystemExit("Unexpected arguments")
+
