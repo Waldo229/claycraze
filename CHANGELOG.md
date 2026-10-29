@@ -1,3 +1,11 @@
+## 2026-10-29 - Observatory firing journal and two-voice commentary
+
+Jim requested that viewers follow registered transitions through a shared Howard/GENE dialogue. Added the public firing-broadcast script and two script includes to the existing Observatory; all existing reflection and signal sections remain. Both voices cite the same mission-scoped event record; strings render as plain text, historical portraits are labelled, old evidence loses current status, and archive links are constrained to exact mission JSON paths.
+
+The matching Cosmo source release is stored under updates/observatory-broadcast in Waldo229/gene_delta. It adds a transactional event journal, verified per-mission archives and current feed on SiteGround, mission-status and sitter hooks, microphone availability, and the existing canonical temperature bands without threshold changes. It preserves installed local repairs with hash-guarded installation. Local camera credentials are omitted from public output and RTSP error URLs are redacted.
+
+Validation: 32 Python tests passed plus the dialogue DOM fixture, JavaScript syntax and Python compilation. Existing static deployment already covers public/js and root HTML. No synthetic runtime feed or invented firing was committed. Production website deployment and Cosmo installation/live SSH verification are separate steps; current source release is not a claim that the broadcaster has already run on Cosmo. Next: install on Cosmo, confirm /broadcast-status publication, and observe a real mission or explicitly labelled rehearsal without inventing ignition.
+
 ## 2026-10-29 - Mission Control sitter deployment coverage
 
 Jim authorized completing the MC sitter integration through Git and SiteGround.
