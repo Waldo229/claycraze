@@ -1,3 +1,9 @@
+## 2026-10-29 - Observatory audience layout and current GENE portrait
+
+Prepared Jim's requested public Observatory changes: Current Field now leads with a visible GENE portrait beside the readings; Howard/GENE commentary follows it. Observation, Interpretation, and Changes use native, initially closed details controls; navigation remains outside the collapsed sections. The portrait and temperature/ramp use the existing GeneTemperature.evaluate helper with unchanged thresholds, exact image filenames, and expiry checks. Invalid, missing, failed, or stale evidence clears numeric readings and shows a neutral grayscale portrait explicitly labelled current state unavailable. This corrects null-to-zero coercion in the prior page. No paid AI calls were introduced.
+
+Changed public/observatory.html and public/js/firing-broadcast.js. DOM fixture verification passed: all six canonical images including /images/ultimate_gene.jpg, collapsed defaults, retained open state, current-field ordering, visible navigation, missing/stale/failure/recovery handling. JavaScript syntax passed. Browser visual verification was unavailable because the browser download failed; responsive CSS has not been visually verified. No fixture data is included in production payload. Jim explicitly approved publishing these prepared changes. Commit only the two public files and work records, then deploy through existing Actions and verify the live audience view. Deployment verification follows this commit.
+
 ## 2026-10-29 - Observatory firing journal and two-voice commentary
 
 Jim requested that viewers follow registered transitions through a shared Howard/GENE dialogue. Added the public firing-broadcast script and two script includes to the existing Observatory; all existing reflection and signal sections remain. Both voices cite the same mission-scoped event record; strings render as plain text, historical portraits are labelled, old evidence loses current status, and archive links are constrained to exact mission JSON paths.
@@ -453,4 +459,5 @@ work records and pushing only agent-sandbox. Next safe step: complete that commi
 and push, then report its hash and tracked worktree status. The previously failed
 live deployment remains NOT READY; promotion, retry, and deployment are not
 authorized. Review evidence: .local-gene-review/offering-guard-exact.diff.
+
 
