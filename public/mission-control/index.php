@@ -760,6 +760,11 @@ if (isset($_GET['firing_notes'])) {
             <label class="choice-card"><input type="radio" id="atmosphereReduction" name="poorBoyAtmosphere" value="Reduction"><span>Reduction</span></label>
           </div></fieldset></div>
 
+          <fieldset class="field" style="border:0;padding:0"><legend>Kiln sitter fitted for this mission?</legend><div class="choice-grid">
+            <label class="choice-card"><input type="radio" id="sitterFitted" name="sitterRequirement" value="required" checked><span>Yes — confirm raised (ON position)</span></label>
+            <label class="choice-card"><input type="radio" id="sitterNotFitted" name="sitterRequirement" value="not_fitted"><span>No — no kiln sitter fitted</span></label>
+          </div><p class="inline-note">For a fitted sitter, full READY requires a fresh, confirmed raised bar. This observes position only.</p></fieldset>
+
           <div class="validation-note" id="missionValidation"></div>
 
           <div class="countdown" aria-label="Countdown">
@@ -801,6 +806,9 @@ if (isset($_GET['firing_notes'])) {
           <div class="checklist" id="geneChecks">
             <div class="checkline status-row" data-key="kiln_probe_data">
               <span class="status-dot"></span><span>KILN / PROBE DATA</span><strong class="check-status">WAIT</strong>
+            </div>
+            <div class="checkline status-row" data-key="kiln_sitter_position">
+              <span class="status-dot"></span><span>KILN SITTER POSITION</span><strong class="check-status">WAIT</strong>
             </div>
             <div class="checkline status-row" data-key="camera_network">
               <span class="status-dot"></span><span>CAMERA NETWORK</span><strong class="check-status">WAIT</strong>
@@ -1104,6 +1112,7 @@ if (isset($_GET['firing_notes'])) {
             if (field.type === 'checkbox' || field.type === 'radio') field.checked = false;
             else field.value = '';
           });
+          $("sitterFitted").checked = true;
           geneReadiness = 'NOT READY'; lastPreflightPayload = null; geneLimitations = [];
           renderReadiness(); syncKilnLogic(); updateCountdown();
         }
@@ -1192,11 +1201,15 @@ if (isset($_GET['firing_notes'])) {
         box.textContent = errors.join(" ");
       }
 
+      function selectedSitterRequirement() {
+        return $("sitterNotFitted").checked && !$("sitterFitted").checked ? "not_fitted" : "required";
+      }
+
       function buildPreflightTarget() {
         const kilns = [];
         if ($("kilnRichie").checked) kilns.push("Richie - Electric - Oxidation");
         if ($("kilnPoorBoy").checked) kilns.push(`Poor Boy - Gas - ${selectedPoorBoyAtmosphere()}`);
-        return [$("missionTarget").value.trim(), `Target heat-work: ${$("targetHeatwork").value.trim()}`, `Kiln assignment: ${kilns.join("; ")}`].join(" | ");
+        return [$("missionTarget").value.trim(), `Target heat-work: ${$("targetHeatwork").value.trim()}`, `Kiln assignment: ${kilns.join("; ")}`, `Kiln sitter: ${selectedSitterRequirement() === "not_fitted" ? "not fitted" : "raised confirmation required"}`].join(" | ");
       }
 
       function publicPreflightItems(payload) {
@@ -1298,7 +1311,8 @@ if (isset($_GET['firing_notes'])) {
 
         for (const check of checks) {
           const name = String(check.name || "").toUpperCase();
-          if (name.includes("KILN") || name.includes("PROBE")) mapped.kiln_probe_data = check;
+          if (name === "KILN SITTER POSITION") mapped.kiln_sitter_position = check;
+          else if (name.includes("KILN") || name.includes("PROBE")) mapped.kiln_probe_data = check;
           else if (name.includes("CAMERA NETWORK")) mapped.camera_network = check;
           else if (name.includes("CAMERA STREAM")) mapped.camera_stream = check;
           else if (name.includes("AUDIO")) mapped.audio_stream = check;
@@ -1339,8 +1353,20 @@ if (isset($_GET['firing_notes'])) {
         try {
           const url = new URL(PREFLIGHT_URL);
           url.searchParams.set("target", target);
+          const sitterRequirement = selectedSitterRequirement();
+          url.searchParams.set("sitter_requirement", sitterRequirement);
 
           const payload = await bridgeRequest(url);
+          if (target !== buildPreflightTarget()) throw new Error('The firing plan changed during preflight. Run it again for the current plan.');
+          // An older COSMO bridge must never silently omit this readiness check.
+          const sitterCheck = payload.checks?.find(check => check.name === "KILN SITTER POSITION");
+          if (payload.sitter_readiness_version !== 1 || payload.sitter_requirement !== sitterRequirement || !sitterCheck) {
+            const detail = "COSMO sitter readiness update is required; sitter position has not been verified for this preflight.";
+            payload.checks = [...(Array.isArray(payload.checks) ? payload.checks : []).filter(check => check.name !== "KILN SITTER POSITION"),
+              {name:"KILN SITTER POSITION", ok:false, status:"LIMIT", critical:false, detail}];
+            payload.limitations = [...(Array.isArray(payload.limitations) ? payload.limitations : []), detail];
+            if (payload.readiness === "READY") payload.readiness = "READY WITH LIMITATIONS";
+          }
           lastPreflightPayload = payload;
           const mapped = normalizeChecks(payload);
 
@@ -1355,7 +1381,8 @@ if (isset($_GET['firing_notes'])) {
               check.status || check.state || (check.ok === true ? "OK" : "BLOCK")
             ).toUpperCase();
 
-            setStatus(row.dataset.key, state, state);
+            setStatus(row.dataset.key, state, check.applicable === false ? "N/A" : state);
+            row.title = String(check.detail || "");
           }
 
           geneReadiness = String(
@@ -1398,7 +1425,7 @@ if (isset($_GET['firing_notes'])) {
       $("ackLimitations").addEventListener("change", updateLaunchAvailability);
       $("humanPresent").addEventListener("change", updateLaunchAvailability);
 
-      ["missionName", "missionTarget", "targetHeatwork", "kilnRichie", "kilnPoorBoy"].forEach(id => {
+      ["missionName", "missionTarget", "targetHeatwork", "kilnRichie", "kilnPoorBoy", "sitterFitted", "sitterNotFitted"].forEach(id => {
         ["input", "change"].forEach(event => $(id).addEventListener(event, () => {
           syncKilnLogic(); renderMissionValidation([]); updateLaunchAvailability();
         }));
@@ -1410,6 +1437,12 @@ if (isset($_GET['firing_notes'])) {
           updateLaunchAvailability();
         });
       });
+
+      document.querySelectorAll('input[name="sitterRequirement"]').forEach(radio => radio.addEventListener("change", () => {
+        geneReadiness = "NOT READY"; lastPreflightPayload = null; geneLimitations = [];
+        $("ackLimitations").checked = false;
+        renderReadiness();
+      }));
 
       $("launchTime").addEventListener("change", () => {
         updateCountdown();
@@ -1470,3 +1503,4 @@ if (isset($_GET['firing_notes'])) {
   <script src="/mission-control/sitter-alert.js?v=1" defer></script>
 </body>
 </html>
+
