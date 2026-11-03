@@ -10,8 +10,7 @@
  const picture=document.createElement('img');picture.hidden=true;picture.style.cssText='display:none;width:min(260px,100%);height:auto;border-radius:12px;margin:12px 0';
  const caption=document.createElement('p');caption.className='memory-time';
  const list=document.createElement('div');list.className='memory-list';
- const archive=document.createElement('a');archive.className='obs-button';archive.textContent='Download mission record';archive.hidden=true;archive.style.display='none';
- panel.append(heading,status,current,picture,caption,list,archive);
+ panel.append(heading,status,current,picture,caption,list);
  let received=null,failed=false;
  function age(){return received? (Date.now()-Date.parse(received.generated_at_utc))/1000:Infinity;}
  function freshness(){
@@ -36,17 +35,15 @@
      const item=document.createElement('article');item.className='memory-item';
      const when=document.createElement('div');when.className='memory-time';
      when.textContent=new Date(event.observed_at_utc).toLocaleString()+' · '+String(event.kind||'Registered event');
-     const howard=document.createElement('p');howard.className='memory-text';howard.textContent=String(event.howard||'');
-     const gene=document.createElement('p');gene.className='memory-text';gene.textContent=String(event.gene||'');
+     const howard=document.createElement('p');howard.className='memory-text';howard.textContent='Q: '+String(event.howard||'').replace(/^\s*Howard\s*:\s*/i,'');
+     const gene=document.createElement('p');gene.className='memory-text';gene.textContent='A: '+String(event.gene||'').replace(/^\s*GENE\s*:\s*/i,'');
      const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Recorded evidence';
      const evidence=document.createElement('pre');evidence.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';evidence.textContent=JSON.stringify(event.evidence,null,2);
      details.append(summary,evidence);item.append(when,howard,gene,details);list.append(item);
    }
    const portrait=events.find(e=>typeof e.image==='string'&&/^\/images\/[A-Za-z0-9_.-]+(?:\?v=[A-Za-z0-9]+)?$/.test(e.image));
    if(portrait){picture.src=portrait.image;picture.alt='GENE at the recorded '+portrait.kind+' event';picture.hidden=false;picture.style.display='block';caption.textContent='Event image · '+new Date(portrait.observed_at_utc).toLocaleString()+' · Historical witness, not a current temperature claim.';}
-   if(typeof data.archive_url==='string'&&/^\/gene\/firing-missions\/[a-f0-9]{64}\.json$/.test(data.archive_url)){
-     archive.href=data.archive_url;archive.hidden=false;archive.style.display='inline-flex';
-   }else{archive.hidden=true;archive.style.display='none';archive.removeAttribute('href');}
+
  }
  let busy=false;
  async function refresh(){if(busy)return;busy=true;

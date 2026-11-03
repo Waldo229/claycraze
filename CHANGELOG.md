@@ -1,3 +1,18 @@
+## 2026-11-03 - Mission Journal portrait and Q/A labels
+
+Jim requested removing the Download mission record link, using the existing
+Theory scroll portrait to the left of the Mission Journal title, and replacing
+Howard/GENE speaker labels with Q:/A:. Updated public/missjour.html and
+public/js/firing-broadcast.js. Runtime records, dialogue wording, evidence
+and freshness labels remain unchanged. The portrait uses the exact Theory asset.
+
+Verification: external and inline JavaScript syntax passed; focused DOM fixture
+verified Q/A prefixes, literal text, mission filtering, retained evidence and
+absence of the download link. Browser preview verified the loaded portrait beside
+the title. Previous approved journal deployment completed successfully.
+Next: publish this requested follow-up through the existing deployment workflow
+and verify the live journal.
+
 ## 2026-11-03 - Mission Journal simplification (prepared)
 
 - Replaced Observatory's commentary and separate record sections with one Mission Journal link below Current Field.

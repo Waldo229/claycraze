@@ -42,6 +42,10 @@
       border-bottom: 1px solid var(--gene-line);
     }
 
+    .journal-heading { display: flex; align-items: center; gap: 24px; }
+    .journal-guide { display: block; width: clamp(100px, 15vw, 180px); height: auto; flex-shrink: 0; }
+    .journal-heading-copy { min-width: 0; }
+
     .obs-kicker {
       margin: 0 0 8px;
       color: var(--gene-green);
@@ -266,6 +270,9 @@
     @media (max-width: 620px) {
       .obs-shell { width: min(100% - 16px, 1180px); }
       .obs-top { padding: 24px 20px; }
+      .journal-heading { gap: 12px; }
+      .journal-guide { width: 80px; }
+      .journal-heading .obs-title { font-size: clamp(1.5rem, 6vw, 2rem); letter-spacing: 0.04em; }
       .obs-grid { padding: 16px; }
     }
   </style>
@@ -291,8 +298,13 @@
   <main class="obs-shell">
     <section class="obs-card">
       <header class="obs-top">
-        <p class="obs-kicker">GENE / Recorded Field</p>
-        <h1 class="obs-title">Mission Journal</h1>
+        <div class="journal-heading">
+          <img class="journal-guide" src="/images/curated/guides/han-shan-gene-autumn-transparent-v2.png" alt="GENE holding a scroll" width="1280" height="1280">
+          <div class="journal-heading-copy">
+            <p class="obs-kicker">GENE / Recorded Field</p>
+            <h1 class="obs-title">Mission Journal</h1>
+          </div>
+        </div>
         <p class="obs-subtitle">GENE’s words and observations through the firing.</p>
       </header>
       <div class="obs-grid">
@@ -354,7 +366,7 @@
     </section>
   </main>
   <script src="/js/gene-temperature.js?v=broadcast1"></script>
-  <script src="/js/firing-broadcast.js?v=journal1" defer></script>
+  <script src="/js/firing-broadcast.js?v=journal2" defer></script>
   <script>
     (() => {
       "use strict";
