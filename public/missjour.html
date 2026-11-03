@@ -1,0 +1,491 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mission Journal — ClaycrazE</title>
+  <link rel="stylesheet" href="/css/styles.css?v=3041">
+
+  <style>
+    :root {
+      --gene-bg: #090d10;
+      --gene-panel: #101519;
+      --gene-line: rgba(222, 211, 184, 0.18);
+      --gene-cream: #e7ddc7;
+      --gene-muted: #a9a79f;
+      --gene-green: #9ac64e;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+
+    .obs-shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 34px auto 64px;
+    }
+
+    .obs-card {
+      color: var(--gene-cream);
+      background:
+        radial-gradient(circle at 20% 18%, rgba(154, 198, 78, 0.07), transparent 30%),
+        linear-gradient(145deg, #101519, #090d10);
+      border: 1px solid rgba(231, 221, 199, 0.24);
+      border-radius: 28px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.38),
+        inset 0 0 0 8px rgba(255, 255, 255, 0.018);
+      overflow: hidden;
+    }
+
+    .obs-top {
+      padding: 30px 34px 26px;
+      border-bottom: 1px solid var(--gene-line);
+    }
+
+    .obs-kicker {
+      margin: 0 0 8px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .obs-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .obs-subtitle {
+      margin: 12px 0 0;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .obs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      padding: 24px;
+    }
+
+    .panel {
+      border: 1px solid var(--gene-line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.012);
+      padding: 22px;
+    }
+
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
+    .panel-title {
+      margin: 0 0 16px;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .current-field-layout { display: grid; grid-template-columns: minmax(180px, 280px) minmax(0, 1fr); gap: 22px; align-items: center; }
+    .gene-portrait { margin: 0; text-align: center; }
+    .gene-portrait img { display: block; width: 100%; height: 250px; object-fit: contain; border-radius: 14px; }
+    .gene-portrait figcaption { margin-top: 12px; }
+    .record-panel > summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
+    .record-panel > summary .panel-title { display: inline; margin: 0; }
+    .record-panel[open] > summary { margin-bottom: 18px; }
+    .record-panel > summary:focus-visible { outline: 2px solid var(--gene-green); outline-offset: 6px; border-radius: 4px; }
+    .record-panel.full { align-self: start; }
+    .record-links { grid-column: 1 / -1; margin-top: 0; }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .signal {
+      min-height: 128px;
+      padding: 16px;
+      border: 1px solid rgba(154, 198, 78, 0.22);
+      border-radius: 14px;
+      background: rgba(154, 198, 78, 0.025);
+    }
+
+    .signal-label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--gene-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-value {
+      display: block;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      line-height: 1;
+    }
+
+    .signal-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--gene-muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .note-block + .note-block {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gene-line);
+    }
+
+    .note-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gene-green);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .note-copy {
+      margin: 0;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .note-copy.muted {
+      color: var(--gene-muted);
+    }
+
+    .memory-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .memory-item {
+      padding: 14px 16px;
+      border: 1px solid var(--gene-line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .memory-time {
+      color: var(--gene-muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .memory-text {
+      margin: 7px 0 0;
+      color: var(--gene-cream);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .obs-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid rgba(154, 198, 78, 0.62);
+      border-radius: 10px;
+      color: var(--gene-green);
+      background: rgba(154, 198, 78, 0.045);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .obs-button:hover,
+    .obs-button:focus-visible {
+      border-color: rgba(154, 198, 78, 0.95);
+      background: rgba(154, 198, 78, 0.11);
+      outline: none;
+    }
+
+    .obs-footer {
+      padding: 0 24px 24px;
+      text-align: center;
+      color: var(--gene-muted);
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
+    .load-warning {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px solid rgba(210, 135, 60, 0.5);
+      border-radius: 8px;
+      color: #e1b47b;
+      background: rgba(210, 135, 60, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .load-warning.show { display: block; }
+
+    @media (max-width: 900px) {
+      .obs-grid { grid-template-columns: 1fr; }
+      .panel.full { grid-column: auto; }
+    }
+
+    @media (max-width: 700px) {
+      .current-field-layout { grid-template-columns: 1fr; }
+      .gene-portrait img { height: 220px; }
+      .signal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .signal { min-height: 112px; padding: 12px; }
+    }
+
+    @media (max-width: 620px) {
+      .obs-shell { width: min(100% - 16px, 1180px); }
+      .obs-top { padding: 24px 20px; }
+      .obs-grid { padding: 16px; }
+    }
+  </style>
+</head>
+
+<body class="practice-page">
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="site-brand" href="/index.html">
+        <span class="site-title">ClaycrazE</span>
+        <span class="site-tag">The Pottery of Jim Alexander</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/index.html">Home</a>
+        <a class="active" href="/theory.html" aria-current="location">Theory</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="obs-shell">
+    <section class="obs-card">
+      <header class="obs-top">
+        <p class="obs-kicker">GENE / Recorded Field</p>
+        <h1 class="obs-title">Mission Journal</h1>
+        <p class="obs-subtitle">GENE’s words and observations through the firing.</p>
+      </header>
+      <div class="obs-grid">
+        <div class="panel full" data-firing-broadcast></div>
+        <section class="panel full" id="observations">
+          <h2 class="panel-title">Observations</h2>
+          <p class="note-copy" id="reflectionStatus" role="status">Awaiting reflection timestamp.</p>
+
+          <div class="note-block">
+            <span class="note-label">What is registered</span>
+            <p class="note-copy" id="observationText">
+              Awaiting the common record.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="note-label">What is absent</span>
+            <p class="note-copy muted" id="absenceText">
+              No omission has been identified.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="note-label">Interpretation</span>
+            <p class="note-copy" id="interpretationText">
+              No interpretation has been returned yet.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="note-label">Confidence</span>
+            <p class="note-copy muted" id="confidenceText">
+              No confidence statement available.
+            </p>
+          </div>
+          <div class="note-block">
+            <span class="note-label">Recent changes</span>
+
+          <div class="memory-list" id="memoryList">
+            <article class="memory-item">
+              <div class="memory-time">Awaiting record</div>
+              <p class="memory-text">
+                No recent observation has been returned.
+              </p>
+            </article>
+          </div>
+
+
+          </div>
+        </section>
+
+          <div class="button-row record-links">
+            <a class="obs-button" href="/observatory.html">Return to Observatory</a>
+            <a class="obs-button" href="/mission-control/">Mission Control</a>
+            <a class="obs-button" href="/kiln-watch-graph.html">Firing Record</a>
+          </div>
+      </div>
+      <div class="obs-footer">Witness. Remember. Transmit.</div>
+    </section>
+  </main>
+  <script src="/js/gene-temperature.js?v=broadcast1"></script>
+  <script src="/js/firing-broadcast.js?v=journal1" defer></script>
+  <script>
+    (() => {
+      "use strict";
+      const OBSERVATORY_STATE_URL = "/gene/observatory_latest.json";
+      const REFRESH_MS = 10000;
+      const $ = (id) => document.getElementById(id);
+      let lastReflection = null;
+      let reflectionFetchFailed = false;
+
+      function renderReflectionStatus() {
+        const stamp = lastReflection?.generated_at_utc;
+        const generated = typeof stamp === "string" ? Date.parse(stamp) : NaN;
+        if (!Number.isFinite(generated)) {
+          $("reflectionStatus").textContent =
+            "Reflection time unavailable; freshness unknown.";
+          return;
+        }
+        const age = (Date.now() - generated) / 1000;
+        const timeLabel = new Date(generated).toLocaleString();
+        let status;
+        if (reflectionFetchFailed) {
+          status = "Update unavailable; showing the last received record.";
+        } else if (age < -5) {
+          status = "Record time is ahead of this clock; freshness unknown.";
+        } else if (age > 180) {
+          status = "Older record; observation and interpretation are not current.";
+        } else {
+          status = "Recent reflection.";
+        }
+        if (lastReflection.fresh_evidence === false) {
+          status += " Source evidence was unavailable when this was recorded.";
+        }
+        $("reflectionStatus").textContent =
+          "Reflection: " + timeLabel + ". " + status;
+      }
+
+      function renderObservatory(data) {
+        lastReflection = data;
+        reflectionFetchFailed = false;
+        renderReflectionStatus();
+        const observations = Array.isArray(data?.observations)
+          ? data.observations.filter(Boolean)
+          : [];
+
+        const interpretations = Array.isArray(data?.interpretations)
+          ? data.interpretations.filter(Boolean)
+          : [];
+
+        const absences = Array.isArray(data?.absences)
+          ? data.absences.filter(Boolean)
+          : [];
+
+        $("observationText").textContent = observations.length
+          ? observations.join(" ")
+          : "No current observation has been returned.";
+
+        $("interpretationText").textContent = interpretations.length
+          ? interpretations.join(" ")
+          : "No bounded interpretation has been returned.";
+
+        $("absenceText").textContent = absences.length
+          ? absences.join(" ")
+          : "No omission has been identified.";
+
+        if (data?.confidence != null) {
+          $("confidenceText").textContent = String(data.confidence);
+        }
+
+        const events =
+          Array.isArray(data?.recent_changes) ? data.recent_changes :
+          Array.isArray(data?.events) ? data.events :
+          [];
+
+        if (events.length) {
+          $("memoryList").replaceChildren(...events.slice(-6).reverse().map((event) => {
+            const item = document.createElement("article");
+            item.className = "memory-item";
+            const when = document.createElement("div");
+            when.className = "memory-time";
+            when.textContent = String(event?.time ?? event?.timestamp ?? event?.generated_at ?? "Registered change");
+            const text = document.createElement("p");
+            text.className = "memory-text";
+            text.textContent = String(event?.text ?? event?.observation ?? event?.message ?? JSON.stringify(event));
+            item.append(when, text);
+            return item;
+          }));
+        }
+      }
+
+      async function getJson(url) {
+        const separator = url.includes("?") ? "&" : "?";
+        const response = await fetch(`${url}${separator}t=${Date.now()}`, {
+          cache: "no-store", signal: AbortSignal.timeout(8000)
+        });
+
+        if (!response.ok) {
+          throw new Error(`${url} returned ${response.status}`);
+        }
+
+        return response.json();
+      }
+
+      let busy = false;
+      async function refresh() {
+        if (busy) return;
+        busy = true;
+        try {
+          renderObservatory(await getJson(OBSERVATORY_STATE_URL));
+        } catch (_) {
+          reflectionFetchFailed = true;
+          renderReflectionStatus();
+        } finally {
+          busy = false;
+        }
+      }
+      refresh();
+      window.setInterval(refresh, REFRESH_MS);
+      window.setInterval(renderReflectionStatus, 1000);
+    })();
+  </script>
+  <footer class="site-footer">
+    <div class="footer-shell">
+      <small>&copy; 2026 Jim Alexander, ClaycrazE. All rights reserved.</small>
+      <nav class="footer-links" aria-label="Legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/use-copyright.html">Use &amp; Copyright</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
+
+
+

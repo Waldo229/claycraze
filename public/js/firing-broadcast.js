@@ -1,17 +1,17 @@
 /* Howard asks; GENE answers. Historical dialogue is never presented as fresh sensor data. */
 (() => {
  'use strict';
- const host=document.querySelector('.obs-grid');
+ const host=document.querySelector('[data-firing-broadcast]');
  if(!host)return;
- const panel=document.createElement('section');panel.className='panel full';
- const heading=document.createElement('h2');heading.className='panel-title';heading.textContent='Calling the firing — Howard & GENE';
+ const panel=host;
+ const heading=document.createElement('h2');heading.className='panel-title';heading.textContent='GENE Speaks';
  const status=document.createElement('p');status.setAttribute('role','status');
  const current=document.createElement('p');
  const picture=document.createElement('img');picture.hidden=true;picture.style.cssText='display:none;width:min(260px,100%);height:auto;border-radius:12px;margin:12px 0';
  const caption=document.createElement('p');caption.className='memory-time';
  const list=document.createElement('div');list.className='memory-list';
- const archive=document.createElement('a');archive.className='obs-button';archive.textContent='Complete mission journal';archive.hidden=true;archive.style.display='none';
- panel.append(heading,status,current,picture,caption,list,archive);const field=document.getElementById('currentField');if(field)field.after(panel);else host.prepend(panel);
+ const archive=document.createElement('a');archive.className='obs-button';archive.textContent='Download mission record';archive.hidden=true;archive.style.display='none';
+ panel.append(heading,status,current,picture,caption,list,archive);
  let received=null,failed=false;
  function age(){return received? (Date.now()-Date.parse(received.generated_at_utc))/1000:Infinity;}
  function freshness(){
@@ -55,4 +55,5 @@
  }
  refresh();setInterval(refresh,10000);setInterval(freshness,1000);
 })();
+
 

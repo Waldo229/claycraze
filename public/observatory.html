@@ -295,8 +295,7 @@
         <p class="obs-kicker">GENE / Present Field</p>
         <h1 class="obs-title">Observatory</h1>
         <p class="obs-subtitle">
-          The Observatory shows what GENE is registering now. Observation is kept separate from interpretation;
-          the record remains visible even when meaning is not yet clear.
+          The Observatory shows what GENE is registering now. Follow the firing’s recorded observations in the Mission Journal.
         </p>
       </header>
 
@@ -345,63 +344,9 @@
           </div>
         </section>
 
-        <details class="panel full record-panel">
-          <summary><h2 class="panel-title">Observation</h2></summary>
-          <p class="note-copy" id="reflectionStatus" role="status">Awaiting reflection timestamp.</p>
-
-          <div class="note-block">
-            <span class="note-label">What is registered</span>
-            <p class="note-copy" id="observationText">
-              Awaiting the common record.
-            </p>
-          </div>
-
-          <div class="note-block">
-            <span class="note-label">What is absent</span>
-            <p class="note-copy muted" id="absenceText">
-              No omission has been identified.
-            </p>
-          </div>
-        </details>
-
-        <details class="panel full record-panel">
-          <summary><h2 class="panel-title">Interpretation</h2></summary>
-
-          <div class="note-block">
-            <span class="note-label">Bounded interpretation</span>
-            <p class="note-copy" id="interpretationText">
-              No interpretation has been returned yet.
-            </p>
-          </div>
-
-          <div class="note-block">
-            <span class="note-label">Confidence</span>
-            <p class="note-copy muted" id="confidenceText">
-              No confidence statement available.
-            </p>
-          </div>
-        </details>
-
-        <details class="panel full record-panel">
-          <summary><h2 class="panel-title">Changes</h2></summary>
-
-          <div class="memory-list" id="memoryList">
-            <article class="memory-item">
-              <div class="memory-time">Awaiting record</div>
-              <p class="memory-text">
-                No recent observation has been returned.
-              </p>
-            </article>
-          </div>
-
-
-        </details>
-
-          <div class="button-row record-links">
-            <a class="obs-button" href="/kilnwatch.html">Return to GENE</a>
-            <a class="obs-button" href="/mission-control.html">Mission Control</a>
-            <a class="obs-button" href="/kiln-watch-graph.html">Firing Record</a>
-          </div>
+        <div class="button-row record-links">
+          <a class="obs-button" href="/missjour.html">Mission Journal</a>
+        </div>
       </div>
 
       <div class="obs-footer">
@@ -412,7 +357,6 @@
   </main>
 
   <script src="/js/gene-temperature.js?v=broadcast1"></script>
-  <script src="/js/firing-broadcast.js?v=2" defer></script>
 
   <script>
     (() => {
@@ -420,7 +364,6 @@
 
       const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
       const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
-      const OBSERVATORY_STATE_URL = "https://claycraze.com/gene/observatory_latest.json";
       const REFRESH_MS = 10000;
 
       const $ = (id) => document.getElementById(id);
@@ -504,97 +447,6 @@
       window.setInterval(renderCurrentField, 1000);
 
 
-      let lastReflection = null;
-      let reflectionFetchFailed = false;
-
-      function renderReflectionStatus() {
-        const stamp = lastReflection?.generated_at_utc;
-        const generated = typeof stamp === "string" ? Date.parse(stamp) : NaN;
-        if (!Number.isFinite(generated)) {
-          $("reflectionStatus").textContent =
-            "Reflection time unavailable; freshness unknown.";
-          return;
-        }
-        const age = (Date.now() - generated) / 1000;
-        const timeLabel = new Date(generated).toLocaleString();
-        let status;
-        if (reflectionFetchFailed) {
-          status = "Update unavailable; showing the last received record.";
-        } else if (age < -5) {
-          status = "Record time is ahead of this clock; freshness unknown.";
-        } else if (age > 180) {
-          status = "Older record; observation and interpretation are not current.";
-        } else {
-          status = "Recent reflection.";
-        }
-        if (lastReflection.fresh_evidence === false) {
-          status += " Source evidence was unavailable when this was recorded.";
-        }
-        $("reflectionStatus").textContent =
-          "Reflection: " + timeLabel + ". " + status;
-      }
-
-      function renderObservatory(data) {
-        lastReflection = data;
-        reflectionFetchFailed = false;
-        renderReflectionStatus();
-        const observations = Array.isArray(data?.observations)
-          ? data.observations.filter(Boolean)
-          : [];
-
-        const interpretations = Array.isArray(data?.interpretations)
-          ? data.interpretations.filter(Boolean)
-          : [];
-
-        const absences = Array.isArray(data?.absences)
-          ? data.absences.filter(Boolean)
-          : [];
-
-        $("observationText").textContent = observations.length
-          ? observations.join(" ")
-          : "No current observation has been returned.";
-
-        $("interpretationText").textContent = interpretations.length
-          ? interpretations.join(" ")
-          : "No bounded interpretation has been returned.";
-
-        $("absenceText").textContent = absences.length
-          ? absences.join(" ")
-          : "No omission has been identified.";
-
-        if (data?.confidence != null) {
-          $("confidenceText").textContent = String(data.confidence);
-        }
-
-        const events =
-          Array.isArray(data?.recent_changes) ? data.recent_changes :
-          Array.isArray(data?.events) ? data.events :
-          [];
-
-        if (events.length) {
-          $("memoryList").innerHTML = events.slice(-6).reverse().map((event) => {
-            const time =
-              event?.time ??
-              event?.timestamp ??
-              event?.generated_at ??
-              "Registered change";
-
-            const text =
-              event?.text ??
-              event?.observation ??
-              event?.message ??
-              JSON.stringify(event);
-
-            return `
-              <article class="memory-item">
-                <div class="memory-time">${String(time)}</div>
-                <p class="memory-text">${String(text)}</p>
-              </article>
-            `;
-          }).join("");
-        }
-      }
-
       async function getJson(url) {
         const separator = url.includes("?") ? "&" : "?";
         const response = await fetch(`${url}${separator}t=${Date.now()}`, {
@@ -611,10 +463,9 @@
       async function refresh() {
         const warning = $("loadWarning");
 
-        const [geneResult, kilnResult, observatoryResult] = await Promise.allSettled([
+        const [geneResult, kilnResult] = await Promise.allSettled([
           getJson(GENE_STATE_URL),
-          getJson(KILN_STATE_URL),
-          getJson(OBSERVATORY_STATE_URL)
+          getJson(KILN_STATE_URL)
         ]);
 
         if (geneResult.status === "fulfilled") {
@@ -628,32 +479,22 @@
           renderCurrentField();
         }
 
-        if (observatoryResult.status === "fulfilled") {
-          renderObservatory(observatoryResult.value);
-        } else {
-          reflectionFetchFailed = true;
-          renderReflectionStatus();
-        }
-
         const failed =
           geneResult.status === "rejected" ||
-          kilnResult.status === "rejected" ||
-          observatoryResult.status === "rejected";
+          kilnResult.status === "rejected";
 
         warning.classList.toggle("show", failed);
 
         if (failed) {
           console.warn("GENE Observatory refresh:", {
             gene: geneResult,
-            kiln: kilnResult,
-            observatory: observatoryResult
+            kiln: kilnResult
           });
         }
       }
 
       refresh();
       window.setInterval(refresh, REFRESH_MS);
-      window.setInterval(renderReflectionStatus, 1000);
     })();
   </script>
 
@@ -668,5 +509,6 @@
   </footer>
 </body>
 </html>
+
 
 

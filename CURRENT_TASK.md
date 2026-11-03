@@ -1,3 +1,25 @@
+## 2026-11-03 - Simplify Observatory into Current Field and Mission Journal
+
+Prepared Jim's requested redesign in public/observatory.html, public/missjour.html,
+and public/js/firing-broadcast.js. Observatory retains Current Field and one Mission
+Journal link directly below it. The new journal mounts GENE Speaks, preserves both
+recorded voices and the archive link, and groups registered observations, absences,
+interpretation, confidence, and recent changes under Observations. Public sensor
+thresholds, calibration, freshness checks, and runtime records are unchanged.
+
+Verification: inline and external JavaScript syntax checks passed. DOM fixtures
+passed for page split, live/failure field rendering, combined observation content,
+literal event text, mission scoping, archive link, and journal-only commentary.
+Browser preview verified the journal link navigation and visible combined layout.
+Preview has no local runtime JSON feeds, so empty/unavailable states were shown;
+fixture data was used only in a temporary test harness outside the source payload.
+
+Status: Jim explicitly approved publishing these prepared changes on 2026-11-03.
+Deployment verification is pending this commit.
+Next step: atomically commit only the three public files and work
+records, deploy via the existing cc_admin_render Actions workflow, and verify live.
+Base source: 9a7c6412cd494cceb91dbeac5fdf5f7f6cc2b0a9.
+
 ## 2026-10-29 - Observatory audience layout and current GENE portrait
 
 Prepared Jim's requested public Observatory changes: Current Field now leads with a visible GENE portrait beside the readings; Howard/GENE commentary follows it. Observation, Interpretation, and Changes use native, initially closed details controls; navigation remains outside the collapsed sections. The portrait and temperature/ramp use the existing GeneTemperature.evaluate helper with unchanged thresholds, exact image filenames, and expiry checks. Invalid, missing, failed, or stale evidence clears numeric readings and shows a neutral grayscale portrait explicitly labelled current state unavailable. This corrects null-to-zero coercion in the prior page. No paid AI calls were introduced.
@@ -459,5 +481,6 @@ work records and pushing only agent-sandbox. Next safe step: complete that commi
 and push, then report its hash and tracked worktree status. The previously failed
 live deployment remains NOT READY; promotion, retry, and deployment are not
 authorized. Review evidence: .local-gene-review/offering-guard-exact.diff.
+
 
 

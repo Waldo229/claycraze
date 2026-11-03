@@ -1,3 +1,11 @@
+## 2026-11-03 - Mission Journal simplification (prepared)
+
+- Replaced Observatory's commentary and separate record sections with one Mission Journal link below Current Field.
+- Added missjour.html with GENE Speaks and a combined Observations section.
+- Preserved existing feeds, recorded dialogue, source labels, expiry behavior, and archive access.
+- JavaScript syntax, DOM fixtures, and browser layout/navigation checks passed.
+- Jim explicitly approved publication on 2026-11-03; deployment verification pending.
+
 ## 2026-10-29 - Observatory audience layout and current GENE portrait
 
 Prepared Jim's requested public Observatory changes: Current Field now leads with a visible GENE portrait beside the readings; Howard/GENE commentary follows it. Observation, Interpretation, and Changes use native, initially closed details controls; navigation remains outside the collapsed sections. The portrait and temperature/ramp use the existing GeneTemperature.evaluate helper with unchanged thresholds, exact image filenames, and expiry checks. Invalid, missing, failed, or stale evidence clears numeric readings and shows a neutral grayscale portrait explicitly labelled current state unavailable. This corrects null-to-zero coercion in the prior page. No paid AI calls were introduced.
@@ -316,5 +324,6 @@ Record only verified work. Keep entries short and factual.
   git diff --check passed. Workflow, destinations, and public content unchanged.
 - Jim approved the four-file commit, including preserved work records, and push
   only to agent-sandbox. No promotion, retry, or deployment authorized or performed.
+
 
 
