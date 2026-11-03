@@ -1,3 +1,19 @@
+## 2026-11-03 - Compact expandable observation list
+
+Prepared Jim's requested compact Mission Journal layout. The five green observation
+labels are bulleted list items with native details/summary controls, initially
+closed and independently expandable. Existing data element IDs and refresh logic
+are retained so refreshing evidence does not reset the reader's open choices.
+Reflection freshness remains visible above the list.
+
+Changed public/missjour.html only, plus work records. Verification: five closed
+disclosures and unique data targets checked; unchanged inline JavaScript syntax
+passed; browser verified initial collapse, click expansion and keyboard collapse.
+Preview has no local runtime feeds; no fixture data was added to production.
+Jim explicitly approved publishing this revision on 2026-11-03. Next: deploy via
+the existing production workflow and verify live. Prior portrait/Q&A deployment
+completed successfully.
+
 ## 2026-11-03 - Mission Journal portrait and Q/A labels
 
 Jim requested removing the Download mission record link, using the existing

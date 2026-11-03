@@ -149,21 +149,26 @@
       line-height: 1.35;
     }
 
-    .note-block + .note-block {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--gene-line);
-    }
-
-    .note-label {
-      display: block;
-      margin-bottom: 8px;
+    .observation-list { margin: 16px 0 0; padding-left: 22px; }
+    .observation-list > li { padding-left: 4px; }
+    .observation-list > li::marker { color: var(--gene-green); }
+    .observation-detail > summary {
+      min-height: 44px;
+      padding: 12px 0;
       color: var(--gene-green);
       font-family: Georgia, "Times New Roman", serif;
       font-size: 0.78rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      cursor: pointer;
     }
+    .observation-detail > summary:focus-visible {
+      outline: 2px solid var(--gene-green);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+    .observation-detail > .note-copy,
+    .observation-detail > .memory-list { margin: 0 0 16px; }
 
     .note-copy {
       margin: 0;
@@ -313,47 +318,43 @@
           <h2 class="panel-title">Observations</h2>
           <p class="note-copy" id="reflectionStatus" role="status">Awaiting reflection timestamp.</p>
 
-          <div class="note-block">
-            <span class="note-label">What is registered</span>
-            <p class="note-copy" id="observationText">
-              Awaiting the common record.
-            </p>
-          </div>
-
-          <div class="note-block">
-            <span class="note-label">What is absent</span>
-            <p class="note-copy muted" id="absenceText">
-              No omission has been identified.
-            </p>
-          </div>
-
-          <div class="note-block">
-            <span class="note-label">Interpretation</span>
-            <p class="note-copy" id="interpretationText">
-              No interpretation has been returned yet.
-            </p>
-          </div>
-
-          <div class="note-block">
-            <span class="note-label">Confidence</span>
-            <p class="note-copy muted" id="confidenceText">
-              No confidence statement available.
-            </p>
-          </div>
-          <div class="note-block">
-            <span class="note-label">Recent changes</span>
-
-          <div class="memory-list" id="memoryList">
-            <article class="memory-item">
-              <div class="memory-time">Awaiting record</div>
-              <p class="memory-text">
-                No recent observation has been returned.
-              </p>
-            </article>
-          </div>
-
-
-          </div>
+          <ul class="observation-list">
+            <li>
+              <details class="observation-detail">
+                <summary>What is registered</summary>
+                <p class="note-copy" id="observationText">Awaiting the common record.</p>
+              </details>
+            </li>
+            <li>
+              <details class="observation-detail">
+                <summary>What is absent</summary>
+                <p class="note-copy muted" id="absenceText">No omission has been identified.</p>
+              </details>
+            </li>
+            <li>
+              <details class="observation-detail">
+                <summary>Interpretation</summary>
+                <p class="note-copy" id="interpretationText">No interpretation has been returned yet.</p>
+              </details>
+            </li>
+            <li>
+              <details class="observation-detail">
+                <summary>Confidence</summary>
+                <p class="note-copy muted" id="confidenceText">No confidence statement available.</p>
+              </details>
+            </li>
+            <li>
+              <details class="observation-detail">
+                <summary>Recent changes</summary>
+                <div class="memory-list" id="memoryList">
+                  <article class="memory-item">
+                    <div class="memory-time">Awaiting record</div>
+                    <p class="memory-text">No recent observation has been returned.</p>
+                  </article>
+                </div>
+              </details>
+            </li>
+          </ul>
         </section>
 
           <div class="button-row record-links">
