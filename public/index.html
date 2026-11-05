@@ -14,48 +14,30 @@
   <link rel="stylesheet" href="/css/styles.css?v=3041">
   <style>
     .home-threshold { padding-top: 2.5rem; }
-    .home-triptych { position: relative; margin: 0 0 2.5rem; padding-bottom: 4rem; }
+    .home-triptych { position: relative; margin: 0 0 2.5rem; }
     .home-triptych img { width: 100%; height: auto; border-radius: .5rem; }
     .triptych-doors { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .triptych-doors a {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding: .8rem .25rem;
-      color: #f4e8cc;
+      padding: clamp(.35rem, 1.6vw, 1.25rem) .25rem;
+      color: #cfab7d;
+      text-shadow: 0 1px 3px #241509, 0 0 10px rgba(36, 21, 9, .6);
       font-size: clamp(1.1rem, 2.2vw, 1.6rem);
       text-decoration: none;
     }
-    .triptych-doors a:hover { background: rgba(244, 232, 204, .04); color: var(--gold); }
+    .triptych-doors a:hover { background: rgba(207, 171, 125, .035); color: #e1bd91; }
     .triptych-doors a:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
     .home-copy { max-width: 900px; margin: 0 auto; text-align: center; }
     .home-copy .home-kicker { text-align: center; }
     .home-copy h1 { font-size: clamp(2.4rem, 4.3vw, 4.2rem); line-height: 1.06; }
-    .home-panel {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      width: 100%;
-      max-width: 620px;
-      margin: 1.2rem auto 0;
-    }
-    .home-panel a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 66px;
-      padding: .8rem .5rem;
-      color: #f4e8cc;
-      font: inherit;
-      font-size: clamp(.85rem, 1.4vw, 1.05rem);
-      line-height: 1.35;
-      text-align: center;
-      text-decoration: none;
-    }
-    .home-panel a:hover { background: rgba(244, 232, 204, .08); }
-    .home-panel a:focus-visible { outline: 2px solid var(--gold); outline-offset: -5px; }
+    .artist-link { text-decoration-color: rgba(207, 171, 125, .55); text-underline-offset: .18em; }
+    .artist-link:hover { color: #e1bd91; }
+    .artist-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     @media (max-width: 560px) {
       .home-threshold { padding: 1.5rem 1rem 3rem; }
-      .home-triptych { margin-bottom: 1.5rem; padding-bottom: 3.2rem; }
+      .home-triptych { margin-bottom: 1.5rem; }
     }
   </style>
 </head>
@@ -105,15 +87,10 @@
         <h1>For trees, flowers, and contemplative rooms.</h1>
 
         <p>
-          Jim Alexander designs quiet, high-fired stoneware containers inspired by
+          <a class="artist-link" href="/artist.html">Jim Alexander</a> designs quiet, high-fired stoneware containers inspired by
           Asian traditions for bonsai enthusiasts, floral designers, and interior decorators.
         </p>
 
-        <nav class="home-panel" aria-label="Explore ClaycrazE">
-          <a href="/gallery/bonsai.html">The Containers</a>
-          <a href="/gene-project.html">The GENE Project</a>
-          <a href="/artist.html">The Artist</a>
-        </nav>
       </div>
     </section>
   </main>
