@@ -13,14 +13,30 @@
 
   <link rel="stylesheet" href="/css/styles.css?v=3041">
   <style>
-    .home-copy { text-align: left; }
+    .home-threshold { padding-top: 2.5rem; }
+    .home-triptych { position: relative; margin: 0 0 2.5rem; padding-bottom: 4rem; }
+    .home-triptych img { width: 100%; height: auto; border-radius: .5rem; }
+    .triptych-doors { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .triptych-doors a {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: .8rem .25rem;
+      color: #f4e8cc;
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      text-decoration: none;
+    }
+    .triptych-doors a:hover { background: rgba(244, 232, 204, .04); color: var(--gold); }
+    .triptych-doors a:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+    .home-copy { max-width: 900px; text-align: left; }
     .home-copy .home-kicker { text-align: left; }
+    .home-copy h1 { font-size: clamp(2.4rem, 4.3vw, 4.2rem); line-height: 1.06; }
     .home-panel {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       width: 100%;
       max-width: 620px;
-      margin: 2rem auto 0 0;
+      margin: 1.2rem auto 0 0;
     }
     .home-panel a {
       display: flex;
@@ -37,6 +53,10 @@
     }
     .home-panel a:hover { background: rgba(244, 232, 204, .08); }
     .home-panel a:focus-visible { outline: 2px solid var(--gold); outline-offset: -5px; }
+    @media (max-width: 560px) {
+      .home-threshold { padding: 1.5rem 1rem 3rem; }
+      .home-triptych { margin-bottom: 1.5rem; padding-bottom: 3.2rem; }
+    }
   </style>
 </head>
 
@@ -66,22 +86,19 @@
   </header>
 
   <main class="home-threshold">
-    <section class="home-hero">
-      <div class="home-gene-feature">
-        <a
-          href="/welcome.html"
-          class="home-gene-link"
-          aria-label="Enter the ClaycrazE welcome page"
-        >
-          <img
-            src="/offering_gene.jpg"
-            alt="GENE presenting a handmade bonsai pot beneath an eclipse."
-            class="home-gene-image"
-            width="300"
-            height="300">
-        </a>
-      </div>
+    <section class="home-triptych" aria-label="GENE: Theory and Practice together">
+      <img
+        src="/images/curated/guides/gene-theory-practice-triptych-v1.jpg"
+        alt="Three aspects of GENE in one landscape: the scroll bearer for Theory, GENE offering a clay vessel at the center, and the broom bearer for Practice."
+        width="1983" height="793" fetchpriority="high">
+      <nav class="triptych-doors" aria-label="Theory, GENE, and Practice">
+        <a href="/theory.html">Theory</a>
+        <a href="/gene-project.html">GENE</a>
+        <a href="/practice.html">Practice</a>
+      </nav>
+    </section>
 
+    <section aria-label="The pottery of Jim Alexander">
       <div class="home-copy">
         <p class="home-kicker">Clay &bull; Philosophy &bull; Bonsai </p>
 
