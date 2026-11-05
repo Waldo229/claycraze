@@ -12,6 +12,32 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
 
   <link rel="stylesheet" href="/css/styles.css?v=3041">
+  <style>
+    .home-copy { text-align: left; }
+    .home-copy .home-kicker { text-align: left; }
+    .home-panel {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+      max-width: 620px;
+      margin: 2rem auto 0 0;
+    }
+    .home-panel a {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 66px;
+      padding: .8rem .5rem;
+      color: #f4e8cc;
+      font: inherit;
+      font-size: clamp(.85rem, 1.4vw, 1.05rem);
+      line-height: 1.35;
+      text-align: left;
+      text-decoration: none;
+    }
+    .home-panel a:hover { background: rgba(244, 232, 204, .08); }
+    .home-panel a:focus-visible { outline: 2px solid var(--gold); outline-offset: -5px; }
+  </style>
 </head>
 
 <body class="home-page">
@@ -54,10 +80,6 @@
             width="300"
             height="300">
         </a>
-
-        <a href="/gene_reveals.html" class="home-gene-caption">
-          GENE Reveals &rarr;
-        </a>
       </div>
 
       <div class="home-copy">
@@ -69,6 +91,12 @@
           Jim Alexander designs quiet, high-fired stoneware containers inspired by
           Asian traditions for bonsai enthusiasts, floral designers, and interior decorators.
         </p>
+
+        <nav class="home-panel" aria-label="Explore ClaycrazE">
+          <a href="/gallery/bonsai.html">The Containers</a>
+          <a href="/gene-project.html">The GENE Project</a>
+          <a href="/artist.html">The Artist</a>
+        </nav>
       </div>
     </section>
   </main>
