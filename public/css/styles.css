@@ -981,15 +981,15 @@ a {
 
 .paired-threshold {
   width: min(100%, 1180px);
-  padding-top: clamp(2.5rem, 5vw, 5rem);
+  padding-top: clamp(1.75rem, 3.5vw, 3.5rem);
 }
 
 .paired-intro {
   display: grid;
   grid-template-columns: minmax(150px, 230px) minmax(0, 1fr);
-  gap: clamp(2rem, 6vw, 5rem);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
   align-items: center;
-  margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
 }
 
 .paired-guide {
@@ -1011,7 +1011,9 @@ a {
 }
 
 .paired-copy h1 {
-  font-size: clamp(3rem, 6vw, 5.7rem);
+  font-size: clamp(2.35rem, 4.3vw, 3.65rem);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
 }
 
 .paired-copy > p:last-child {
@@ -1131,13 +1133,13 @@ a {
   }
 
   .paired-intro {
-    grid-template-columns: 88px minmax(0, 1fr);
-    gap: 1.2rem;
+    grid-template-columns: clamp(56px, 13vw, 88px) minmax(0, 1fr);
+    gap: clamp(.75rem, 3vw, 1.2rem);
     align-items: start;
   }
 
   .paired-copy h1 {
-    font-size: clamp(2.6rem, 12vw, 4.1rem);
+    font-size: clamp(1.65rem, 5.5vw, 2.6rem);
   }
 
   .threshold-directory {
