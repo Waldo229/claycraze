@@ -19,13 +19,21 @@
     .triptych-doors { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .triptych-doors a {
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: .12em;
+      line-height: 1.15;
+      text-align: center;
       padding: clamp(.35rem, 1.6vw, 1.25rem) .25rem;
       color: #cfab7d;
       text-shadow: 0 1px 3px #241509, 0 0 10px rgba(36, 21, 9, .6);
       font-size: clamp(1.1rem, 2.2vw, 1.6rem);
       text-decoration: none;
+    }
+    .triptych-subtitle {
+      font-size: clamp(.75rem, 1.4vw, 1.05rem);
+      font-style: italic;
     }
     .triptych-doors a:hover { background: rgba(207, 171, 125, .035); color: #e1bd91; }
     .triptych-doors a:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
@@ -74,9 +82,18 @@
         alt="Three aspects of GENE in one landscape: the scroll bearer for Theory, GENE offering a clay vessel at the center, and the broom bearer for Practice."
         width="1983" height="793" fetchpriority="high">
       <nav class="triptych-doors" aria-label="Theory, GENE, and Practice">
-        <a href="/theory.html">Theory</a>
-        <a href="/gene-project.html">GENE</a>
-        <a href="/practice.html">Practice</a>
+        <a href="/theory.html">
+          <span>Theory</span>
+          <span class="triptych-subtitle">(The Studio)</span>
+        </a>
+        <a href="/gene-project.html">
+          <span>GENE</span>
+          <span class="triptych-subtitle">(The Kiln Watcher)</span>
+        </a>
+        <a href="/practice.html">
+          <span>Practice</span>
+          <span class="triptych-subtitle">(The Pottery)</span>
+        </a>
       </nav>
     </section>
 
