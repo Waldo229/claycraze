@@ -678,8 +678,22 @@ if (isset($_GET['firing_notes'])) {
       .mc-grid { padding: 16px; }
       .countdown { grid-template-columns: repeat(2, 1fr); }
     }
-    .mc-shell { margin: 16px auto 24px; }
+    .mc-shell { width: min(1040px, calc(100% - 28px)); margin: 16px auto 24px; }
     .mc-top { padding: 16px 20px; }
+    .mc-top #geneSitterPanel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 14px;
+      margin-top: 10px !important;
+      padding: 8px 12px !important;
+      border-color: var(--gene-line) !important;
+      border-radius: 8px !important;
+      font-size: .9rem;
+    }
+    #geneSitterPanel p { margin: 0; overflow-wrap: anywhere; }
+    #geneSitterMessage { flex-basis: 100%; }
+    #geneSitterMessage:empty { display: none; }
     .mc-title { font-size: 1.6rem; letter-spacing: .02em; }
     .mc-subtitle, .mc-kicker { display: none; }
     .mc-grid { padding: 16px; gap: 12px; }
@@ -689,7 +703,27 @@ if (isset($_GET['firing_notes'])) {
     .count-box { flex: 1; padding: 6px 2px; border: 0; }
     .count-value { font-size: 1.5rem; }
     summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
-    .security-pending { margin: 12px 16px 0; padding: 12px; border-left: 3px solid var(--gene-amber); color: var(--gene-cream); }
+    .security-pending {
+      margin: 10px 16px 0;
+      padding: 6px 10px;
+      border-left: 3px solid var(--gene-amber);
+      color: var(--gene-cream);
+      font-size: .9rem;
+      overflow-wrap: anywhere;
+    }
+    .plan-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+      margin-bottom: 14px;
+    }
+    .plan-fields .field { min-width: 0; margin: 0; }
+    .plan-purpose { grid-column: 1 / -1; }
+    .plan-purpose textarea { display: block; min-height: 72px; }
+    @media (max-width: 620px) {
+      .mc-shell { width: calc(100% - 16px); }
+      .plan-fields { grid-template-columns: minmax(0, 1fr); }
+    }
     @media (max-width:620px) { .mc-grid { padding: 10px; } .mc-button { font-size: 1rem; letter-spacing: 0; } }
 
     [data-mc-page][hidden], .mc-grid[hidden], #mcHomeNote[hidden] { display: none !important; }
@@ -700,8 +734,8 @@ if (isset($_GET['firing_notes'])) {
     .mc-page-nav a:hover, .mc-page-nav a[aria-current="page"] { color: var(--gene-green); }
     .mc-page-nav a:focus-visible, .mc-title a:focus-visible { outline: 2px solid var(--gene-green); outline-offset: 3px; }
     .mc-home-note { padding: 0 32px; color: var(--gene-muted); }
-    .mc-card[data-view="detail"] .mc-page-nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
-    .mc-card[data-view="detail"] .mc-page-nav a { font-size: .95rem; padding: 12px 0; }
+    .mc-card[data-view="detail"] .mc-page-nav { display: flex; flex-wrap: wrap; gap: 0 16px; padding: 0 20px; }
+    .mc-card[data-view="detail"] .mc-page-nav a { font-size: .95rem; min-height: 44px; padding: 9px 0; }
   </style>
 </head>
 
@@ -747,9 +781,11 @@ if (isset($_GET['firing_notes'])) {
 
         <section data-mc-page="firing-plan" class="panel">
           <h2 class="panel-title">Firing plan</h2>
-          <div class="field"><label for="missionName">Name</label><input id="missionName" type="text" placeholder="Name this firing"></div>
-          <div class="field"><label for="launchTime">Date and planned ignition time</label><input id="launchTime" type="datetime-local"></div>
-          <div class="field"><label for="missionTarget">Purpose</label><textarea id="missionTarget" placeholder="What do you want this firing to accomplish?"></textarea></div>
+          <div class="plan-fields">
+            <div class="field"><label for="missionName">Name</label><input id="missionName" type="text" placeholder="Name this firing"></div>
+            <div class="field"><label for="launchTime">Date and planned ignition time</label><input id="launchTime" type="datetime-local"></div>
+            <div class="field plan-purpose"><label for="missionTarget">Purpose</label><textarea id="missionTarget" placeholder="What do you want this firing to accomplish?"></textarea></div>
+          </div>
           <div class="field"><label for="targetHeatwork">Heat work target</label><input id="targetHeatwork" type="text" placeholder="Example: Cone 10"><p class="inline-note">Record heat work accomplished in your firing notes as evidence becomes available.</p></div>
           <fieldset class="field" style="border:0;padding:0"><legend>Kiln names</legend><div class="choice-grid">
             <label class="choice-card"><input id="kilnRichie" type="checkbox"><span>Richie — electric, oxidation</span></label>
