@@ -1,3 +1,9 @@
+## 2026-11-06 - Mission Control launch label
+
+Renamed `GO for observation` to `LAUNCH` in `public/mission-control/index.php`.
+Verified that the page change is limited to the label. Jim approved publication.
+Next: check the production deployment and the label in Mission Control.
+
 ## 2026-11-03 - Compact expandable observation list
 
 Prepared Jim's requested compact Mission Journal layout. The five green observation

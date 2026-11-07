@@ -886,7 +886,7 @@ if (isset($_GET['firing_notes'])) {
 
           <div class="button-row">
             <button class="mc-button secondary" id="evaluateButton" type="button" disabled>Run Preflight</button>
-            <button class="mc-button" id="launchButton" type="button" disabled>GO for observation</button>
+            <button class="mc-button" id="launchButton" type="button" disabled>LAUNCH</button>
           </div>
         </section>
 
