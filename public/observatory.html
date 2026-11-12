@@ -400,35 +400,76 @@
       const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
       const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
       const MISSION_URL = "https://claycraze.com/gene/mission_control_latest.json";
+      const FIRING_JOURNAL_URL = "/gene/firing_broadcast_latest.json";
       const REFRESH_MS = 10000;
 
       const $ = (id) => document.getElementById(id);
 
       let latestMission = null;
+      let latestFiringJournal = null;
       let scheduleStatus = "Checking the firing schedule…";
+
+      function recordedFiringTimes(mission) {
+        const journal = latestFiringJournal;
+        if (!mission?.mission_id || journal?.mission_id !== mission.mission_id ||
+            !Array.isArray(journal.events)) return {};
+
+        const transitions = journal.events
+          .filter(event => event?.mission_id === mission.mission_id && event.kind === "mission")
+          .map(event => ({
+            status: event.evidence?.mission_status,
+            at: Date.parse(event.observed_at_utc)
+          }))
+          .filter(event => Number.isFinite(event.at))
+          .sort((a, b) => a.at - b.at);
+        const start = transitions.find(event => event.status === "FIRING")?.at;
+        const end = transitions.find(event =>
+          event.at >= start && ["COMPLETE", "ABORTED"].includes(event.status))?.at;
+        return { start, end };
+      }
 
       function renderCountdown() {
         const mission = latestMission;
         const status = mission?.mission_status;
+        const now = Date.now();
         const target = Date.parse(mission?.planned_ignition);
-        const remaining = Math.ceil((target - Date.now()) / 1000);
+        const remaining = Math.ceil((target - now) / 1000);
         const scheduled = ["PLANNED", "GO"].includes(status) && Number.isFinite(target);
-        const ticking = scheduled && remaining > 0;
+        const { start, end } = recordedFiringTimes(mission);
+        const underway = ["FIRING", "OBSERVING", "UNDERWAY", "COOLING", "RECOVERY"].includes(status);
+        const finished = ["COMPLETE", "ABORTED"].includes(status);
+        const elapsed = (underway || finished) && Number.isFinite(start) && start <= now;
+        const duration = elapsed
+          ? Math.floor(((finished ? end : now) - start) / 1000)
+          : scheduled && remaining > 0 ? remaining : NaN;
         let message = scheduleStatus;
-        if (status === "HOLD") {
+        if (underway || finished) {
+          if (Number.isFinite(duration)) {
+            message = {
+              COOLING: "Cooling.",
+              RECOVERY: "Recovery.",
+              COMPLETE: "Mission complete.",
+              ABORTED: "Mission aborted."
+            }[status] || "Firing underway.";
+          } else {
+            message = elapsed ? "Awaiting the recorded end time." : "Awaiting a recorded ignition time.";
+          }
+        } else if (status === "HOLD") {
           message = "On hold.";
         } else if (scheduled) {
-          message = ticking ? "" : "Planned ignition time has passed.";
+          message = remaining > 0 ? "" : "Planned ignition time has passed.";
         }
 
-        const name = (scheduled || status === "HOLD") && mission.mission_name;
+        $("missionCountdownTitle").textContent = underway || finished
+          ? "T+ Mission elapsed time" : "Countdown to planned ignition";
+        const name = (scheduled || status === "HOLD" || underway || finished) && mission.mission_name;
         $("countdownMission").textContent = [name, message].filter(Boolean).join(" · ");
 
-        const digits = (value) => ticking ? String(value).padStart(2, "0") : "—";
-        $("countdownDays").textContent = digits(Math.floor(remaining / 86400));
-        $("countdownHours").textContent = digits(Math.floor(remaining / 3600) % 24);
-        $("countdownMinutes").textContent = digits(Math.floor(remaining / 60) % 60);
-        $("countdownSeconds").textContent = digits(remaining % 60);
+        const digits = (value) => Number.isFinite(value) ? String(value).padStart(2, "0") : "—";
+        $("countdownDays").textContent = digits(Math.floor(duration / 86400));
+        $("countdownHours").textContent = digits(Math.floor(duration / 3600) % 24);
+        $("countdownMinutes").textContent = digits(Math.floor(duration / 60) % 60);
+        $("countdownSeconds").textContent = digits(duration % 60);
       }
 
       async function refreshMission() {
@@ -438,6 +479,15 @@
         } catch {
           latestMission = null;
           scheduleStatus = "Firing schedule temporarily unavailable.";
+        }
+        renderCountdown();
+      }
+
+      async function refreshFiringJournal() {
+        try {
+          latestFiringJournal = await getJson(FIRING_JOURNAL_URL);
+        } catch {
+          // Keep the last recorded transitions through a temporary feed outage.
         }
         renderCountdown();
       }
@@ -569,8 +619,10 @@
 
       refresh();
       refreshMission();
+      refreshFiringJournal();
       window.setInterval(refresh, REFRESH_MS);
       window.setInterval(refreshMission, REFRESH_MS);
+      window.setInterval(refreshFiringJournal, REFRESH_MS);
       window.setInterval(renderCountdown, 1000);
     })();
   </script>

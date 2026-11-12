@@ -1,3 +1,8 @@
+## 2026-11-12 - Observatory T+ mission clock
+
+Added elapsed mission time based on recorded firing and end events, with the
+clock continuing through cooling and recovery.
+
 ## 2026-11-12 - Observatory countdown visibility
 
 Kept the countdown panel visible between firings and after the planned time

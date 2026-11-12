@@ -1,3 +1,12 @@
+## 2026-11-12 - Observatory T+ mission clock
+
+The Observatory now switches from the planned countdown to elapsed mission
+time when the same mission's journal records FIRING. It counts through cooling
+and recovery and freezes at recorded completion or abort. Missing start and
+end events are shown explicitly. The current live mission is still PLANNED,
+so the full transition was verified with a DOM fixture using the public feed
+shape. All 33 existing tests passed. Pending publication and a live firing.
+
 ## 2026-11-12 - Keep the Observatory countdown visible
 
 The live plan for Major Tom 3 had passed its scheduled time while still
