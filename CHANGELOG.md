@@ -1,3 +1,9 @@
+## 2026-11-11 - Public navigation
+
+Prepared consistent primary navigation, direct routes to GENE pages, and
+named return links for pottery and studio pages. Verified internal routes
+against the production tree. Jim approved publication on 2026-11-11.
+
 ## 2026-11-11 - GENE's pre-launch question and reveal note
 
 Prepared two timestamped entries in Mission Control's existing firing notes.

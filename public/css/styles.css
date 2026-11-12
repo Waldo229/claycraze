@@ -83,6 +83,17 @@ a {
   font-size: 0.95rem;
 }
 
+.site-nav a[aria-current] {
+  color: #f2e6c9;
+  text-decoration: underline;
+  text-underline-offset: 0.28em;
+}
+
+.site-nav a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
 .site-nav a:hover,
 .category-nav a:hover {
   color: #fff3d6;

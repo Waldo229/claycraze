@@ -108,7 +108,7 @@ if (isset($_GET['firing_notes'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GENE Mission Control - ClaycrazE</title>
-  <link rel="stylesheet" href="/css/styles.css?v=3031">
+  <link rel="stylesheet" href="/css/styles.css?v=site-nav-1">
 
   <style>
     :root {
@@ -762,6 +762,7 @@ if (isset($_GET['firing_notes'])) {
       <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/theory.html">Theory</a>
+        <a class="active" aria-current="location" href="/gene-project.html">GENE</a>
         <a href="/practice.html">Practice</a>
       </nav>
     </div>
@@ -963,7 +964,7 @@ if (isset($_GET['firing_notes'])) {
 
           </details>
           <div class="button-row">
-            <a class="mc-button secondary" href="/kilnwatch.html" style="text-decoration:none; display:inline-flex; align-items:center;">Return to GENE</a>
+            <a class="mc-button secondary" href="/kilnwatch.html" style="text-decoration:none; display:inline-flex; align-items:center;">Back to Kiln Watch</a>
             <a class="mc-button secondary" href="/observatory.html" style="text-decoration:none; display:inline-flex; align-items:center;">Enter Observatory</a>
           </div>
         </section>

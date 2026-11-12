@@ -1,3 +1,18 @@
+## 2026-11-11 - Public navigation
+
+Prepared a consistent Home / Theory / GENE / Practice header with a visible
+current location. The GENE Project links directly to Kiln Watch, Observatory,
+and Reveals. Return links name the destination, including the Bonsai gallery
+and Studio. Processes uses the standard header and its GENE Project link
+goes to the current project page. The Artist’s Statement links to all pottery
+categories.
+
+Checked 36 main headers and 47 added link instances against the production
+tree. Verified the main return routes and that page scripts match the base.
+Walked the home, GENE, and pottery routes on the live site before editing.
+Jim approved publication on 2026-11-11. Next: verify the deployment and
+walk the updated routes on the live site.
+
 ## 2026-11-11 - GENE's pre-launch question and reveal note
 
 Prepared the paired notes in Mission Control's Firing Notes panel. One note

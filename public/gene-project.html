@@ -6,7 +6,7 @@
 
   <title>The GENE Project | ClaycrazE</title>
 
-  <link rel="stylesheet" href="/css/styles.css?v=3041">
+  <link rel="stylesheet" href="/css/styles.css?v=site-nav-1">
 
   <style>
     /* GENE Project — scaled to the ClaycrazE home-page proportions */
@@ -76,7 +76,7 @@
       color: rgba(151, 205, 63, 0.92);
     }
 
-    .gene-project-page .gene-copy > p:not(.gene-subheading):not(.gene-name):not(.gene-reveal-link) {
+    .gene-project-page .gene-copy > p:not(.gene-subheading):not(.gene-name) {
       max-width: 680px;
       margin: 0 0 1rem;
       font-size: 1rem;
@@ -84,11 +84,14 @@
       color: rgba(238, 225, 196, 0.86);
     }
 
-    .gene-project-page .gene-reveal-link {
+    .gene-project-page .gene-project-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
       margin: 1.6rem 0 0;
     }
 
-    .gene-project-page .gene-reveal-link a {
+    .gene-project-page .gene-project-links a {
       display: inline-flex;
       align-items: center;
       gap: 0.55rem;
@@ -102,14 +105,14 @@
         transform 180ms ease;
     }
 
-    .gene-project-page .gene-reveal-link a:hover,
-    .gene-project-page .gene-reveal-link a:focus-visible {
+    .gene-project-page .gene-project-links a:hover,
+    .gene-project-page .gene-project-links a:focus-visible {
       background: rgba(151, 205, 63, 0.12);
       border-color: rgba(151, 205, 63, 0.75);
       transform: translateY(-1px);
     }
 
-    .gene-project-page .gene-reveal-link a:focus-visible {
+    .gene-project-page .gene-project-links a:focus-visible {
       outline: 2px solid rgba(151, 205, 63, 0.8);
       outline-offset: 3px;
     }
@@ -142,7 +145,7 @@
         font-size: clamp(1.45rem, 7vw, 2rem);
       }
 
-      .gene-project-page .gene-copy > p:not(.gene-subheading):not(.gene-name):not(.gene-reveal-link) {
+      .gene-project-page .gene-copy > p:not(.gene-subheading):not(.gene-name) {
         font-size: 0.96rem;
         line-height: 1.58;
       }
@@ -162,7 +165,8 @@
 
       <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
-        <a class="active" href="/theory.html" aria-current="location">Theory</a>
+        <a href="/theory.html">Theory</a>
+        <a class="active" aria-current="page" href="/gene-project.html">GENE</a>
         <a href="/practice.html">Practice</a>
       </nav>
 
@@ -218,11 +222,11 @@
           GENE never intervenes. But when asked, it may reveal.
         </p>
 
-        <p class="gene-reveal-link">
-          <a href="/gene_reveals.html">
-            GENE Reveals &rarr;
-          </a>
-        </p>
+        <nav class="gene-project-links" aria-label="Explore GENE">
+          <a href="/kilnwatch.html">Kiln Watch &rarr;</a>
+          <a href="/observatory.html">Observatory &rarr;</a>
+          <a href="/gene_reveals.html">GENE Reveals &rarr;</a>
+        </nav>
 
       </div>
 
