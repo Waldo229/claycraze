@@ -47,16 +47,26 @@ if (isset($_GET['firing_notes'])) {
     if ($method === 'POST') {
         $text = $input['text'] ?? '';
         $id = $input['note_id'] ?? '';
+        $stage = $input['stage'] ?? '';
         if (!is_string($text) || trim($text) === '' || strlen($text) > 8000 || !is_string($id) || !preg_match('/^[a-zA-Z0-9-]{16,80}$/', $id)) note_reply(400, ['ok'=>false, 'error'=>'Enter a note of up to 8,000 bytes.']);
+        if (!in_array($stage, ['', 'pre_launch', 'reveal'], true)) note_reply(400, ['ok'=>false, 'error'=>'Choose a valid note type.']);
         $handle = @fopen($path, 'c+');
         if (!$handle || !flock($handle, LOCK_EX)) note_reply(503, ['ok'=>false, 'error'=>'Could not save note. Your text is still in the box.']);
         $existing = false;
+        $stageTaken = false;
         while (($line = fgets($handle)) !== false) {
             $entry = json_decode($line, true);
-            if (is_array($entry) && ($entry['note_id'] ?? '') === $id) $existing = true;
+            if (!is_array($entry)) continue;
+            if (($entry['note_id'] ?? '') === $id) $existing = true;
+            if ($stage !== '' && ($entry['stage'] ?? '') === $stage) $stageTaken = true;
+        }
+        if (!$existing && $stageTaken) {
+            flock($handle, LOCK_UN); fclose($handle);
+            note_reply(409, ['ok'=>false, 'error'=>'This firing already has that note. You can save a follow-up as a firing observation.']);
         }
         if (!$existing) {
             $entry = ['note_id'=>$id, 'mission_id'=>$mission, 'recorded_at'=>gmdate('c'), 'source'=>'human_observation', 'operator'=>$user, 'text'=>trim($text)];
+            if ($stage !== '') $entry['stage'] = $stage;
             $line = json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) . "\n";
             $written = fwrite($handle, $line);
             $flushed = fflush($handle);
@@ -377,6 +387,7 @@ if (isset($_GET['firing_notes'])) {
     .firing-note-entry { padding: 12px 0; border-bottom: 1px solid var(--gene-line); }
     .firing-note-entry p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0; }
     .firing-note-entry time { color: var(--gene-muted); font-size: .85rem; }
+    .firing-note-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
     .heatwork-board {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -892,9 +903,28 @@ if (isset($_GET['firing_notes'])) {
 
         <section data-mc-page="firing-notes" class="panel" style="grid-column:1 / -1">
           <h2 class="panel-title">Firing notes</h2>
-          <p class="inline-note">Record damper changes, flame, cone evidence, heat work accomplished, or anything worth revisiting. Each entry is timestamped and kept with this mission. Use [remember] for a lesson to retain, [question] for an unresolved question, or [test] for a system test.</p>
-          <div class="field"><label for="firingNote">Your observation</label><textarea id="firingNote" maxlength="8000" placeholder="Example: Damper closed slightly. Flame softened; temperature rise slowed."></textarea></div>
-          <button class="mc-button" id="addNoteButton" type="button" disabled>Add note</button>
+          <section aria-label="Firing question and reveal">
+            <div class="firing-note-pair">
+              <div><h3>Before launch</h3><div id="preLaunchNote">What do you want GENE to watch for?</div></div>
+              <div><h3>At reveal</h3><div id="revealNote">What did the firing trace, witness cones and pots show?</div></div>
+            </div>
+            <div class="button-row">
+              <a href="/kiln-watch-graph.html" id="currentFiringTrace">Current firing trace</a>
+              <a href="/gene/firing_archive/">Firing archive</a>
+              <a id="firingNotesPermalink" hidden>Link to this firing’s notes</a>
+              <a id="currentFiringNotes" href="/mission-control/?page=firing-notes" hidden>Current firing notes</a>
+            </div>
+          </section>
+          <div id="firingNoteEditor">
+            <p class="inline-note">Record damper changes, flame, cone evidence, heat work accomplished, or anything worth revisiting. Each entry is timestamped and kept with this mission. Use [remember] for a lesson to retain, [question] for an unresolved question, or [test] for a system test.</p>
+            <div class="field"><label for="firingNoteStage">Note type</label><select id="firingNoteStage">
+              <option value="">Firing observation</option>
+              <option value="pre_launch">Before launch</option>
+              <option value="reveal">At reveal</option>
+            </select></div>
+            <div class="field"><label for="firingNote">Your observation</label><textarea id="firingNote" maxlength="8000" placeholder="Example: Damper closed slightly. Flame softened; temperature rise slowed."></textarea></div>
+            <button class="mc-button" id="addNoteButton" type="button" disabled>Add note</button>
+          </div>
           <button class="mc-button secondary" id="refreshNotesButton" type="button" disabled>Refresh notes</button>
           <p class="inline-note" id="notesStatus" role="status">Publish the firing plan through preflight to attach notes to a mission.</p>
           <div id="firingNotesList"></div>
@@ -952,6 +982,7 @@ if (isset($_GET['firing_notes'])) {
       "use strict";
 
       const $ = (id) => document.getElementById(id);
+      const savedNotesMission = new URL(window.location.href).searchParams.get("notes_mission");
       const mcPages = [...document.querySelectorAll("[data-mc-page]")];
       const mcLinks = [...document.querySelectorAll("[data-mc-link]")];
       function showMissionPage(focusHeading = false) {
@@ -970,7 +1001,7 @@ if (isset($_GET['firing_notes'])) {
         if (focusHeading && heading) { heading.tabIndex = -1; heading.focus(); }
       }
       mcLinks.forEach(link => link.addEventListener("click", event => {
-        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        if (savedNotesMission || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
         event.preventDefault();
         window.history.pushState({}, "", link.href);
         showMissionPage(true);
@@ -989,6 +1020,7 @@ if (isset($_GET['firing_notes'])) {
       const commandButtons = [...document.querySelectorAll('[data-command]')];
       let noteSaving = false;
       let pendingNote = null;
+      let notesRefresh = 0;
       async function notesRequest(method, body, missionId) {
         const url = new URL(window.location.href);
         url.search = "";
@@ -1040,17 +1072,22 @@ if (isset($_GET['firing_notes'])) {
         }
       }
       async function refreshNotes() {
-        const id = missionRecord.mission_id;
+        const id = savedNotesMission || missionRecord.mission_id;
+        const request = ++notesRefresh;
         $("firingNotesList").replaceChildren();
+        $("preLaunchNote").textContent = "What do you want GENE to watch for?";
+        $("revealNote").textContent = "What did the firing trace, witness cones and pots show?";
         $("noteReviewList").replaceChildren();
         $("noteReviewStatus").textContent = "Awaiting Cosmo's next review.";
+        $("firingNotesPermalink").hidden = !id || !!savedNotesMission;
         if (!id) {
           $("notesStatus").textContent = "Run preflight to save the plan before adding mission notes.";
           return;
         }
+        $("firingNotesPermalink").href = `/mission-control/?page=firing-notes&notes_mission=${encodeURIComponent(id)}`;
         try {
           const result = await notesRequest("GET", null, id);
-          if (missionRecord.mission_id !== id) return;
+          if (request !== notesRefresh) return;
           renderNoteReview(result);
           for (const note of result.notes) {
             const entry = document.createElement("article");
@@ -1061,23 +1098,26 @@ if (isset($_GET['firing_notes'])) {
             const text = document.createElement("p");
             text.textContent = note.text;
             entry.append(time, text);
-            $("firingNotesList").append(entry);
+            if (note.stage === "pre_launch") $("preLaunchNote").replaceChildren(entry);
+            else if (note.stage === "reveal") $("revealNote").replaceChildren(entry);
+            else $("firingNotesList").append(entry);
           }
           $("notesStatus").textContent = result.notes.length ? "Notes saved with this mission." : "No notes recorded for this mission yet.";
         } catch (error) {
-          if (missionRecord.mission_id === id) $("notesStatus").textContent = error.message;
+          if (request === notesRefresh) $("notesStatus").textContent = error.message;
         }
       }
       async function addFiringNote() {
         const text = $("firingNote").value.trim();
         const id = missionRecord.mission_id;
-        if (!id || !text || noteSaving) return;
+        const stage = $("firingNoteStage").value;
+        if (savedNotesMission || !id || !text || noteSaving) return;
         if (new TextEncoder().encode(text).length > 8000) {
           $("notesStatus").textContent = "Please shorten this note (maximum 8,000 bytes).";
           return;
         }
-        if (!pendingNote || pendingNote.text !== text || pendingNote.mission_id !== id) {
-          pendingNote = {mission_id:id, text, note_id:crypto.randomUUID()};
+        if (!pendingNote || pendingNote.text !== text || pendingNote.mission_id !== id || pendingNote.stage !== stage) {
+          pendingNote = {mission_id:id, text, stage, note_id:crypto.randomUUID()};
         }
         noteSaving = true;
         $("addNoteButton").disabled = true;
@@ -1085,11 +1125,16 @@ if (isset($_GET['firing_notes'])) {
         try {
           await notesRequest("POST", pendingNote, id);
           if (missionRecord.mission_id === id) {
-            if ($("firingNote").value.trim() === text) $("firingNote").value = "";
+            if ($("firingNote").value.trim() === text && $("firingNoteStage").value === stage) {
+              $("firingNote").value = "";
+              $("firingNoteStage").value = "";
+            }
             pendingNote = null;
             await refreshNotes();
           }
-        } catch (error) { $("notesStatus").textContent = error.message; }
+        } catch (error) {
+          if (missionRecord.mission_id === id) $("notesStatus").textContent = error.message;
+        }
         finally {
           noteSaving = false;
           $("addNoteButton").disabled = !missionRecord.mission_id;
@@ -1097,16 +1142,24 @@ if (isset($_GET['firing_notes'])) {
       }
       $("addNoteButton").addEventListener("click", addFiringNote);
       $("refreshNotesButton").addEventListener("click", refreshNotes);
+      if (savedNotesMission) {
+        $("firingNoteEditor").hidden = true;
+        $("currentFiringTrace").hidden = true;
+        $("currentFiringNotes").hidden = false;
+        $("refreshNotesButton").disabled = false;
+        refreshNotes();
+      }
       function syncMission(record) {
         const previousMissionId = missionRecord.mission_id;
         missionRecord = record || {};
         if (previousMissionId !== missionRecord.mission_id) {
           $("firingNote").value = "";
+          $("firingNoteStage").value = "";
           pendingNote = null;
-          refreshNotes();
+          if (!savedNotesMission) refreshNotes();
         }
         $("addNoteButton").disabled = !missionRecord.mission_id || noteSaving;
-        $("refreshNotesButton").disabled = !missionRecord.mission_id || noteSaving;
+        $("refreshNotesButton").disabled = !savedNotesMission && (!missionRecord.mission_id || noteSaving);
         missionVersion = {mission_id: missionRecord.mission_id ?? null, revision: missionRecord.revision ?? 0};
         publicMissionStatus = missionRecord.mission_status || "PLANNED";
         $("operatorMissionStatus").textContent = publicMissionStatus;
@@ -1277,7 +1330,7 @@ if (isset($_GET['firing_notes'])) {
         return {
           ...missionVersion,
           plan_fields: Object.fromEntries([...document.querySelectorAll('input[id],textarea[id],select[id]')]
-            .filter(field => !['humanPresent','ackLimitations','decisionReason','firingNote'].includes(field.id) && field.type !== 'file')
+            .filter(field => !['humanPresent','ackLimitations','decisionReason','firingNote','firingNoteStage'].includes(field.id) && field.type !== 'file')
             .map(field => [field.id, {value:field.value, checked:field.checked === true}])),
           preflight_target: buildPreflightTarget(),
           human_present: $("humanPresent").checked,
@@ -1510,7 +1563,7 @@ if (isset($_GET['firing_notes'])) {
           }
           Object.entries(record.plan_fields || {}).forEach(([id, saved]) => {
             const field = $(id);
-            if (field && !['humanPresent','ackLimitations','decisionReason','firingNote'].includes(id) && field.type !== 'file' && saved && typeof saved === 'object') {
+            if (field && !['humanPresent','ackLimitations','decisionReason','firingNote','firingNoteStage'].includes(id) && field.type !== 'file' && saved && typeof saved === 'object') {
               if (typeof saved.value === 'string') field.value = saved.value;
               field.checked = saved.checked === true;
             }
@@ -1527,7 +1580,8 @@ if (isset($_GET['firing_notes'])) {
           $("clearanceStatus").textContent = 'Operator commands unavailable: ' + error.message;
         }
       }
-      connectBridge();
+      if (savedNotesMission) $("clearanceStatus").textContent = "Operator clearance verified. Viewing saved firing notes.";
+      else connectBridge();
 
       window.setInterval(updateCountdown, 1000);
       syncKilnLogic();

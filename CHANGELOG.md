@@ -1,3 +1,10 @@
+## 2026-11-11 - GENE's pre-launch question and reveal note
+
+Prepared two timestamped entries in Mission Control's existing firing notes.
+The firing ID ties the question and reveal together, with a read-only link
+for later review. Ordinary observations still use the same log. JavaScript
+syntax and DOM fixtures passed. Jim approved publication on 2026-11-11.
+
 ## 2026-11-06 - Mission Control launch label
 
 Renamed `GO for observation` to `LAUNCH` in `public/mission-control/index.php`.

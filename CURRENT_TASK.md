@@ -1,3 +1,17 @@
+## 2026-11-11 - GENE's pre-launch question and reveal note
+
+Prepared the paired notes in Mission Control's Firing Notes panel. One note
+per stage uses the existing mission ID, private JSONL storage, and server
+timestamp. The pair sits above ordinary observations, with links to the
+current firing trace and firing archive. A saved link reopens the same
+mission's notes in read-only view without the local bridge.
+
+Changed public/mission-control/index.php. JavaScript syntax and DOM fixtures
+passed for staged saves, timestamps, a retained draft and retry ID, older
+notes, and the saved link. Jim approved publication on 2026-11-11. The production workflow verifies
+the deployed Mission Control file by checksum. An authenticated test firing
+is needed to verify live note persistence and layout.
+
 ## 2026-11-06 - Mission Control launch label
 
 Renamed `GO for observation` to `LAUNCH` in `public/mission-control/index.php`.
