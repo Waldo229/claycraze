@@ -102,8 +102,6 @@
       margin: 14px 0;
     }
 
-    .mission-countdown[hidden] { display: none; }
-
     .mission-countdown > div {
       display: flex;
       flex-direction: column-reverse;
@@ -325,14 +323,14 @@
 
       <div class="obs-grid">
 
-        <section class="panel full" id="missionCountdownPanel" aria-labelledby="missionCountdownTitle" hidden>
+        <section class="panel full" id="missionCountdownPanel" aria-labelledby="missionCountdownTitle">
           <h2 class="panel-title" id="missionCountdownTitle">Countdown to planned ignition</h2>
-          <p id="countdownMission"></p>
+          <p id="countdownMission">Checking the firing schedule…</p>
           <dl class="mission-countdown" id="missionCountdown" role="timer" aria-labelledby="missionCountdownTitle">
-            <div><dt class="signal-label">Days</dt><dd class="signal-value" id="countdownDays">00</dd></div>
-            <div><dt class="signal-label">Hours</dt><dd class="signal-value" id="countdownHours">00</dd></div>
-            <div><dt class="signal-label">Minutes</dt><dd class="signal-value" id="countdownMinutes">00</dd></div>
-            <div><dt class="signal-label">Seconds</dt><dd class="signal-value" id="countdownSeconds">00</dd></div>
+            <div><dt class="signal-label">Days</dt><dd class="signal-value" id="countdownDays">—</dd></div>
+            <div><dt class="signal-label">Hours</dt><dd class="signal-value" id="countdownHours">—</dd></div>
+            <div><dt class="signal-label">Minutes</dt><dd class="signal-value" id="countdownMinutes">—</dd></div>
+            <div><dt class="signal-label">Seconds</dt><dd class="signal-value" id="countdownSeconds">—</dd></div>
           </dl>
           <p class="countdown-note">Ignition remains a human action.</p>
         </section>
@@ -407,23 +405,26 @@
       const $ = (id) => document.getElementById(id);
 
       let latestMission = null;
+      let scheduleStatus = "Checking the firing schedule…";
 
       function renderCountdown() {
         const mission = latestMission;
         const status = mission?.mission_status;
         const target = Date.parse(mission?.planned_ignition);
         const remaining = Math.ceil((target - Date.now()) / 1000);
-        const active = remaining > 0 && ["PLANNED", "GO", "HOLD"].includes(status);
-        $("missionCountdownPanel").hidden = !active;
-        if (!active) return;
+        const scheduled = ["PLANNED", "GO"].includes(status) && Number.isFinite(target);
+        const ticking = scheduled && remaining > 0;
+        let message = scheduleStatus;
+        if (status === "HOLD") {
+          message = "On hold.";
+        } else if (scheduled) {
+          message = ticking ? "" : "Planned ignition time has passed.";
+        }
 
-        const holding = status === "HOLD";
-        $("countdownMission").textContent = [mission.mission_name, holding ? "On hold" : ""]
-          .filter(Boolean).join(" · ");
-        $("missionCountdown").hidden = holding;
-        if (holding) return;
+        const name = (scheduled || status === "HOLD") && mission.mission_name;
+        $("countdownMission").textContent = [name, message].filter(Boolean).join(" · ");
 
-        const digits = (value) => String(value).padStart(2, "0");
+        const digits = (value) => ticking ? String(value).padStart(2, "0") : "—";
         $("countdownDays").textContent = digits(Math.floor(remaining / 86400));
         $("countdownHours").textContent = digits(Math.floor(remaining / 3600) % 24);
         $("countdownMinutes").textContent = digits(Math.floor(remaining / 60) % 60);
@@ -433,8 +434,10 @@
       async function refreshMission() {
         try {
           latestMission = await getJson(MISSION_URL);
+          scheduleStatus = "No upcoming ignition scheduled.";
         } catch {
           latestMission = null;
+          scheduleStatus = "Firing schedule temporarily unavailable.";
         }
         renderCountdown();
       }

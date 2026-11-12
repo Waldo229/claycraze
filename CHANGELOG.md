@@ -1,3 +1,8 @@
+## 2026-11-12 - Observatory countdown visibility
+
+Kept the countdown panel visible between firings and after the planned time
+passes. It shows the schedule status and displays dashes while idle.
+
 ## 2026-11-12 - Observatory countdown
 
 Added the public firing countdown above Current Field, including an on-hold

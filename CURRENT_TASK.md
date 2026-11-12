@@ -1,3 +1,11 @@
+## 2026-11-12 - Keep the Observatory countdown visible
+
+The live plan for Major Tom 3 had passed its scheduled time while still
+marked PLANNED, so the original countdown panel was hidden. Keep the panel
+visible and show schedule status with dashes whenever no timer is running.
+Verified ticking, expiry, hold, inactive and unavailable states with a DOM
+fixture. All 33 existing tests passed.
+
 ## 2026-11-12 - Observatory countdown
 
 Added a four-part planned ignition countdown above Current Field in
