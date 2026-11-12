@@ -1,3 +1,8 @@
+## 2026-11-12 - Observatory countdown
+
+Added the public firing countdown above Current Field, including an on-hold
+display and automatic removal when the scheduled ignition time passes.
+
 ## 2026-11-11 - Public navigation
 
 Prepared consistent primary navigation, direct routes to GENE pages, and

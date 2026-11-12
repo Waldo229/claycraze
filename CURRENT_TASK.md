@@ -1,3 +1,17 @@
+## 2026-11-12 - Observatory countdown
+
+Added a four-part planned ignition countdown above Current Field in
+`public/observatory.html`. It uses the existing public Mission Control feed,
+shows a hold without ticking, and hides the countdown at the scheduled time
+or when the feed cannot supply an active plan.
+
+Verified the live feed's planned ignition and status fields. A DOM fixture
+passed for ticking, hold, resume, inactive missions, invalid dates, feed
+failure and recovery, and expiry. All 33 existing tests passed. The responsive
+CSS was checked in source. Chromium could not start in the workspace, so the
+layout still needs visual verification. The next step is publication after
+Jim requests it.
+
 ## 2026-11-11 - Public navigation
 
 Prepared a consistent Home / Theory / GENE / Practice header with a visible

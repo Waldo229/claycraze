@@ -95,6 +95,28 @@
       text-transform: uppercase;
     }
 
+    .mission-countdown {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .mission-countdown[hidden] { display: none; }
+
+    .mission-countdown > div {
+      display: flex;
+      flex-direction: column-reverse;
+      padding: 12px 4px;
+      border-radius: 14px;
+      background: rgba(154, 198, 78, 0.04);
+      text-align: center;
+    }
+
+    .mission-countdown dt { margin: 8px 0 0; }
+    .mission-countdown dd { margin: 0; font-variant-numeric: tabular-nums; }
+    .countdown-note { margin: 12px 0 0; color: var(--gene-muted); font-style: italic; }
+
     .current-field-layout { display: grid; grid-template-columns: minmax(180px, 280px) minmax(0, 1fr); gap: 22px; align-items: center; }
     .gene-portrait { margin: 0; text-align: center; }
     .gene-portrait img { display: block; width: 100%; height: 250px; object-fit: contain; border-radius: 14px; }
@@ -267,6 +289,7 @@
       .obs-shell { width: min(100% - 16px, 1180px); }
       .obs-top { padding: 24px 20px; }
       .obs-grid { padding: 16px; }
+      .mission-countdown { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
   </style>
 </head>
@@ -301,6 +324,18 @@
       </header>
 
       <div class="obs-grid">
+
+        <section class="panel full" id="missionCountdownPanel" aria-labelledby="missionCountdownTitle" hidden>
+          <h2 class="panel-title" id="missionCountdownTitle">Countdown to planned ignition</h2>
+          <p id="countdownMission"></p>
+          <dl class="mission-countdown" id="missionCountdown" role="timer" aria-labelledby="missionCountdownTitle">
+            <div><dt class="signal-label">Days</dt><dd class="signal-value" id="countdownDays">00</dd></div>
+            <div><dt class="signal-label">Hours</dt><dd class="signal-value" id="countdownHours">00</dd></div>
+            <div><dt class="signal-label">Minutes</dt><dd class="signal-value" id="countdownMinutes">00</dd></div>
+            <div><dt class="signal-label">Seconds</dt><dd class="signal-value" id="countdownSeconds">00</dd></div>
+          </dl>
+          <p class="countdown-note">Ignition remains a human action.</p>
+        </section>
 
         <section class="panel full" id="currentField">
           <h2 class="panel-title">Current Field</h2>
@@ -366,9 +401,43 @@
 
       const GENE_STATE_URL = "https://claycraze.com/gene/gene_state_latest.json";
       const KILN_STATE_URL = "https://claycraze.com/gene/kiln_watch_latest.json";
+      const MISSION_URL = "https://claycraze.com/gene/mission_control_latest.json";
       const REFRESH_MS = 10000;
 
       const $ = (id) => document.getElementById(id);
+
+      let latestMission = null;
+
+      function renderCountdown() {
+        const mission = latestMission;
+        const status = mission?.mission_status;
+        const target = Date.parse(mission?.planned_ignition);
+        const remaining = Math.ceil((target - Date.now()) / 1000);
+        const active = remaining > 0 && ["PLANNED", "GO", "HOLD"].includes(status);
+        $("missionCountdownPanel").hidden = !active;
+        if (!active) return;
+
+        const holding = status === "HOLD";
+        $("countdownMission").textContent = [mission.mission_name, holding ? "On hold" : ""]
+          .filter(Boolean).join(" · ");
+        $("missionCountdown").hidden = holding;
+        if (holding) return;
+
+        const digits = (value) => String(value).padStart(2, "0");
+        $("countdownDays").textContent = digits(Math.floor(remaining / 86400));
+        $("countdownHours").textContent = digits(Math.floor(remaining / 3600) % 24);
+        $("countdownMinutes").textContent = digits(Math.floor(remaining / 60) % 60);
+        $("countdownSeconds").textContent = digits(remaining % 60);
+      }
+
+      async function refreshMission() {
+        try {
+          latestMission = await getJson(MISSION_URL);
+        } catch {
+          latestMission = null;
+        }
+        renderCountdown();
+      }
 
       function asFiniteNumber(value) {
         if (typeof value !== "number" && typeof value !== "string") return null;
@@ -496,7 +565,10 @@
       }
 
       refresh();
+      refreshMission();
       window.setInterval(refresh, REFRESH_MS);
+      window.setInterval(refreshMission, REFRESH_MS);
+      window.setInterval(renderCountdown, 1000);
     })();
   </script>
 
