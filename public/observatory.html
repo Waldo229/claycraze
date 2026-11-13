@@ -383,6 +383,7 @@
 
           </div>
 
+          <p id="sinceLastLooked" class="countdown-note">Waiting for a fresh GREEN_0 reading.</p>
           <div class="load-warning" id="loadWarning">
             One or more live signals have not arrived yet. The Observatory will retry automatically.
           </div>
@@ -402,6 +403,7 @@
   </main>
 
   <script src="/js/gene-temperature.js?v=broadcast1"></script>
+  <script src="/js/gene-firing-measurements.js?v=1"></script>
 
   <script>
     (() => {
@@ -493,6 +495,7 @@
           scheduleStatus = "Firing schedule temporarily unavailable.";
         }
         renderCountdown();
+        renderCurrentField();
       }
 
       async function refreshFiringJournal() {
@@ -555,6 +558,68 @@
 
       let latestKilnState = null;
       let kilnFetchFailed = false;
+      const measurements = window.GeneFiringMeasurements;
+      const seenKey = "gene-observatory-last-look";
+      let lastSeen = measurements.readLocal(seenKey);
+      let viewingMission = null;
+      let comparison = null;
+      let lastFreshProbe = measurements.validSample(lastSeen?.sample) ? lastSeen.sample : null;
+      let lastWrittenAt = null;
+
+      function renderProbeChange() {
+        const now = Date.now();
+        const missionId = latestMission?.mission_id;
+        const sample = measurements.probeSample(latestKilnState, window.GeneTemperature.evidenceTime, now);
+        if (sample && (!lastFreshProbe || sample.at >= lastFreshProbe.at)) lastFreshProbe = sample;
+        const fresh = !kilnFetchFailed && sample && now - sample.at <= window.GeneTemperature.MAX_AGE_MS;
+        const status = $("sinceLastLooked");
+        if (!fresh) {
+          status.textContent = lastFreshProbe
+            ? "GREEN_0 is unavailable. Last fresh evidence " + measurements.ageLabel(now - lastFreshProbe.at) + " ago."
+            : "Waiting for fresh GREEN_0 evidence.";
+          return;
+        }
+        const age = measurements.ageLabel(now - sample.at) + " ago";
+        if (sample.temp >= measurements.GREEN_LIMIT_F) {
+          status.textContent = "GREEN_0 is near or above its observed limit of 1,800°F. Evidence " + age + ".";
+          return;
+        }
+        const ignition = Date.parse(latestMission?.actual_ignition);
+        if (!missionId || document.hidden || (Number.isFinite(ignition) && sample.at < ignition)) {
+          status.textContent = "GREEN_0 evidence " + age + ".";
+          return;
+        }
+        if (viewingMission !== missionId) {
+          viewingMission = missionId;
+          comparison = lastSeen?.missionId === missionId && measurements.validSample(lastSeen.sample) ? lastSeen.sample : null;
+          lastWrittenAt = null;
+        }
+        if (lastWrittenAt !== sample.at) {
+          lastSeen = {missionId, sample};
+          measurements.writeLocal(seenKey, lastSeen);
+          lastWrittenAt = sample.at;
+        }
+        if (!comparison || comparison.at >= sample.at) {
+          status.textContent = "GREEN_0 evidence " + age + ". Check back to see what changed.";
+          return;
+        }
+        const change = Math.round(sample.temp - comparison.temp);
+        const direction = change === 0 ? "held steady" : (change > 0 ? "rose " : "fell ") + Math.abs(change) + "°F";
+        const ramp = sample.rate !== null && comparison.rate !== null
+          ? " Rate of rise " + Math.round(comparison.rate) + " to " + Math.round(sample.rate) + "°F/hr."
+          : "";
+        status.textContent = "Since you last looked, GREEN_0 " + direction + " over " +
+          measurements.ageLabel(sample.at - comparison.at) + "." + ramp + " Evidence " + age + ".";
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          lastSeen = measurements.readLocal(seenKey) || lastSeen;
+          viewingMission = null;
+          renderProbeChange();
+        }
+      });
+
 
       function renderKiln(data) {
         latestKilnState = data;
@@ -563,6 +628,7 @@
       }
 
       function renderCurrentField() {
+        renderProbeChange();
         const result = window.GeneTemperature.evaluate(kilnFetchFailed ? null : latestKilnState);
         const live = result.evidenceStatus === "LIVE";
         const image = $("geneStateImage");
