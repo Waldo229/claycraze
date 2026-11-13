@@ -95,6 +95,13 @@
       text-transform: uppercase;
     }
 
+    .mission-firing-status {
+      margin-inline-start: 0.6em;
+      color: #ff746d;
+      font-size: 1.2em;
+      font-weight: 700;
+    }
+
     .mission-countdown {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -324,7 +331,10 @@
       <div class="obs-grid">
 
         <section class="panel full" id="missionCountdownPanel" aria-labelledby="missionCountdownTitle">
-          <h2 class="panel-title" id="missionCountdownTitle">Countdown to planned ignition</h2>
+          <h2 class="panel-title" id="missionCountdownTitle">
+            <span id="missionClockLabel">Countdown to planned ignition</span>
+            <strong class="mission-firing-status" id="missionFiringStatus" hidden>FIRING</strong>
+          </h2>
           <p id="countdownMission">Checking the firing schedule…</p>
           <dl class="mission-countdown" id="missionCountdown" role="timer" aria-labelledby="missionCountdownTitle">
             <div><dt class="signal-label">Days</dt><dd class="signal-value" id="countdownDays">—</dd></div>
@@ -446,11 +456,12 @@
         if (underway || finished) {
           if (Number.isFinite(duration)) {
             message = {
+              FIRING: "",
               COOLING: "Cooling.",
               RECOVERY: "Recovery.",
               COMPLETE: "Mission complete.",
               ABORTED: "Mission aborted."
-            }[status] || "Firing underway.";
+            }[status] ?? "Firing underway.";
           } else {
             message = elapsed ? "Awaiting the recorded end time." : "Awaiting a recorded ignition time.";
           }
@@ -460,8 +471,9 @@
           message = remaining > 0 ? "" : "Planned ignition time has passed.";
         }
 
-        $("missionCountdownTitle").textContent = underway || finished
+        $("missionClockLabel").textContent = underway || finished
           ? "T+ Mission elapsed time" : "Countdown to planned ignition";
+        $("missionFiringStatus").hidden = status !== "FIRING";
         const name = (scheduled || status === "HOLD" || underway || finished) && mission.mission_name;
         $("countdownMission").textContent = [name, message].filter(Boolean).join(" · ");
 
