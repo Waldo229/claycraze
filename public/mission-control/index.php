@@ -34,8 +34,8 @@ if (isset($_GET['firing_notes'])) {
     if (($_SERVER['HTTP_X_GENE_NOTES'] ?? '') !== '1') note_reply(403, ['ok'=>false, 'error'=>'Open notes from Mission Control.']);
     $input = [];
     if ($method === 'POST') {
-        $body = file_get_contents('php://input', false, null, 0, 20001);
-        if (strlen($body) > 20000) note_reply(413, ['ok'=>false, 'error'=>'Note is too long.']);
+        $body = file_get_contents('php://input', false, null, 0, 300001);
+        if (strlen($body) > 300000) note_reply(413, ['ok'=>false, 'error'=>'Note is too long.']);
         $input = json_decode($body, true);
         if (!is_array($input)) note_reply(400, ['ok'=>false, 'error'=>'Invalid note.']);
     }
@@ -50,6 +50,37 @@ if (isset($_GET['firing_notes'])) {
         $stage = $input['stage'] ?? '';
         if (!is_string($text) || trim($text) === '' || strlen($text) > 8000 || !is_string($id) || !preg_match('/^[a-zA-Z0-9-]{16,80}$/', $id)) note_reply(400, ['ok'=>false, 'error'=>'Enter a note of up to 8,000 bytes.']);
         if (!in_array($stage, ['', 'pre_launch', 'reveal'], true)) note_reply(400, ['ok'=>false, 'error'=>'Choose a valid note type.']);
+        $measurement = $input['measurement'] ?? null;
+        if ($measurement !== null) {
+            $kind = is_array($measurement) ? ($measurement['kind'] ?? '') : '';
+            $valid = in_array($kind, ['camera', 'reference', 'forecast', 'cone'], true) && $stage === '';
+            if ($kind === 'reference') {
+                $temp = $measurement['temp'] ?? null;
+                $at = $measurement['at'] ?? null;
+                $valid = $valid && (is_float($temp) || is_int($temp)) && $temp >= -459.67 &&
+                    is_int($at) && $at > 0 && $at <= (time() + 60) * 1000 &&
+                    in_array($measurement['source'] ?? '', ['Skutt', 'Handheld'], true);
+                if ($valid) $measurement = ['kind'=>$kind, 'temp'=>$temp, 'at'=>$at, 'source'=>$measurement['source']];
+            } elseif ($kind === 'forecast') {
+                $at = $measurement['at'] ?? null;
+                $target = $measurement['target'] ?? null;
+                $valid = $valid && is_int($at) && $at > 0 && $at <= (time() + 60) * 1000 &&
+                    (is_float($target) || is_int($target)) &&
+                    in_array($measurement['source'] ?? '', ['GREEN_0', 'Skutt', 'Handheld'], true);
+                if ($valid) $measurement = ['kind'=>$kind, 'at'=>$at, 'target'=>$target, 'source'=>$measurement['source']];
+            } else {
+                $measurement = ['kind'=>$kind];
+            }
+            if (!$valid) note_reply(400, ['ok'=>false, 'error'=>'Invalid firing measurement.']);
+        }
+        $photo = $input['photo'] ?? null;
+        if ($photo !== null) {
+            $jpeg = is_string($photo) && strlen($photo) <= 280000 ? base64_decode($photo, true) : false;
+            $info = $jpeg === false ? false : @getimagesizefromstring($jpeg);
+            if (!$info || $info[2] !== IMAGETYPE_JPEG || $info[0] > 1600 || $info[1] > 1600 || ($measurement['kind'] ?? '') !== 'camera') {
+                note_reply(400, ['ok'=>false, 'error'=>'Invalid paired-reading image.']);
+            }
+        }
         $handle = @fopen($path, 'c+');
         if (!$handle || !flock($handle, LOCK_EX)) note_reply(503, ['ok'=>false, 'error'=>'Could not save note. Your text is still in the box.']);
         $existing = false;
@@ -65,8 +96,11 @@ if (isset($_GET['firing_notes'])) {
             note_reply(409, ['ok'=>false, 'error'=>'This firing already has that note. You can save a follow-up as a firing observation.']);
         }
         if (!$existing) {
-            $entry = ['note_id'=>$id, 'mission_id'=>$mission, 'recorded_at'=>gmdate('c'), 'source'=>'human_observation', 'operator'=>$user, 'text'=>trim($text)];
+            $source = ['forecast'=>'gene_forecast', 'camera'=>'camera_capture'][$measurement['kind'] ?? ''] ?? 'human_observation';
+            $entry = ['note_id'=>$id, 'mission_id'=>$mission, 'recorded_at'=>gmdate('c'), 'source'=>$source, 'operator'=>$user, 'text'=>trim($text)];
             if ($stage !== '') $entry['stage'] = $stage;
+            if ($photo !== null) $entry['photo'] = $photo;
+            if ($measurement !== null) $entry['measurement'] = $measurement;
             $line = json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) . "\n";
             $written = fwrite($handle, $line);
             $flushed = fflush($handle);
@@ -926,6 +960,20 @@ if (isset($_GET['firing_notes'])) {
             <div class="field"><label for="firingNote">Your observation</label><textarea id="firingNote" maxlength="8000" placeholder="Example: Damper closed slightly. Flame softened; temperature rise slowed."></textarea></div>
             <button class="mc-button" id="addNoteButton" type="button" disabled>Add note</button>
           </div>
+          <section id="firingMeasurements" hidden aria-labelledby="firingMeasurementsHeading">
+            <h3 id="firingMeasurementsHeading">Paired readings and finish estimates</h3>
+            <div class="field"><label for="referenceTemperature">Skutt or handheld reading in °F</label><input type="number" step="any" id="referenceTemperature"></div>
+            <div class="field"><label for="referenceSource">Reference instrument</label><select id="referenceSource"><option>Skutt</option><option>Handheld</option></select></div>
+            <div class="button-row">
+              <button class="mc-button" type="button" id="capturePair">Save camera and probe</button>
+              <button class="mc-button secondary" type="button" id="saveReference">Save instrument and probe</button>
+            </div>
+            <div class="field"><label for="finishTarget">Estimated cone endpoint in °F</label><input type="number" step="any" id="finishTarget"><p class="inline-note">Use the endpoint for your cone and planned final rate. Estimates assume the current rate continues.</p></div>
+            <p class="inline-note" id="finishEstimate">Waiting for a temperature target.</p>
+            <div class="field"><label for="coneObserved">Witness cone and shelf observed</label><input id="coneObserved" maxlength="300" placeholder="Example: Cone 10 bent on the middle shelf"></div>
+            <button class="mc-button secondary" type="button" id="saveCone">Record cone observation now</button>
+            <p class="inline-note" id="measurementStatus" role="status"></p>
+          </section>
           <button class="mc-button secondary" id="refreshNotesButton" type="button" disabled>Refresh notes</button>
           <p class="inline-note" id="notesStatus" role="status">Publish the firing plan through preflight to attach notes to a mission.</p>
           <div id="firingNotesList"></div>
@@ -978,6 +1026,8 @@ if (isset($_GET['firing_notes'])) {
     </section>
   </main>
 
+  <script src="/js/gene-temperature.js?v=broadcast1"></script>
+  <script src="/js/gene-firing-measurements.js?v=1"></script>
   <script>
     (() => {
       "use strict";
@@ -1089,16 +1139,26 @@ if (isset($_GET['firing_notes'])) {
         try {
           const result = await notesRequest("GET", null, id);
           if (request !== notesRefresh) return;
+          if (!savedNotesMission && missionRecord.mission_id === id) restoreMeasurements(result.notes);
           renderNoteReview(result);
           for (const note of result.notes) {
             const entry = document.createElement("article");
             entry.className = "firing-note-entry";
             const time = document.createElement("time");
             time.dateTime = note.recorded_at;
-            time.textContent = new Date(note.recorded_at).toLocaleString() + " — Your observation";
+            time.textContent = new Date(note.recorded_at).toLocaleString() +
+              (note.measurement?.kind === "forecast" ? " — GENE estimate" : " — Your observation");
             const text = document.createElement("p");
             text.textContent = note.text;
             entry.append(time, text);
+            if (typeof note.photo === "string" && /^[A-Za-z0-9+/]+={0,2}$/.test(note.photo)) {
+              const image = document.createElement("img");
+              image.src = "data:image/jpeg;base64," + note.photo;
+              image.alt = "Camera frame saved with this paired reading";
+              image.loading = "lazy";
+              image.style.maxWidth = "100%";
+              entry.append(image);
+            }
             if (note.stage === "pre_launch") $("preLaunchNote").replaceChildren(entry);
             else if (note.stage === "reveal") $("revealNote").replaceChildren(entry);
             else $("firingNotesList").append(entry);
@@ -1157,12 +1217,14 @@ if (isset($_GET['firing_notes'])) {
           $("firingNote").value = "";
           $("firingNoteStage").value = "";
           pendingNote = null;
+          resetMeasurements();
           if (!savedNotesMission) refreshNotes();
         }
         $("addNoteButton").disabled = !missionRecord.mission_id || noteSaving;
         $("refreshNotesButton").disabled = !savedNotesMission && (!missionRecord.mission_id || noteSaving);
         missionVersion = {mission_id: missionRecord.mission_id ?? null, revision: missionRecord.revision ?? 0};
         publicMissionStatus = missionRecord.mission_status || "PLANNED";
+        $("firingMeasurements").hidden = !!savedNotesMission || !missionRecord.mission_id;
         $("operatorMissionStatus").textContent = publicMissionStatus;
         const states = {
           'NO-GO':['PLANNED','GO','HOLD'], HOLD:['PLANNED','GO','NO-GO'],
@@ -1175,18 +1237,242 @@ if (isset($_GET['firing_notes'])) {
         $("evaluateButton").disabled = !COMMANDS_ENABLED || !["PLANNED", "NO-GO", "HOLD"].includes(publicMissionStatus);
         updateLaunchAvailability();
       }
-      async function bridgeRequest(url, options = {}) {
+      async function bridgeFetch(url, options = {}) {
         const clearance = await fetch('/mission-control/clearance.php', {cache:'no-store', credentials:'same-origin'});
         let grant;
         try { grant = await clearance.json(); }
         catch (_) { throw new Error('SiteGround operator clearance could not be verified.'); }
         if (!clearance.ok || !grant.ok || !grant.token) throw new Error(grant.error || 'Operator clearance unavailable.');
-        const response = await fetch(url, {...options, cache:'no-store', headers:{...options.headers, Authorization:'Bearer ' + grant.token}});
+        return fetch(url, {...options, cache:'no-store', headers:{...options.headers, Authorization:'Bearer ' + grant.token}});
+      }
+      async function bridgeRequest(url, options) {
+        const response = await bridgeFetch(url, options);
         const result = await response.json();
         if (result.mission_record) syncMission(result.mission_record);
         if (!response.ok || result.ok === false) throw new Error(result.error || 'Bridge request failed.');
         return result;
       }
+      const measurements = window.GeneFiringMeasurements;
+      const maxAge = window.GeneTemperature.MAX_AGE_MS;
+      const activeFiring = () => ["FIRING", "OBSERVING", "UNDERWAY"].includes(missionRecord.mission_status);
+      const targetKey = () => "gene-finish-target:" + missionRecord.mission_id;
+      let captureBusy = false;
+      let captureRetry = null;
+      let previousReference = null;
+      let currentReference = null;
+      let lastForecast = null;
+      let pendingForecast = null;
+      let forecastBusy = false;
+      let coneRecorded = false;
+      let measurementHistoryReady = false;
+
+      function restoreMeasurements(notes) {
+        const records = notes.map(note => note.measurement).filter(Boolean);
+        const reference = records.filter(record => record.kind === "reference").slice(-2);
+        currentReference = reference.at(-1) ?? null;
+        previousReference = reference.at(-2) ?? null;
+        lastForecast = records.findLast(record => record.kind === "forecast") ?? null;
+        coneRecorded = records.some(record => record.kind === "cone");
+        measurementHistoryReady = true;
+      }
+
+      function resetMeasurements() {
+        $("referenceTemperature").value = "";
+        $("coneObserved").value = "";
+        $("finishTarget").value = measurements.readLocal(targetKey()) ?? "";
+        $("measurementStatus").textContent = "";
+        $("finishEstimate").textContent = "";
+        captureRetry = previousReference = currentReference = lastForecast = pendingForecast = null;
+        coneRecorded = false;
+        measurementHistoryReady = false;
+      }
+
+      function readingTime(at) {
+        return new Date(at).toISOString();
+      }
+
+      async function currentProbe() {
+        const response = await fetch("/gene/kiln_watch_latest.json", {
+          cache: "no-store", signal: AbortSignal.timeout(8000)
+        });
+        if (!response.ok) throw new Error("The GREEN_0 feed is unavailable.");
+        const sample = measurements.probeSample(await response.json(), window.GeneTemperature.evidenceTime);
+        return sample && Date.now() - sample.at <= maxAge ? sample : null;
+      }
+
+      async function cameraFrame() {
+        const startedAt = Date.now();
+        const response = await bridgeFetch("http://127.0.0.1:8765/camera.jpg", {
+          signal: AbortSignal.timeout(20000)
+        });
+        if (!response.ok || !response.headers.get("Content-Type")?.startsWith("image/jpeg")) {
+          throw new Error("The local camera bridge did not return a frame.");
+        }
+        const blob = await response.blob();
+        const at = Date.now();
+        const frame = await createImageBitmap(blob);
+        try {
+          const canvas = document.createElement("canvas");
+          const scale = Math.min(1, 1440 / Math.max(frame.width, frame.height));
+          canvas.width = Math.max(1, Math.round(frame.width * scale));
+          canvas.height = Math.max(1, Math.round(frame.height * scale));
+          canvas.getContext("2d").drawImage(frame, 0, 0, canvas.width, canvas.height);
+          let photo = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+          if (photo.length > 280000) photo = canvas.toDataURL("image/jpeg", 0.65).split(",")[1];
+          if (photo.length > 280000) throw new Error("The camera frame is too large to save.");
+          return {photo, at, startedAt};
+        } finally {
+          frame.close();
+        }
+      }
+
+      async function saveMeasurement(kind) {
+        const id = missionRecord.mission_id;
+        if (savedNotesMission || !id || captureBusy) return;
+        const input = $("referenceTemperature");
+        const temp = input.valueAsNumber;
+        const source = $("referenceSource").value;
+        const observed = $("coneObserved").value.trim();
+        if (kind === "reference" && (!Number.isFinite(temp) || temp < -459.67)) {
+          $("measurementStatus").textContent = "Enter the instrument reading in °F.";
+          return;
+        }
+        if (kind === "cone" && !observed) {
+          $("measurementStatus").textContent = "Enter the witness cone and shelf you observed.";
+          return;
+        }
+        const signature = JSON.stringify([id, kind, temp, source, observed]);
+        captureBusy = true;
+        const buttons = ["capturePair", "saveReference", "saveCone"].map($);
+        buttons.forEach(button => button.disabled = true);
+        $("measurementStatus").textContent = "Saving firing evidence…";
+        try {
+          if (captureRetry?.signature !== signature) {
+            const at = Date.now();
+            let text, photo, reference;
+            if (kind === "cone") {
+              text = "Witness cone observation at " + readingTime(at) + "\n" + observed;
+            } else {
+              const [frame, before] = await Promise.all([
+                kind === "camera" ? cameraFrame() : null,
+                currentProbe().catch(() => null)
+              ]);
+              const after = frame ? await currentProbe().catch(() => null) : null;
+              const anchor = frame?.at ?? at;
+              const probe = [before, after].filter(Boolean)
+                .filter(sample => Math.abs(sample.at - anchor) <= maxAge)
+                .sort((a, b) => Math.abs(a.at - anchor) - Math.abs(b.at - anchor))[0];
+              text = frame
+                ? "Camera request " + readingTime(frame.startedAt) + "; frame received " + readingTime(frame.at)
+                : source + " instrument reading " + temp + "°F at " + readingTime(at);
+              if (frame && Number.isFinite(temp)) text += "\nOperator-entered " + source + " reading " + temp + "°F";
+              text += probe ? "\nGREEN_0 raw " + probe.temp + "°F; evidence generated " + readingTime(probe.at) +
+                " (" + Math.round(Math.abs(probe.at - anchor) / 1000) + " sec apart)." +
+                (probe.temp >= measurements.GREEN_LIMIT_F ? " At or above observed probe limit." : "")
+                : "\nNo fresh GREEN_0 evidence near this reading.";
+              photo = frame?.photo;
+              if (!frame) reference = {at, temp, source};
+            }
+            const measurement = {kind, ...reference};
+            captureRetry = {signature, reference, payload: {mission_id:id, note_id:crypto.randomUUID(), text, photo, measurement}};
+          }
+          if (missionRecord.mission_id !== id) return;
+          const record = captureRetry;
+          await notesRequest("POST", record.payload, id);
+          if (missionRecord.mission_id !== id) return;
+          if (record.reference) {
+            previousReference = currentReference;
+            currentReference = record.reference;
+          }
+          if (kind === "cone") coneRecorded = true;
+          captureRetry = null;
+          if (kind === "cone") $("coneObserved").value = "";
+          else if (input.valueAsNumber === temp) input.value = "";
+          $("measurementStatus").textContent = "Saved with this mission.";
+          await refreshNotes();
+          refreshForecast();
+        } catch (error) {
+          if (missionRecord.mission_id === id) $("measurementStatus").textContent = error.message;
+        } finally {
+          captureBusy = false;
+          buttons.forEach(button => button.disabled = false);
+        }
+      }
+
+      async function refreshForecast() {
+        const target = $("finishTarget").valueAsNumber;
+        const id = missionRecord.mission_id;
+        const status = $("finishEstimate");
+        if (!id || !measurementHistoryReady || savedNotesMission || forecastBusy || document.hidden ||
+            $("firingMeasurements").closest("[data-mc-page]").hidden) return;
+        if (!activeFiring()) {
+          status.textContent = "Finish estimates run while the mission is firing.";
+          return;
+        }
+        if (coneRecorded || !Number.isFinite(target)) {
+          status.textContent = coneRecorded ? "Witness cone observation recorded." : "Enter the estimated cone endpoint.";
+          return;
+        }
+        forecastBusy = true;
+        try {
+          let sample = await currentProbe().catch(() => null);
+          if (missionRecord.mission_id !== id || !activeFiring() ||
+              coneRecorded || $("finishTarget").valueAsNumber !== target) return;
+          let source = "GREEN_0";
+          let allowedAge = maxAge;
+          const now = Date.now();
+          if (currentReference && previousReference?.source === currentReference.source &&
+              now - currentReference.at <= 300000 && currentReference.at - previousReference.at >= 60000) {
+            sample = {...currentReference, rate: (currentReference.temp - previousReference.temp) *
+              3600000 / (currentReference.at - previousReference.at)};
+            source = currentReference.source;
+            allowedAge = 300000;
+          }
+          const eta = measurements.estimate(sample, target, source, now, allowedAge);
+          if (!eta) {
+            status.textContent = target >= measurements.GREEN_LIMIT_F
+              ? "For this target, record two recent readings from the same reference instrument, at least one minute apart."
+              : "Waiting for a fresh reading with a positive rate below the target.";
+          } else {
+            status.textContent = "Estimated " + new Date(eta).toLocaleString() + " at " +
+              Math.round(sample.rate) + "°F/hr from " + source + ".";
+          }
+          if (pendingForecast) {
+            await notesRequest("POST", pendingForecast.payload, id);
+            if (missionRecord.mission_id !== id) return;
+            lastForecast = pendingForecast;
+            pendingForecast = null;
+          }
+          if (!eta || (lastForecast?.at === sample.at && lastForecast.target === target && lastForecast.source === source)) return;
+          if (missionRecord.mission_id !== id || !activeFiring() || coneRecorded || $("finishTarget").valueAsNumber !== target) return;
+          const text = "Finish estimate from " + source + " at " + readingTime(sample.at) +
+            "\n" + sample.temp + "°F at " + Math.round(sample.rate) + "°F/hr. Target " + target +
+            "°F. Estimated arrival " + readingTime(eta) + " if the current rate continues.";
+          const measurement = {kind:"forecast", at:sample.at, source, target};
+          pendingForecast = {...measurement, payload:{mission_id:id, note_id:crypto.randomUUID(), text, measurement}};
+          await notesRequest("POST", pendingForecast.payload, id);
+          if (missionRecord.mission_id !== id) return;
+          lastForecast = pendingForecast;
+          pendingForecast = null;
+          await refreshNotes();
+        } catch (_) {
+          if (missionRecord.mission_id === id) status.textContent += " Estimate history could not be saved. Retrying.";
+        } finally {
+          forecastBusy = false;
+        }
+      }
+
+      $("capturePair").addEventListener("click", () => saveMeasurement("camera"));
+      $("saveReference").addEventListener("click", () => saveMeasurement("reference"));
+      $("saveCone").addEventListener("click", () => saveMeasurement("cone"));
+      $("finishTarget").addEventListener("change", () => {
+        if (!missionRecord.mission_id) return;
+        const value = $("finishTarget").valueAsNumber;
+        measurements.writeLocal(targetKey(), Number.isFinite(value) ? value : null);
+        refreshForecast();
+      });
+      window.setInterval(refreshForecast, 15000);
+
       async function sendMissionCommand(command) {
         if (!COMMANDS_ENABLED) return;
         if (['GO', 'RESUME COUNT', 'CONFIRM IGNITION'].includes(command) && (missionRecord.preflight_target !== buildPreflightTarget() || new Date(missionRecord.planned_ignition).getTime() !== new Date($("launchTime").value).getTime() || missionRecord.mission_name !== ($("missionName").value.trim() || 'Unnamed firing mission'))) {
@@ -1495,6 +1781,7 @@ if (isset($_GET['firing_notes'])) {
           $("narration").innerHTML = `<strong>GENE:</strong> ${publicNarration}`;
 
           publicMissionStatus = missionRecord.mission_status || "PLANNED";
+        $("firingMeasurements").hidden = !!savedNotesMission || !missionRecord.mission_id;
 
           try {
             await publishPublicMission(publicMissionStatus, publicNarration);
