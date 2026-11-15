@@ -1,3 +1,8 @@
+## 2026-11-15 - Move the Kiln Watch mission clock
+
+The mission clock appears under Current Field. Removed the ignition note and
+Mission Control link from the public page.
+
 ## 2026-11-15 - Consolidate Kiln Watch and Observatory
 
 Observatory becomes the single Kiln Watch page, with View firing graph beside

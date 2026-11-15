@@ -1,3 +1,10 @@
+## 2026-11-15 - Move the Kiln Watch mission clock
+
+Moved the mission clock inside Current Field, immediately below its heading.
+Removed the ignition note and Mission Control link from public Kiln Watch.
+All 29 tests passed. Checked the heading order, public links, and unchanged
+page scripts. Jim approved publishing the follow-up on 2026-11-15.
+
 ## 2026-11-15 - Consolidate Kiln Watch and Observatory
 
 Use `public/observatory.html` as the single Kiln Watch page. It retains

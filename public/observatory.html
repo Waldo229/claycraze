@@ -102,6 +102,8 @@
       font-weight: 700;
     }
 
+    .mission-clock { margin-bottom: 22px; }
+
     .mission-countdown {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -330,23 +332,21 @@
 
       <div class="obs-grid">
 
-        <section class="panel full" id="missionCountdownPanel" aria-labelledby="missionCountdownTitle">
-          <h2 class="panel-title" id="missionCountdownTitle">
-            <span id="missionClockLabel">Countdown to planned ignition</span>
-            <strong class="mission-firing-status" id="missionFiringStatus" hidden>FIRING</strong>
-          </h2>
-          <p id="countdownMission">Checking the firing schedule…</p>
-          <dl class="mission-countdown" id="missionCountdown" role="timer" aria-labelledby="missionCountdownTitle">
-            <div><dt class="signal-label">Days</dt><dd class="signal-value" id="countdownDays">—</dd></div>
-            <div><dt class="signal-label">Hours</dt><dd class="signal-value" id="countdownHours">—</dd></div>
-            <div><dt class="signal-label">Minutes</dt><dd class="signal-value" id="countdownMinutes">—</dd></div>
-            <div><dt class="signal-label">Seconds</dt><dd class="signal-value" id="countdownSeconds">—</dd></div>
-          </dl>
-          <p class="countdown-note">Ignition remains a human action.</p>
-        </section>
-
         <section class="panel full" id="currentField">
           <h2 class="panel-title">Current Field</h2>
+          <section class="mission-clock" id="missionCountdownPanel" aria-labelledby="missionCountdownTitle">
+            <h3 class="panel-title" id="missionCountdownTitle">
+              <span id="missionClockLabel">Countdown to planned ignition</span>
+              <strong class="mission-firing-status" id="missionFiringStatus" hidden>FIRING</strong>
+            </h3>
+            <p id="countdownMission">Checking the firing schedule…</p>
+            <dl class="mission-countdown" id="missionCountdown" role="timer" aria-labelledby="missionCountdownTitle">
+              <div><dt class="signal-label">Days</dt><dd class="signal-value" id="countdownDays">—</dd></div>
+              <div><dt class="signal-label">Hours</dt><dd class="signal-value" id="countdownHours">—</dd></div>
+              <div><dt class="signal-label">Minutes</dt><dd class="signal-value" id="countdownMinutes">—</dd></div>
+              <div><dt class="signal-label">Seconds</dt><dd class="signal-value" id="countdownSeconds">—</dd></div>
+            </dl>
+          </section>
           <div class="current-field-layout">
             <figure class="gene-portrait">
               <img id="geneStateImage" src="/images/gene-kilnwatch-emoji.png?v=0504f9e8" alt="GENE awaiting current temperature evidence" width="280" height="250">
@@ -392,7 +392,6 @@
         <nav class="button-row record-links" aria-label="GENE observation pages">
           <a class="obs-button" href="/missjour.html">Mission Journal</a>
           <a class="obs-button" href="/kiln-watch-graph.html">View firing graph</a>
-          <a class="obs-button" href="/mission-control/">Mission Control</a>
         </nav>
       </div>
 
