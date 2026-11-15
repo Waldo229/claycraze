@@ -143,6 +143,23 @@ test('consolidated Kiln Watch links and live readings', async () => {
   let temperature = 2000;
   let geneOffline = false;
   let kilnOffline = false;
+  const mission = {
+    mission_id: 'major-tom-4', mission_name: 'Major Tom 4', mission_status: 'COMPLETE',
+    actual_ignition: new Date(now - 3600000).toISOString()
+  };
+  const archiveUrl = `/gene/firing-missions/${'a'.repeat(64)}.json`;
+  const journal = {
+    mission_id: mission.mission_id, mission_status: 'COMPLETE', archive_url: archiveUrl,
+    events: []
+  };
+  const archive = {
+    mission_id: mission.mission_id, mission_status: 'COMPLETE',
+    events: [{
+      mission_id: mission.mission_id, kind: 'mission',
+      observed_at_utc: new Date(now - 60000).toISOString(),
+      evidence: {mission_status: 'COMPLETE'}
+    }]
+  };
   const intervals = [];
   const context = {
     document: {getElementById: element, addEventListener() {}},
@@ -165,7 +182,10 @@ test('consolidated Kiln Watch links and live readings', async () => {
         if (kilnOffline) throw Error('kiln feed offline');
         return {ok: true, json: async () => evidence(temperature)};
       }
-      return {ok: true, json: async () => ({})};
+      if (url.includes('mission_control_latest')) return {ok: true, json: async () => mission};
+      if (url.includes('firing_broadcast_latest')) return {ok: true, json: async () => journal};
+      if (url.startsWith(`${archiveUrl}?`)) return {ok: true, json: async () => archive};
+      throw Error(`Unexpected Kiln Watch feed: ${url}`);
     }
   };
   const [, script] = html.match(/<script>([\s\S]*?)<\/script>/);
@@ -174,6 +194,9 @@ test('consolidated Kiln Watch links and live readings', async () => {
   const refresh = intervals.find(item => item.ms === 10000).fn;
   const tick = () => intervals.filter(item => item.ms === 1000).forEach(({fn}) => fn());
 
+  assert.equal(element('countdownMission').textContent, 'Major Tom 4 · Mission complete.');
+  assert.equal(element('countdownMinutes').textContent, '59');
+  assert.equal(element('countdownSeconds').textContent, '00');
   assert.equal(element('awareness').textContent, '0.00');
   assert.equal(element('soundLevel').textContent, '10.0');
   for (const temp of [0, 200, 800, 1001, 1801, 2000]) {
@@ -198,6 +221,12 @@ test('consolidated Kiln Watch links and live readings', async () => {
   await refresh();
   clockNow += 120000;
   tick();
+  assert.equal(element('countdownMinutes').textContent, '59');
+  assert.equal(element('countdownSeconds').textContent, '00');
+  mission.mission_status = 'COOLING';
+  tick();
+  assert.equal(element('countdownHours').textContent, '01');
+  assert.equal(element('countdownMinutes').textContent, '02');
   assert.equal(element('awareness').textContent, '0.00');
   assert.equal(element('temperature').textContent, '2000 °F');
   clockNow++;

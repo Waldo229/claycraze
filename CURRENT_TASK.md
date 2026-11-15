@@ -1,3 +1,17 @@
+## 2026-11-15 - Restore the Kiln Watch elapsed clock
+
+Major Tom 4's ignition remains in the Mission Control feed after the FIRING
+transition ages out of the latest 30 journal events. Kiln Watch now uses that
+recorded ignition when present, with the journal transition as a fallback for
+older records. The elapsed clock freezes at the recorded completion or abort,
+using the matching mission archive after recent journal events roll off. The
+Major Tom 4 archive replay displayed 22:50:32 with the recent events removed.
+The public GENE feed alternated between fresh numeric microphone levels and fresh reports that the
+microphone was unavailable. The Raspberry Pi could not be reached from this
+workspace. All 29 tests passed, including archive recovery and the countdown
+freeze. Jim approved publishing the clock repair on 2026-11-15. Diagnose intermittent
+microphone capture on the Pi using the process list, device list, and runtime log.
+
 ## 2026-11-15 - Move the Kiln Watch mission clock
 
 Moved the mission clock inside Current Field, immediately below its heading.

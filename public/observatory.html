@@ -420,14 +420,15 @@
 
       let latestMission = null;
       let latestFiringJournal = null;
+      let completedFiringArchive = null;
       let scheduleStatus = "Checking the firing schedule…";
 
       function recordedFiringTimes(mission) {
-        const journal = latestFiringJournal;
-        if (!mission?.mission_id || journal?.mission_id !== mission.mission_id ||
-            !Array.isArray(journal.events)) return {};
-
-        const transitions = journal.events
+        if (!mission?.mission_id) return {};
+        const recordedIgnition = Date.parse(mission.actual_ignition);
+        const transitions = [completedFiringArchive, latestFiringJournal]
+          .filter(journal => journal?.mission_id === mission.mission_id && Array.isArray(journal.events))
+          .flatMap(journal => journal.events)
           .filter(event => event?.mission_id === mission.mission_id && event.kind === "mission")
           .map(event => ({
             status: event.evidence?.mission_status,
@@ -435,9 +436,11 @@
           }))
           .filter(event => Number.isFinite(event.at))
           .sort((a, b) => a.at - b.at);
-        const start = transitions.find(event => event.status === "FIRING")?.at;
+        const start = Number.isFinite(recordedIgnition)
+          ? recordedIgnition
+          : transitions.find(event => event.status === "FIRING")?.at;
         const end = transitions.find(event =>
-          event.at >= start && ["COMPLETE", "ABORTED"].includes(event.status))?.at;
+          event.at >= start && event.status === mission.mission_status)?.at;
         return { start, end };
       }
 
@@ -506,6 +509,26 @@
           // Keep the last recorded transitions through a temporary feed outage.
         }
         renderCountdown();
+
+        const journal = latestFiringJournal;
+        if (!journal?.mission_id || !["COMPLETE", "ABORTED"].includes(journal.mission_status) ||
+            !/^\/gene\/firing-missions\/[a-f0-9]{64}\.json$/.test(journal.archive_url) ||
+            (completedFiringArchive?.mission_id === journal.mission_id &&
+             completedFiringArchive.mission_status === journal.mission_status)) return;
+
+        try {
+          const archive = await getJson(journal.archive_url);
+          if (latestFiringJournal === journal && archive?.mission_id === journal.mission_id &&
+              archive.mission_status === journal.mission_status && Array.isArray(archive.events) &&
+              archive.events.some(event => event?.mission_id === journal.mission_id &&
+                event.kind === "mission" && event.evidence?.mission_status === journal.mission_status &&
+                Number.isFinite(Date.parse(event.observed_at_utc)))) {
+            completedFiringArchive = archive;
+            renderCountdown();
+          }
+        } catch {
+          // Retry on the next journal refresh.
+        }
       }
 
       function asFiniteNumber(value) {

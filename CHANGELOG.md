@@ -1,3 +1,9 @@
+## 2026-11-15 - Restore the Kiln Watch elapsed clock
+
+Kiln Watch reads the recorded ignition from Mission Control so T+ can display
+when the FIRING event rolls out of the recent journal feed. The final T+ can
+recover from the mission archive on reload and stays frozen at the recorded end.
+
 ## 2026-11-15 - Move the Kiln Watch mission clock
 
 The mission clock appears under Current Field. Removed the ignition note and
