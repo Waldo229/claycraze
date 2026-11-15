@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GENE Observatory — ClaycrazE</title>
+  <title>Kiln Watch — ClaycrazE</title>
   <link rel="stylesheet" href="/css/styles.css?v=site-nav-1">
 
   <style>
@@ -321,10 +321,10 @@
     <section class="obs-card">
 
       <header class="obs-top">
-        <p class="obs-kicker">GENE / Present Field</p>
-        <h1 class="obs-title">Observatory</h1>
+        <p class="obs-kicker">GENE / Observatory</p>
+        <h1 class="obs-title">Kiln Watch</h1>
         <p class="obs-subtitle">
-          The Observatory shows what GENE is registering now. Follow the firing’s recorded observations in the Mission Journal.
+          Kiln Watch shows what GENE is registering now. Follow the firing’s recorded observations in the Mission Journal.
         </p>
       </header>
 
@@ -385,13 +385,14 @@
 
           <p id="sinceLastLooked" class="countdown-note">Waiting for a fresh GREEN_0 reading.</p>
           <div class="load-warning" id="loadWarning">
-            One or more live signals have not arrived yet. The Observatory will retry automatically.
+            One or more live signals have not arrived yet. Kiln Watch will retry automatically.
           </div>
         </section>
 
         <nav class="button-row record-links" aria-label="GENE observation pages">
           <a class="obs-button" href="/missjour.html">Mission Journal</a>
-          <a class="obs-button" href="/kilnwatch.html">Back to Kiln Watch</a>
+          <a class="obs-button" href="/kiln-watch-graph.html">View firing graph</a>
+          <a class="obs-button" href="/mission-control/">Mission Control</a>
         </nav>
       </div>
 
@@ -414,6 +415,7 @@
       const MISSION_URL = "https://claycraze.com/gene/mission_control_latest.json";
       const FIRING_JOURNAL_URL = "/gene/firing_broadcast_latest.json";
       const REFRESH_MS = 10000;
+      const GENE_STALE_AFTER_SECONDS = 120;
 
       const $ = (id) => document.getElementById(id);
 
@@ -522,13 +524,19 @@
         return "Urgent";
       }
 
-      let latestSoundState = null;
+      let latestGeneState = null;
 
-      function renderSound() {
-        const data = latestSoundState;
+      function renderGene() {
+        const data = latestGeneState;
         const age = typeof data?.generated_unix === "number"
           ? Date.now() / 1000 - data.generated_unix : Infinity;
-        const fresh = Number.isFinite(age) && age >= -5 && age <= 120;
+        const fresh = Number.isFinite(age) && age >= -5 && age <= GENE_STALE_AFTER_SECONDS;
+        const awareness = fresh ? asFiniteNumber(data.arousal) : null;
+        $("awareness").textContent = awareness === null ? "--" : awareness.toFixed(2);
+        $("awarenessNote").textContent = awareness === null
+          ? fresh ? "Awareness reading unavailable" : "GENE update unavailable or out of date"
+          : awarenessLanguage(awareness);
+
         const available = data?.mic_available === true
           && typeof data.sound_level === "number"
           && Number.isFinite(data.sound_level);
@@ -543,18 +551,7 @@
             : "Relative 0-100; sampled " + Math.max(0, Math.floor(age)) + "s ago";
       }
 
-      window.setInterval(renderSound, 1000);
-
-      function renderGene(data) {
-        latestSoundState = data;
-        renderSound();
-        const awareness = asFiniteNumber(data?.arousal);
-
-        if (awareness !== null) {
-          $("awareness").textContent = awareness.toFixed(2);
-          $("awarenessNote").textContent = awarenessLanguage(awareness);
-        }
-      }
+      window.setInterval(renderGene, 1000);
 
       let latestKilnState = null;
       let kilnFetchFailed = false;
@@ -670,9 +667,8 @@
           getJson(KILN_STATE_URL)
         ]);
 
-        if (geneResult.status === "fulfilled") {
-          renderGene(geneResult.value);
-        }
+        latestGeneState = geneResult.status === "fulfilled" ? geneResult.value : null;
+        renderGene();
 
         if (kilnResult.status === "fulfilled") {
           renderKiln(kilnResult.value);

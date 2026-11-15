@@ -1,3 +1,18 @@
+## 2026-11-15 - Consolidate Kiln Watch and Observatory
+
+Use `public/observatory.html` as the single Kiln Watch page. It retains
+the mission clock and Current Field. The bottom navigation places View firing
+graph directly after Mission Journal, with Mission Control available alongside.
+The old `public/kilnwatch.html` forwards to it, and public entry and return links
+now point directly to the consolidated page. Awareness clears when GENE's
+sample is unavailable or expires, independently of kiln data.
+
+All 29 temperature tests passed, with the former Kiln Watch fixture updated
+for the consolidated page. Checked action order, redirect target, and links
+from six entry pages. Chromium could not start in the workspace, so visual
+verification is pending. Jim approved publishing on 2026-11-15. Verify the
+public redirect, action links, and live feeds after deployment.
+
 ## 2026-11-12 - Observatory T+ mission clock
 
 The Observatory now switches from the planned countdown to elapsed mission

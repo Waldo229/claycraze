@@ -58,72 +58,152 @@ test('all image paths exist with exact capitalization', () => {
   }
 });
 
-for (const page of ['kilnwatch.html', 'kiln-watch-graph.html']) {
-  test(`${page}: live transitions, failure clears hot image, recovery and expiry`, async () => {
-    const html = fs.readFileSync(`public/${page}`, 'utf8');
-    assert.ok(html.includes('<meta charset="UTF-8">'));
-    const elements = new Map();
-    function element(id) {
-      if (!elements.has(id)) elements.set(id, {style: {setProperty() {}}, classList: {toggle() {}}, setAttribute(k,v) {this[k]=v;}, removeAttribute(k) {delete this[k];}});
-      return elements.get(id);
+test('kiln-watch-graph.html: live transitions, failure clears hot image, recovery and expiry', async () => {
+  const html = fs.readFileSync('public/kiln-watch-graph.html', 'utf8');
+  assert.ok(html.includes('<meta charset="UTF-8">'));
+  const elements = new Map();
+  function element(id) {
+    if (!elements.has(id)) elements.set(id, {style: {setProperty() {}}, classList: {toggle() {}}, setAttribute(k,v) {this[k]=v;}, removeAttribute(k) {delete this[k];}});
+    return elements.get(id);
+  }
+  let current = evidence(2000), fail = false;
+  let clockNow = now;
+  current.summaries[0].latest_rate = 0;
+  let noteText = 'Ramp 0 ?F/hr.';
+  const intervals = [];
+  const context = { GeneTemperature: {...gene, evaluate: data => gene.evaluate(data, clockNow)},
+    document: {getElementById: element}, window: {setInterval(fn, ms) {intervals.push({fn,ms});}},
+    Date, Intl, AbortSignal, console: {warn() {}},
+    fetch: async url => {
+      if (fail && url.includes('kiln_watch_latest.json')) throw Error('offline');
+      return {ok: true, json: async () => url.includes('gene_state') ? {} : current, text: async () => noteText};
     }
-    let current = evidence(2000), fail = false;
-    let clockNow = now;
-    current.summaries[0].latest_rate = 0;
-    let noteText = 'Ramp 0 ?F/hr.';
-    const intervals = [];
-    const context = { GeneTemperature: {...gene, evaluate: data => gene.evaluate(data, clockNow)},
-      document: {getElementById: element}, window: {setInterval(fn, ms) {intervals.push({fn,ms});}},
-      Date, Intl, AbortSignal, console: {warn() {}},
-      fetch: async url => {
-        if (fail && url.includes('kiln_watch_latest.json')) throw Error('offline');
-        return {ok: true, json: async () => url.includes('gene_state') ? {} : current, text: async () => noteText};
-      }
-    };
-    for (const [, script] of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInNewContext(script, context);
-    const flush = () => new Promise(resolve => setImmediate(resolve));
-    await flush();
-    assert.equal(element('evidenceBadge').textContent, 'LIVE');
-    assert.equal(element('evidenceBadge')['aria-label'], 'Temperature evidence: LIVE');
-    assert.equal(element(page === 'kilnwatch.html' ? 'rampNote' : 'firingNote').textContent, 'Ramp 0 \u00B0F/hr.');
-    if (page === 'kiln-watch-graph.html') {
-      const refreshNote = intervals.find(item => item.ms === 300000).fn;
-      for (const unit of ['?', '\uFFFD', '\u00C2\u00B0', '\u00B0']) {
-        noteText = `Existing note. Ramp 0 ${unit}F/hr. Keep this wording.`;
-        await refreshNote();
-        assert.equal(element('firingNote').textContent, 'Existing note. Ramp 0 \u00B0F/hr. Keep this wording.');
-      }
+  };
+  for (const [, script] of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInNewContext(script, context);
+  const flush = () => new Promise(resolve => setImmediate(resolve));
+  await flush();
+  assert.equal(element('evidenceBadge').textContent, 'LIVE');
+  assert.equal(element('evidenceBadge')['aria-label'], 'Temperature evidence: LIVE');
+  assert.equal(element('firingNote').textContent, 'Ramp 0 \u00B0F/hr.');
+  const refreshNote = intervals.find(item => item.ms === 300000).fn;
+  for (const unit of ['?', '\uFFFD', '\u00C2\u00B0', '\u00B0']) {
+    noteText = `Existing note. Ramp 0 ${unit}F/hr. Keep this wording.`;
+    await refreshNote();
+    assert.equal(element('firingNote').textContent, 'Existing note. Ramp 0 \u00B0F/hr. Keep this wording.');
+  }
+  const mascot = element('pocketGene');
+  const label = element('geneTemperatureState');
+  const refresh = intervals.find(item => item.ms === 10000).fn;
+  for (const temp of [0,200,800,1001,1801,2000]) {
+    current = evidence(temp); await refresh();
+    assert.equal(label.textContent, gene.displayName(gene.classify(temp).state));
+    assert.equal(mascot.src, gene.classify(temp).image);
+    if (temp === 1001) {
+      assert.equal(label.textContent, 'Atomic GENE I');
+      assert.equal(mascot.alt, 'Atomic GENE I');
     }
-    const mascot = element(page === 'kilnwatch.html' ? 'geneMascot' : 'pocketGene');
-    const label = element('geneTemperatureState');
-    const refresh = intervals.find(item => item.ms === 10000).fn;
-    for (const temp of [0,200,800,1001,1801,2000]) {
-      current = evidence(temp); await refresh();
-      assert.equal(label.textContent, gene.displayName(gene.classify(temp).state));
-      assert.equal(mascot.src, gene.classify(temp).image);
-      if (temp === 1001) {
-        assert.equal(label.textContent, 'Atomic GENE I');
-        assert.equal(mascot.alt, 'Atomic GENE I');
-        if (page === 'kilnwatch.html') assert.equal(element('heatState').textContent, 'Atomic GENE I');
+    assert.equal(element('evidenceBadge').textContent, 'LIVE');
+  }
+  const tick = intervals.find(item => item.ms === 1000).fn;
+  clockNow = now + 120000; tick();
+  assert.equal(element('evidenceBadge').textContent, 'LIVE');
+  clockNow = now + 120001; tick();
+  assert.equal(element('evidenceBadge').textContent, 'STALE');
+  assert.equal(mascot.src, undefined);
+  clockNow = now; await refresh();
+  assert.equal(element('evidenceBadge').textContent, 'LIVE');
+  fail = true; await refresh();
+  assert.equal(element('evidenceBadge').textContent, 'UNAVAILABLE');
+  assert.equal(label.textContent, 'Temperature unavailable'); assert.equal(mascot.src, undefined); assert.equal(mascot.hidden, true);
+  fail = false; current = evidence(1801); await refresh(); assert.equal(mascot.hidden, false);
+  assert.equal(element('evidenceBadge').textContent, 'LIVE');
+  current.evidence_generated_at = new Date(now - 120001).toISOString();
+  intervals.find(item => item.ms === 1000).fn();
+  assert.equal(label.textContent, 'Temperature unavailable'); assert.equal(mascot.src, undefined);
+  assert.equal(element('evidenceBadge').textContent, 'STALE');
+});
+
+test('consolidated Kiln Watch links and live readings', async () => {
+  const legacy = fs.readFileSync('public/kilnwatch.html', 'utf8');
+  const html = fs.readFileSync('public/observatory.html', 'utf8');
+  assert.match(legacy, /http-equiv="refresh" content="0; url=\/observatory\.html"/);
+  assert.match(html, /href="\/missjour\.html">Mission Journal<\/a>\s*<a[^>]* href="\/kiln-watch-graph\.html">View firing graph<\/a>/);
+
+  const elements = new Map();
+  function element(id) {
+    if (!elements.has(id)) elements.set(id, {
+      style: {},
+      classList: {toggle() {}},
+      getAttribute(name) { return this[name]; }
+    });
+    return elements.get(id);
+  }
+
+  let clockNow = now;
+  let temperature = 2000;
+  let geneOffline = false;
+  let kilnOffline = false;
+  const intervals = [];
+  const context = {
+    document: {getElementById: element, addEventListener() {}},
+    window: {
+      GeneTemperature: {...gene, evaluate: data => gene.evaluate(data, clockNow)},
+      GeneFiringMeasurements: require('../public/js/gene-firing-measurements'),
+      setInterval(fn, ms) { intervals.push({fn, ms}); }
+    },
+    Date: class extends Date { static now() { return clockNow; } },
+    AbortSignal,
+    console: {warn() {}},
+    async fetch(url) {
+      if (url.includes('gene_state_latest')) {
+        if (geneOffline) throw Error('GENE offline');
+        return {ok: true, json: async () => ({
+          generated_unix: now / 1000, arousal: 0, mic_available: true, sound_level: 10
+        })};
       }
-      assert.equal(element('evidenceBadge').textContent, 'LIVE');
+      if (url.includes('kiln_watch_latest')) {
+        if (kilnOffline) throw Error('kiln feed offline');
+        return {ok: true, json: async () => evidence(temperature)};
+      }
+      return {ok: true, json: async () => ({})};
     }
-    const tick = intervals.find(item => item.ms === 1000).fn;
-    clockNow = now + 120000; tick();
-    assert.equal(element('evidenceBadge').textContent, 'LIVE');
-    clockNow = now + 120001; tick();
-    assert.equal(element('evidenceBadge').textContent, 'STALE');
-    assert.equal(mascot.src, undefined);
-    clockNow = now; await refresh();
-    assert.equal(element('evidenceBadge').textContent, 'LIVE');
-    fail = true; await refresh();
-    assert.equal(element('evidenceBadge').textContent, 'UNAVAILABLE');
-    assert.equal(label.textContent, 'Temperature unavailable'); assert.equal(mascot.src, undefined); assert.equal(mascot.hidden, true);
-    fail = false; current = evidence(1801); await refresh(); assert.equal(mascot.hidden, false);
-    assert.equal(element('evidenceBadge').textContent, 'LIVE');
-    current.evidence_generated_at = new Date(now - 120001).toISOString();
-    intervals.find(item => item.ms === 1000).fn();
-    assert.equal(label.textContent, 'Temperature unavailable'); assert.equal(mascot.src, undefined);
-    assert.equal(element('evidenceBadge').textContent, 'STALE');
-  });
-}
+  };
+  const [, script] = html.match(/<script>([\s\S]*?)<\/script>/);
+  vm.runInNewContext(script, context);
+  await new Promise(resolve => setImmediate(resolve));
+  const refresh = intervals.find(item => item.ms === 10000).fn;
+  const tick = () => intervals.filter(item => item.ms === 1000).forEach(({fn}) => fn());
+
+  assert.equal(element('awareness').textContent, '0.00');
+  assert.equal(element('soundLevel').textContent, '10.0');
+  for (const temp of [0, 200, 800, 1001, 1801, 2000]) {
+    temperature = temp;
+    await refresh();
+    assert.equal(element('geneStateImage').src, gene.classify(temp).image);
+  }
+
+  geneOffline = true;
+  await refresh();
+  assert.equal(element('awareness').textContent, '--');
+  assert.equal(element('soundLevel').textContent, '--');
+  assert.equal(element('temperature').textContent, '2000 °F');
+
+  geneOffline = false;
+  kilnOffline = true;
+  await refresh();
+  assert.equal(element('awareness').textContent, '0.00');
+  assert.equal(element('geneStateLabel').textContent, 'Current state unavailable');
+
+  kilnOffline = false;
+  await refresh();
+  clockNow += 120000;
+  tick();
+  assert.equal(element('awareness').textContent, '0.00');
+  assert.equal(element('temperature').textContent, '2000 °F');
+  clockNow++;
+  tick();
+  assert.equal(element('awareness').textContent, '--');
+  assert.equal(element('soundLevel').textContent, '--');
+  assert.equal(element('temperature').textContent, '-- °F');
+  assert.equal(element('geneStateLabel').textContent, 'Current state unavailable');
+});

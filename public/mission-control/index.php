@@ -1012,8 +1012,7 @@ if (isset($_GET['firing_notes'])) {
 
           </details>
           <div class="button-row">
-            <a class="mc-button secondary" href="/kilnwatch.html" style="text-decoration:none; display:inline-flex; align-items:center;">Back to Kiln Watch</a>
-            <a class="mc-button secondary" href="/observatory.html" style="text-decoration:none; display:inline-flex; align-items:center;">Enter Observatory</a>
+            <a class="mc-button secondary" href="/observatory.html" style="text-decoration:none; display:inline-flex; align-items:center;">Back to Kiln Watch</a>
           </div>
         </section>
 

@@ -1,3 +1,9 @@
+## 2026-11-15 - Consolidate Kiln Watch and Observatory
+
+Observatory becomes the single Kiln Watch page, with View firing graph beside
+Mission Journal and the old Kiln Watch URL forwarding to it. Awareness clears
+when the GENE update is unavailable or older than two minutes.
+
 ## 2026-11-12 - Observatory T+ mission clock
 
 Added elapsed mission time based on recorded firing and end events, with the
