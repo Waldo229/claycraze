@@ -1,3 +1,15 @@
+## 2026-11-18 - Keep microphone status in journal evidence
+
+Routine microphone availability records now appear together under a collapsed
+Microphone evidence disclosure. Their original event times and data remain
+visible there. A microphone event with additional recorded evidence can still
+appear in GENE's chronological narrative.
+
+Updated public/js/firing-broadcast.js, public/missjour.html and the journal
+regression test. All 31 tests passed, including microphone status preservation,
+a substantive sound event in the narrative, and reset on mission change.
+Jim approved publishing the change on 2026-11-18.
+
 ## 2026-11-18 - GENE narrates the Mission Journal
 
 Changed the Mission Journal's GENE Speaks panel to first-person entries sorted

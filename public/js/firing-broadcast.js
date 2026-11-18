@@ -21,7 +21,15 @@
   historyStatus.hidden = true;
   const list = document.createElement("div");
   list.className = "memory-list";
-  host.append(heading, status, current, picture, caption, historyStatus, list);
+  const microphoneDetails = document.createElement("details");
+  microphoneDetails.className = "microphone-evidence";
+  microphoneDetails.hidden = true;
+  const microphoneSummary = document.createElement("summary");
+  microphoneSummary.textContent = "Microphone evidence";
+  const microphoneList = document.createElement("div");
+  microphoneList.className = "memory-list";
+  microphoneDetails.append(microphoneSummary, microphoneList);
+  host.append(heading, status, current, picture, caption, historyStatus, list, microphoneDetails);
 
   const entries = new Map();
   const sequences = new Set();
@@ -76,10 +84,6 @@
         const temperature = evidence.temperature_f.toLocaleString();
         return `I took on my ${stage} form when ${evidence.probe} read ${temperature}°F.`;
       }
-      case "microphone":
-        return evidence.available
-          ? "My microphone was ready to listen to the studio."
-          : "I had no reading from my microphone.";
       default:
         return originalNarrative(event);
     }
@@ -89,22 +93,32 @@
     return String(event.gene || "").replace(/^\s*GENE\s*:\s*/i, "").trim();
   }
 
-  function makeEntry(event) {
+  function isMicrophoneStatus(event) {
+    return event.kind === "microphone" && typeof event.evidence?.available === "boolean" &&
+      Object.keys(event.evidence).every(key => key === "available" || key === "sample_generated_unix");
+  }
+
+  function makeEntry(event, evidenceOnly) {
     const item = document.createElement("article");
     item.className = "memory-item";
     const when = document.createElement("time");
     when.className = "memory-time";
     when.dateTime = event.observed_at_utc;
     when.textContent = new Date(event.observed_at_utc).toLocaleString();
+    const evidence = document.createElement("pre");
+    evidence.style.cssText = "white-space:pre-wrap;overflow-wrap:anywhere";
+    evidence.textContent = JSON.stringify(event.evidence, null, 2);
+    if (evidenceOnly) {
+      item.append(when, evidence);
+      return item;
+    }
+
     const words = document.createElement("p");
     words.className = "memory-text";
     words.textContent = narrate(event);
     const details = document.createElement("details");
     const summary = document.createElement("summary");
     summary.textContent = "Recorded evidence";
-    const evidence = document.createElement("pre");
-    evidence.style.cssText = "white-space:pre-wrap;overflow-wrap:anywhere";
-    evidence.textContent = JSON.stringify(event.evidence, null, 2);
     details.append(summary, evidence);
     item.append(when, words, details);
     return item;
@@ -117,7 +131,8 @@
           !Number.isFinite(Date.parse(event.observed_at_utc))) continue;
       const key = event.event_id || event.sequence;
       if (key == null || entries.has(key)) continue;
-      entries.set(key, {event, item: makeEntry(event)});
+      const evidenceOnly = isMicrophoneStatus(event);
+      entries.set(key, {event, evidenceOnly, item: makeEntry(event, evidenceOnly)});
       if (Number.isInteger(event.sequence)) {
         sequences.add(event.sequence);
         lastSequence = Math.max(lastSequence, event.sequence);
@@ -132,7 +147,10 @@
     const ordered = [...entries.values()].sort((a, b) =>
       Date.parse(a.event.observed_at_utc) - Date.parse(b.event.observed_at_utc) ||
       (a.event.sequence ?? 0) - (b.event.sequence ?? 0));
-    list.replaceChildren(...ordered.map(entry => entry.item));
+    const microphoneEntries = ordered.filter(entry => entry.evidenceOnly);
+    list.replaceChildren(...ordered.filter(entry => !entry.evidenceOnly).map(entry => entry.item));
+    microphoneList.replaceChildren(...microphoneEntries.map(entry => entry.item));
+    microphoneDetails.hidden = microphoneEntries.length === 0;
 
     const portrait = ordered.map(entry => entry.event).reverse().find(event =>
       typeof event.image === "string" && /^\/images\/[A-Za-z0-9_.-]+(?:\?v=[A-Za-z0-9]+)?$/.test(event.image));
@@ -170,6 +188,7 @@
       if (newMission) {
         entries.clear();
         sequences.clear();
+        microphoneDetails.open = false;
         nextSequence = 1;
         lastSequence = 0;
       }

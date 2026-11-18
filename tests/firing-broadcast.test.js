@@ -58,9 +58,9 @@ async function startJournal(recent, archive) {
   };
   vm.runInNewContext(script, context);
   await new Promise(resolve => setImmediate(resolve));
-  const [, status, currentReading, picture, , historyStatus, list] = host.children;
+  const [, status, currentReading, picture, , historyStatus, list, microphoneDetails] = host.children;
   return {
-    status, currentReading, picture, historyStatus, list, refresh,
+    status, currentReading, picture, historyStatus, list, microphoneDetails, refresh,
     get archiveRequests() { return archiveRequests; },
     set recent(data) { current = data; },
     set archive(data) { history = data; }
@@ -88,12 +88,29 @@ test("GENE tells the whole journal in time order and retains open evidence on re
 
   const saved = app.list.children[1].children[2];
   saved.open = true;
-  app.recent = journal([...observations.slice(-29), event(34, "microphone", {available: true})]);
+  const microphone = event(34, "microphone", {available: true, sample_generated_unix: 1794985200});
+  app.recent = journal([...observations.slice(-29), microphone]);
   await app.refresh();
-  assert.equal(app.list.children.length, 34);
+  assert.equal(app.list.children.length, 33);
+  assert.equal(app.microphoneDetails.hidden, false);
+  assert.equal(app.microphoneDetails.children[0].textContent, "Microphone evidence");
+  const [micRecord] = app.microphoneDetails.children[1].children;
+  assert.equal(micRecord.children[0].dateTime, microphone.observed_at_utc);
+  assert.deepEqual(JSON.parse(micRecord.children[1].textContent), microphone.evidence);
   assert.equal(app.list.children[1].children[2], saved);
   assert.equal(saved.open, true);
   assert.equal(app.archiveRequests, 1);
+
+  const sound = event(35, "microphone", {available: true, sound_level: 80}, {
+    gene: "GENE: I registered a brief rise in studio sound."
+  });
+  app.microphoneDetails.open = true;
+  app.recent = journal([microphone, sound]);
+  await app.refresh();
+  assert.equal(app.list.children.length, 34);
+  assert.match(app.list.children.at(-1).children[1].textContent, /brief rise in studio sound/);
+  assert.equal(app.microphoneDetails.open, true);
+  assert.equal(app.microphoneDetails.children[1].children.length, 1);
 
   app.recent = null;
   await app.refresh();
@@ -104,6 +121,8 @@ test("GENE tells the whole journal in time order and retains open evidence on re
   await app.refresh();
   assert.equal(app.list.children.length, 0);
   assert.equal(app.picture.hidden, true);
+  assert.equal(app.microphoneDetails.hidden, true);
+  assert.equal(app.microphoneDetails.open, false);
 });
 
 test("a missing or mismatched archive is retried without duplicating the recent entries", async () => {

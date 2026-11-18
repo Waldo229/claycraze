@@ -1,3 +1,9 @@
+## 2026-11-18 - Keep microphone status in journal evidence
+
+The Mission Journal now keeps routine microphone availability in one expandable
+evidence section. Recorded sound observations with additional evidence can
+still appear in GENE's narrative.
+
 ## 2026-11-18 - GENE narrates the Mission Journal
 
 GENE tells the firing in its own voice from the first recorded observation to
