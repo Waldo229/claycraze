@@ -1,3 +1,8 @@
+## 2026-11-18 - Keep the journal focused on state changes
+
+The Mission Journal keeps routine probe records and same-state readings in
+expandable evidence. GENE continues to narrate recorded changes of state.
+
 ## 2026-11-18 - Keep microphone status in journal evidence
 
 The Mission Journal now keeps routine microphone availability in one expandable

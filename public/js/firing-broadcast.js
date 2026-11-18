@@ -21,15 +21,10 @@
   historyStatus.hidden = true;
   const list = document.createElement("div");
   list.className = "memory-list";
-  const microphoneDetails = document.createElement("details");
-  microphoneDetails.className = "microphone-evidence";
-  microphoneDetails.hidden = true;
-  const microphoneSummary = document.createElement("summary");
-  microphoneSummary.textContent = "Microphone evidence";
-  const microphoneList = document.createElement("div");
-  microphoneList.className = "memory-list";
-  microphoneDetails.append(microphoneSummary, microphoneList);
-  host.append(heading, status, current, picture, caption, historyStatus, list, microphoneDetails);
+  const probeEvidence = createEvidenceSection("Probe evidence");
+  const microphoneEvidence = createEvidenceSection("Microphone evidence");
+  host.append(heading, status, current, picture, caption, historyStatus, list,
+    probeEvidence.details, microphoneEvidence.details);
 
   const entries = new Map();
   const sequences = new Set();
@@ -38,6 +33,18 @@
   let busy = false;
   let nextSequence = 1;
   let lastSequence = 0;
+
+  function createEvidenceSection(label) {
+    const details = document.createElement("details");
+    details.className = "journal-evidence";
+    details.hidden = true;
+    const summary = document.createElement("summary");
+    summary.textContent = label;
+    const items = document.createElement("div");
+    items.className = "memory-list";
+    details.append(summary, items);
+    return {details, items};
+  }
 
   function renderFreshness() {
     const age = (Date.now() - Date.parse(received?.generated_at_utc)) / 1000;
@@ -68,10 +75,6 @@
           ABORTED: "The operator ended the mission early. I’ll keep the record we have.",
           SCRUBBED: "The operator called off this firing. The plan stays in my journal."
         }[evidence.mission_status] || originalNarrative(event);
-      case "evidence":
-        return evidence.available
-          ? "I have a fresh reading from the kiln."
-          : "I’m waiting for the next reading from the kiln.";
       case "gene_stage": {
         const stage = {
           atomic_gene1: "Atomic GENE I",
@@ -131,8 +134,7 @@
           !Number.isFinite(Date.parse(event.observed_at_utc))) continue;
       const key = event.event_id || event.sequence;
       if (key == null || entries.has(key)) continue;
-      const evidenceOnly = isMicrophoneStatus(event);
-      entries.set(key, {event, evidenceOnly, item: makeEntry(event, evidenceOnly)});
+      entries.set(key, {event});
       if (Number.isInteger(event.sequence)) {
         sequences.add(event.sequence);
         lastSequence = Math.max(lastSequence, event.sequence);
@@ -147,13 +149,39 @@
     const ordered = [...entries.values()].sort((a, b) =>
       Date.parse(a.event.observed_at_utc) - Date.parse(b.event.observed_at_utc) ||
       (a.event.sequence ?? 0) - (b.event.sequence ?? 0));
-    const microphoneEntries = ordered.filter(entry => entry.evidenceOnly);
-    list.replaceChildren(...ordered.filter(entry => !entry.evidenceOnly).map(entry => entry.item));
-    microphoneList.replaceChildren(...microphoneEntries.map(entry => entry.item));
-    microphoneDetails.hidden = microphoneEntries.length === 0;
+    const narrative = [];
+    const probe = [];
+    const microphone = [];
+    let portrait;
+    let lastStage;
+    for (const entry of ordered) {
+      const {event} = entry;
+      const evidence = event.evidence;
+      const stage = event.kind === "gene_stage" && evidence?.available !== false &&
+        evidence?.probe && Number.isFinite(evidence.temperature_f) ? evidence.stage : null;
+      const repeatedStage = !!stage && stage === lastStage;
+      if (stage) lastStage = stage;
 
-    const portrait = ordered.map(entry => entry.event).reverse().find(event =>
-      typeof event.image === "string" && /^\/images\/[A-Za-z0-9_.-]+(?:\?v=[A-Za-z0-9]+)?$/.test(event.image));
+      const destination = isMicrophoneStatus(event) ? microphone
+        : event.kind === "evidence" || repeatedStage ? probe : narrative;
+      const evidenceOnly = destination !== narrative;
+      if (!entry.item || entry.evidenceOnly !== evidenceOnly) {
+        entry.item = makeEntry(event, evidenceOnly);
+        entry.evidenceOnly = evidenceOnly;
+      }
+      destination.push(entry.item);
+      if (!evidenceOnly && typeof event.image === "string" &&
+          /^\/images\/[A-Za-z0-9_.-]+(?:\?v=[A-Za-z0-9]+)?$/.test(event.image)) {
+        portrait = event;
+      }
+    }
+
+    list.replaceChildren(...narrative);
+    probeEvidence.items.replaceChildren(...probe);
+    probeEvidence.details.hidden = probe.length === 0;
+    microphoneEvidence.items.replaceChildren(...microphone);
+    microphoneEvidence.details.hidden = microphone.length === 0;
+
     picture.hidden = !portrait;
     picture.style.display = portrait ? "block" : "none";
     if (portrait) {
@@ -188,7 +216,8 @@
       if (newMission) {
         entries.clear();
         sequences.clear();
-        microphoneDetails.open = false;
+        probeEvidence.details.open = false;
+        microphoneEvidence.details.open = false;
         nextSequence = 1;
         lastSequence = 0;
       }

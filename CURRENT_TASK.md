@@ -1,3 +1,15 @@
+## 2026-11-18 - Keep the journal focused on state changes
+
+GENE's narrative now prioritizes recorded mission events and changes of state.
+Probe availability, returning samples, and repeated observations of the same
+state remain timestamped under the collapsed Probe evidence disclosure. The
+current probe reading and freshness remain visible at the top.
+
+Updated public/js/firing-broadcast.js, public/missjour.html, and the journal
+regression tests. All 32 tests passed, including repeated stage suppression
+after an evidence interruption and a genuine return to an earlier state.
+Jim approved publishing the change on 2026-11-18.
+
 ## 2026-11-18 - Keep microphone status in journal evidence
 
 Routine microphone availability records now appear together under a collapsed

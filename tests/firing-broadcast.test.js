@@ -58,9 +58,9 @@ async function startJournal(recent, archive) {
   };
   vm.runInNewContext(script, context);
   await new Promise(resolve => setImmediate(resolve));
-  const [, status, currentReading, picture, , historyStatus, list, microphoneDetails] = host.children;
+  const [, status, currentReading, picture, , historyStatus, list, probeDetails, microphoneDetails] = host.children;
   return {
-    status, currentReading, picture, historyStatus, list, microphoneDetails, refresh,
+    status, currentReading, picture, historyStatus, list, probeDetails, microphoneDetails, refresh,
     get archiveRequests() { return archiveRequests; },
     set recent(data) { current = data; },
     set archive(data) { history = data; }
@@ -77,7 +77,9 @@ test("GENE tells the whole journal in time order and retains open evidence on re
   const app = await startJournal(journal(observations.slice(-30)), journal([
     ...observations, event(34, "mission", {}, {mission_id: "another-mission"}), stage, launch
   ]));
-  assert.equal(app.list.children.length, 33);
+  assert.equal(app.list.children.length, 2);
+  assert.equal(app.probeDetails.children[0].textContent, "Probe evidence");
+  assert.equal(app.probeDetails.children[1].children.length, 31);
   assert.match(app.list.children[0].children[1].textContent, /Ignition is on the record/);
   assert.match(app.list.children[1].children[1].textContent, /Atomic GENE I.*GREEN_0.*°F/);
   const stageWords = app.list.children[1].children[1].textContent;
@@ -91,7 +93,7 @@ test("GENE tells the whole journal in time order and retains open evidence on re
   const microphone = event(34, "microphone", {available: true, sample_generated_unix: 1794985200});
   app.recent = journal([...observations.slice(-29), microphone]);
   await app.refresh();
-  assert.equal(app.list.children.length, 33);
+  assert.equal(app.list.children.length, 2);
   assert.equal(app.microphoneDetails.hidden, false);
   assert.equal(app.microphoneDetails.children[0].textContent, "Microphone evidence");
   const [micRecord] = app.microphoneDetails.children[1].children;
@@ -107,14 +109,14 @@ test("GENE tells the whole journal in time order and retains open evidence on re
   app.microphoneDetails.open = true;
   app.recent = journal([microphone, sound]);
   await app.refresh();
-  assert.equal(app.list.children.length, 34);
+  assert.equal(app.list.children.length, 3);
   assert.match(app.list.children.at(-1).children[1].textContent, /brief rise in studio sound/);
   assert.equal(app.microphoneDetails.open, true);
   assert.equal(app.microphoneDetails.children[1].children.length, 1);
 
   app.recent = null;
   await app.refresh();
-  assert.equal(app.list.children.length, 34);
+  assert.equal(app.list.children.length, 3);
   assert.match(app.currentReading.textContent, /out of date/);
 
   app.recent = journal([], {mission_id: "new-mission", archive_url: null});
@@ -123,20 +125,47 @@ test("GENE tells the whole journal in time order and retains open evidence on re
   assert.equal(app.picture.hidden, true);
   assert.equal(app.microphoneDetails.hidden, true);
   assert.equal(app.microphoneDetails.open, false);
+  assert.equal(app.probeDetails.hidden, true);
 });
 
 test("a missing or mismatched archive is retried without duplicating the recent entries", async () => {
   const second = event(2, "evidence", {available: false});
   const app = await startJournal(journal([second]), journal([], {mission_id: "different"}));
-  assert.equal(app.list.children.length, 1);
+  assert.equal(app.list.children.length, 0);
+  assert.equal(app.probeDetails.children[1].children.length, 1);
   assert.equal(app.historyStatus.hidden, false);
   app.archive = journal([second]);
   await app.refresh();
-  assert.equal(app.list.children.length, 1);
+  assert.equal(app.list.children.length, 0);
+  assert.equal(app.probeDetails.children[1].children.length, 1);
   assert.equal(app.historyStatus.hidden, false);
 
   app.archive = journal([event(1, "mission", {mission_status: "GO"}), second]);
   await app.refresh();
-  assert.equal(app.list.children.length, 2);
+  assert.equal(app.list.children.length, 1);
   assert.equal(app.historyStatus.hidden, true);
+});
+
+test("GENE narrates state changes and keeps same-state readings in probe evidence", async () => {
+  const stage = (sequence, label, temperature) => event(sequence, "gene_stage",
+    {available: true, stage: label, temperature_f: temperature, probe: "GREEN_0"});
+  const repeated = stage(4, "Safety GENE", 991);
+  const app = await startJournal(journal([
+    stage(1, "Safety GENE", 845),
+    event(2, "evidence", {available: false}),
+    event(3, "evidence", {available: true, temperature_f: 991}),
+    repeated,
+    stage(5, "atomic_gene1", 1024),
+    stage(6, "Safety GENE", 985)
+  ]));
+  const words = app.list.children.map(entry => entry.children[1].textContent);
+  assert.equal(words.length, 3);
+  assert.match(words[0], /Safety GENE.*845/);
+  assert.match(words[1], /Atomic GENE I.*1,?024/);
+  assert.match(words[2], /Safety GENE.*985/);
+  const readings = app.probeDetails.children[1].children;
+  assert.equal(readings.length, 3);
+  assert.equal(readings[2].children[0].dateTime, repeated.observed_at_utc);
+  assert.deepEqual(JSON.parse(readings[2].children[1].textContent), repeated.evidence);
+  assert.equal(app.archiveRequests, 0);
 });
