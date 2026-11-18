@@ -4,6 +4,9 @@
 
   const host = document.querySelector("[data-firing-broadcast]");
   if (!host) return;
+  const missionScoped = host.hasAttribute("data-mission-id");
+  let missionId = host.dataset.missionId;
+  let missionGeneration = 0;
 
   const heading = document.createElement("h2");
   heading.className = "panel-title";
@@ -49,13 +52,18 @@
   function renderFreshness() {
     const age = (Date.now() - Date.parse(received?.generated_at_utc)) / 1000;
     const live = !failed && age >= -5 && age <= 90;
-    status.textContent = !received ? "Awaiting the first mission broadcast."
+    status.textContent = !received ? missionScoped
+      ? !missionId ? "Waiting for Mission Control to load a mission."
+        : failed ? "Journal unavailable for this mission. Check the Mission Journal for saved broadcasts."
+          : "Loading the journal for this mission…"
+      : "Awaiting the first mission broadcast."
       : live ? `Mission: ${received.mission_name || "Unnamed mission"} · ${received.mission_status || "Unknown"} · Updated ${new Date(received.generated_at_utc).toLocaleTimeString()}`
       : "Latest broadcast unavailable. Showing the saved journal.";
     const evidence = received?.current_probe_evidence;
     const at = window.GeneTemperature?.evidenceTime(evidence?.source_time);
     const evidenceAge = (Date.now() - at) / 1000;
-    current.textContent = live && evidence?.available && evidenceAge >= 0 && evidenceAge <= 120
+    current.textContent = missionScoped && !received ? ""
+      : live && evidence?.available && evidenceAge >= 0 && evidenceAge <= 120
       ? `Current probe evidence: ${evidence.probe} · ${evidence.temperature_f} °F.`
       : "Current probe evidence is unavailable or out of date.";
   }
@@ -207,20 +215,26 @@
     return journal;
   }
 
+  function resetJournal() {
+    entries.clear();
+    sequences.clear();
+    probeEvidence.details.open = false;
+    microphoneEvidence.details.open = false;
+    historyStatus.hidden = true;
+    nextSequence = 1;
+    lastSequence = 0;
+  }
+
   async function refresh() {
-    if (busy) return;
+    if (busy || (missionScoped && !missionId)) return;
     busy = true;
+    const generation = missionGeneration;
     try {
       const data = await getJournal("/gene/firing_broadcast_latest.json");
+      if (generation !== missionGeneration) return;
+      if (missionScoped && data.mission_id !== missionId) throw Error("Journal is for a different mission.");
       const newMission = received?.mission_id !== data.mission_id;
-      if (newMission) {
-        entries.clear();
-        sequences.clear();
-        probeEvidence.details.open = false;
-        microphoneEvidence.details.open = false;
-        nextSequence = 1;
-        lastSequence = 0;
-      }
+      if (newMission) resetJournal();
       received = data;
       failed = false;
       renderFreshness();
@@ -230,6 +244,7 @@
       if (nextSequence <= lastSequence && /^\/gene\/firing-missions\/[a-f0-9]{64}\.json$/.test(data.archive_url)) {
         try {
           const archive = await getJournal(data.archive_url);
+          if (generation !== missionGeneration) return;
           if (archive.mission_id !== data.mission_id) throw Error("Wrong mission archive.");
           if (addEvents(archive.events)) renderEntries();
         } catch {
@@ -239,13 +254,28 @@
       historyStatus.hidden = nextSequence > lastSequence;
       historyStatus.textContent = "Some earlier journal entries are temporarily unavailable.";
     } catch {
+      if (generation !== missionGeneration) return;
       failed = true;
       renderFreshness();
     } finally {
       busy = false;
+      if (generation !== missionGeneration) refresh();
     }
   }
 
+  if (missionScoped) {
+    host.addEventListener("mission-change", () => {
+      missionId = host.dataset.missionId;
+      missionGeneration += 1;
+      received = null;
+      failed = false;
+      resetJournal();
+      renderEntries();
+      renderFreshness();
+      refresh();
+    });
+    renderFreshness();
+  }
   refresh();
   setInterval(refresh, 10000);
   setInterval(renderFreshness, 1000);

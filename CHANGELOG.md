@@ -1,3 +1,8 @@
+## 2026-11-18 - Restore Mission Control narration
+
+The GENE Narration tab restores the mission message after connecting and shows
+recorded journal events for that mission.
+
 ## 2026-11-18 - Keep the journal focused on state changes
 
 The Mission Journal keeps routine probe records and same-state readings in

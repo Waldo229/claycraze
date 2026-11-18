@@ -1,3 +1,17 @@
+## 2026-11-18 - Restore Mission Control narration on reload
+
+Mission Control restored the bridge's mission status without restoring its
+narration. The narration tab also omitted the firing journal. The tab now
+restores the mission message and subscribes to the existing journal for the
+bridge's mission ID. A late response or another mission's feed cannot replace
+the selected mission's narration. Operator notes continue to appear in Firing
+Notes.
+
+Changed public/mission-control/index.php and public/js/firing-broadcast.js.
+All 33 JavaScript tests passed, including mission isolation. Inline and
+external JavaScript parsed, and the diff check passed. The signed-in
+production view is pending publication and verification.
+
 ## 2026-11-18 - Keep the journal focused on state changes
 
 GENE's narrative now prioritizes recorded mission events and changes of state.

@@ -37,8 +37,14 @@ function journal(events, overrides = {}) {
   };
 }
 
-async function startJournal(recent, archive) {
+async function startJournal(recent, archive, scope) {
   const host = element();
+  host.dataset = {missionId: scope};
+  host.hasAttribute = name => name === "data-mission-id" && scope !== undefined;
+  let onMissionChange;
+  host.addEventListener = (type, callback) => {
+    if (type === "mission-change") onMissionChange = callback;
+  };
   let current = recent;
   let history = archive;
   let archiveRequests = 0;
@@ -61,11 +67,37 @@ async function startJournal(recent, archive) {
   const [, status, currentReading, picture, , historyStatus, list, probeDetails, microphoneDetails] = host.children;
   return {
     status, currentReading, picture, historyStatus, list, probeDetails, microphoneDetails, refresh,
+    async setMission(id) {
+      host.dataset.missionId = id;
+      onMissionChange();
+      await new Promise(resolve => setImmediate(resolve));
+    },
     get archiveRequests() { return archiveRequests; },
     set recent(data) { current = data; },
     set archive(data) { history = data; }
   };
 }
+
+test("Mission Control narration waits for the bridge and isolates the selected mission", async () => {
+  const other = "another-mission";
+  const ignition = event(1, "mission", {mission_status: "FIRING"});
+  const app = await startJournal(journal([ignition]), undefined, "");
+  assert.match(app.status.textContent, /Waiting for Mission Control/);
+  assert.equal(app.list.children.length, 0);
+
+  await app.setMission(missionId);
+  assert.match(app.list.children[0].children[1].textContent, /Ignition is on the record/);
+
+  await app.setMission(other);
+  assert.match(app.status.textContent, /Journal unavailable for this mission/);
+  assert.equal(app.list.children.length, 0);
+  assert.equal(app.currentReading.textContent, "");
+
+  const launch = event(1, "mission", {mission_status: "GO"}, {mission_id: other});
+  app.recent = journal([launch], {mission_id: other});
+  await app.refresh();
+  assert.match(app.list.children[0].children[1].textContent, /operator called GO/);
+});
 
 test("GENE tells the whole journal in time order and retains open evidence on refresh", async () => {
   const launch = event(1, "mission", {mission_status: "FIRING"});

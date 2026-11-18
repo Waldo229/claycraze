@@ -988,8 +988,9 @@ if (isset($_GET['firing_notes'])) {
         <section data-mc-page="gene-narration" class="panel">
           <h2 class="panel-title">GENE Narration</h2>
           <div class="narration" id="narration">
-            <strong>GENE:</strong> Mission Control is quiet. No firing has been called.
+            <strong>GENE:</strong> Waiting for the mission record.
           </div>
+          <div id="missionNarrationJournal" data-firing-broadcast data-mission-id="" class="narration"></div>
         </section>
 
         <section data-mc-page="mission-status" class="panel"><h2 class="panel-title">Mission status: <span id="operatorMissionStatus">PLANNED</span></h2>
@@ -1223,6 +1224,20 @@ if (isset($_GET['firing_notes'])) {
         $("refreshNotesButton").disabled = !savedNotesMission && (!missionRecord.mission_id || noteSaving);
         missionVersion = {mission_id: missionRecord.mission_id ?? null, revision: missionRecord.revision ?? 0};
         publicMissionStatus = missionRecord.mission_status || "PLANNED";
+        const words = typeof missionRecord.narration === "string" ? missionRecord.narration.trim() : "";
+        const hasFiring = !!missionRecord.actual_ignition ||
+          ["GO", "FIRING", "OBSERVING", "UNDERWAY", "COOLING", "COMPLETE"].includes(publicMissionStatus);
+        const narration = words && !(hasFiring && words === "Mission Control is quiet. No firing has been called.")
+          ? words : missionRecord.mission_id
+            ? [missionRecord.mission_name || "Saved mission", publicMissionStatus].join(" · ")
+            : "No mission has been loaded.";
+        $("narration").textContent = "GENE: " + narration;
+        const journal = $("missionNarrationJournal");
+        const journalMission = missionRecord.mission_id || "";
+        if (journal.dataset.missionId !== journalMission) {
+          journal.dataset.missionId = journalMission;
+          journal.dispatchEvent(new Event("mission-change"));
+        }
         $("firingMeasurements").hidden = !!savedNotesMission || !missionRecord.mission_id;
         $("operatorMissionStatus").textContent = publicMissionStatus;
         const states = {
@@ -1491,7 +1506,7 @@ if (isset($_GET['firing_notes'])) {
           geneReadiness = 'NOT READY'; lastPreflightPayload = null; geneLimitations = [];
           renderReadiness(); syncKilnLogic(); updateCountdown();
         }
-        $("narration").textContent = 'GENE: ' + (result.mission_record?.narration || 'Decision recorded.');
+        if (!result.mission_record) $("narration").textContent = "GENE: Decision recorded.";
       }
       let geneReadiness = "NOT READY";
       let geneLimitations = [];
@@ -1878,6 +1893,7 @@ if (isset($_GET['firing_notes'])) {
   </script>
 
   <script src="/mission-control/sitter-alert.js?v=1" defer></script>
+  <script src="/js/firing-broadcast.js?v=journal6" defer></script>
 </body>
 </html>
 
