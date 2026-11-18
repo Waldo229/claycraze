@@ -1,3 +1,16 @@
+## 2026-11-18 - GENE narrates the Mission Journal
+
+Changed the Mission Journal's GENE Speaks panel to first-person entries sorted
+from earliest to latest observation. The page fills gaps from the matching
+mission archive and keeps earlier entries as the recent feed advances. Current
+probe freshness is displayed beside the mission status. Expandable evidence
+and recorded event times stay with the entries.
+
+Updated public/js/firing-broadcast.js and the script version in
+public/missjour.html. All 31 tests passed, including the rolling-feed gap,
+archive retry, mission isolation, and preservation of expanded evidence.
+Jim approved publishing the change on 2026-11-18.
+
 ## 2026-11-15 - Restore the Kiln Watch elapsed clock
 
 Major Tom 4's ignition remains in the Mission Control feed after the FIRING

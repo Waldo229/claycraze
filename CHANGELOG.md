@@ -1,3 +1,9 @@
+## 2026-11-18 - GENE narrates the Mission Journal
+
+GENE tells the firing in its own voice from the first recorded observation to
+the latest. Older entries load from the mission archive when needed, and each
+entry retains its timestamp and expandable evidence.
+
 ## 2026-11-15 - Restore the Kiln Watch elapsed clock
 
 Kiln Watch reads the recorded ignition from Mission Control so T+ can display
