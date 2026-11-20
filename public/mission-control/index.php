@@ -934,6 +934,7 @@ if (isset($_GET['firing_notes'])) {
             <button class="mc-button secondary" id="evaluateButton" type="button" disabled>Run Preflight</button>
             <button class="mc-button" id="launchButton" type="button" disabled>LAUNCH</button>
           </div>
+          <p class="inline-note" id="launchFeedback" role="status" hidden></p>
         </section>
 
         <section data-mc-page="firing-notes" class="panel" style="grid-column:1 / -1">
@@ -1066,6 +1067,8 @@ if (isset($_GET['firing_notes'])) {
 
       // Enabled only after SG clearance and authenticated local bridge both succeed.
       let COMMANDS_ENABLED = false;
+      let preflightInProgress = false;
+      let launchInProgress = false;
       let missionVersion = {mission_id: null, revision: 0};
       let missionRecord = {};
       const commandButtons = [...document.querySelectorAll('[data-command]')];
@@ -1248,7 +1251,6 @@ if (isset($_GET['firing_notes'])) {
           'NEW MISSION':['SCRUBBED','ABORTED','COMPLETE']
         };
         commandButtons.forEach(button => button.disabled = !COMMANDS_ENABLED || !states[button.dataset.command]?.includes(publicMissionStatus));
-        $("evaluateButton").disabled = !COMMANDS_ENABLED || !["PLANNED", "NO-GO", "HOLD"].includes(publicMissionStatus);
         updateLaunchAvailability();
       }
       async function bridgeFetch(url, options = {}) {
@@ -1669,7 +1671,17 @@ if (isset($_GET['firing_notes'])) {
           enabled = false;
         }
 
-        $("launchButton").disabled = !COMMANDS_ENABLED || !enabled || !["PLANNED", "NO-GO"].includes(publicMissionStatus);
+        const requestPending = preflightInProgress || launchInProgress;
+        $("evaluateButton").disabled = !COMMANDS_ENABLED || requestPending ||
+          !["PLANNED", "NO-GO", "HOLD"].includes(publicMissionStatus);
+        $("launchButton").disabled = !COMMANDS_ENABLED || requestPending || !enabled ||
+          !["PLANNED", "NO-GO"].includes(publicMissionStatus);
+      }
+
+      function showLaunchFeedback(message) {
+        const feedback = $("launchFeedback");
+        feedback.textContent = message;
+        feedback.hidden = !message;
       }
 
       function renderReadiness() {
@@ -1715,7 +1727,8 @@ if (isset($_GET['firing_notes'])) {
       }
 
       async function runPreflight() {
-        if (!COMMANDS_ENABLED) return;
+        if ($("evaluateButton").disabled) return;
+        showLaunchFeedback("");
         syncKilnLogic();
 
         const errors = missionValidationErrors();
@@ -1738,7 +1751,8 @@ if (isset($_GET['firing_notes'])) {
 
         $("readiness").textContent = "CHECKING...";
         $("readiness").style.color = "var(--gene-muted)";
-        $("launchButton").disabled = true;
+        preflightInProgress = true;
+        updateLaunchAvailability();
 
         try {
           const url = new URL(PREFLIGHT_URL);
@@ -1797,10 +1811,13 @@ if (isset($_GET['firing_notes'])) {
           publicMissionStatus = missionRecord.mission_status || "PLANNED";
         $("firingMeasurements").hidden = !!savedNotesMission || !missionRecord.mission_id;
 
+          showLaunchFeedback("Saving preflight results…");
           try {
             await publishPublicMission(publicMissionStatus, publicNarration);
+            showLaunchFeedback("");
             $("narration").innerHTML += '<br>Public mission record transmitted and verified.';
           } catch (publishError) {
+            showLaunchFeedback("Could not finish saving preflight results. " + publishError.message);
             $("narration").innerHTML +=
               `<br><br><span style="color:var(--gene-amber);">Public transmission failed: ${publishError.message}</span>`;
           }
@@ -1809,6 +1826,10 @@ if (isset($_GET['firing_notes'])) {
           renderReadiness();
           $("narration").innerHTML =
             `<strong>GENE:</strong> Mission Control could not reach the local preflight bridge. ${error.message}`;
+          showLaunchFeedback("Preflight failed. " + error.message);
+        } finally {
+          preflightInProgress = false;
+          updateLaunchAvailability();
         }
       }
 
@@ -1842,9 +1863,24 @@ if (isset($_GET['firing_notes'])) {
       });
 
       $("launchButton").addEventListener("click", async () => {
-        if (!COMMANDS_ENABLED || $("launchButton").disabled) return;
-        try { await sendMissionCommand('GO'); }
-        catch (error) { $("narration").textContent = error.message; }
+        if ($("launchButton").disabled) return;
+        launchInProgress = true;
+        updateLaunchAvailability();
+        showLaunchFeedback("Recording GO…");
+        try {
+          await sendMissionCommand('GO');
+          if (publicMissionStatus === "GO") {
+            showLaunchFeedback("GO recorded. Open Mission Status to confirm ignition.");
+          } else {
+            showLaunchFeedback("Check Mission Status to verify the GO decision.");
+          }
+        } catch (error) {
+          $("narration").textContent = error.message;
+          showLaunchFeedback(error.message);
+        } finally {
+          launchInProgress = false;
+          updateLaunchAvailability();
+        }
       });
       commandButtons.forEach(button => button.addEventListener('click', async () => {
         if (button.disabled) return;
@@ -1872,7 +1908,6 @@ if (isset($_GET['firing_notes'])) {
           });
           syncKilnLogic(); updateCountdown();
           syncMission(record);
-          $("evaluateButton").disabled = !['PLANNED','NO-GO','HOLD'].includes(publicMissionStatus);
           $("clearanceStatus").textContent = 'Operator clearance verified. Local bridge connected.';
         } catch (error) {
           COMMANDS_ENABLED = false;
