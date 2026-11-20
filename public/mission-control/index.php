@@ -1329,14 +1329,24 @@ if (isset($_GET['firing_notes'])) {
         const frame = await createImageBitmap(blob);
         try {
           const canvas = document.createElement("canvas");
-          const scale = Math.min(1, 1440 / Math.max(frame.width, frame.height));
-          canvas.width = Math.max(1, Math.round(frame.width * scale));
-          canvas.height = Math.max(1, Math.round(frame.height * scale));
-          canvas.getContext("2d").drawImage(frame, 0, 0, canvas.width, canvas.height);
-          let photo = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
-          if (photo.length > 280000) photo = canvas.toDataURL("image/jpeg", 0.65).split(",")[1];
-          if (photo.length > 280000) throw new Error("The camera frame is too large to save.");
-          return {photo, at, startedAt};
+          const longest = Math.max(frame.width, frame.height);
+          const context = canvas.getContext("2d");
+          const maxPhotoLength = 280000;
+          const minEdge = 256;
+          let edge = Math.min(1440, longest);
+          while (true) {
+            const scale = edge / longest;
+            canvas.width = Math.max(1, Math.round(frame.width * scale));
+            canvas.height = Math.max(1, Math.round(frame.height * scale));
+            context.drawImage(frame, 0, 0, canvas.width, canvas.height);
+            for (const quality of [0.85, 0.65]) {
+              const photo = canvas.toDataURL("image/jpeg", quality).split(",")[1];
+              if (photo && photo.length <= maxPhotoLength) return {photo, at, startedAt};
+            }
+            if (edge <= minEdge) break;
+            edge = Math.max(minEdge, Math.floor(edge * 0.75));
+          }
+          throw new Error("The camera frame could not be compressed to the firing-note size limit.");
         } finally {
           frame.close();
         }
